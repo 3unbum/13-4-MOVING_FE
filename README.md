@@ -8,7 +8,7 @@
 
 [![Next.js](https://img.shields.io/badge/Next.js-16-000000?style=flat-square&logo=next.js)](https://nextjs.org)
 [![React](https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react&logoColor=black)](https://react.dev)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![TypeScript](https://img.shields.io/badge/TypeScript-6-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
 
 [Backend Repository](https://github.com/3unbum/13-4-MOVING_BE)
@@ -44,14 +44,14 @@
 
 ## 🛠 기술 스택
 
-| 구분             | 기술                     |
-| ---------------- | ------------------------ |
-| **Framework**    | Next.js 16 (App Router)  |
-| **Language**     | TypeScript               |
-| **UI**           | React 19, Tailwind CSS 4 |
-| **State / Data** | TanStack Query           |
-| **Form**         | React Hook Form          |
-| **Lint**         | ESLint                   |
+| 구분             | 기술                      |
+| ---------------- | ------------------------- |
+| **Framework**    | Next.js 16 (App Router)   |
+| **Language**     | TypeScript 6              |
+| **UI**           | React 19 · Tailwind CSS 4 |
+| **State / Data** | TanStack Query 5          |
+| **Form**         | React Hook Form 7         |
+| **Lint**         | ESLint 9                  |
 
 <br />
 
