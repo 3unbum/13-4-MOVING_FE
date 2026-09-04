@@ -17,7 +17,7 @@ Cursor/AI 에이전트가 이 저장소에서 작업할 때 참고하는 규칙 
 
 ## 프로젝트 구조
 
-```
+```text
 src/
 ├── app/
 │   ├── (auth)/           # 인증 플로우 라우트 그룹 (URL에 노출 안 됨)
@@ -82,7 +82,7 @@ commitlint로 강제됨 (`commitlint.config.js`), 아래 타입만 허용:
 
 ## 브랜치 전략
 
-```
+```text
 main        운영 배포
  └── dev    개발 통합 (기본 브랜치)
       └── {type}/{작업명}-{이슈번호}   예: feat/mover-list-page-18
