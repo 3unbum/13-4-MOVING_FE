@@ -1,0 +1,14 @@
+<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Property 1=office_fill, Property 2=sm" clip-path="url(#clip0_1_52555)">
+<path id="Icon" d="M12.8 2H7.2C6.0799 2 5.51984 2 5.09202 2.19377C4.71569 2.36421 4.40973 2.63617 4.21799 2.97068C4 3.35097 4 3.8488 4 4.84444V18H16V4.84444C16 3.8488 16 3.35097 15.782 2.97068C15.5903 2.63617 15.2843 2.36421 14.908 2.19377C14.4802 2 13.9201 2 12.8 2Z" fill="#F9502E"/>
+<path id="Vector 2514" d="M3 18L17 18" stroke="#F9502E" stroke-width="2" stroke-linecap="round"/>
+<path id="Vector 2510" d="M7 5H13" stroke="#FD947F" stroke-width="1.5" stroke-linecap="round"/>
+<path id="Vector 2511" d="M7 8H13" stroke="#FD947F" stroke-width="1.5" stroke-linecap="round"/>
+<path id="Vector 2512" d="M7 11H13" stroke="#FD947F" stroke-width="1.5" stroke-linecap="round"/>
+</g>
+<defs>
+<clipPath id="clip0_1_52555">
+<rect width="20" height="20" fill="white"/>
+</clipPath>
+</defs>
+</svg>

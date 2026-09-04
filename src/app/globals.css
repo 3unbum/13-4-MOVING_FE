@@ -1,26 +1,268 @@
 @import "tailwindcss";
 
+/*
+ * 사용법:
+ *  색상  -> bg-orange-400, text-black-500, border-line-200 처럼 Tailwind 유틸 그대로 사용
+ *  글자  -> text-pretendard-{size}-{weight} 하나로 크기+줄간격+굵기 다 적용됨
+ *          예) 버튼 라벨: className="text-pretendard-14-semibold"
+ *  반응형 -> tablet:, pc: 프리픽스 사용 (모바일 375가 기본값, 접두사 없음)
+ */
+
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #111111;
+}
+
+@theme {
+  /* Grayscale */
+  --color-gray-50: #ffffff;
+  --color-gray-100: #f5f5f5;
+  --color-gray-200: #e6e6e6;
+  --color-gray-300: #d9d9d9;
+  --color-gray-400: #b3b3b3;
+  --color-gray-500: #7a7a79;
+
+  /* Black scale (warm dark neutrals) */
+  --color-black-100: #61605e;
+  --color-black-200: #474643;
+  --color-black-300: #302f2d;
+  --color-black-400: #1e1e1e;
+  --color-black-500: #111111;
+
+  /* Primary orange (brand) */
+  --color-orange-100: #feeeea;
+  --color-orange-200: #fed8d0;
+  --color-orange-300: #fd947f;
+  --color-orange-400: #f9502e;
+  --color-orange-500: #e04829;
+
+  /* Background */
+  --color-background-100: #fcfcfc;
+  --color-background-200: #f7f7f7;
+  --color-background-300: #efefef;
+
+  /* Line */
+  --color-line-100: #f2f2f2;
+  --color-line-200: var(--color-gray-200);
+
+  /* 브레이크포인트 (Figma 프레임 폭 기준: Mobile 375 / Tablet 744 / PC 1920) */
+  --breakpoint-tablet: 744px;
+  --breakpoint-pc: 1920px;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --font-sans: var(--font-pretendard), ui-sans-serif, system-ui, sans-serif;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+}
+
+/* 타이포그래피 (Pretendard) */
+@utility text-pretendard-50-bold {
+  font-family: var(--font-sans);
+  font-size: 50px;
+  line-height: 42px;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+@utility text-pretendard-32-bold {
+  font-family: var(--font-sans);
+  font-size: 32px;
+  line-height: 42px;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+@utility text-pretendard-32-semibold {
+  font-family: var(--font-sans);
+  font-size: 32px;
+  line-height: 42px;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+@utility text-pretendard-24-bold {
+  font-family: var(--font-sans);
+  font-size: 24px;
+  line-height: 32px;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+@utility text-pretendard-24-semibold {
+  font-family: var(--font-sans);
+  font-size: 24px;
+  line-height: 32px;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+@utility text-pretendard-24-medium {
+  font-family: var(--font-sans);
+  font-size: 24px;
+  line-height: 32px;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+@utility text-pretendard-24-regular {
+  font-family: var(--font-sans);
+  font-size: 24px;
+  line-height: 32px;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+@utility text-pretendard-20-bold {
+  font-family: var(--font-sans);
+  font-size: 20px;
+  line-height: 32px;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+@utility text-pretendard-20-semibold {
+  font-family: var(--font-sans);
+  font-size: 20px;
+  line-height: 32px;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+@utility text-pretendard-20-medium {
+  font-family: var(--font-sans);
+  font-size: 20px;
+  line-height: 32px;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+@utility text-pretendard-20-regular {
+  font-family: var(--font-sans);
+  font-size: 20px;
+  line-height: 32px;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+@utility text-pretendard-18-bold {
+  font-family: var(--font-sans);
+  font-size: 18px;
+  line-height: 26px;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+@utility text-pretendard-18-semibold {
+  font-family: var(--font-sans);
+  font-size: 18px;
+  line-height: 26px;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+@utility text-pretendard-18-medium {
+  font-family: var(--font-sans);
+  font-size: 18px;
+  line-height: 26px;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+@utility text-pretendard-18-regular {
+  font-family: var(--font-sans);
+  font-size: 18px;
+  line-height: 26px;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+@utility text-pretendard-16-bold {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 26px;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+@utility text-pretendard-16-semibold {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 26px;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+@utility text-pretendard-16-medium {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 26px;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+@utility text-pretendard-16-regular {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 26px;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+@utility text-pretendard-14-bold {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 24px;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+@utility text-pretendard-14-semibold {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 24px;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+@utility text-pretendard-14-medium {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 24px;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+@utility text-pretendard-14-regular {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 24px;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+@utility text-pretendard-13-semibold {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  line-height: 22px;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+@utility text-pretendard-13-medium {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  line-height: 22px;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+@utility text-pretendard-12-semibold {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  line-height: 20px;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+@utility text-pretendard-12-medium {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  line-height: 18px;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+@utility text-pretendard-12-regular {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  line-height: 18px;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+@layer base {
+  button:not(:disabled) {
+    cursor: pointer;
+  }
 }
