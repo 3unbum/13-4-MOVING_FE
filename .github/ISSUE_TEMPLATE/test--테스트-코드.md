@@ -1,10 +1,9 @@
 ---
-name: 'test: 테스트 코드'
+name: "test: 테스트 코드"
 about: 테스트 코드 작성 이슈 템플릿
-title: ''
-labels: ''
-assignees: ''
-
+title: ""
+labels: ""
+assignees: ""
 ---
 
 ## 🧪 테스트 대상

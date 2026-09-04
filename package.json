@@ -7,16 +7,27 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{js,jsx,mjs,ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,css,md}": [
+      "prettier --write"
+    ]
   },
   "dependencies": {
     "@tanstack/react-query": "^5.102.8",
-    "@tanstack/react-query-devtools": "^5.102.8",
     "clsx": "^2.1.1",
     "next": "16.3.3",
     "react": "19.2.8",
     "react-dom": "19.2.8",
-    "react-hook-form": "^7.86.0"
+    "react-hook-form": "^7.86.0",
+    "@tanstack/react-query-devtools": "^5.102.8"
   },
   "devDependencies": {
     "@commitlint/cli": "^21.2.2",
@@ -28,7 +39,11 @@
     "babel-plugin-react-compiler": "1.0.0",
     "eslint": "^9",
     "eslint-config-next": "16.3.3",
+    "eslint-plugin-check-file": "^3.3.2",
+    "eslint-plugin-unused-imports": "^4.4.1",
     "husky": "^9.1.7",
+    "lint-staged": "^17.4.1",
+    "prettier": "^3.9.6",
     "tailwindcss": "^4",
     "typescript": "^6.0.3"
   }

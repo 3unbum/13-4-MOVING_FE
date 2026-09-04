@@ -1,10 +1,9 @@
 ---
-name: 'refactor: 코드 리팩토링'
+name: "refactor: 코드 리팩토링"
 about: 리팩토링 이슈 템플릿
-title: ''
-labels: ''
-assignees: ''
-
+title: ""
+labels: ""
+assignees: ""
 ---
 
 ## 🔧 대상 코드

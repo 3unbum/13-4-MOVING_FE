@@ -1,10 +1,9 @@
 ---
-name: 'feat: 구현할 기능'
+name: "feat: 구현할 기능"
 about: 새 기능 이슈 템플릿
-title: ''
-labels: ''
-assignees: ''
-
+title: ""
+labels: ""
+assignees: ""
 ---
 
 ## 💬 기능 설명 및 기대 결과
