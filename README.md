@@ -44,14 +44,15 @@
 
 ## 🛠 기술 스택
 
-| 구분             | 기술                      |
-| ---------------- | ------------------------- |
-| **Framework**    | Next.js 16 (App Router)   |
-| **Language**     | TypeScript 6              |
-| **UI**           | React 19 · Tailwind CSS 4 |
-| **State / Data** | TanStack Query 5          |
-| **Form**         | React Hook Form 7         |
-| **Lint**         | ESLint 9                  |
+| 구분              | 기술                             |
+| ----------------- | -------------------------------- |
+| **Framework**     | Next.js 16 (App Router)          |
+| **Language**      | TypeScript 6                     |
+| **UI**            | React 19 · Tailwind CSS 4        |
+| **State / Data**  | TanStack Query 5                 |
+| **Form**          | React Hook Form 7                |
+| **Lint / Format** | ESLint 9 · Prettier 3            |
+| **Git Hooks**     | husky · lint-staged · commitlint |
 
 <br />
 
@@ -94,22 +95,39 @@ npm run lint     # 린트 검사
 
 ## 📁 프로젝트 구조
 
-```
+```text
 src/
-└── app/              # App Router
-    ├── layout.tsx
-    ├── page.tsx
-    └── globals.css
+├── app/
+│   ├── (main)/           # 공개 페이지, 로그인 불필요
+│   │   └── page.tsx      # 루트("/") 랜딩 페이지
+│   ├── (auth)/           # 로그인/회원가입 플로우
+│   │   ├── customer/     # 일반 유저 (URL: /customer/...)
+│   │   └── mover/        # 기사님 (URL: /mover/...)
+│   ├── (protected)/      # 로그인 필요, role별 분기
+│   │   ├── customer/     # 일반 유저 전용
+│   │   └── mover/        # 기사님 전용
+│   ├── layout.tsx        # 루트 레이아웃
+│   ├── providers.tsx     # Provider 조립
+│   ├── not-found.tsx
+│   ├── loading.tsx
+│   └── globals.css       # 디자인 토큰 · 폰트 · 반응형 브레이크포인트
+├── assets/               # fonts · icons · images
+├── components/           # 공통 컴포넌트
+├── hooks/                # 커스텀 훅
+├── lib/                  # actions · services · utils
+└── providers/            # QueryProvider 등 개별 provider 구현체
 ```
+
+세부 구조·컨벤션은 `AGENT.md` 참고.
 
 <br />
 
 ## 🌿 브랜치 전략
 
-```
+```text
 main        운영 배포
  └── dev    개발 통합 (기본 브랜치)
-      └── feat-기능이름-이슈번호
+      └── {type}/{작업명}-{이슈번호}   예: feat/mover-list-page-18
 ```
 
 - 이슈 생성 시 브랜치를 함께 생성합니다

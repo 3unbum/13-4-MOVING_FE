@@ -25,8 +25,13 @@ src/
 │   │   │   └── layout.tsx
 │   │   └── mover/        # 기사님 회원가입/로그인 (URL: /mover/...)
 │   │       └── layout.tsx
-│   ├── (main)/           # 메인 서비스 라우트 그룹
+│   ├── (main)/           # 메인 서비스 라우트 그룹 (공개 페이지, 로그인 불필요)
 │   │   └── page.tsx      # 루트("/") 랜딩 페이지
+│   ├── (protected)/      # 로그인 필요한 페이지, role별 분기
+│   │   ├── customer/     # 일반 유저 전용 (마이페이지 등, URL: /customer/...)
+│   │   │   └── layout.tsx
+│   │   └── mover/        # 기사님 전용 (대시보드 등, URL: /mover/...)
+│   │       └── layout.tsx
 │   ├── layout.tsx        # 루트 레이아웃
 │   ├── providers.tsx     # Provider 조립 (QueryProvider 등), RootLayout에서 사용
 │   ├── not-found.tsx
@@ -47,6 +52,7 @@ src/
 ```
 
 - `customer` / `mover`는 (같은 `/login` 등 페이지명이 겹쳐서) URL 충돌 방지 위해 일반 폴더로 분리 — `/customer/...`, `/mover/...`. 각자 `layout.tsx`에서 공통 UI/가드 처리
+- `(auth)/customer`·`(protected)/customer` (mover도 동일)처럼 같은 이름 폴더가 서로 다른 그룹에 있을 수 있음 — 그룹은 URL에 안 보이니 두 그룹에 걸쳐 같은 하위 경로(예: 양쪽에 `page.tsx` 루트)를 만들면 URL 충돌남. `(auth)`는 로그인/회원가입, `(protected)`는 로그인 후 페이지로 하위 경로 안 겹치게 유지
 - 절대경로 import는 `@/*` → `src/*` 로 매핑되어 있음 (`tsconfig.json`)
   - 예: `import { X } from "@/app/..."`
 - `types/`, `constants/`는 필요해지는 시점에 추가 (현재는 미생성)
