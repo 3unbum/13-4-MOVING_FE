@@ -58,6 +58,7 @@ src/
 - 서버 상태(API 데이터)는 TanStack Query로, 폼 상태는 React Hook Form으로 관리 — `useState`로 중복 관리하지 않음
 - 클래스명 조합은 `clsx` 사용
 - children만 받는 컴포넌트는 직접 타입 정의 대신 React `PropsWithChildren` 사용
+- 새 provider(예: `AuthProvider`, `ModalProvider`)는 `src/providers/`에 구현체 먼저 만들고, `src/app/providers.tsx`에서 import해서 조립 (RootLayout이 직접 여러 provider를 감싸지 않도록)
 - 파일명은 kebab-case (예: `query-provider.tsx`) — Next.js가 이름을 강제하는 특수 파일(`page.tsx`, `layout.tsx`, `loading.tsx`, `not-found.tsx` 등)은 예외. `check-file` ESLint 룰로 강제됨 (자동수정 안 됨, 직접 이름 변경 필요)
 - import는 `@/` 절대경로 사용, 상위 폴더 상대경로(`../`) 금지 (ESLint `no-restricted-imports`로 강제됨) — 같은 폴더 내 `./`는 허용
 - 안 쓰는 import는 `eslint --fix` 시 자동 삭제됨 (`eslint-plugin-unused-imports`), 안 쓰는 변수는 `_` 접두어로 무시 처리
