@@ -44,15 +44,15 @@
 
 ## 🛠 기술 스택
 
-| 구분              | 기술                             |
-| ----------------- | -------------------------------- |
-| **Framework**     | Next.js 16 (App Router)          |
-| **Language**      | TypeScript 6                     |
-| **UI**            | React 19 · Tailwind CSS 4        |
-| **State / Data**  | TanStack Query 5                 |
-| **Form**          | React Hook Form 7                |
-| **Lint / Format** | ESLint 9 · Prettier 3            |
-| **Git Hooks**     | husky · lint-staged · commitlint |
+| 구분              | 기술                                                |
+| ----------------- | --------------------------------------------------- |
+| **Framework**     | Next.js 16 (App Router)                             |
+| **Language**      | TypeScript 6                                        |
+| **UI**            | React 19 · Tailwind CSS 4                           |
+| **State / Data**  | TanStack Query 5                                    |
+| **Form**          | React Hook Form 7                                   |
+| **Lint / Format** | ESLint 9 · Prettier 3 + prettier-plugin-tailwindcss |
+| **Git Hooks**     | husky · lint-staged · commitlint                    |
 
 <br />
 
@@ -112,7 +112,7 @@ src/
 │   ├── loading.tsx
 │   └── globals.css       # 디자인 토큰 · 폰트 · 반응형 브레이크포인트
 ├── assets/               # fonts · icons · images
-├── components/           # 공통 컴포넌트
+├── component/            # 공통 컴포넌트
 ├── hooks/                # 커스텀 훅
 ├── lib/                  # actions · services · utils
 └── providers/            # QueryProvider 등 개별 provider 구현체
@@ -130,9 +130,10 @@ main        운영 배포
       └── {type}/{작업명}-{이슈번호}   예: feat/mover-list-page-18
 ```
 
+- `main`, `dev`는 **직접 push 불가** (룰셋 보호)
+- `dev` 머지: 승인 **2명** / `main` 머지: 승인 **1명**
+- **Squash and Merge**로 병합, 머지 후 브랜치 자동 삭제
 - 이슈 생성 시 브랜치를 함께 생성합니다
-- 작업 완료 후 `dev`로 PR을 올립니다
-- **Squash and Merge**로 병합합니다
 
 ### 커밋 컨벤션
 
@@ -144,12 +145,15 @@ main        운영 배포
 | `test`     | 테스트 코드      |
 | `refactor` | 코드 리팩토링    |
 
+형식: `{type}: {내용}` — 세부 브랜치 네이밍·커밋 내용 규칙은 `AGENT.md` 참고
+
 <br />
 
 ## 🤝 팀 규칙
 
-- 코드 리뷰는 **24시간 내**에 완료합니다
-- `dev` 브랜치 병합에는 **승인 2명**이 필요합니다
+- 이슈 템플릿 5종 사용, 이슈 생성 시 브랜치 함께 생성, Projects 보드(`무빙_FE`) 연결
+- PR은 템플릿 항목 모두 채우고 **Linked Issue**에 `close #번호` 작성
+- 리뷰어는 팀장 고정 + 팀원 1명, 코드 리뷰는 **24시간 내** 완료
 - 4시간 동안 해결되지 않는 문제는 팀에 공유합니다
 - 데일리 스크럼은 전날 퇴실 전 최신화합니다
 

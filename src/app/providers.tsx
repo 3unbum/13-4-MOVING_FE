@@ -1,8 +1,8 @@
 import { QueryProvider } from "@/providers/query-provider";
-import { type PropsWithChildren } from "react";
+import { type ReactNode } from "react";
 // import { AuthProvider } from "@/providers/auth-provider";
 
-export default function Providers({ children }: PropsWithChildren) {
+export default function Providers({ children }: { children: ReactNode }) {
   return (
     <QueryProvider>
       {/* <AuthProvider> */}
