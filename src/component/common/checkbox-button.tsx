@@ -6,12 +6,16 @@ import checkIcon from "@/assets/icons/check.svg";
 type CheckboxShape = "round" | "square";
 
 interface CheckboxButtonProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "type"> {
-  // round: 24px 원형 (기본, 다중 선택 등) / square: 36px 사각형 (약관 동의 등)
   shape?: CheckboxShape;
 }
 
 // 순수 CSS(group-has-[:checked])로 체크 상태를 표현 — 별도 상태 관리 없이 네이티브
 // <input type="checkbox">라 react-hook-form의 register(...)를 그대로 spread해서 쓸 수 있음
+// group-has-[:checked]는 className에 "group"이 붙은 조상(아래 label) 안에 :checked 요소가 있어야 감지됨 —
+// label의 "group" 클래스명을 지우거나 바꾸면 체크 스타일이 조용히 깨지니 유지할 것
+
+// 사용 예: <CheckboxButton shape="round" checked={isChecked} onChange={toggleChecked} />
+//         <CheckboxButton shape="square" {...register("agree")} />
 export default function CheckboxButton({
   shape = "round",
   className,

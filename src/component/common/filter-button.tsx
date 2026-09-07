@@ -12,6 +12,7 @@ interface FilterButtonProps extends Omit<
   active?: boolean;
 }
 
+// 사용 예: <FilterButton active={isFilterOpen} onClick={() => setIsFilterOpen((v) => !v)} />
 export default function FilterButton({
   active = false,
   className,

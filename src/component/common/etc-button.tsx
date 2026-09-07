@@ -43,6 +43,8 @@ const CONTAINER_SIZE: Record<EtcButtonSize, string> = {
   md: "size-16 rounded-2xl",
 };
 
+// 사용 예: <EtcButton kind="like" size="md" active={isLiked} onClick={toggleLike} />
+//         <EtcButton kind="share-kakao" onClick={shareToKakao} />
 export default function EtcButton({
   kind,
   size = "sm",
