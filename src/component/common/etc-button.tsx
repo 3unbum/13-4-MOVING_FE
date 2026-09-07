@@ -14,7 +14,12 @@ import likeIconSmDefault from "@/assets/icons/like-md-default.svg";
 type EtcButtonKind = "like" | "clip" | "share-kakao" | "share-facebook";
 type EtcButtonSize = "xs" | "sm" | "md";
 
-type EtcButtonBaseProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, "children">;
+// aria-pressed도 Omit으로 막아서 호출부가 직접 못 넘기게 함 — FilterButton과 동일한 이유로,
+// 안 막으면 ...props 스프레드가 아래 aria-pressed={active}를 조용히 덮어쓸 수 있음
+type EtcButtonBaseProps = Omit<
+  ButtonHTMLAttributes<HTMLButtonElement>,
+  "children" | "aria-pressed"
+>;
 
 // like는 Figma에 xs 배리언트가 없어 sm/md만 허용 — kind에 따라 가능한 size를 타입으로 제한
 // like는 찜 여부(active)에 따라 아이콘이 달라지므로 active prop 추가
@@ -30,7 +35,10 @@ type EtcButtonProps =
       active?: never;
     } & EtcButtonBaseProps);
 
-const DEFAULT_ARIA_LABEL: Record<Exclude<EtcButtonKind, "like">, string> = {
+// like는 active로 눌림 여부가 바뀌어도 이름(label)은 고정 — 상태는 aria-pressed로만 전달
+// (WAI-ARIA toggle button 패턴)
+const DEFAULT_ARIA_LABEL: Record<EtcButtonKind, string> = {
+  like: "찜하기",
   clip: "링크 복사",
   "share-kakao": "카카오톡 공유",
   "share-facebook": "페이스북 공유",
@@ -61,9 +69,8 @@ export default function EtcButton({
   return (
     <button
       type={type}
-      aria-label={
-        ariaLabel ?? (kind === "like" ? (active ? "찜 취소" : "찜하기") : DEFAULT_ARIA_LABEL[kind])
-      }
+      aria-pressed={kind === "like" ? active : undefined}
+      aria-label={ariaLabel ?? DEFAULT_ARIA_LABEL[kind]}
       className={clsx(
         "flex shrink-0 items-center justify-center transition-colors",
         CONTAINER_SIZE[size],
