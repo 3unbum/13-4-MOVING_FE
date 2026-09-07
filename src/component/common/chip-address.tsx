@@ -21,7 +21,7 @@ export default function AddressChip({
     <span
       className={clsx(
         "inline-flex items-center self-start rounded-full bg-orange-100 py-0.5 font-semibold text-orange-400",
-        isMd ? "text-14 w-13.5 justify-center px-1" : "text-12 px-1.5 leading-5",
+        isMd ? "text-14 w-13.5 justify-center px-1" : "text-12 px-1.5",
         className
       )}
       {...props}
