@@ -130,6 +130,7 @@ main        운영 배포
       └── {type}/{작업명}-{이슈번호}   예: feat/mover-list-page-18
 ```
 
+- 컴포넌트 작업 시: `{type}/component-{작업명}-{이슈번호}` (예: `feat/component-mover-card-21`)
 - `main`, `dev`는 **직접 push 불가** (룰셋 보호)
 - `dev` 머지: 승인 **2명** / `main` 머지: 승인 **1명**
 - **Squash and Merge**로 병합, 머지 후 브랜치 자동 삭제
