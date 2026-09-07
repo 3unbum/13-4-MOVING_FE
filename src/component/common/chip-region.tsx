@@ -30,7 +30,7 @@ export default function Chip({
         weightClass,
         selected
           ? "border-orange-400 bg-orange-100 text-orange-400"
-          : "border-gray-300 bg-[#fafafa] text-[#262524]",
+          : "bg-background-100 text-black-400 border-gray-300",
         className
       )}
       {...props}

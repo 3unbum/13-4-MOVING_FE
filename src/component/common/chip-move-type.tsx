@@ -49,7 +49,7 @@ export default function MoveTypeChip({
         isMd ? "gap-1 rounded-md py-1 pl-1.25" : "gap-0.5 rounded py-0.5 pl-1",
         isMd ? "text-14" : "text-13",
         "font-semibold",
-        isRequested ? "bg-[#ffeef0] text-[#ff4f64]" : "bg-orange-100 text-orange-400",
+        isRequested ? "bg-red-100 text-red-200" : "bg-orange-100 text-orange-400",
         className
       )}
       {...props}
