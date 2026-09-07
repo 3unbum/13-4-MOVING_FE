@@ -4,7 +4,10 @@ import type { ButtonHTMLAttributes } from "react";
 import filterIconActive from "@/assets/icons/filter-active.svg";
 import filterIconDefault from "@/assets/icons/filter-default.svg";
 
-interface FilterButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, "children"> {
+interface FilterButtonProps extends Omit<
+  ButtonHTMLAttributes<HTMLButtonElement>,
+  "children" | "aria-pressed"
+> {
   // 필터가 적용된 상태인지 — true면 주황 강조 스타일로 전환 (토글 버튼이라 aria-pressed로 상태 전달)
   active?: boolean;
 }
