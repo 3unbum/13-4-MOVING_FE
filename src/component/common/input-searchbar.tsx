@@ -20,6 +20,8 @@ interface InputSearchbarProps extends Omit<
   onChange: (value: string) => void;
   // 검색 아이콘 클릭 또는 엔터 입력 시 호출 (form submit으로 통일해서 처리)
   onSearch?: (value: string) => void;
+  // 스크린리더용 접근 가능한 이름 (sr-only <label>로 렌더링) — 안 넘기면 placeholder로 대체
+  label?: string;
 }
 
 // Figma 디자인은 포커스 여부에 따라 좌측 검색 아이콘 <-> 우측 지우기/검색 버튼으로
@@ -37,6 +39,7 @@ export default function InputSearchbar({
   className,
   id,
   placeholder = "텍스트를 입력해 주세요.",
+  label,
   onFocus,
   onBlur,
   ...props
@@ -71,7 +74,7 @@ export default function InputSearchbar({
         />
       )}
       <label htmlFor={inputId} className="sr-only">
-        {placeholder}
+        {label ?? placeholder}
       </label>
       <input
         id={inputId}

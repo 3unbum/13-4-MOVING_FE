@@ -2,7 +2,7 @@
 
 import clsx from "clsx";
 import Image from "next/image";
-import { forwardRef, useState } from "react";
+import { forwardRef, useId, useState } from "react";
 import type { InputHTMLAttributes } from "react";
 import visibilityOffIcon from "@/assets/icons/visibility-md-off.svg";
 import visibilityOnIcon from "@/assets/icons/visibility-md-on.svg";
@@ -15,21 +15,40 @@ interface InputTextFieldProps extends Omit<InputHTMLAttributes<HTMLInputElement>
   errorMessage?: string;
   // errorMessage가 없을 때만 보여주는 안내 문구 (Figma의 "feedback" 상태)
   helperText?: string;
+  // 스크린리더용 접근 가능한 이름 (sr-only <label>로 렌더링, 시각적으로는 안 보임)
+  label?: string;
 }
 
 // type="password"일 때만 눈 아이콘으로 마스킹 토글 — 어떤 값을 보여줄지는 부모(RHF)가 관리하고,
 // "지금 마스킹을 풀지 말지"는 순수 UI 상태라 컴포넌트 내부 useState로 처리
 const InputTextField = forwardRef<HTMLInputElement, InputTextFieldProps>(function InputTextField(
-  { size = "sm", errorMessage, helperText, type = "text", className, disabled, ...props },
+  {
+    size = "sm",
+    errorMessage,
+    helperText,
+    label,
+    type = "text",
+    className,
+    id,
+    disabled,
+    ...props
+  },
   ref
 ) {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const generatedId = useId();
+  const inputId = id ?? generatedId;
   const isPassword = type === "password";
   const isError = Boolean(errorMessage);
   const message = errorMessage ?? helperText;
 
   return (
     <div className={clsx("flex w-full flex-col", size === "sm" ? "gap-1" : "gap-2", className)}>
+      {label && (
+        <label htmlFor={inputId} className="sr-only">
+          {label}
+        </label>
+      )}
       <div
         className={clsx(
           "flex w-full items-center rounded-2xl border bg-gray-50 px-3.5 transition-colors",
@@ -42,6 +61,7 @@ const InputTextField = forwardRef<HTMLInputElement, InputTextFieldProps>(functio
       >
         <input
           ref={ref}
+          id={inputId}
           type={isPassword && isPasswordVisible ? "text" : type}
           disabled={disabled}
           className={clsx(
