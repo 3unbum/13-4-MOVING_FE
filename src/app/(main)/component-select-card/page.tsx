@@ -6,8 +6,7 @@ import { useState } from "react";
 const MOVE_TYPES = ["소형이사", "가정이사", "사무실이사"] as const;
 
 export default function Page() {
-  const [selectedMd, setSelectedMd] = useState<(typeof MOVE_TYPES)[number]>("소형이사");
-  const [selectedSm, setSelectedSm] = useState<(typeof MOVE_TYPES)[number]>("소형이사");
+  const [selected, setSelected] = useState<(typeof MOVE_TYPES)[number]>("소형이사");
 
   return (
     <div className="px-160">
@@ -19,8 +18,8 @@ export default function Page() {
             key={type}
             variant={type}
             size="md"
-            selected={selectedMd === type}
-            onClick={() => setSelectedMd(type)}
+            selected={selected === type}
+            onClick={() => setSelected(type)}
           />
         ))}
       </section>
@@ -32,8 +31,8 @@ export default function Page() {
             key={type}
             variant={type}
             size="sm"
-            selected={selectedSm === type}
-            onClick={() => setSelectedSm(type)}
+            selected={selected === type}
+            onClick={() => setSelected(type)}
           />
         ))}
       </section>
