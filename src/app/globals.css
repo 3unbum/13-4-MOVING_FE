@@ -36,6 +36,10 @@
   --color-orange-400: #f9502e;
   --color-orange-500: #e04829;
 
+  /* Secondary red */
+  --color-red-100: #ffeef0;
+  --color-red-200: #ff4f64;
+
   /* Background */
   --color-background-100: #fcfcfc;
   --color-background-200: #f7f7f7;
@@ -67,7 +71,7 @@
   --text-13: 13px;
   --text-13--line-height: 22px;
   --text-12: 12px;
-  --text-12--line-height: 18px;
+  --text-12--line-height: 20px;
 }
 
 @theme inline {
