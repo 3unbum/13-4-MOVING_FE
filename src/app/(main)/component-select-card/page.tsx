@@ -12,7 +12,7 @@ export default function Page() {
   return (
     <div className="px-160">
       <h1 className="mt-6 font-semibold">이사유형 select card - md</h1>
-      <p className="text-16 mt-1 text-[#999]">*이용할 이사 서비스를 선택해주세요!</p>
+      <p className="text-16 text-gray-gray-400 mt-1">*이용할 이사 서비스를 선택해주세요!</p>
       <section className="mt-6 flex flex-wrap gap-4">
         {MOVE_TYPES.map((type) => (
           <SelectCard
@@ -25,7 +25,7 @@ export default function Page() {
         ))}
       </section>
       <h2 className="mt-6 font-semibold">이사유형 select card - sm</h2>
-      <p className="text-16 mt-1 text-[#999]">*이용할 이사 서비스를 선택해주세요!</p>
+      <p className="text-16 text-gray-gray-400 mt-1">*이용할 이사 서비스를 선택해주세요!</p>
       <section className="mt-6 flex flex-col flex-wrap gap-3">
         {MOVE_TYPES.map((type) => (
           <SelectCard

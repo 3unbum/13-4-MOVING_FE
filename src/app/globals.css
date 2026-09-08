@@ -21,6 +21,8 @@
   --color-gray-300: #d9d9d9;
   --color-gray-400: #b3b3b3;
   --color-gray-500: #7a7a79;
+  --color-gray-gray-400: #999999;
+  --color-gray-gray-500: #808080;
 
   /* Black scale (warm dark neutrals) */
   --color-black-100: #61605e;
@@ -28,6 +30,7 @@
   --color-black-300: #302f2d;
   --color-black-400: #1e1e1e;
   --color-black-500: #111111;
+  --color-black-black-400: #262524;
 
   /* Primary orange (brand) */
   --color-orange-100: #feeeea;
@@ -44,6 +47,7 @@
   --color-background-100: #fcfcfc;
   --color-background-200: #f7f7f7;
   --color-background-300: #efefef;
+  --color-background-background-100: #fafafa;
 
   /* Line */
   --color-line-100: #f2f2f2;

@@ -75,7 +75,7 @@ export default function SelectCard({
           <span
             className={clsx(
               "text-14 whitespace-nowrap",
-              selected ? "text-orange-400" : "text-[#808080]"
+              selected ? "text-orange-400" : "text-gray-gray-500"
             )}
           >
             {SUBTITLES[variant]}
