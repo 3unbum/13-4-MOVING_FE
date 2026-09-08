@@ -1,5 +1,4 @@
-import checkboxActive from "@/assets/icons/checkbox-sm-active.svg";
-import checkboxDefault from "@/assets/icons/checkbox-sm-default.svg";
+import checkIcon from "@/assets/icons/check.svg";
 import homeImg from "@/assets/images/common/이사유형_가정이사.png";
 import officeImg from "@/assets/images/common/이사유형_사무실이사.png";
 import smallImg from "@/assets/images/common/이사유형_소형이사.png";
@@ -58,11 +57,14 @@ export default function SelectCard({
           isMd ? "w-full flex-none flex-row" : "flex-col"
         )}
       >
-        <Image
-          src={selected ? checkboxActive : checkboxDefault}
-          alt=""
-          className="size-4.5 shrink-0"
-        />
+        <span
+          className={clsx(
+            "flex size-4.5 shrink-0 items-center justify-center rounded-full border",
+            selected ? "border-orange-400 bg-orange-400" : "border-line-200 bg-gray-50"
+          )}
+        >
+          {selected && <Image src={checkIcon} alt="" className="h-auto w-2" />}
+        </span>
         <span className="flex flex-col items-start">
           <span
             className={clsx(
