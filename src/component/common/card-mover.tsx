@@ -3,6 +3,7 @@ import likeActive from "@/assets/icons/like-md-red-active.svg";
 import likeDefault from "@/assets/icons/like-md-default.svg";
 import CheckboxButton from "@/component/common/checkbox-button";
 import MoveTypeChip from "@/component/common/chip-move-type";
+import type { ServiceCode } from "@/component/common/chip-region";
 import MoverMeta from "@/component/common/mover-meta";
 import MoverName from "@/component/common/mover-name";
 import ProfileAvatar from "@/component/common/profile-avatar";
@@ -10,7 +11,12 @@ import clsx from "clsx";
 import Image from "next/image";
 
 type CardMoverSize = "sm" | "md" | "lg";
-type MoveType = "소형이사" | "사무실이사" | "가정이사" | "지정견적요청";
+// 카드 상단 칩에 표시할 값. MoveTypeChip의 variant와 동일한 타입입니다.
+// ⚠️ 이사 종류(SMALL/HOME/OFFICE)와 지정 요청 여부(TARGETED)는 원래 별개 개념입니다
+//    — 전자는 quotation_request.category, 후자는 targeted_request 조인 결과.
+//    기사님 찾기 카드는 칩이 하나뿐이라 합쳐 받지만, 둘을 동시에 표시해야 하는
+//    카드(받은 요청 등)가 나오면 category + isTargeted로 분리해야 합니다.
+type MoveType = ServiceCode | "TARGETED";
 
 interface CardMoverProps extends HTMLAttributes<HTMLElement> {
   size?: CardMoverSize;
@@ -113,6 +119,7 @@ export default function CardMover({
             {selectable && (
               <CheckboxButton
                 shape="square"
+                aria-label={`${nickName} 기사님 선택`}
                 checked={selected}
                 onChange={(e) => onSelectChange?.(e.target.checked)}
               />
