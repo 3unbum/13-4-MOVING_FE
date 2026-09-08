@@ -124,7 +124,6 @@ export default function Filter(props: FilterProps) {
       <button
         type="button"
         disabled={disabled}
-        aria-haspopup="listbox"
         aria-expanded={isOpen}
         aria-controls={listId}
         onClick={() => setIsOpen((prev) => !prev)}
@@ -206,7 +205,6 @@ function SingleList({ id, size, options, value, onSelect }: SingleListProps) {
   return (
     <ul
       id={id}
-      role="listbox"
       aria-label="필터 옵션"
       // TODO: z-index 토큰(--z-filter-dropdown) PR 머지 후 z-filter-dropdown으로 교체
       className={clsx(
@@ -221,10 +219,10 @@ function SingleList({ id, size, options, value, onSelect }: SingleListProps) {
         const isLast = index === options.length - 1;
 
         return (
-          <li key={option.value} role="option" aria-selected={option.value === value}>
+          <li key={option.value}>
             <button
               type="button"
-              tabIndex={-1}
+              aria-current={option.value === value ? "true" : undefined}
               onClick={() => onSelect(option.value)}
               className={clsx(
                 "text-black-black-400 hover:bg-background-200 flex w-full items-center justify-start bg-gray-50 text-left font-medium",
@@ -301,7 +299,7 @@ function DoubleList({ id, size, columns, value, onSelect }: DoubleListProps) {
   return (
     <div
       id={id}
-      role="listbox"
+      role="group"
       aria-label="지역 필터 옵션"
       // TODO: z-index 토큰(--z-filter-dropdown) PR 머지 후 z-filter-dropdown으로 교체
       className={clsx(
@@ -362,10 +360,10 @@ function Column({ options, value, onSelect, size, side }: ColumnProps) {
         const isLast = index === options.length - 1;
 
         return (
-          <li key={option.value} role="option" aria-selected={option.value === value}>
+          <li key={option.value}>
             <button
               type="button"
-              tabIndex={-1}
+              aria-current={option.value === value ? "true" : undefined}
               onClick={() => onSelect(option.value)}
               className={clsx(
                 "text-black-black-400 hover:bg-background-200 flex items-center justify-start bg-gray-50 text-left font-medium",

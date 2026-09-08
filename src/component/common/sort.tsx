@@ -89,7 +89,6 @@ export default function Sort({
         type="button"
         disabled={disabled}
         aria-label={`정렬: ${selectedLabel}`}
-        aria-haspopup="listbox"
         aria-expanded={isOpen}
         aria-controls={listId}
         onClick={() => setIsOpen((prev) => !prev)}
@@ -126,7 +125,6 @@ export default function Sort({
       {isOpen ? (
         <ul
           id={listId}
-          role="listbox"
           aria-label="정렬 옵션"
           // TODO: z-index 토큰(--z-filter-dropdown) PR 머지 후 z-filter-dropdown으로 교체
           className={clsx(
@@ -139,15 +137,10 @@ export default function Sort({
             const isLast = index === options.length - 1;
 
             return (
-              <li
-                key={option.value}
-                role="option"
-                aria-selected={option.value === value}
-                className="w-full"
-              >
+              <li key={option.value} className="w-full">
                 <button
                   type="button"
-                  tabIndex={-1}
+                  aria-current={option.value === value ? "true" : undefined}
                   onClick={() => handleSelect(option.value)}
                   className={clsx(
                     "text-black-black-400 hover:bg-background-200 flex w-full items-center bg-gray-50 font-medium",
