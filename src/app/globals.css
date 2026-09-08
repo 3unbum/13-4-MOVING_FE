@@ -4,7 +4,7 @@
  * 사용법:
  *  색상  -> bg-orange-400, text-black-500, border-line-200 처럼 Tailwind 유틸 그대로 사용
  *  글자  -> text-{size} (font-size+line-height 세트) + font-{weight} 조합해서 사용
- *          예) 버튼 라벨: className="text-14 font-semibold"
+ *          예) 버튼 라벨: className="text-14 font-sem`ibold"
  *  반응형 -> tablet:, pc: 프리픽스 사용 (모바일 375가 기본값, 접두사 없음)
  */
 
@@ -53,9 +53,9 @@
   --color-line-100: #f2f2f2;
   --color-line-200: var(--color-gray-200);
 
-  /* 브레이크포인트 (Figma 프레임 폭 기준: Mobile 375 / Tablet 744 / PC 1920) */
+  /* 브레이크포인트: Mobile 375 / Tablet 744 / pc 1280 */
   --breakpoint-tablet: 744px;
-  --breakpoint-pc: 1920px;
+  --breakpoint-pc: 1280px;
 
   /* 타이포그래피: font-size + line-height는 한 세트로 관리, font-weight는 text-*와 조합해서 각자 커스텀 */
   --text-50: 50px;
