@@ -25,6 +25,9 @@ interface InputSearchbarProps extends Omit<
 // Figma 디자인은 포커스 여부에 따라 좌측 검색 아이콘 <-> 우측 지우기/검색 버튼으로
 // 레이아웃 자체가 바뀌는 구조라 "지금 포커스 중인가"만 내부 상태로 둠 —
 // 검색어(value)는 부모가 controlled로 관리(검색 API 호출, URL 쿼리 동기화 등에 필요)
+
+// 내부 <form onSubmit>은 이 검색바 자체의 엔터키/버튼 제출 UX 처리용이며,
+// 상위 RHF 폼에 필드로 등록되어 함께 제출되는 것을 전제로 하지 않음
 export default function InputSearchbar({
   size = "sm",
   value,
@@ -49,6 +52,7 @@ export default function InputSearchbar({
       role="search"
       onSubmit={(e) => {
         e.preventDefault();
+        if (disabled) return;
         onSearch?.(value);
       }}
       className={clsx(
@@ -98,6 +102,7 @@ export default function InputSearchbar({
               type="button"
               onMouseDown={(e) => e.preventDefault()}
               onClick={() => onChange("")}
+              disabled={disabled}
               aria-label="검색어 지우기"
               className="flex shrink-0 items-center justify-center"
             >
@@ -111,6 +116,7 @@ export default function InputSearchbar({
           <button
             type="submit"
             onMouseDown={(e) => e.preventDefault()}
+            disabled={disabled}
             aria-label="검색"
             className="flex shrink-0 items-center justify-center"
           >
