@@ -9,8 +9,10 @@ import solidHomeSm from "@/assets/icons/solid-home-sm.svg";
 import clsx from "clsx";
 import Image from "next/image";
 import type { HTMLAttributes } from "react";
+import type { ServiceCode } from "./chip-region";
 
-type MoveTypeChipVariant = "소형이사" | "사무실이사" | "가정이사" | "지정견적요청";
+// TARGETED는 BE ServiceType이 아니라 FE에서 판단하는 지정견적요청 표시 — isTargeted는 응답 필드가 아니라 요청 목록 조회용 쿼리 파라미터라 category enum에 못 낌
+type MoveTypeChipVariant = ServiceCode | "TARGETED";
 type MoveTypeChipSize = "sm" | "md";
 
 interface MoveTypeChipProps extends HTMLAttributes<HTMLSpanElement> {
@@ -19,20 +21,20 @@ interface MoveTypeChipProps extends HTMLAttributes<HTMLSpanElement> {
 }
 
 const ICONS: Record<MoveTypeChipVariant, Record<MoveTypeChipSize, string>> = {
-  소형이사: { sm: solidBoxSm, md: solidBoxMd },
-  사무실이사: { sm: solidCompanySm, md: solidCompanyMd },
-  가정이사: { sm: solidHomeSm, md: solidHomeMd },
-  지정견적요청: { sm: solidDocumentSm, md: solidDocumentMd },
+  SMALL: { sm: solidBoxSm, md: solidBoxMd },
+  OFFICE: { sm: solidCompanySm, md: solidCompanyMd },
+  HOME: { sm: solidHomeSm, md: solidHomeMd },
+  TARGETED: { sm: solidDocumentSm, md: solidDocumentMd },
 };
 
 const LABELS: Record<MoveTypeChipVariant, string> = {
-  소형이사: "소형이사",
-  사무실이사: "사무실이사",
-  가정이사: "가정이사",
-  지정견적요청: "지정 견적 요청",
+  SMALL: "소형이사",
+  OFFICE: "사무실이사",
+  HOME: "가정이사",
+  TARGETED: "지정 견적 요청",
 };
 
-// 사용법: <MoveTypeChip variant="소형이사" size="md" />
+// 사용법: <MoveTypeChip variant="SMALL" size="md" />
 export default function MoveTypeChip({
   variant,
   size = "sm",
@@ -40,7 +42,7 @@ export default function MoveTypeChip({
   ...props
 }: MoveTypeChipProps) {
   const isMd = size === "md";
-  const isRequested = variant === "지정견적요청";
+  const isRequested = variant === "TARGETED";
 
   return (
     <span

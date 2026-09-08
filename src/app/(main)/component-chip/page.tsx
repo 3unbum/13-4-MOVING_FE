@@ -1,30 +1,48 @@
 "use client";
 
 import AddressChip from "@/component/common/chip-address";
-import Chip from "@/component/common/chip-region";
+import Chip, {
+  REGION_LABELS,
+  REGIONS,
+  SERVICE_LABELS,
+  SERVICES,
+} from "@/component/common/chip-region";
 import MoveTypeChip from "@/component/common/chip-move-type";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 
-const REGIONS = [
-  "서울",
-  "경기",
-  "인천",
-  "강원",
-  "충북",
-  "충남",
-  "세종",
-  "대전",
-  "전북",
-  "전남",
-  "광주",
-  "경북",
-  "경남",
-  "대구",
-  "울산",
-  "부산",
-  "제주",
-];
-const MOVE_TYPE = ["소형이사", "가정이사", "사무실이사"];
+// GET /estimate/mover-requests 응답 예시 (mover가 받은 요청 목록) — category는 raw enum(SMALL/HOME/OFFICE) 그대로 내려옴
+// isTargeted는 실제 응답 필드가 아니라 지정 요청 탭(쿼리파라미터)에서 온 건지로 FE가 판단하는 값 — 데모용으로 같이 표기
+const MOCK_REQUESTS = [
+  {
+    id: 101,
+    category: "SMALL",
+    movingDate: "2026-09-20",
+    quotationStatus: "PENDING",
+    isTargeted: false,
+  },
+  {
+    id: 102,
+    category: "HOME",
+    movingDate: "2026-09-22",
+    quotationStatus: "PENDING",
+    isTargeted: false,
+  },
+  {
+    id: 103,
+    category: "OFFICE",
+    movingDate: "2026-09-25",
+    quotationStatus: "PENDING",
+    isTargeted: false,
+  },
+  {
+    id: 104,
+    category: "SMALL",
+    movingDate: "2026-09-28",
+    quotationStatus: "PENDING",
+    isTargeted: true,
+  },
+] as const;
+
 export default function Page() {
   const [myRegions, setMyRegions] = useState<string[]>([]);
 
@@ -47,7 +65,7 @@ export default function Page() {
             selected={myRegions.includes(region)}
             onClick={() => toggleRegion(region)}
           >
-            {region}
+            {REGION_LABELS[region]}
           </Chip>
         ))}
       </section>
@@ -62,7 +80,7 @@ export default function Page() {
             selected={myRegions.includes(region)}
             onClick={() => toggleRegion(region)}
           >
-            {region}
+            {REGION_LABELS[region]}
           </Chip>
         ))}
       </section>
@@ -71,7 +89,7 @@ export default function Page() {
         *이용 서비스는 중복 선택 가능하며, 언제든 수정 가능해요!
       </p>
       <section className="mt-6 flex flex-wrap gap-x-3.5 gap-y-4.5">
-        {MOVE_TYPE.map((m_t) => (
+        {SERVICES.map((m_t) => (
           <Chip
             key={m_t}
             size="md"
@@ -79,7 +97,7 @@ export default function Page() {
             selected={myRegions.includes(m_t)}
             onClick={() => toggleRegion(m_t)}
           >
-            {m_t}
+            {SERVICE_LABELS[m_t]}
           </Chip>
         ))}
       </section>
@@ -88,7 +106,7 @@ export default function Page() {
         *이용 서비스는 중복 선택 가능하며, 언제든 수정 가능해요!
       </p>
       <section className="mt-6 flex flex-wrap gap-x-3.5 gap-y-4.5">
-        {MOVE_TYPE.map((m_t) => (
+        {SERVICES.map((m_t) => (
           <Chip
             key={m_t}
             size="sm"
@@ -96,7 +114,7 @@ export default function Page() {
             selected={myRegions.includes(m_t)}
             onClick={() => toggleRegion(m_t)}
           >
-            {m_t}
+            {SERVICE_LABELS[m_t]}
           </Chip>
         ))}
       </section>
@@ -107,16 +125,14 @@ export default function Page() {
         <AddressChip size="md">지번</AddressChip>
         <AddressChip size="sm">지번</AddressChip>
       </section>
-      <h4 className="mt-6 font-semibold">이사유형 chip</h4>
+      <h4 className="mt-6 font-semibold">이사유형 chip (mock 응답 기반)</h4>
       <section className="mt-3 flex flex-wrap gap-2.5">
-        <MoveTypeChip variant="소형이사" size="md" />
-        <MoveTypeChip variant="소형이사" size="sm" />
-        <MoveTypeChip variant="가정이사" size="md" />
-        <MoveTypeChip variant="가정이사" size="sm" />
-        <MoveTypeChip variant="사무실이사" size="md" />
-        <MoveTypeChip variant="사무실이사" size="sm" />
-        <MoveTypeChip variant="지정견적요청" size="md" />
-        <MoveTypeChip variant="지정견적요청" size="sm" />
+        {MOCK_REQUESTS.map((request) => (
+          <Fragment key={request.id}>
+            <MoveTypeChip variant={request.isTargeted ? "TARGETED" : request.category} size="md" />
+            <MoveTypeChip variant={request.isTargeted ? "TARGETED" : request.category} size="sm" />
+          </Fragment>
+        ))}
       </section>
     </div>
   );
