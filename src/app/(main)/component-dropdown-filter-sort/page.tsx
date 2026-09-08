@@ -196,7 +196,7 @@ export default function DropdownFilterSortPreviewPage() {
         {/* 조합 */}
         <section className="pc:p-10 flex flex-col gap-6 rounded-2xl bg-gray-50 p-6 shadow-sm">
           <h2 className="text-20 text-black-500 font-bold">조합 (기사님 찾기 툴바)</h2>
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="tablet:flex hidden flex-wrap items-center gap-3">
             <Filter size="md" options={SERVICE_OPTIONS} value={serviceMd} onChange={setServiceMd} />
             <Filter
               layout="double"

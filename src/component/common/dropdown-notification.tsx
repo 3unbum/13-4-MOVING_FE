@@ -134,7 +134,18 @@ export interface DropdownNotificationItemProps {
   className?: string;
 }
 
-const MESSAGE_WRAP_WIDTH = { md: "w-[279px]", sm: "w-[244px]" } as const;
+/**
+ * 줄바꿈될 때 접히는 폭 — 피그마 메시지 텍스트 박스(md 327-48 / sm 276-32).
+ * 패널 보더 2px 때문에 버튼 content 폭이 이보다 좁아 줄바꿈 위치가 밀리므로 직접 고정한다.
+ */
+const MESSAGE_WIDTH = { md: 279, sm: 244 } as const;
+
+/**
+ * 한 줄을 유지할 수 있는 최대 폭.
+ * 피그마는 항목별로 줄바꿈을 수동 지정하고 짧은 메시지는 아이템 패딩까지 파고들며 한 줄을 유지한다.
+ * 이를 재현하되 패널 여백(md 16 / sm 18)은 남겨서 텍스트가 잘리지 않도록 한다.
+ */
+const NOWRAP_LIMIT = { md: 301, sm: 260 } as const;
 
 const useIsomorphicLayoutEffect = typeof window === "undefined" ? useEffect : useLayoutEffect;
 
@@ -151,8 +162,7 @@ export function DropdownNotificationItem({
 
   useIsomorphicLayoutEffect(() => {
     const el = messageRef.current;
-    const row = el?.parentElement;
-    if (!el || !row) return;
+    if (!el) return;
 
     let cancelled = false;
     const measure = () => {
@@ -166,7 +176,7 @@ export function DropdownNotificationItem({
       el.style.whiteSpace = prevWhiteSpace;
       el.style.width = prevWidth;
 
-      setWrap(textWidth > row.clientWidth - 32);
+      setWrap(textWidth > NOWRAP_LIMIT[size]);
     };
 
     measure();
@@ -190,10 +200,11 @@ export function DropdownNotificationItem({
     >
       <span
         ref={messageRef}
+        style={wrap ? { width: MESSAGE_WIDTH[size] } : undefined}
         className={clsx(
           "text-black-black-400 font-medium",
           isSm ? "text-14" : "text-16",
-          wrap ? clsx("whitespace-normal", MESSAGE_WRAP_WIDTH[size]) : "whitespace-nowrap"
+          wrap ? "whitespace-normal" : "whitespace-nowrap"
         )}
       >
         {message}
