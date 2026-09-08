@@ -6,7 +6,7 @@ import clsx from "clsx";
 import Image, { type StaticImageData } from "next/image";
 import type { ButtonHTMLAttributes } from "react";
 
-type SelectCardVariant = "소형이사" | "가정이사" | "사무실이사";
+type SelectCardVariant = "SMALL" | "HOME" | "OFFICE";
 type SelectCardSize = "sm" | "md";
 
 interface SelectCardProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -15,19 +15,26 @@ interface SelectCardProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   selected?: boolean;
 }
 
+// BE ServiceType과 값 맞춤 (견적 요청 category로 그대로 전송)
+const LABELS: Record<SelectCardVariant, string> = {
+  SMALL: "소형이사",
+  HOME: "가정이사",
+  OFFICE: "사무실이사",
+};
+
 const IMAGES: Record<SelectCardVariant, StaticImageData> = {
-  소형이사: smallImg,
-  가정이사: homeImg,
-  사무실이사: officeImg,
+  SMALL: smallImg,
+  HOME: homeImg,
+  OFFICE: officeImg,
 };
 
 const SUBTITLES: Record<SelectCardVariant, string> = {
-  소형이사: "원룸, 투룸, 20평대 미만",
-  가정이사: "쓰리룸, 20평대 이상",
-  사무실이사: "사무실, 상업공간",
+  SMALL: "원룸, 투룸, 20평대 미만",
+  HOME: "쓰리룸, 20평대 이상",
+  OFFICE: "사무실, 상업공간",
 };
 
-// 사용법: <SelectCard variant="소형이사" size="md" selected={selected} onClick={() => setSelected("소형이사")} />
+// 사용법: <SelectCard variant="SMALL" size="md" selected={selected} onClick={() => setSelected("SMALL")} />
 export default function SelectCard({
   variant,
   size = "sm",
@@ -72,7 +79,7 @@ export default function SelectCard({
               selected ? "text-orange-400" : "text-black-500"
             )}
           >
-            {variant}
+            {LABELS[variant]}
           </span>
           <span
             className={clsx(

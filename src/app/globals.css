@@ -4,7 +4,7 @@
  * 사용법:
  *  색상  -> bg-orange-400, text-black-500, border-line-200 처럼 Tailwind 유틸 그대로 사용
  *  글자  -> text-{size} (font-size+line-height 세트) + font-{weight} 조합해서 사용
- *          예) 버튼 라벨: className="text-14 font-sem`ibold"
+ *          예) 버튼 라벨: className="text-14 font-semibold"
  *  반응형 -> tablet:, pc: 프리픽스 사용 (모바일 375가 기본값, 접두사 없음)
  */
 

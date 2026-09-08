@@ -3,10 +3,10 @@
 import SelectCard from "@/component/common/select-card";
 import { useState } from "react";
 
-const MOVE_TYPES = ["소형이사", "가정이사", "사무실이사"] as const;
+const MOVE_TYPES = ["SMALL", "HOME", "OFFICE"] as const;
 
 export default function Page() {
-  const [selected, setSelected] = useState<(typeof MOVE_TYPES)[number]>("소형이사");
+  const [selected, setSelected] = useState<(typeof MOVE_TYPES)[number]>("SMALL");
 
   return (
     <div className="px-160">

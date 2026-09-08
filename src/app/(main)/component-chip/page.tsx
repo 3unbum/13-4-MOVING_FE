@@ -35,7 +35,7 @@ export default function Page() {
   };
 
   return (
-    <div className="px-160">
+    <div className="px-10">
       <h1 className="mt-6 font-semibold">내가 사는 지역 - md</h1>
       <p className="text-16 text-gray-gray-400 mt-1">*내가 사는 지역은 언제든 수정 가능해요!</p>
       <section className="mt-6 flex flex-wrap gap-x-3.5 gap-y-4.5">
