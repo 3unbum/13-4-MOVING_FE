@@ -104,7 +104,10 @@ export default function DropdownNotification({
         )}
       >
         <div
-          className={clsx("font-bold", isSm ? "text-16 text-black-300" : "text-18 text-black-400")}
+          className={clsx(
+            "font-bold",
+            isSm ? "text-16 text-black-300" : "text-18 text-black-black-400"
+          )}
         >
           {header}
         </div>
@@ -188,7 +191,7 @@ export function DropdownNotificationItem({
       <span
         ref={messageRef}
         className={clsx(
-          "text-black-400 font-medium",
+          "text-black-black-400 font-medium",
           isSm ? "text-14" : "text-16",
           wrap ? clsx("whitespace-normal", MESSAGE_WRAP_WIDTH[size]) : "whitespace-nowrap"
         )}
@@ -197,7 +200,7 @@ export function DropdownNotificationItem({
       </span>
       <span
         className={clsx(
-          "shrink-0 font-medium whitespace-nowrap text-gray-300",
+          "text-gray-gray-300 shrink-0 font-medium whitespace-nowrap",
           isSm ? "text-13" : "text-14"
         )}
       >

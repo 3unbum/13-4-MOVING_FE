@@ -137,12 +137,12 @@ export default function DropdownDateTrigger({
         onClick={() => setOpen(!isOpen)}
         className={clsx(
           "flex h-[50px] w-full items-center rounded-xl bg-gray-50 py-4 pr-3 pl-5 disabled:cursor-not-allowed disabled:opacity-50",
-          isOpen ? "border-2 border-orange-400" : "border border-gray-300"
+          isOpen ? "border-2 border-orange-400" : "border-gray-gray-100 border"
         )}
       >
         <span className="flex min-w-0 flex-1 items-center gap-2">
           <Image src={calendarMd} alt="" width={24} height={24} className="size-6 shrink-0" />
-          <span className="text-16 text-black-400 truncate font-medium">{label}</span>
+          <span className="text-16 text-black-black-400 truncate font-medium">{label}</span>
         </span>
         <Image src={chevronDownLgDark} alt="" width={36} height={36} className="size-9 shrink-0" />
       </button>

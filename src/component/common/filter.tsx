@@ -51,7 +51,7 @@ export type FilterProps = FilterSingleProps | FilterDoubleProps;
  *   options={[
  *     { value: "ALL", label: "전체" },
  *     { value: "SMALL", label: "소형이사" },
- *     { value: "FAMILY", label: "가정이사" },
+ *     { value: "HOME", label: "가정이사" },
  *     { value: "OFFICE", label: "사무실이사" },
  *   ]}
  *   value={service}
@@ -140,14 +140,14 @@ export default function Filter(props: FilterProps) {
               : "border-orange-400 bg-orange-100 shadow-[4px_4px_5px_rgba(195,217,242,0.2)]"
             : isSm
               ? "border-line-200 bg-gray-50 shadow-[4px_4px_5px_rgba(238,238,238,0.1)]"
-              : "border-gray-300 bg-gray-50 shadow-[4px_4px_5px_rgba(195,217,242,0.2)]"
+              : "border-gray-gray-100 bg-gray-50 shadow-[4px_4px_5px_rgba(195,217,242,0.2)]"
         )}
       >
         <span
           className={clsx(
             "text-left font-medium whitespace-nowrap",
-            isSm ? "text-14" : "text-16 w-[92px]",
-            isOpen ? "text-orange-400" : "text-black-400"
+            isSm ? "text-14" : "text-16 w-23",
+            isOpen ? "text-orange-400" : "text-black-black-400"
           )}
         >
           {triggerLabel}
@@ -210,10 +210,10 @@ function SingleList({ id, size, options, value, onSelect }: SingleListProps) {
       aria-label="필터 옵션"
       // TODO: z-index 토큰(--z-filter-dropdown) PR 머지 후 z-filter-dropdown으로 교체
       className={clsx(
-        "absolute left-0 z-100 flex flex-col overflow-hidden bg-gray-50",
+        "absolute z-100 flex flex-col overflow-hidden bg-gray-50",
         isSm
-          ? "border-line-200 top-[47px] w-[106px] rounded-lg border shadow-[4px_4px_10px_rgba(191,191,191,0.2)]"
-          : "border-line-200 top-[61px] w-40 rounded-xl border shadow-[4px_4px_5px_rgba(224,224,224,0.25)]"
+          ? "border-line-200 top-[47px] -left-px w-[106px] rounded-lg border shadow-[4px_4px_10px_rgba(191,191,191,0.2)]"
+          : "border-line-200 top-[61px] left-0 w-40 rounded-xl border shadow-[4px_4px_5px_rgba(224,224,224,0.25)]"
       )}
     >
       {options.map((option, index) => {
@@ -227,13 +227,13 @@ function SingleList({ id, size, options, value, onSelect }: SingleListProps) {
               tabIndex={-1}
               onClick={() => onSelect(option.value)}
               className={clsx(
-                "text-black-400 hover:bg-background-200 flex w-full items-center justify-start bg-gray-50 text-left font-medium",
-                isSm ? "text-14 h-10 px-3.5" : "text-16 h-[60px] pl-5",
+                "text-black-black-400 hover:bg-background-200 flex w-full items-center justify-start bg-gray-50 text-left font-medium",
+                isSm ? "text-14 h-10 px-3.5" : "text-16 h-15 pl-5",
                 isFirst && (isSm ? "rounded-t-lg" : "rounded-t-xl"),
                 isLast && (isSm ? "rounded-b-lg" : "rounded-b-xl")
               )}
             >
-              <span className={clsx("shrink-0 text-left", isSm ? "w-[61px]" : "w-[92px]")}>
+              <span className={clsx("shrink-0 text-left", isSm ? "w-[61px]" : "w-23")}>
                 {option.label}
               </span>
             </button>
@@ -305,10 +305,10 @@ function DoubleList({ id, size, columns, value, onSelect }: DoubleListProps) {
       aria-label="지역 필터 옵션"
       // TODO: z-index 토큰(--z-filter-dropdown) PR 머지 후 z-filter-dropdown으로 교체
       className={clsx(
-        "absolute left-0 z-100 overflow-hidden bg-gray-50",
+        "absolute -left-px z-100 overflow-hidden bg-gray-50",
         isSm
-          ? "border-line-200 top-[47px] max-h-[180px] rounded-lg border shadow-[4px_4px_10px_rgba(191,191,191,0.2)]"
-          : "top-[61px] max-h-[320px] rounded-2xl shadow-[4px_4px_5px_rgba(224,224,224,0.25)]"
+          ? "border-line-200 top-[47px] max-h-45 rounded-lg border shadow-[4px_4px_10px_rgba(191,191,191,0.2)]"
+          : "top-[61px] max-h-80 rounded-2xl shadow-[4px_4px_5px_rgba(224,224,224,0.25)]"
       )}
     >
       <div className="relative h-full max-h-[inherit]">
@@ -332,7 +332,7 @@ function DoubleList({ id, size, columns, value, onSelect }: DoubleListProps) {
           <div
             aria-hidden
             className={clsx(
-              "pointer-events-none absolute rounded-full bg-[#C4C4C4]",
+              "bg-gray-gray-200 pointer-events-none absolute rounded-full",
               isSm ? "right-1 w-1" : "right-1.5 w-1.5"
             )}
             style={{ top: thumbTop, height: thumbHeight }}
@@ -368,7 +368,7 @@ function Column({ options, value, onSelect, size, side }: ColumnProps) {
               tabIndex={-1}
               onClick={() => onSelect(option.value)}
               className={clsx(
-                "text-black-400 hover:bg-background-200 flex items-center justify-start bg-gray-50 text-left font-medium",
+                "text-black-black-400 hover:bg-background-200 flex items-center justify-start bg-gray-50 text-left font-medium",
                 isSm ? "text-14 h-9 w-[75px] px-3.5 py-4" : "text-18 h-16 w-[164px] px-6 py-4",
                 isLeft && !isSm && "border-line-200 border-l",
                 isLeft && "border-line-200 border-r",

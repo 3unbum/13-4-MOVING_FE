@@ -97,7 +97,7 @@ export default function Sort({
           "inline-flex items-center justify-center rounded-lg bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50",
           isSm
             ? "gap-0.5 py-1.5 pr-1.5 pl-2"
-            : "w-[114px] gap-2.5 px-2.5 py-2 shadow-[4px_4px_10px_0_rgba(220,220,220,0.2)]"
+            : "w-[114px] gap-2.5 px-2.5 py-2 shadow-[4px_4px_5px_0_rgba(220,220,220,0.2)]"
         )}
       >
         <span
@@ -105,11 +105,11 @@ export default function Sort({
             "text-center whitespace-nowrap",
             isSm
               ? isOpen
-                ? "text-12 font-medium text-gray-400"
-                : "text-12 text-black-400 font-semibold"
+                ? "text-12 text-gray-gray-400 font-medium"
+                : "text-12 text-black-black-400 font-semibold"
               : isOpen
-                ? "text-14 font-medium text-gray-400"
-                : "text-14 text-black-400 font-semibold"
+                ? "text-14 text-gray-gray-400 font-medium"
+                : "text-14 text-black-black-400 font-semibold"
           )}
         >
           {selectedLabel}
@@ -150,7 +150,7 @@ export default function Sort({
                   tabIndex={-1}
                   onClick={() => handleSelect(option.value)}
                   className={clsx(
-                    "text-black-400 hover:bg-background-200 flex w-full items-center bg-gray-50 font-medium",
+                    "text-black-black-400 hover:bg-background-200 flex w-full items-center bg-gray-50 font-medium",
                     isSm ? "text-12 h-8 py-1.5 pr-1.5 pl-2.5" : "text-14 px-3 py-2",
                     isFirst && "rounded-t-lg",
                     isLast && "rounded-b-lg"
