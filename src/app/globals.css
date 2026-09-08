@@ -21,6 +21,7 @@
   --color-gray-300: #d9d9d9;
   --color-gray-400: #b3b3b3;
   --color-gray-500: #7a7a79;
+  --color-gray-gray-300: #ababab;
   --color-gray-gray-400: #999999;
   --color-gray-gray-500: #808080;
 
@@ -30,6 +31,7 @@
   --color-black-300: #302f2d;
   --color-black-400: #1e1e1e;
   --color-black-500: #111111;
+  --color-black-black-300: #373737;
   --color-black-black-400: #262524;
 
   /* Primary orange (brand) */

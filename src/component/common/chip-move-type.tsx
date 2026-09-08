@@ -20,6 +20,13 @@ interface MoveTypeChipProps extends HTMLAttributes<HTMLSpanElement> {
   size?: MoveTypeChipSize;
 }
 
+const BG_CLASS: Record<MoveTypeChipVariant, string> = {
+  SMALL: "bg-orange-100",
+  HOME: "bg-orange-100",
+  OFFICE: "bg-red-100",
+  TARGETED: "bg-red-100",
+};
+
 const ICONS: Record<MoveTypeChipVariant, Record<MoveTypeChipSize, string>> = {
   SMALL: { sm: solidBoxSm, md: solidBoxMd },
   OFFICE: { sm: solidCompanySm, md: solidCompanyMd },
@@ -51,7 +58,8 @@ export default function MoveTypeChip({
         isMd ? "gap-1 rounded-md py-1 pl-1.25" : "gap-0.5 rounded py-0.5 pl-1",
         isMd ? "text-14" : "text-13",
         "font-semibold",
-        isRequested ? "bg-red-100 text-red-200" : "bg-orange-100 text-orange-400",
+        BG_CLASS[variant],
+        isRequested ? "text-red-200" : "text-orange-400",
         className
       )}
       {...props}
