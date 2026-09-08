@@ -27,13 +27,13 @@ export default function MoverMeta({
       <span className="flex items-center gap-0.5">
         <Image src={starActive} alt="" className="size-5 shrink-0" />
         <span className="text-black-300">{rating.toFixed(1)}</span>
-        <span className="text-gray-400">({reviewCount})</span>
+        <span className="text-gray-gray-300">({reviewCount})</span>
       </span>
 
       <Divider />
 
       <span className="flex items-center gap-1">
-        <span className="text-gray-400">경력</span>
+        <span className="text-gray-gray-300">경력</span>
         <span className="text-black-300">{career}년</span>
       </span>
 
@@ -41,7 +41,7 @@ export default function MoverMeta({
 
       <span className="flex items-center gap-1">
         <span className="text-black-300">{confirmedCount}건</span>
-        <span className="text-gray-400">확정</span>
+        <span className="text-gray-gray-300">확정</span>
       </span>
     </div>
   );

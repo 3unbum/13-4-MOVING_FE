@@ -56,7 +56,7 @@ function FavoriteCount({
   const content = (
     <>
       <Image src={isFavorited ? likeActive : likeDefault} alt="" className="size-6 shrink-0" />
-      {showCount && <span className="text-14 text-gray-500">{count}</span>}
+      {showCount && <span className="text-14 text-gray-gray-500">{count}</span>}
     </>
   );
 
@@ -131,8 +131,10 @@ export default function CardMover({
 
             <div className="flex min-w-px flex-1 flex-col gap-5 self-stretch py-1">
               <div className="flex w-full flex-col">
-                <p className="text-20 text-black-300 font-semibold">{title}</p>
-                {description && <p className="text-14 truncate text-gray-500">{description}</p>}
+                <p className="text-20 text-black-black-300 font-semibold">{title}</p>
+                {description && (
+                  <p className="text-14 text-gray-gray-500 truncate">{description}</p>
+                )}
               </div>
 
               <div className="flex w-full items-end justify-between">
@@ -165,9 +167,9 @@ export default function CardMover({
 
         <div className="flex w-full flex-col gap-4">
           <div className="flex w-full flex-col">
-            <p className="text-16 text-black-300 font-semibold">{title}</p>
+            <p className="text-16 text-black-black-300 font-semibold">{title}</p>
             {description && (
-              <p className="text-13 truncate font-medium text-gray-500">{description}</p>
+              <p className="text-13 text-gray-gray-500 truncate font-medium">{description}</p>
             )}
           </div>
 
@@ -205,7 +207,7 @@ export default function CardMover({
         <MoveTypeChip variant={moveType} size="sm" />
 
         <div className="flex w-full flex-col items-start gap-4">
-          <p className="text-16 text-black-300 w-full font-semibold">{title}</p>
+          <p className="text-16 text-black-black-300 w-full font-semibold">{title}</p>
 
           <div className="flex w-full items-center gap-2">
             <ProfileAvatar src={profileImage} alt={nickName} size="sm" />
