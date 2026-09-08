@@ -1,8 +1,13 @@
 "use client";
 
+import { useState } from "react";
+import InputSearchbar from "@/component/common/input-searchbar";
 import InputTextField from "@/component/common/input-textfield";
 
 export default function ComponentInputPage() {
+  const [searchSm, setSearchSm] = useState("");
+  const [searchMd, setSearchMd] = useState("포장이사");
+
   return (
     <div className="mx-auto flex max-w-md flex-col gap-8 p-10">
       <section className="flex flex-col gap-3">
@@ -45,6 +50,18 @@ export default function ComponentInputPage() {
           defaultValue="codeit@email.com"
           errorMessage="이메일 형식이 아닙니다."
         />
+      </section>
+
+      <section className="flex flex-col gap-3">
+        <h2 className="text-14 font-semibold text-gray-500">
+          searchbar / sm (default, focus, typing, clear)
+        </h2>
+        <InputSearchbar size="sm" value={searchSm} onChange={setSearchSm} onSearch={console.log} />
+      </section>
+
+      <section className="flex flex-col gap-3">
+        <h2 className="text-14 font-semibold text-gray-500">searchbar / md (filled)</h2>
+        <InputSearchbar size="md" value={searchMd} onChange={setSearchMd} onSearch={console.log} />
       </section>
     </div>
   );
