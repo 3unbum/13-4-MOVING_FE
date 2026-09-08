@@ -16,6 +16,18 @@ export default function ButtonPage() {
   return (
     <div className="mx-auto flex max-w-md flex-col gap-8 p-10">
       <section className="flex flex-col gap-3">
+        <h2 className="text-14 font-semibold text-gray-500">solid / xs (헤더 로그인 버튼)</h2>
+        <div className="w-[116px]">
+          <Button size="xs">로그인</Button>
+        </div>
+        <div className="w-[116px]">
+          <Button size="xs" disabled>
+            로그인
+          </Button>
+        </div>
+      </section>
+
+      <section className="flex flex-col gap-3">
         <h2 className="text-14 font-semibold text-gray-500">solid / sm</h2>
         <Button size="sm">Primary CTA 버튼</Button>
         <Button size="sm" disabled>
