@@ -3,7 +3,15 @@
 import xMd from "@/assets/icons/x-md.svg";
 import clsx from "clsx";
 import Image from "next/image";
-import { useEffect, useId, useRef, type ReactNode, type RefObject } from "react";
+import {
+  useEffect,
+  useId,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type ReactNode,
+  type RefObject,
+} from "react";
 
 export interface DropdownNotificationProps {
   /** 패널 헤더 (기본: 알림) */
@@ -92,7 +100,7 @@ export default function DropdownNotification({
       <div
         className={clsx(
           "flex w-full items-center justify-between bg-gray-50",
-          isSm ? "py-3.5 pr-3 pl-4" : "py-3.5 pr-3 pl-6"
+          isSm ? "py-3.5 pr-7 pl-8" : "py-3.5 pr-7 pl-10"
         )}
       >
         <div
@@ -123,6 +131,10 @@ export interface DropdownNotificationItemProps {
   className?: string;
 }
 
+const MESSAGE_WRAP_WIDTH = { md: "w-[279px]", sm: "w-[244px]" } as const;
+
+const useIsomorphicLayoutEffect = typeof window === "undefined" ? useEffect : useLayoutEffect;
+
 export function DropdownNotificationItem({
   message,
   timeLabel,
@@ -131,6 +143,36 @@ export function DropdownNotificationItem({
   className,
 }: DropdownNotificationItemProps) {
   const isSm = size === "sm";
+  const messageRef = useRef<HTMLSpanElement>(null);
+  const [wrap, setWrap] = useState(false);
+
+  useIsomorphicLayoutEffect(() => {
+    const el = messageRef.current;
+    const row = el?.parentElement;
+    if (!el || !row) return;
+
+    let cancelled = false;
+    const measure = () => {
+      if (cancelled) return;
+
+      const prevWhiteSpace = el.style.whiteSpace;
+      const prevWidth = el.style.width;
+      el.style.whiteSpace = "nowrap";
+      el.style.width = "max-content";
+      const textWidth = el.scrollWidth;
+      el.style.whiteSpace = prevWhiteSpace;
+      el.style.width = prevWidth;
+
+      setWrap(textWidth > row.clientWidth - 32);
+    };
+
+    measure();
+    void document.fonts.ready.then(measure);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [message, size]);
 
   return (
     <button
@@ -139,16 +181,23 @@ export function DropdownNotificationItem({
       onClick={onClick}
       className={clsx(
         "border-line-200 hover:bg-background-300 flex w-full shrink-0 flex-col items-start justify-center gap-0.5 border-b bg-gray-50 text-left last:border-b-0",
-        isSm ? "px-4 py-3" : "px-6 py-4",
+        isSm ? "px-8 py-3" : "px-10 py-4",
         className
       )}
     >
-      <span className={clsx("text-black-400 w-full font-medium", isSm ? "text-14" : "text-16")}>
+      <span
+        ref={messageRef}
+        className={clsx(
+          "text-black-400 font-medium",
+          isSm ? "text-14" : "text-16",
+          wrap ? clsx("whitespace-normal", MESSAGE_WRAP_WIDTH[size]) : "whitespace-nowrap"
+        )}
+      >
         {message}
       </span>
       <span
         className={clsx(
-          "shrink-0 font-medium whitespace-nowrap text-[#ABABAB]",
+          "shrink-0 font-medium whitespace-nowrap text-gray-300",
           isSm ? "text-13" : "text-14"
         )}
       >
