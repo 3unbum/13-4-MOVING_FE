@@ -54,8 +54,9 @@ const InputTextField = forwardRef<HTMLInputElement, InputTextFieldProps>(functio
           <button
             type="button"
             onClick={() => setIsPasswordVisible((prev) => !prev)}
+            disabled={disabled}
             aria-label={isPasswordVisible ? "비밀번호 숨기기" : "비밀번호 보기"}
-            className="ml-2 flex shrink-0 items-center justify-center"
+            className="ml-2 flex shrink-0 items-center justify-center disabled:cursor-not-allowed"
           >
             <Image
               src={isPasswordVisible ? visibilityOnIcon : visibilityOffIcon}
