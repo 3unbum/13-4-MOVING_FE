@@ -21,6 +21,8 @@
   --color-gray-300: #d9d9d9;
   --color-gray-400: #b3b3b3;
   --color-gray-500: #7a7a79;
+  --color-gray-gray-400: #999999;
+  --color-gray-gray-500: #808080;
 
   /* Black scale (warm dark neutrals) */
   --color-black-100: #61605e;
@@ -28,6 +30,7 @@
   --color-black-300: #302f2d;
   --color-black-400: #1e1e1e;
   --color-black-500: #111111;
+  --color-black-black-400: #262524;
 
   /* Primary orange (brand) */
   --color-orange-100: #feeeea;
@@ -44,14 +47,15 @@
   --color-background-100: #fcfcfc;
   --color-background-200: #f7f7f7;
   --color-background-300: #efefef;
+  --color-background-background-100: #fafafa;
 
   /* Line */
   --color-line-100: #f2f2f2;
   --color-line-200: var(--color-gray-200);
 
-  /* 브레이크포인트 (Figma 프레임 폭 기준: Mobile 375 / Tablet 744 / PC 1920) */
+  /* 브레이크포인트: Mobile 375 / Tablet 744 / pc 1280 */
   --breakpoint-tablet: 744px;
-  --breakpoint-pc: 1920px;
+  --breakpoint-pc: 1280px;
 
   /* 타이포그래피: font-size + line-height는 한 세트로 관리, font-weight는 text-*와 조합해서 각자 커스텀 */
   --text-50: 50px;
