@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import InputSearchbar from "@/component/common/input-searchbar";
+import InputTextArea from "@/component/common/input-textarea";
 import InputTextField from "@/component/common/input-textfield";
 
 export default function ComponentInputPage() {
@@ -62,6 +63,34 @@ export default function ComponentInputPage() {
       <section className="flex flex-col gap-3">
         <h2 className="text-14 font-semibold text-gray-500">searchbar / md (filled)</h2>
         <InputSearchbar size="md" value={searchMd} onChange={setSearchMd} onSearch={console.log} />
+      </section>
+
+      <section className="flex flex-col gap-3">
+        <h2 className="text-14 font-semibold text-gray-500">textarea / sm (default, filled)</h2>
+        <InputTextArea size="sm" placeholder="최소 10자 이상 입력해주세요" />
+        <InputTextArea size="sm" defaultValue="후기를 작성하는 중입니다" />
+      </section>
+
+      <section className="flex flex-col gap-3">
+        <h2 className="text-14 font-semibold text-gray-500">textarea / md (error, disabled)</h2>
+        <InputTextArea size="md" placeholder="후기" errorMessage="10자 이상 입력해주세요." />
+        <InputTextArea size="md" placeholder="최소 10자 이상 입력해주세요" disabled />
+      </section>
+
+      <section className="flex flex-col gap-3">
+        <h2 className="text-14 font-semibold text-gray-500">textarea / 스크롤바 (내용 넘칠 때)</h2>
+        <InputTextArea
+          size="sm"
+          defaultValue={
+            "text area는 최소 10자 이상 입력해야 버튼이 활성화됩니다. 또한 input 내용이 길어지면 내부 스크롤이 나타납니다. text area는 최소 10자 이상 입력해야 버튼이 활성화됩니다. 또한 input 내용이 길어지면 내부 스크롤이 나타납니다."
+          }
+        />
+        <InputTextArea
+          size="md"
+          defaultValue={
+            "text area는 최소 10자 이상 입력해야 버튼이 활성화됩니다. 또한 input 내용이 길어지면 내부 스크롤이 나타납니다. text area는 최소 10자 이상 입력해야 버튼이 활성화됩니다. 또한 input 내용이 길어지면 내부 스크롤이 나타납니다."
+          }
+        />
       </section>
     </div>
   );
