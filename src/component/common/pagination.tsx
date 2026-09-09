@@ -17,31 +17,32 @@ interface PaginationProps {
 }
 
 // 피그마 디자인 시스템 "Pagination" 컴포넌트 스펙(component/pagination/sm·lg) 그대로 반영
-// - 정사각형 버튼(원형 X), sm 34px/rounded-6px · lg 48px/rounded-8px, 배경은 항상 gray-50(#FFFFFF)
+// - 정사각형 버튼(원형 X), sm 34px/rounded-md(6px) · lg size-12(48px)/rounded-lg(8px), 배경은 항상 gray-50(#FFFFFF)
 // - 현재 페이지는 배경 변화 없이 텍스트만 semibold + black-black-400(#262524)로 강조
 // - 다른 페이지 번호는 gray-gray-200(#c4c4c4), 굵기는 사이즈별로 다름(lg medium / sm regular — 피그마 파일 자체 표기)
-// - "..." 생략은 텍스트가 아니라 13×3px 바 아이콘, gray-gray-300(#ababab)
+// - "..." 생략은 텍스트가 아니라 3px 원 3개(gap 2px, gray-gray-200) — 피그마 "more" 컴포넌트 그대로
 // - 이전/다음 버튼은 클릭 가능 여부에 따라 아이콘 자체가 교체됨(default ↔ active), opacity 처리 아님
+// - 글자 크기는 globals.css의 text-16/text-18 토큰(line-height 페어링 포함) 사용, 임의 px 값 사용 안 함
 const SIZE_STYLES = {
   sm: {
-    button: "size-[34px] rounded-[6px]",
+    button: "size-[34px] rounded-md",
     gapOuter: "gap-2", // 8px
-    text: "text-[16px]",
+    text: "text-16",
     inactiveWeight: "font-normal",
   },
   lg: {
-    button: "size-[48px] rounded-[8px]",
+    button: "size-12 rounded-lg",
     gapOuter: "gap-2.5", // 10px
-    text: "text-[18px]",
+    text: "text-18",
     inactiveWeight: "font-medium",
   },
 } as const;
 
 // size 생략 시 기본값: SIZE_STYLES를 pc: 프리픽스로 묶어 반응형으로 자동 전환
 const RESPONSIVE_STYLES = {
-  button: "size-[34px] rounded-[6px] pc:size-[48px] pc:rounded-[8px]",
+  button: "size-[34px] rounded-md pc:size-12 pc:rounded-lg",
   gapOuter: "gap-2 pc:gap-2.5",
-  text: "text-[16px] pc:text-[18px]",
+  text: "text-16 pc:text-18",
   inactiveWeight: "font-normal pc:font-medium",
 };
 
@@ -128,7 +129,11 @@ export default function Pagination({
         {pages.map((page, index) =>
           page === "ellipsis" ? (
             <span key={`ellipsis-${index}`} className={buttonBase} aria-hidden="true">
-              <span className="bg-gray-gray-300 h-[3px] w-[13px] rounded-full" />
+              <span className="flex items-center gap-0.5">
+                <span className="bg-gray-gray-200 size-[3px] rounded-full" />
+                <span className="bg-gray-gray-200 size-[3px] rounded-full" />
+                <span className="bg-gray-gray-200 size-[3px] rounded-full" />
+              </span>
             </span>
           ) : (
             <button
@@ -138,7 +143,6 @@ export default function Pagination({
               onClick={() => onPageChange(page)}
               className={clsx(
                 buttonBase,
-                "leading-[26px]",
                 styles.text,
                 page === currentPage
                   ? "text-black-black-400 font-semibold"
