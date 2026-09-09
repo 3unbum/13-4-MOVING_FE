@@ -46,6 +46,7 @@
   /* Secondary red */
   --color-red-100: #ffeef0;
   --color-red-200: #ff4f64;
+  --color-yellow-100: #ffc149;
 
   /* Background */
   --color-background-100: #fcfcfc;
@@ -64,6 +65,8 @@
   /* 타이포그래피: font-size + line-height는 한 세트로 관리, font-weight는 text-*와 조합해서 각자 커스텀 */
   --text-50: 50px;
   --text-50--line-height: 42px;
+  --text-40: 40px;
+  --text-40--line-height: normal;
   --text-32: 32px;
   --text-32--line-height: 42px;
   --text-24: 24px;
