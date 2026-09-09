@@ -1,6 +1,5 @@
 import type { HTMLAttributes } from "react";
-import likeActive from "@/assets/icons/like-md-red-active.svg";
-import likeDefault from "@/assets/icons/like-md-default.svg";
+import { FavoriteCount } from "@/component/common/card-parts";
 import CheckboxButton from "@/component/common/checkbox-button";
 import MoveTypeChip from "@/component/common/chip-move-type";
 import type { ServiceCode } from "@/component/common/chip-region";
@@ -8,7 +7,6 @@ import MoverMeta from "@/component/common/mover-meta";
 import MoverName from "@/component/common/mover-name";
 import ProfileAvatar from "@/component/common/profile-avatar";
 import clsx from "clsx";
-import Image from "next/image";
 
 type CardMoverSize = "sm" | "md" | "lg";
 
@@ -36,43 +34,6 @@ interface CardMoverProps extends HTMLAttributes<HTMLElement> {
   onSelectChange?: (selected: boolean) => void;
   onFavoriteClick?: () => void;
   className?: string;
-}
-
-/** 찜 하트 + 개수. onClick이 없으면 표시 전용 */
-function FavoriteCount({
-  count,
-  isFavorited = false,
-  showCount = true,
-  onClick,
-}: {
-  count: number;
-  isFavorited?: boolean;
-  showCount?: boolean;
-  onClick?: () => void;
-}) {
-  const content = (
-    <>
-      <Image src={isFavorited ? likeActive : likeDefault} alt="" className="size-6 shrink-0" />
-      {showCount && <span className="text-14 text-gray-gray-500">{count}</span>}
-    </>
-  );
-
-  // 핸들러가 없으면 불필요한 버튼 시맨틱을 만들지 않음
-  if (!onClick) {
-    return <div className="flex shrink-0 items-center justify-center gap-0.5">{content}</div>;
-  }
-
-  return (
-    <button
-      type="button"
-      aria-label="찜하기"
-      aria-pressed={isFavorited}
-      onClick={onClick}
-      className="flex shrink-0 cursor-pointer items-center justify-center gap-0.5"
-    >
-      {content}
-    </button>
-  );
 }
 
 // 사용법: <CardMover size="lg" category="SMALL" isTargeted title="..." nickName="김코드" ... />

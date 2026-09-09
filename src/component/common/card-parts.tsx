@@ -1,7 +1,56 @@
 import checkCircleOrange from "@/assets/icons/check-circle-orange-sm.svg";
+import likeDefault from "@/assets/icons/like-md-default.svg";
+import likeRedActive from "@/assets/icons/like-md-red-active.svg";
 import clsx from "clsx";
 import Image from "next/image";
 import type { ReactNode } from "react";
+
+/**
+ * 찜 하트 + 개수. Card-list 계열이 공유합니다.
+ *
+ * - `onClick`이 없으면 표시 전용이라 버튼 시맨틱을 만들지 않습니다.
+ * - 숫자 색은 카드마다 달라 `countClassName`으로 받습니다.
+ *   (기사님 찾기·견적내역 sm은 gray-500, 견적내역 lg는 black-500)
+ *
+ * 사용법: <FavoriteCount count={136} isFavorited onClick={handleClick} />
+ */
+export function FavoriteCount({
+  count,
+  isFavorited = false,
+  showCount = true,
+  countClassName = "text-gray-gray-500",
+  onClick,
+}: {
+  count: number;
+  isFavorited?: boolean;
+  /** sm 카드처럼 하트만 노출할 때 false */
+  showCount?: boolean;
+  countClassName?: string;
+  onClick?: () => void;
+}) {
+  const content = (
+    <>
+      <Image src={isFavorited ? likeRedActive : likeDefault} alt="" className="size-6 shrink-0" />
+      {showCount && <span className={clsx("text-14", countClassName)}>{count}</span>}
+    </>
+  );
+
+  if (!onClick) {
+    return <div className="flex shrink-0 items-center justify-center gap-0.5">{content}</div>;
+  }
+
+  return (
+    <button
+      type="button"
+      aria-label="찜하기"
+      aria-pressed={isFavorited}
+      onClick={onClick}
+      className="flex shrink-0 cursor-pointer items-center justify-center gap-0.5"
+    >
+      {content}
+    </button>
+  );
+}
 
 /**
  * "확정견적" 배지. 배경 없이 주황 아이콘 + 텍스트.

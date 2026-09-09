@@ -144,8 +144,8 @@ export function CardCompleted({
   return (
     <CardRequest
       size={size}
-      /* 고객 견적과 달리 default에는 배지 자리 자체가 없습니다 (피그마 1:13299) */
-      headerRight={isConfirmed ? <ConfirmedBadge /> : undefined}
+      /* 고객 견적과 동일하게 자리를 유지합니다 — 피그마도 default/확정 높이가 326px로 같습니다 */
+      headerRight={<ConfirmedBadge visible={isConfirmed} />}
       footer={<PriceFooter price={price} size={size} />}
       overlay={
         <CardOverlay message="이사 완료된 견적이에요">

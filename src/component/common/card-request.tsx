@@ -75,9 +75,10 @@ export default function CardRequest({
         </div>
 
         <div className="flex w-full flex-col gap-3">
-          <p className="text-20 text-black-black-300 flex items-center gap-2 font-semibold whitespace-nowrap">
-            <span>{customerName}</span>
-            <span>고객님</span>
+          {/* 이름이 길면 이름만 잘리고 "고객님"은 남습니다 */}
+          <p className="text-20 text-black-black-300 flex w-full min-w-0 items-center gap-2 font-semibold">
+            <span className="min-w-0 truncate">{customerName}</span>
+            <span className="shrink-0">고객님</span>
           </p>
           <hr className="border-line-100 w-full border-t" />
         </div>

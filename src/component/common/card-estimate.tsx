@@ -1,8 +1,7 @@
-import likeDefault from "@/assets/icons/like-md-default.svg";
-import likeRedActive from "@/assets/icons/like-md-red-active.svg";
 import Button from "@/component/common/button";
 import {
   ConfirmedBadge,
+  FavoriteCount,
   PendingBadge,
   PriceFooter,
   PriceInline,
@@ -13,7 +12,6 @@ import MoverMeta from "@/component/common/mover-meta";
 import MoverName from "@/component/common/mover-name";
 import ProfileAvatar from "@/component/common/profile-avatar";
 import clsx from "clsx";
-import Image from "next/image";
 import type { HTMLAttributes } from "react";
 
 type CardSize = "sm" | "lg";
@@ -27,21 +25,6 @@ interface MoverInfo {
   career: number;
   confirmedCount: number;
   favoriteCount: number;
-}
-
-/**
- * 찜 하트 + 개수 (표시 전용).
- * 견적내역 lg만 빈 하트 + 검정 숫자이고, 나머지는 빨간 하트 + 회색 숫자입니다.
- */
-function FavoriteCount({ count, filled }: { count: number; filled: boolean }) {
-  return (
-    <div className="flex shrink-0 items-center justify-center gap-0.5">
-      <Image src={filled ? likeRedActive : likeDefault} alt="" className="size-6 shrink-0" />
-      <span className={clsx("text-14", filled ? "text-gray-gray-500" : "text-black-500")}>
-        {count}
-      </span>
-    </div>
-  );
 }
 
 /**
@@ -82,7 +65,11 @@ function MoverBox({
       <div className={clsx("flex min-w-px flex-1 flex-col items-start", isLg ? "gap-2" : "gap-1")}>
         <div className="flex w-full items-center justify-between">
           <MoverName nickName={nickName} size={isLg ? "lg" : "sm"} showLogo={showLogo} />
-          <FavoriteCount count={favoriteCount} filled={favoriteFilled} />
+          <FavoriteCount
+            count={favoriteCount}
+            isFavorited={favoriteFilled}
+            countClassName={favoriteFilled ? "text-gray-gray-500" : "text-black-500"}
+          />
         </div>
         <MoverMeta
           rating={rating}
@@ -271,7 +258,12 @@ export function CardPendingHistory({
           </div>
 
           <div className="flex w-full flex-col gap-7.5">
-            <p className="text-16 text-black-black-300 w-full min-w-0 truncate font-semibold">
+            <p
+              className={clsx(
+                "text-black-black-300 w-full min-w-0 truncate font-semibold",
+                isLg ? "text-18" : "text-16"
+              )}
+            >
               {title}
             </p>
             <MoverBox size={size} bordered={false} {...mover} />
