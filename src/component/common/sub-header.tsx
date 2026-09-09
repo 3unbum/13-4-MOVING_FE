@@ -24,7 +24,7 @@ function formatDate(iso: string) {
 }
 
 function shortenAddress(address: string) {
-  const tokens = address.split(" ");
+  const tokens = address.trim().split(/\s+/);
   const isProvince = tokens[0].endsWith("도");
   const [city, district] = isProvince ? tokens.slice(1, 3) : tokens;
   return `${isProvince ? city : city.replace(/(특별시|광역시)/, "시")} ${district}`;
