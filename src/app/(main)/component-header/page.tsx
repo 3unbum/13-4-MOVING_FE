@@ -14,7 +14,7 @@ export default function Page() {
       <h2 className="text-16 text-gray-gray-400 mt-1 ml-2">Header - md사이즈</h2>
       <section className="mt-6 flex flex-col gap-x-3.5 gap-y-4.5">
         {page.map((p) => (
-          <Header size="md" key={p} className="w-150">
+          <Header size="md" key={p} className="w-186">
             {p}
           </Header>
         ))}

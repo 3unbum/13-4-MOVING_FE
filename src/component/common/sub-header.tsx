@@ -25,9 +25,9 @@ function formatDate(iso: string) {
 
 function shortenAddress(address: string) {
   const tokens = address.trim().split(/\s+/);
-  const isProvince = tokens[0].endsWith("도");
-  const [city, district] = isProvince ? tokens.slice(1, 3) : tokens;
-  return `${isProvince ? city : city.replace(/(특별시|광역시)/, "시")} ${district}`;
+  const isProvince = tokens[0]?.endsWith("도");
+  const city = isProvince ? tokens[0] : tokens[0]?.replace(/(특별시|광역시)/, "시");
+  return tokens[1] ? `${city} ${tokens[1]}` : (city ?? "");
 }
 
 function Field({
@@ -44,9 +44,7 @@ function Field({
   return (
     <div className={clsx(big ? "flex flex-col" : "flex justify-between", className)}>
       <p className="text-14 text-gray-gray-500 font-normal">{label}</p>
-      <p className={clsx("text-14 text-black-black-500 font-semibold", big && "text-18")}>
-        {value}
-      </p>
+      <p className={clsx("text-14 text-black-500 font-semibold", big && "text-18")}>{value}</p>
     </div>
   );
 }
