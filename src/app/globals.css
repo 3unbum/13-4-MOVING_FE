@@ -21,6 +21,7 @@
   --color-gray-300: #d9d9d9;
   --color-gray-400: #b3b3b3;
   --color-gray-500: #7a7a79;
+  --color-gray-gray-100: #d9d9d9;
   --color-gray-gray-300: #ababab;
   --color-gray-gray-400: #999999;
   --color-gray-gray-500: #808080;
@@ -58,6 +59,9 @@
   /* 브레이크포인트: Mobile 375 / Tablet 744 / pc 1280 */
   --breakpoint-tablet: 744px;
   --breakpoint-pc: 1280px;
+
+  /* Z-index: 컴포넌트별 --z-{이름} 형태로 관리, 숫자 하드코딩 금지 */
+  --z-datepicker: 100;
 
   /* 타이포그래피: font-size + line-height는 한 세트로 관리, font-weight는 text-*와 조합해서 각자 커스텀 */
   --text-50: 50px;
