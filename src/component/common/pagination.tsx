@@ -18,12 +18,10 @@ interface PaginationProps {
 
 // 피그마 디자인 시스템 "Pagination" 컴포넌트 스펙(component/pagination/sm·lg) 그대로 반영
 // - 정사각형 버튼(원형 X), sm 34px/rounded-6px · lg 48px/rounded-8px, 배경은 항상 gray-50(#FFFFFF)
-// - 현재 페이지는 배경 변화 없이 텍스트만 semibold + #262524로 강조
-// - 다른 페이지 번호는 #c4c4c4, 굵기는 사이즈별로 다름(lg medium / sm regular — 피그마 파일 자체 표기)
-// - "..." 생략은 텍스트가 아니라 13×3px 바 아이콘(#ababab)
+// - 현재 페이지는 배경 변화 없이 텍스트만 semibold + black-black-400(#262524)로 강조
+// - 다른 페이지 번호는 gray-gray-200(#c4c4c4), 굵기는 사이즈별로 다름(lg medium / sm regular — 피그마 파일 자체 표기)
+// - "..." 생략은 텍스트가 아니라 13×3px 바 아이콘, gray-gray-300(#ababab)
 // - 이전/다음 버튼은 클릭 가능 여부에 따라 아이콘 자체가 교체됨(default ↔ active), opacity 처리 아님
-// ⚠️ #262524/#c4c4c4/#ababab는 globals.css의 gray/black 토큰과 정확히 일치하지 않아 우선 하드코딩,
-//   토큰화 여부는 디자인 담당자와 별도 확인 필요
 const SIZE_STYLES = {
   sm: {
     button: "size-[34px] rounded-[6px]",
@@ -130,7 +128,7 @@ export default function Pagination({
         {pages.map((page, index) =>
           page === "ellipsis" ? (
             <span key={`ellipsis-${index}`} className={buttonBase} aria-hidden="true">
-              <span className="h-[3px] w-[13px] rounded-full bg-[#ababab]" />
+              <span className="bg-gray-gray-300 h-[3px] w-[13px] rounded-full" />
             </span>
           ) : (
             <button
@@ -143,8 +141,8 @@ export default function Pagination({
                 "leading-[26px]",
                 styles.text,
                 page === currentPage
-                  ? "font-semibold text-[#262524]"
-                  : clsx(styles.inactiveWeight, "text-[#c4c4c4]")
+                  ? "text-black-black-400 font-semibold"
+                  : clsx(styles.inactiveWeight, "text-gray-gray-200")
               )}
             >
               {page}
