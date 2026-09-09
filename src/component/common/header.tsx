@@ -20,7 +20,7 @@ export default function Header({ children, size = "sm", className, ...props }: H
   return (
     <section
       className={clsx(
-        "text-18 text-black-black-500 bg-gray-gray-50 font-semibold",
+        "text-18 text-black-500 bg-gray-50 font-semibold",
         !isMd && !isLg && SM_SIZE,
         isMd && MD_SIZE,
         isLg && LG_SIZE,

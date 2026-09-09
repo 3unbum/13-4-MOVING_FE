@@ -69,7 +69,7 @@ export default function SubHeader({
     <section
       className={clsx(
         "flex flex-col gap-5 px-6 py-6",
-        isMd && "px-8 py-8",
+        isMd && "px-18 py-8",
         isLg && "flex flex-row justify-between py-8 pr-100 pl-80",
         className
       )}
