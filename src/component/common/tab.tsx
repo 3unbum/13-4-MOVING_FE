@@ -29,8 +29,8 @@ export default function Tab({
         "text-14 flex h-[54px] shrink-0 items-center border-b-2 border-solid whitespace-nowrap",
         "pc:h-auto pc:py-4 pc:text-20",
         active
-          ? "border-black-400 text-black-500 pc:border-black-500 pc:font-semibold font-bold"
-          : "border-transparent font-semibold text-gray-400",
+          ? "border-black-black-400 text-black-500 pc:border-black-500 pc:font-semibold font-bold"
+          : "text-gray-gray-400 border-transparent font-semibold",
         className
       )}
       {...props}
