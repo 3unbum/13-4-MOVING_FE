@@ -125,9 +125,9 @@ export default function Pagination({
           page === "ellipsis" ? (
             <span key={`ellipsis-${index}`} className={buttonBase} aria-hidden="true">
               <span className="flex items-center gap-0.5">
-                <span className="bg-gray-gray-200 size-[3px] rounded-full" />
-                <span className="bg-gray-gray-200 size-[3px] rounded-full" />
-                <span className="bg-gray-gray-200 size-[3px] rounded-full" />
+                <span className="bg-gray-gray-200 size-0.75 rounded-full" />
+                <span className="bg-gray-gray-200 size-0.75 rounded-full" />
+                <span className="bg-gray-gray-200 size-0.75 rounded-full" />
               </span>
             </span>
           ) : (
