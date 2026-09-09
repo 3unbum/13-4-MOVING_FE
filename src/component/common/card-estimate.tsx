@@ -166,9 +166,12 @@ export function CardEstimateHistory({
                 isLg ? "items-center justify-between" : "flex-col items-start"
               )}
             >
+              {/* 한 줄 소개는 길이가 가변이라 잘라냅니다.
+                  피그마는 고정 텍스트라 nowrap이지만, 그대로 두면 배지를 밀어내고 카드를 넘칩니다.
+                  min-w-0이 있어야 flex 안에서 축소됩니다. */}
               <p
                 className={clsx(
-                  "text-black-black-300 font-semibold whitespace-nowrap",
+                  "text-black-black-300 w-full min-w-0 truncate font-semibold",
                   isLg ? "text-18" : "text-16"
                 )}
               >
@@ -268,7 +271,9 @@ export function CardPendingHistory({
           </div>
 
           <div className="flex w-full flex-col gap-7.5">
-            <p className="text-16 text-black-black-300 font-semibold whitespace-nowrap">{title}</p>
+            <p className="text-16 text-black-black-300 w-full min-w-0 truncate font-semibold">
+              {title}
+            </p>
             <MoverBox size={size} bordered={false} {...mover} />
           </div>
         </div>
