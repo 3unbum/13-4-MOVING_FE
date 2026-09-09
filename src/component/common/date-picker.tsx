@@ -60,6 +60,8 @@ const CALENDAR_STYLES = {
 
 // 선택/비활성 날짜는 버튼 자식에 색만 덧입힘
 const SELECTED_CLASS = "[&>button]:bg-orange-400 [&>button]:font-semibold [&>button]:text-white";
+// outside(월 외 날짜)는 색만 흐리게 — 과거가 아니면 클릭 가능하므로 cursor-not-allowed는 disabled에만
+const OUTSIDE_CLASS = "[&>button]:text-gray-gray-100";
 const MUTED_CLASS = "[&>button]:cursor-not-allowed [&>button]:text-gray-gray-100";
 
 interface CalendarProps {
@@ -109,7 +111,7 @@ function Calendar({ size, month, onMonthChange, selected, onSelect }: CalendarPr
           day: s.day,
           day_button: s.dayButton,
           selected: SELECTED_CLASS,
-          outside: MUTED_CLASS,
+          outside: OUTSIDE_CLASS,
           disabled: MUTED_CLASS,
         }}
       />
