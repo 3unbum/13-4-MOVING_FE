@@ -74,7 +74,7 @@ export default function SubHeader({
       {...props}
     >
       <header className={clsx("flex flex-col", big && "gap-1")}>
-        <p className={clsx("text-black-black-500 font-bold", big ? "text-24" : "text-20")}>
+        <p className={clsx("text-black-500 font-bold", big ? "text-24" : "text-20")}>
           {SERVICE_LABELS[category]}
         </p>
         <p
