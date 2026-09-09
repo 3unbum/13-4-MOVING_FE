@@ -4,7 +4,7 @@ import { useState } from "react";
 import CardMover from "@/component/common/card-mover";
 
 const MOCK = {
-  moveType: "SMALL",
+  category: "SMALL",
   title: "고객님의 물품을 안전하게 운송해 드립니다.",
   description: "이사업계 경력 7년으로 안전한 이사를 도와드리는 김코드입니다.",
   nickName: "김코드",
@@ -63,9 +63,9 @@ export default function CardListPage() {
       <section className="flex flex-col gap-3">
         <h2 className="text-14 font-semibold text-gray-500">이사 유형 variant</h2>
         <div className="flex flex-wrap gap-3">
-          <CardMover size="md" {...MOCK} moveType="HOME" />
-          <CardMover size="md" {...MOCK} moveType="OFFICE" />
-          <CardMover size="md" {...MOCK} moveType="TARGETED" />
+          <CardMover size="md" {...MOCK} category="HOME" />
+          <CardMover size="md" {...MOCK} category="OFFICE" />
+          <CardMover size="md" {...MOCK} isTargeted />
         </div>
       </section>
     </div>

@@ -11,16 +11,13 @@ import clsx from "clsx";
 import Image from "next/image";
 
 type CardMoverSize = "sm" | "md" | "lg";
-// 카드 상단 칩에 표시할 값. MoveTypeChip의 variant와 동일한 타입입니다.
-// ⚠️ 이사 종류(SMALL/HOME/OFFICE)와 지정 요청 여부(TARGETED)는 원래 별개 개념입니다
-//    — 전자는 quotation_request.category, 후자는 targeted_request 조인 결과.
-//    기사님 찾기 카드는 칩이 하나뿐이라 합쳐 받지만, 둘을 동시에 표시해야 하는
-//    카드(받은 요청 등)가 나오면 category + isTargeted로 분리해야 합니다.
-type MoveType = ServiceCode | "TARGETED";
 
 interface CardMoverProps extends HTMLAttributes<HTMLElement> {
   size?: CardMoverSize;
-  moveType: MoveType;
+  /** 이사 종류 - quotation_request.category */
+  category: ServiceCode;
+  /** 지정 견젹 요청 여부 - targeted_request 조인 결과. 별도 칩으로 나란히 표시. */
+  isTargeted?: boolean;
   /** 기사님 한 줄 소개 (제목) */
   title: string;
   /** 상세 설명. sm에서는 표시하지 않음 */
@@ -78,10 +75,11 @@ function FavoriteCount({
   );
 }
 
-// 사용법: <CardMover size="lg" moveType="소형이사" title="..." nickname="김코드" ... />
+// 사용법: <CardMover size="lg" category="SMALL" isTargeted title="..." nickName="김코드" ... />
 export default function CardMover({
   size = "md",
-  moveType,
+  category,
+  isTargeted = false,
   title,
   description,
   nickName,
@@ -115,7 +113,10 @@ export default function CardMover({
       <article className={cardClass} {...props}>
         <div className="flex w-full flex-col items-start gap-3">
           <div className="flex h-[34px] w-full items-center justify-between">
-            <MoveTypeChip variant={moveType} size="md" />
+            <div className="flex items-center gap-2">
+              <MoveTypeChip variant={category} size="md" />
+              {isTargeted && <MoveTypeChip variant="TARGETED" size="md" />}
+            </div>
             {selectable && (
               <CheckboxButton
                 shape="square"
@@ -163,7 +164,10 @@ export default function CardMover({
   if (isMd) {
     return (
       <article className={cardClass} {...props}>
-        <MoveTypeChip variant={moveType} size="sm" />
+        <div className="flex items-center gap-2">
+          <MoveTypeChip variant={category} size="sm" />
+          {isTargeted && <MoveTypeChip variant="TARGETED" size="sm" />}
+        </div>
 
         <div className="flex w-full flex-col gap-4">
           <div className="flex w-full flex-col">
@@ -204,7 +208,10 @@ export default function CardMover({
   return (
     <article className={clsx(cardClass, "items-end")} {...props}>
       <div className="flex w-full flex-col gap-3">
-        <MoveTypeChip variant={moveType} size="sm" />
+        <div className="flex items-center gap-2">
+          <MoveTypeChip variant={category} size="sm" />
+          {isTargeted && <MoveTypeChip variant="TARGETED" size="sm" />}
+        </div>
 
         <div className="flex w-full flex-col items-start gap-4">
           <p className="text-16 text-black-black-300 w-full font-semibold">{title}</p>
