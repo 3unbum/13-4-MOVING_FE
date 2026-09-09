@@ -8,8 +8,9 @@ interface HeaderProps extends HTMLAttributes<HTMLDivElement> {
   size?: HeaderSize;
 }
 
+const SM_SIZE = "py-3.5 pl-7.5";
 const MD_SIZE = "px-18 py-3.5";
-const LG_SIZE = "flex h-8 w-full items-center px-92 py-8 text-24";
+const LG_SIZE = "flex w-full items-center px-92 py-8 text-24";
 
 // 사용법: <Header size="lg">제목 텍스트</Header>
 export default function Header({ children, size = "sm", className, ...props }: HeaderProps) {
@@ -19,7 +20,8 @@ export default function Header({ children, size = "sm", className, ...props }: H
   return (
     <section
       className={clsx(
-        "text-18 text-black-black-500 bg-gray-gray-50 py-3.5 pl-7.5 font-semibold",
+        "text-18 text-black-black-500 bg-gray-gray-50 font-semibold",
+        !isMd && !isLg && SM_SIZE,
         isMd && MD_SIZE,
         isLg && LG_SIZE,
         className
