@@ -28,14 +28,14 @@ function formatTriggerLabel(date: Date) {
   return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일`;
 }
 
-// 자정 기준 오늘 이전 날짜는 선택 불가(이사 예정일은 미래 날짜만 유효) — 피그마엔 없는 지정, 서비스 성격상 추가한 규칙
+// 오늘 이전 날짜는 선택 불가
 function isPastDate(date: Date) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   return date < today;
 }
 
-// 데스크톱/태블릿=sm(40px 셀, 팝오버 내장) · 모바일=md(48px 셀, 페이지 인라인) — 피그마 Date picker 컴포넌트 스펙 그대로
+// 데스크톱/태블릿=sm(팝오버) · 모바일=md(인라인)
 const CALENDAR_STYLES = {
   sm: {
     root: "flex flex-col items-center gap-4",
@@ -58,7 +58,7 @@ const CALENDAR_STYLES = {
   },
 } as const;
 
-// 선택된 날짜/벗어난 날짜(이전 달·다음 달·과거)는 버튼 자식에 색만 덧입힘
+// 선택/비활성 날짜는 버튼 자식에 색만 덧입힘
 const SELECTED_CLASS = "[&>button]:bg-orange-400 [&>button]:font-semibold [&>button]:text-white";
 const MUTED_CLASS = "[&>button]:cursor-not-allowed [&>button]:text-gray-gray-100";
 
@@ -117,16 +117,14 @@ function Calendar({ size, month, onMonthChange, selected, onSelect }: CalendarPr
   );
 }
 
-// 사용 예: <DatePicker value={date} onChange={setDate} />
-// 데스크톱/태블릿: 인풋 클릭 시 팝오버로 캘린더 노출, 팝오버 내장 "선택완료" 버튼으로 닫음
-// 모바일: 페이지 안에 캘린더가 항상 인라인으로 펼쳐짐 — 확정은 컴포넌트 밖 페이지 레벨 "다음" 버튼이 담당
+// 데스크톱/태블릿: 트리거+팝오버(선택완료 버튼 내장) · 모바일: 인라인(확정은 페이지 쪽 버튼)
 export default function DatePicker({ value, onChange, className }: DatePickerProps) {
   const [open, setOpen] = useState(false);
   const [month, setMonth] = useState(value ?? new Date());
 
   return (
     <div className={clsx("relative", className)}>
-      <div className="pc:block hidden">
+      <div className="tablet:block hidden">
         <button
           type="button"
           onClick={() => setOpen((prev) => !prev)}
@@ -154,7 +152,7 @@ export default function DatePicker({ value, onChange, className }: DatePickerPro
         )}
       </div>
 
-      <div className="pc:hidden">
+      <div className="tablet:hidden">
         <Calendar
           size="md"
           month={month}
