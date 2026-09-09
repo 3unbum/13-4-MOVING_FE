@@ -16,13 +16,8 @@ interface PaginationProps {
   className?: string;
 }
 
-// 피그마 디자인 시스템 "Pagination" 컴포넌트 스펙(component/pagination/sm·lg) 그대로 반영
-// - 정사각형 버튼(원형 X), sm 34px/rounded-md(6px) · lg size-12(48px)/rounded-lg(8px), 배경은 항상 gray-50(#FFFFFF)
-// - 현재 페이지는 배경 변화 없이 텍스트만 semibold + black-black-400(#262524)로 강조
-// - 다른 페이지 번호는 gray-gray-200(#c4c4c4), 굵기는 사이즈별로 다름(lg medium / sm regular — 피그마 파일 자체 표기)
-// - "..." 생략은 텍스트가 아니라 3px 원 3개(gap 2px, gray-gray-200) — 피그마 "more" 컴포넌트 그대로
-// - 이전/다음 버튼은 클릭 가능 여부에 따라 아이콘 자체가 교체됨(default ↔ active), opacity 처리 아님
-// - 글자 크기는 globals.css의 text-16/text-18 토큰(line-height 페어링 포함) 사용, 임의 px 값 사용 안 함
+// 정사각형 버튼(원형 아님), "..." 생략은 텍스트가 아니라 점 3개 아이콘으로 구현
+// 이전/다음 버튼은 클릭 가능 여부에 따라 아이콘 자체가 교체됨(default ↔ active), opacity 처리 아님
 const SIZE_STYLES = {
   sm: {
     button: "size-[34px] rounded-md",
