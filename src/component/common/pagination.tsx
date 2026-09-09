@@ -20,7 +20,7 @@ interface PaginationProps {
 // 이전/다음 버튼은 클릭 가능 여부에 따라 아이콘 자체가 교체됨(default ↔ active), opacity 처리 아님
 const SIZE_STYLES = {
   sm: {
-    button: "size-[34px] rounded-md",
+    button: "size-8.5 rounded-md",
     gapOuter: "gap-2", // 8px
     text: "text-16",
     inactiveWeight: "font-normal",
@@ -35,7 +35,7 @@ const SIZE_STYLES = {
 
 // size 생략 시 기본값: SIZE_STYLES를 pc: 프리픽스로 묶어 반응형으로 자동 전환
 const RESPONSIVE_STYLES = {
-  button: "size-[34px] rounded-md pc:size-12 pc:rounded-lg",
+  button: "size-8.5 rounded-md pc:size-12 pc:rounded-lg",
   gapOuter: "gap-2 pc:gap-2.5",
   text: "text-16 pc:text-18",
   inactiveWeight: "font-normal pc:font-medium",
