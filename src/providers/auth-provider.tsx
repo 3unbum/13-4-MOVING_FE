@@ -8,6 +8,8 @@ interface AuthContextValue {
   account: AccountResponse | null;
   isLoading: boolean;
   isAuthenticated: boolean;
+  /** 401(비로그인)이 아니라 네트워크·5xx 등으로 조회 자체가 실패한 경우에만 채워진다. */
+  authError: Error | null;
   refetch: () => Promise<void>;
   logout: () => Promise<void>;
 }
@@ -32,6 +34,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [account, setAccount] = useState<AccountResponse | null>(null);
   // fetchAccount가 끝나기 전까지는 "로그인 여부 확인 중"이므로 true로 시작한다.
   const [isLoading, setIsLoading] = useState(true);
+  const [authError, setAuthError] = useState<Error | null>(null);
 
   // 앱 최초 마운트 시 한 번만 로그인 상태를 확인한다.
   useEffect(() => {
@@ -40,9 +43,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     async function loadAccount() {
       try {
         const result = await fetchAccount();
-        if (!cancelled) setAccount(result);
+        if (!cancelled) {
+          setAccount(result);
+          setAuthError(null);
+        }
       } catch (error) {
+        // 401(비로그인)은 fetchAccount가 이미 null로 걸러줬으니, 여기 걸리는 건 진짜 오류
+        // (fetchAccount가 던지는 건 항상 ApiError/TypeError/SyntaxError 등 Error 계열이다)
         console.error("계정 정보를 불러오지 못했습니다", error);
+        if (!cancelled) setAuthError(error as Error);
       } finally {
         if (!cancelled) setIsLoading(false);
       }
@@ -55,11 +64,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  /** 로그인/프로필 변경 직후처럼 계정 상태를 다시 확인해야 할 때 호출한다. */
+  /**
+   * 로그인/프로필 변경 직후처럼 계정 상태를 다시 확인해야 할 때 호출한다.
+   * 초기 로드와 달리 호출자가 있으므로, 실패하면 그대로 던져서 호출한 쪽이 처리하게 한다.
+   */
   const refetch = async () => {
     setIsLoading(true);
     try {
       setAccount(await fetchAccount());
+      setAuthError(null);
     } finally {
       setIsLoading(false);
     }
@@ -77,6 +90,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const value: AuthContextValue = {
     account,
     isLoading,
+    authError,
     isAuthenticated: !!account,
     refetch,
     logout,
