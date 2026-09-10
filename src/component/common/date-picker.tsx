@@ -144,7 +144,7 @@ export default function DatePicker({ value, onChange, className }: DatePickerPro
 
   return (
     <div className={clsx("relative", className)}>
-      <div className="tablet:block hidden" ref={popoverRef}>
+      <div className="tablet:block hidden w-100" ref={popoverRef}>
         <button
           type="button"
           onClick={() => setOpen((prev) => !prev)}
