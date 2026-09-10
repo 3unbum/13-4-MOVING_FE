@@ -61,7 +61,7 @@ export default function CardMyReview({
 
   const cardClass = clsx(
     "border-line-100 flex w-full flex-col border-[0.5px] bg-white",
-    "shadow-[-2px_-2px_10px_0_rgba(220,220,220,0.2),2px_2px_10px_0_rgba(220,220,220,0.2)",
+    "shadow-[-2px_-2px_10px_0_rgba(220,220,220,0.2),2px_2px_10px_0_rgba(220,220,220,0.2)]",
     "rounded-[20px]",
     isLg ? "gap-5 p-10" : "gap-4 px-5 py-6",
     className
