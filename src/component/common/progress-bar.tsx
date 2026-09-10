@@ -43,7 +43,7 @@ export default function ProgressBar({ data }: { data: ReviewDistribution }) {
             </div>
           </div>
         </div>
-        <div>
+        <div className="flex flex-col gap-1">
           {RATINGS.map((rating) => {
             const count = data[rating];
             const percent = data.totalCount ? (count / data.totalCount) * 100 : 0;
