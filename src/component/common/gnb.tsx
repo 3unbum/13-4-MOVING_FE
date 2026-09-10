@@ -199,12 +199,12 @@ export default function Gnb({
 
               {openPanel === "notification" ? (
                 <>
-                  <div className="pc:hidden tablet:right-9 tablet:mt-[15px] absolute top-full -right-1 z-50 mt-[9px]">
+                  <div className="pc:hidden tablet:right-9 tablet:mt-[15px] absolute top-full -right-1 z-[var(--z-gnb-dropdown)] mt-[9px]">
                     <DropdownNotification size="sm" containerRef={actionsRef} onClose={closePanel}>
                       {renderNotificationItems("sm")}
                     </DropdownNotification>
                   </div>
-                  <div className="pc:block absolute top-full right-[101px] z-50 mt-6.5 hidden">
+                  <div className="pc:block absolute top-full right-[101px] z-[var(--z-gnb-dropdown)] mt-6.5 hidden">
                     <DropdownNotification size="md" containerRef={actionsRef} onClose={closePanel}>
                       {renderNotificationItems("md")}
                     </DropdownNotification>
@@ -214,7 +214,7 @@ export default function Gnb({
 
               {openPanel === "profile" ? (
                 <>
-                  <div className="pc:hidden tablet:-right-14 absolute top-full right-[-9.5px] z-50 mt-[13px]">
+                  <div className="pc:hidden tablet:-right-14 absolute top-full right-[-9.5px] z-[var(--z-gnb-dropdown)] mt-[13px]">
                     <DropdownProfile
                       size="sm"
                       header={profileHeader}
@@ -224,7 +224,7 @@ export default function Gnb({
                       onChange={handleProfileSelect}
                     />
                   </div>
-                  <div className="pc:block absolute top-full -right-31 z-50 mt-4.5 hidden">
+                  <div className="pc:block absolute top-full -right-31 z-[var(--z-gnb-dropdown)] mt-4.5 hidden">
                     <DropdownProfile
                       size="md"
                       header={profileHeader}

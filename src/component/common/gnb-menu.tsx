@@ -76,7 +76,12 @@ export default function GnbMenu({
   if (!isOpen) return null;
 
   return (
-    <div className="pc:hidden fixed inset-0 z-50" role="dialog" aria-modal="true" aria-label="메뉴">
+    <div
+      className="pc:hidden fixed inset-0 z-[var(--z-gnb)]"
+      role="dialog"
+      aria-modal="true"
+      aria-label="메뉴"
+    >
       <button
         type="button"
         className="bg-black-500/40 absolute inset-0"
