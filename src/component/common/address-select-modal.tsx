@@ -56,7 +56,7 @@ export default function AddressSelectModal({
       labelledBy={titleId}
       className={clsx(
         isMd
-          ? "w-140 min-w-140 gap-10 rounded-[32px] px-6 pt-8 pb-10"
+          ? "w-152 min-w-152 gap-10 rounded-[32px] px-6 pt-8 pb-10"
           : "w-[292px] min-w-[292px] gap-7.5 rounded-3xl px-4 py-6"
       )}
     >

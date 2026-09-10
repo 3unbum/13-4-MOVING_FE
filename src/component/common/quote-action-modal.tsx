@@ -76,7 +76,7 @@ export default function QuoteActionModal({
       className={clsx(
         "px-6 pt-8 pb-10",
         isMd
-          ? "w-140 min-w-140 gap-10 rounded-[32px]"
+          ? "w-152 min-w-152 gap-10 rounded-[32px]"
           : "w-93.75 min-w-93.75 gap-6.5 rounded-t-[32px]"
       )}
     >
@@ -116,7 +116,7 @@ export default function QuoteActionModal({
                 size={isMd ? "md" : "sm"}
                 placeholder="견적가 입력"
                 value={price}
-                onChange={(event) => onPriceChange?.(event.target.value)}
+                onChange={(event) => onPriceChange?.(event.target.value.replace(/\D/g, ""))}
               />
               <p className={clsx("text-black-300 font-semibold", isMd ? "text-18" : "text-16")}>
                 코멘트를 입력해 주세요
