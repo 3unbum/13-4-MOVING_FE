@@ -52,101 +52,152 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   );
 }
 
+/**
+ * 카드는 폭을 갖지 않습니다(`w-full`). 부모가 정합니다.
+ * 실제 페이지에서는 같은 카드가 여러 폭으로 쓰여서(견적내역 327/544/660 등)
+ * 이 확인 페이지에서도 래퍼로 폭을 지정합니다.
+ */
+function W({ px, children }: { px: number; children: React.ReactNode }) {
+  return <div style={{ width: px }}>{children}</div>;
+}
+
 export default function CardListPage() {
   const [selected, setSelected] = useState(false);
   const [favorited, setFavorited] = useState(true);
 
+  const fav = {
+    isFavorited: favorited,
+    onFavoriteClick: () => setFavorited((prev) => !prev),
+  };
+
   return (
     <div className="flex flex-col gap-8 p-10">
-      <section className="flex flex-col gap-3">
-        <h2 className="text-14 font-semibold text-gray-500">기사님 찾기 / lg (1200px)</h2>
-        <CardMover
-          size="lg"
-          {...MOCK}
-          isFavorited={favorited}
-          onFavoriteClick={() => setFavorited((prev) => !prev)}
-        />
-        <CardMover
-          size="lg"
-          {...MOCK}
-          isFavorited={favorited}
-          onFavoriteClick={() => setFavorited((prev) => !prev)}
-          selectable
-          selected={selected}
-          onSelectChange={setSelected}
-        />
-      </section>
+      <Section title="기사님 찾기 / lg — 1200 · 820 · 600px">
+        <W px={1200}>
+          <CardMover size="lg" {...MOCK} {...fav} />
+        </W>
+        <W px={1200}>
+          <CardMover
+            size="lg"
+            {...MOCK}
+            {...fav}
+            selectable
+            selected={selected}
+            onSelectChange={setSelected}
+          />
+        </W>
+        <W px={820}>
+          <CardMover size="lg" {...MOCK} {...fav} />
+        </W>
+      </Section>
 
-      <section className="flex flex-col gap-3">
-        <h2 className="text-14 font-semibold text-gray-500">기사님 찾기 / md (327px)</h2>
-        <CardMover
-          size="md"
-          {...MOCK}
-          isFavorited={favorited}
-          onFavoriteClick={() => setFavorited((prev) => !prev)}
-        />
-      </section>
+      <Section title="기사님 찾기 / md · sm — 327px">
+        <W px={327}>
+          <CardMover size="md" {...MOCK} {...fav} />
+        </W>
+        <W px={327}>
+          <CardMover size="sm" {...MOCK} {...fav} />
+        </W>
+      </Section>
 
-      <section className="flex flex-col gap-3">
-        <h2 className="text-14 font-semibold text-gray-500">기사님 찾기 / sm (327px)</h2>
-        <CardMover
-          size="sm"
-          {...MOCK}
-          isFavorited={favorited}
-          onFavoriteClick={() => setFavorited((prev) => !prev)}
-        />
-      </section>
-
-      <section className="flex flex-col gap-3">
-        <h2 className="text-14 font-semibold text-gray-500">이사 유형 variant</h2>
-        <div className="flex flex-wrap gap-3">
+      <Section title="이사 유형 variant">
+        <W px={327}>
           <CardMover size="md" {...MOCK} category="HOME" />
+        </W>
+        <W px={327}>
           <CardMover size="md" {...MOCK} category="OFFICE" />
+        </W>
+        <W px={327}>
           <CardMover size="md" {...MOCK} isTargeted />
-        </div>
-      </section>
-
-      <Section title="고객 견적 / lg 588px · sm 328px (default · 확정견적)">
-        <CardCustomerQuotation size="lg" {...REQUEST} price={180000} />
-        <CardCustomerQuotation size="lg" {...REQUEST} price={180000} isConfirmed />
-        <CardCustomerQuotation {...REQUEST} price={180000} />
-        <CardCustomerQuotation {...REQUEST} price={180000} isConfirmed />
+        </W>
       </Section>
 
-      <Section title="받은 요청 / lg 588px · sm 328px">
-        <CardReceivedRequest size="lg" {...REQUEST} elapsedTime="1시간 전" />
-        <CardReceivedRequest {...REQUEST} elapsedTime="1시간 전" />
+      <Section title="고객 견적 / lg 588 · sm 328 (default · 확정견적)">
+        <W px={588}>
+          <CardCustomerQuotation size="lg" {...REQUEST} price={180000} />
+        </W>
+        <W px={588}>
+          <CardCustomerQuotation size="lg" {...REQUEST} price={180000} isConfirmed />
+        </W>
+        <W px={328}>
+          <CardCustomerQuotation {...REQUEST} price={180000} />
+        </W>
+        <W px={328}>
+          <CardCustomerQuotation {...REQUEST} price={180000} isConfirmed />
+        </W>
       </Section>
 
-      <Section title="반려 요청 / lg 588px · sm 328px">
-        <CardRejectedRequest size="lg" {...REQUEST} />
-        <CardRejectedRequest {...REQUEST} />
+      <Section title="받은 요청 / lg 588 · 600 · sm 328">
+        <W px={588}>
+          <CardReceivedRequest size="lg" {...REQUEST} elapsedTime="1시간 전" />
+        </W>
+        <W px={600}>
+          <CardReceivedRequest size="lg" {...REQUEST} elapsedTime="1시간 전" />
+        </W>
+        <W px={328}>
+          <CardReceivedRequest {...REQUEST} elapsedTime="1시간 전" />
+        </W>
       </Section>
 
-      <Section title="이사완료 / lg 588px · sm 328px (default · 확정견적)">
-        <CardCompleted size="lg" {...REQUEST} price={180000} />
-        <CardCompleted size="lg" {...REQUEST} price={180000} isConfirmed />
-        <CardCompleted {...REQUEST} price={180000} />
-        <CardCompleted {...REQUEST} price={180000} isConfirmed />
+      <Section title="반려 요청 / lg 588 · sm 328">
+        <W px={588}>
+          <CardRejectedRequest size="lg" {...REQUEST} />
+        </W>
+        <W px={328}>
+          <CardRejectedRequest {...REQUEST} />
+        </W>
       </Section>
 
-      <Section title="견적내역 / lg 660px · sm 327px (테두리 없음 — 목록 행)">
-        <CardEstimateHistory size="lg" category="OFFICE" isTargeted {...MOVER} price={180000} />
-        <CardEstimateHistory
-          size="lg"
-          category="OFFICE"
-          isTargeted
-          {...MOVER}
-          price={180000}
-          isConfirmed
-        />
-        <CardEstimateHistory category="OFFICE" isTargeted {...MOVER} price={180000} />
-        <CardEstimateHistory category="OFFICE" isTargeted {...MOVER} price={180000} isConfirmed />
+      <Section title="이사완료 / lg 588 · sm 328 (default · 확정견적)">
+        <W px={588}>
+          <CardCompleted size="lg" {...REQUEST} price={180000} />
+        </W>
+        <W px={588}>
+          <CardCompleted size="lg" {...REQUEST} price={180000} isConfirmed />
+        </W>
+        <W px={328}>
+          <CardCompleted {...REQUEST} price={180000} />
+        </W>
+        <W px={328}>
+          <CardCompleted {...REQUEST} price={180000} isConfirmed />
+        </W>
       </Section>
 
-      <Section title="대기중인 내역 / lg 558px · sm 327px">
-        <CardPendingHistory size="lg" category="SMALL" isTargeted {...MOVER} price={180000} />
-        <CardPendingHistory category="SMALL" isTargeted {...MOVER} price={180000} />
+      <Section title="견적내역 / lg 660 · 544 · sm 327 (테두리 없음 — 목록 행)">
+        <W px={660}>
+          <CardEstimateHistory size="lg" category="OFFICE" isTargeted {...MOVER} price={180000} />
+        </W>
+        <W px={660}>
+          <CardEstimateHistory
+            size="lg"
+            category="OFFICE"
+            isTargeted
+            {...MOVER}
+            price={180000}
+            isConfirmed
+          />
+        </W>
+        <W px={544}>
+          <CardEstimateHistory size="lg" category="OFFICE" isTargeted {...MOVER} price={180000} />
+        </W>
+        <W px={327}>
+          <CardEstimateHistory category="OFFICE" isTargeted {...MOVER} price={180000} />
+        </W>
+        <W px={327}>
+          <CardEstimateHistory category="OFFICE" isTargeted {...MOVER} price={180000} isConfirmed />
+        </W>
+      </Section>
+
+      <Section title="대기중인 내역 / lg 558 · 600 · sm 327">
+        <W px={558}>
+          <CardPendingHistory size="lg" category="SMALL" isTargeted {...MOVER} price={180000} />
+        </W>
+        <W px={600}>
+          <CardPendingHistory size="lg" category="SMALL" isTargeted {...MOVER} price={180000} />
+        </W>
+        <W px={327}>
+          <CardPendingHistory category="SMALL" isTargeted {...MOVER} price={180000} />
+        </W>
       </Section>
     </div>
   );

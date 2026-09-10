@@ -28,6 +28,11 @@ interface CardRequestProps extends HTMLAttributes<HTMLElement> {
 
 /**
  * 고객 정보형 카드(기사님이 보는 화면)의 공통 뼈대.
+ *
+ * **폭은 부모가 정합니다** (`w-full`). Button·Input과 같은 방식입니다.
+ * 같은 카드가 페이지마다 588/600/328 등 다른 폭으로 쓰여서, 부모 래퍼에 폭을 주세요.
+ * `size`는 폭이 아니라 내부 레이아웃(padding·폰트·배지 위치)을 결정합니다.
+ *
  * 고객 견적·받은 요청·반려 요청·이사완료 4종이 상단 구조를 그대로 공유하고
  * headerRight / footer / overlay 세 슬롯만 달라집니다.
  *
@@ -54,7 +59,8 @@ export default function CardRequest({
       className={clsx(
         "border-line-100 relative flex flex-col items-start border-[0.5px] bg-white",
         "shadow-[-2px_-2px_10px_0_rgba(220,220,220,0.2),2px_2px_10px_0_rgba(220,220,220,0.2)]",
-        isLg ? "w-147 gap-8 rounded-[20px] px-10 py-8" : "w-82 gap-6 rounded-[20px] px-5 py-6",
+        "w-full",
+        isLg ? "gap-8 rounded-[20px] px-10 py-8" : "gap-6 rounded-[20px] px-5 py-6",
         className
       )}
       {...props}

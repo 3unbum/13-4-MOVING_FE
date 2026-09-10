@@ -131,11 +131,7 @@ export function CardEstimateHistory({
 
   return (
     <article
-      className={clsx(
-        "flex flex-col items-end bg-white py-5",
-        isLg ? "w-165 px-2" : "w-81.75",
-        className
-      )}
+      className={clsx("flex flex-col items-end bg-white py-5", "w-full", isLg && "px-2", className)}
       {...props}
     >
       <div className={clsx("flex w-full flex-col items-start", isLg ? "gap-5" : "gap-4")}>
@@ -235,9 +231,8 @@ export function CardPendingHistory({
       className={clsx(
         "border-line-100 flex flex-col items-start border-[0.5px] bg-white",
         "shadow-[-2px_-2px_10px_0_rgba(220,220,220,0.2),2px_2px_10px_0_rgba(220,220,220,0.2)]",
-        isLg
-          ? "w-139.5 gap-10 rounded-[20px] px-10 py-8"
-          : "w-81.75 gap-7 rounded-[20px] px-5 py-6",
+        "w-full",
+        isLg ? "gap-10 rounded-[20px] px-10 py-8" : "gap-7 rounded-[20px] px-5 py-6",
         className
       )}
       {...props}
