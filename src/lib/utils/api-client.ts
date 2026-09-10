@@ -2,10 +2,14 @@ import { ApiError } from "@/lib/utils/api-error";
 
 /** `cookieFetch`/`defaultFetch`가 공유하는 밑바탕 fetch — 쿠키 포함 여부(`withCredentials`)만 다르게 받는다. */
 function baseFetch(path: string, init?: RequestInit, withCredentials = true): Promise<Response> {
+  // FormData body는 브라우저가 boundary 포함 Content-Type을 자동 설정하므로 강제로 덮어쓰지 않는다.
+  const isFormData = init?.body instanceof FormData;
+
   return fetch(`/api${path}`, {
     ...init,
-    ...(withCredentials && { credentials: "include" }),
-    headers: { "Content-Type": "application/json", ...init?.headers },
+    // fetch 기본 credentials는 "same-origin"이라, 명시적으로 "omit"을 줘야 쿠키가 안 실린다.
+    credentials: withCredentials ? "include" : "omit",
+    headers: isFormData ? init?.headers : { "Content-Type": "application/json", ...init?.headers },
   });
 }
 
