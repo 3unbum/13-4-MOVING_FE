@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { CardEstimateHistory, CardPendingHistory } from "@/component/common/card-estimate";
 import CardMover from "@/component/common/card-mover";
+import CardMyReview from "@/component/common/card-my-review";
+import CardReview from "@/component/common/card-review";
 import {
   CardCompleted,
   CardCustomerQuotation,
@@ -41,6 +43,29 @@ const MOVER = {
   career: 7,
   confirmedCount: 334,
   favoriteCount: 136,
+} as const;
+
+/** 리뷰 카드용 목업 */
+const REVIEW = {
+  writer: "kim****",
+  createdAt: "2024-07-01",
+  rating: 5,
+  content:
+    "듣던대로 정말 친절하시고 물건도 잘 옮겨주셨어요~~ 나중에 또 짐 옮길 일 있으면 김코드 기사님께 부탁드릴 예정입니다!! 비 오는데 꼼꼼히 잘 해주셔서 감사드립니다 :)",
+} as const;
+
+/** 내가 작성한 리뷰 카드용 목업 */
+const MY_REVIEW = {
+  category: "SMALL",
+  nickName: "김코드",
+  description: "이사업계 경력 7년으로 안전한 이사를 도와드리는 김코드입니다.",
+  from: "서울시 중구",
+  to: "경기도 수원시",
+  movingDate: "2024년 07월 01일",
+  rating: 5,
+  content:
+    "처음 견적 받아봤는데, 엄청 친절하시고 꼼꼼하세요! 귀찮게 이것저것 물어봤는데 잘 알려주셨습니다. 원룸 이사는 믿고 맡기세요! :) 곧 이사 앞두고 있는 지인분께 추천드릴 예정입니다!",
+  createdAt: "2024.07.02",
 } as const;
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
@@ -185,6 +210,30 @@ export default function CardListPage() {
         </W>
         <W px={327}>
           <CardEstimateHistory category="OFFICE" isTargeted {...MOVER} price={180000} isConfirmed />
+        </W>
+      </Section>
+
+      <Section title="Card-list-review / lg 955 ・ sm 600 (테두리 없음 - 목록 행)">
+        <W px={955}>
+          <CardReview size="lg" {...REVIEW} />
+        </W>
+        <W px={600}>
+          <CardReview {...REVIEW} />
+        </W>
+        <W px={600}>
+          <CardReview {...REVIEW} rating={3} />
+        </W>
+      </Section>
+
+      <Section title="내가 작성한 리뷰 / lg 588 · 1120 · sm 327">
+        <W px={588}>
+          <CardMyReview size="lg" {...MY_REVIEW} />
+        </W>
+        <W px={1120}>
+          <CardMyReview size="lg" {...MY_REVIEW} />
+        </W>
+        <W px={327}>
+          <CardMyReview {...MY_REVIEW} isTargeted />
         </W>
       </Section>
 
