@@ -111,6 +111,7 @@ export default function ReviewWriteModal({
           </p>
           <InputTextArea
             size={isMd ? "md" : "sm"}
+            label="상세 후기"
             placeholder="최소 10자 이상 입력해주세요"
             value={review}
             onChange={(event) => onReviewChange(event.target.value)}
