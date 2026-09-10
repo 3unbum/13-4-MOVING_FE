@@ -14,28 +14,26 @@ interface AuthContextValue {
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
-// "지금 로그인한 사람 정보"를 가져오는 함수. AuthProvider 안에서도 쓰고, refetch로도 재사용한다.
+/** 현재 로그인한 계정 정보를 조회한다. accessToken은 httpOnly라 role을 몰라도 되는 /auth/me에 맡긴다. */
 async function fetchAccount(): Promise<AccountResponse | null> {
-  // accessToken은 httpOnly 쿠키라 JS가 role을 읽을 수 없다. 그래서 role을 몰라도 부를 수 있는
-  // /auth/me에 맡긴다 — BE가 토큰의 role로 분기해 알맞은 계정 정보를 돌려준다.
   try {
     return await authService.getMyAccount();
   } catch (error) {
-    // /auth/me는 requireRole이 없어 403이 나지 않는다. 401 = 쿠키가 없거나 만료 = 비로그인.
+    // /auth/me는 requireRole이 없어 403이 나지 않는다 — 401만 "비로그인"으로 처리한다.
     if (error instanceof ApiError && error.status === 401) {
       return null;
     }
-    // 그 외(네트워크 문제, 500 등)는 그대로 던져서 호출한 쪽에서 알 수 있게 한다
+    // 네트워크 오류·500 등은 호출한 쪽이 구분할 수 있도록 그대로 던진다.
     throw error;
   }
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [account, setAccount] = useState<AccountResponse | null>(null);
-  // 처음엔 무조건 true로 시작 — "아직 로그인 여부를 확인 중"이라는 뜻. fetchAccount가 끝나야 false가 된다.
+  // fetchAccount가 끝나기 전까지는 "로그인 여부 확인 중"이므로 true로 시작한다.
   const [isLoading, setIsLoading] = useState(true);
 
-  // 앱이 처음 켜졌을 때 딱 한 번(deps가 []) 실행되는 effect: "지금 로그인 상태 확인"
+  // 앱 최초 마운트 시 한 번만 로그인 상태를 확인한다.
   useEffect(() => {
     let cancelled = false;
 
@@ -57,6 +55,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
+  /** 로그인/프로필 변경 직후처럼 계정 상태를 다시 확인해야 할 때 호출한다. */
   const refetch = async () => {
     setIsLoading(true);
     try {

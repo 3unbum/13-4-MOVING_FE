@@ -34,9 +34,7 @@ export interface MoverAccountResponse {
 export type AccountResponse = CustomerAccountResponse | MoverAccountResponse;
 
 export const authService = {
-  /**
-   * 호출 전에 role을 몰라도 되는 유일한 계정 조회. BE가 accessToken의 role로 분기해준다.
-   */
+  /** 호출 전에 role을 몰라도 되는 유일한 계정 조회 — BE가 accessToken의 role로 분기해준다. */
   getMyAccount: () => cookieFetch<AccountResponse>("/auth/me"),
 
   logout: () => cookieFetch<void>("/auth/logout", { method: "POST" }),
