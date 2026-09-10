@@ -81,10 +81,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   //로그아웃 응답이 느릴때에 대한 UX적인 개선필요
   const logout = async () => {
     try {
-      await authService.logout(); // BE에 쿠키 삭제 요청
-    } finally {
-      setAccount(null);
+      await authService.logout();
+    } catch (error) {
+      // 401은 BE가 refreshToken이 이미 없거나 무효하다는 뜻(이미 로그아웃 됨) 이라 서버에도 지킬 세션이 없다 — 로컬만 정리해도 안전하니 실패로 취급하지 않는다.
+      if (error instanceof ApiError && error.status === 401) {
+        setAccount(null);
+        return;
+      }
+      // 네트워크 오류·5xx는 서버 세션이 실제로 살아있을 수 있으므로 로컬 상태를 그대로 두고 호출한 쪽이 재시도 등을 판단하도록 그대로 던진다.
+      throw error;
     }
+    setAccount(null);
   };
 
   const value: AuthContextValue = {
