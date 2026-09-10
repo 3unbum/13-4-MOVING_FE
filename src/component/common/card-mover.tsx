@@ -62,8 +62,8 @@ export default function CardMover({
   const isMd = size === "md";
 
   const cardClass = clsx(
-    "border-line-100 flex flex-col border-[0.5px] bg-white",
-    "shadow-[-2px_-2px_10px_0_rgba(220,220,220,0.2),2px_2px_10px_0_rgba(220,220,220,0.2)]",
+    "flex flex-col bg-white",
+    "shadow-[inset_0_0_0_0.5px_var(--color-line-100),-2px_-2px_10px_0_rgba(220,220,220,0.2),2px_2px_10px_0_rgba(220,220,220,0.2)]",
     "w-full",
     isLg ? "rounded-[20px] px-7 py-6" : "rounded-2xl p-5",
     isMd && "gap-2",
@@ -139,7 +139,7 @@ export default function CardMover({
             )}
           </div>
 
-          <hr className="border-line-100 w-full border-t" />
+          <hr className="w-full border-t" />
 
           <div className="flex w-full items-center gap-2">
             <ProfileAvatar src={profileImage} alt={nickName} size="50" />

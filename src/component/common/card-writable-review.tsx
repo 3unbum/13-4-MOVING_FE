@@ -68,8 +68,8 @@ export default function CardWritableReview({
   const isSm = size === "sm";
 
   const cardClass = clsx(
-    "border-line-100 flex w-full flex-col border-[0.5px] bg-white",
-    "shadow-[-2px_-2px_10px_0_rgba(220,220,220,0.2),2px_2px_10px_0_rgba(220,220,220,0.2)]",
+    "flex w-full flex-col bg-white",
+    "shadow-[inset_0_0_0_0.5px_var(--color-line-100),-2px_-2px_10px_0_rgba(220,220,220,0.2),2px_2px_10px_0_rgba(220,220,220,0.2)]",
     "rounded-[20px]",
     isLg && "gap-6 px-10 py-8",
     isMd && "gap-10 p-8",
@@ -131,7 +131,7 @@ export default function CardWritableReview({
   if (isMd) {
     return (
       <article className={cardClass} {...props}>
-        <div className="flex w-full flex-col gap-7">
+        <div className="flex w-full flex-col gap-6">
           <div className="flex w-full items-start gap-5">
             <ProfileAvatar src={profileImage} alt={nickName} size="80" />
 
@@ -170,37 +170,40 @@ export default function CardWritableReview({
   /* ── sm (327px) ──────────────────────────────────── */
   return (
     <article className={cardClass} {...props}>
+      {/* 피그마는 카드(gap 20)와 내용(gap 12)이 두 층입니다 — 1:12199 */}
       <div className="flex w-full flex-col items-start gap-3">
-        <div className="flex items-center gap-2">
-          <MoveTypeChip variant={category} size="sm" />
-          {isTargeted && <MoveTypeChip variant="TARGETED" size="sm" />}
-        </div>
-
-        <div className="flex w-full items-center gap-2">
-          <div className="flex min-w-0 flex-1 flex-col items-start gap-1">
-            <MoverName nickName={nickName} size="lg" />
-            {description && (
-              <p className="text-12 text-gray-gray-500 w-full truncate">{description}</p>
-            )}
+        <div className="flex w-full flex-col items-start gap-3">
+          <div className="flex items-center gap-2">
+            <MoveTypeChip variant={category} size="sm" />
+            {isTargeted && <MoveTypeChip variant="TARGETED" size="sm" />}
           </div>
-          <ProfileAvatar src={profileImage} alt={nickName} size="64" />
-        </div>
-      </div>
 
-      {/* sm은 이사 정보가 2행 (출발지·도착지 / 이사일) */}
-      <div className="flex w-full flex-col items-start justify-center gap-4">
-        <div className="flex w-full items-center gap-4">
-          <InfoItem label="출발지" value={from} valueClassName={infoValueClass} />
-          <InfoItem label="도착지" value={to} valueClassName={infoValueClass} />
+          <div className="flex w-full items-center gap-2">
+            <div className="flex min-w-0 flex-1 flex-col items-start gap-1">
+              <MoverName nickName={nickName} size="lg" stacked />
+              {description && (
+                <p className="text-12 text-gray-gray-500 w-full truncate">{description}</p>
+              )}
+            </div>
+            <ProfileAvatar src={profileImage} alt={nickName} size="64" />
+          </div>
         </div>
-        <InfoItem label="이사일" value={movingDate} valueClassName={infoValueClass} />
-      </div>
 
-      <div className="border-line-200 flex h-11.75 w-full items-end justify-between border-t">
-        <span className="text-14 text-gray-gray-300 font-medium">견적 금액</span>
-        <span className="text-18 text-black-black-400 font-bold whitespace-nowrap">
-          {price.toLocaleString()}원
-        </span>
+        {/* sm은 이사 정보가 2행 (출발지·도착지 / 이사일) */}
+        <div className="flex w-full flex-col items-start justify-center gap-4">
+          <div className="flex w-full items-center gap-4">
+            <InfoItem label="출발지" value={from} valueClassName={infoValueClass} />
+            <InfoItem label="도착지" value={to} valueClassName={infoValueClass} />
+          </div>
+          <InfoItem label="이사일" value={movingDate} valueClassName={infoValueClass} />
+        </div>
+
+        <div className="border-line-200 flex h-11.75 w-full items-end justify-between border-t">
+          <span className="text-14 text-gray-gray-300 font-medium">견적 금액</span>
+          <span className="text-18 text-black-black-400 font-bold whitespace-nowrap">
+            {price.toLocaleString()}원
+          </span>
+        </div>
       </div>
 
       {writeButton}

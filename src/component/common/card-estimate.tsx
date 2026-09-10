@@ -229,8 +229,8 @@ export function CardPendingHistory({
   return (
     <article
       className={clsx(
-        "border-line-100 flex flex-col items-start border-[0.5px] bg-white",
-        "shadow-[-2px_-2px_10px_0_rgba(220,220,220,0.2),2px_2px_10px_0_rgba(220,220,220,0.2)]",
+        "flex flex-col items-start bg-white",
+        "shadow-[inset_0_0_0_0.5px_var(--color-line-100),-2px_-2px_10px_0_rgba(220,220,220,0.2),2px_2px_10px_0_rgba(220,220,220,0.2)]",
         "w-full",
         isLg ? "gap-10 rounded-[20px] px-10 py-8" : "gap-7 rounded-[20px] px-5 py-6",
         className

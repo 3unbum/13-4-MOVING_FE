@@ -225,14 +225,21 @@ export default function CardListPage() {
         </W>
       </Section>
 
-      <Section title="Card-list-review / lg 955 ・ sm 600 (테두리 없음 - 목록 행)">
+      {/* 실제 사용 폭: lg 600·766·821·955 / sm 335 (UI Design 집계) */}
+      <Section title="Card-list-review / lg 955・821・766・600 ・ sm 335 (테두리 없음 - 목록 행)">
         <W px={955}>
           <CardReview size="lg" {...REVIEW} />
         </W>
-        <W px={600}>
-          <CardReview {...REVIEW} />
+        <W px={821}>
+          <CardReview size="lg" {...REVIEW} />
+        </W>
+        <W px={766}>
+          <CardReview size="lg" {...REVIEW} />
         </W>
         <W px={600}>
+          <CardReview size="lg" {...REVIEW} />
+        </W>
+        <W px={335}>
           <CardReview {...REVIEW} rating={3} />
         </W>
       </Section>

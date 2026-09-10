@@ -60,8 +60,8 @@ export default function CardMyReview({
   const isLg = size === "lg";
 
   const cardClass = clsx(
-    "border-line-100 flex w-full flex-col border-[0.5px] bg-white",
-    "shadow-[-2px_-2px_10px_0_rgba(220,220,220,0.2),2px_2px_10px_0_rgba(220,220,220,0.2)]",
+    "flex w-full flex-col bg-white",
+    "shadow-[inset_0_0_0_0.5px_var(--color-line-100),-2px_-2px_10px_0_rgba(220,220,220,0.2),2px_2px_10px_0_rgba(220,220,220,0.2)]",
     "rounded-[20px]",
     isLg ? "gap-5 p-10" : "gap-4 px-5 py-6",
     className
@@ -131,12 +131,12 @@ export default function CardMyReview({
         </div>
 
         <div className="flex w-full items-center justify-between">
-          <MoverName nickName={nickName} size="lg" />
+          <MoverName nickName={nickName} size="lg" stacked />
           <ProfileAvatar src={profileImage} alt={nickName} size="50" />
         </div>
       </div>
 
-      <hr className="border-line-100 w-full border-t" />
+      <hr className="w-full border-t" />
 
       <div className="flex w-full items-center gap-4">
         <InfoItem
@@ -159,7 +159,7 @@ export default function CardMyReview({
         />
       </div>
 
-      <hr className="border-line-100 w-full border-t" />
+      <hr className="w-full border-t" />
 
       {review}
 
