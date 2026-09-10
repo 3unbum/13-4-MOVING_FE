@@ -10,6 +10,8 @@ import Modal, { ModalHeader } from "@/component/common/modal";
 type AddressSelectModalSize = "sm" | "md";
 
 export interface AddressSelectResult {
+  // zipCode는 우편번호라 같은 값이 여러 건일 수 있음 — 선택/key는 id 사용
+  id: string;
   zipCode: string;
   roadAddress: string;
   lotAddress: string;
@@ -24,7 +26,7 @@ interface AddressSelectModalProps {
   onSearchChange: (value: string) => void;
   onSearch?: (value: string) => void;
   results: AddressSelectResult[];
-  selectedZipCode?: string;
+  selectedId?: string;
   onSelect: (result: AddressSelectResult) => void;
   onConfirm: () => void;
 }
@@ -39,13 +41,13 @@ export default function AddressSelectModal({
   onSearchChange,
   onSearch,
   results,
-  selectedZipCode,
+  selectedId,
   onSelect,
   onConfirm,
 }: AddressSelectModalProps) {
   const titleId = useId();
   const isMd = size === "md";
-  const canConfirm = Boolean(selectedZipCode);
+  const canConfirm = results.some((result) => result.id === selectedId);
 
   return (
     <Modal
@@ -72,12 +74,12 @@ export default function AddressSelectModal({
           <div className="flex w-full flex-col gap-4">
             {results.map((result) => (
               <AddressCard
-                key={result.zipCode}
+                key={result.id}
                 size={size}
                 zipCode={result.zipCode}
                 roadAddress={result.roadAddress}
                 lotAddress={result.lotAddress}
-                selected={result.zipCode === selectedZipCode}
+                selected={result.id === selectedId}
                 onClick={() => onSelect(result)}
               />
             ))}

@@ -111,7 +111,7 @@ export default function QuoteActionModal({
                 견적가를 입력해 주세요
               </p>
               <InputTextField
-                type="password"
+                type="text"
                 inputMode="numeric"
                 size={isMd ? "md" : "sm"}
                 placeholder="견적가 입력"

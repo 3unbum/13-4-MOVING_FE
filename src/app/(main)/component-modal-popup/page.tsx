@@ -13,8 +13,14 @@ import Toast from "@/component/common/toast";
 import type { ServiceCode } from "@/component/common/chip-region";
 
 const MOCK_RESULTS: AddressSelectResult[] = [
-  { zipCode: "04538", roadAddress: "서울 중구 세종대로 110", lotAddress: "서울 중구 태평로1가 31" },
   {
+    id: "04538-세종대로-110",
+    zipCode: "04538",
+    roadAddress: "서울 중구 세종대로 110",
+    lotAddress: "서울 중구 태평로1가 31",
+  },
+  {
+    id: "13529-판교역로-235",
     zipCode: "13529",
     roadAddress: "경기 성남시 분당구 판교역로 235",
     lotAddress: "경기 성남시 분당구 삼평동 683",
@@ -36,10 +42,10 @@ type ModalKey =
 
 export default function Page() {
   const [openModal, setOpenModal] = useState<ModalKey | null>(null);
-  const [showToast, setShowToast] = useState(false);
+  const [toastToken, setToastToken] = useState<number | null>(null);
 
   const [searchValue, setSearchValue] = useState("");
-  const [selectedZipCode, setSelectedZipCode] = useState<string>();
+  const [selectedId, setSelectedId] = useState<string>();
 
   const [category] = useState<ServiceCode>("SMALL");
   const [price, setPrice] = useState("");
@@ -54,10 +60,10 @@ export default function Page() {
   const [review, setReview] = useState("");
 
   useEffect(() => {
-    if (!showToast) return;
-    const timer = setTimeout(() => setShowToast(false), 2000);
+    if (toastToken == null) return;
+    const timer = setTimeout(() => setToastToken(null), 2000);
     return () => clearTimeout(timer);
-  }, [showToast]);
+  }, [toastToken]);
 
   const close = () => setOpenModal(null);
 
@@ -118,7 +124,7 @@ export default function Page() {
 
       <h3 className="text-16 text-gray-gray-400">토스트 팝업</h3>
       <section className="flex gap-3">
-        <Button size="sm" className="w-40" onClick={() => setShowToast(true)}>
+        <Button size="sm" className="w-40" onClick={() => setToastToken(Date.now())}>
           toast 띄우기
         </Button>
       </section>
@@ -128,10 +134,13 @@ export default function Page() {
         onClose={close}
         size={openModal === "address-sm" ? "sm" : "md"}
         searchValue={searchValue}
-        onSearchChange={setSearchValue}
+        onSearchChange={(value) => {
+          setSearchValue(value);
+          setSelectedId(undefined);
+        }}
         results={searchValue ? MOCK_RESULTS : []}
-        selectedZipCode={selectedZipCode}
-        onSelect={(result) => setSelectedZipCode(result.zipCode)}
+        selectedId={selectedId}
+        onSelect={(result) => setSelectedId(result.id)}
         onConfirm={close}
       />
 
@@ -202,7 +211,7 @@ export default function Page() {
         onSubmit={close}
       />
 
-      {showToast && <Toast message="링크가 복사되었어요" />}
+      {toastToken != null && <Toast message="링크가 복사되었어요" />}
     </div>
   );
 }

@@ -10,6 +10,11 @@ interface UseDialogOptions {
 // Escape 닫기, 배경 스크롤 락, 포커스 트랩. 바깥 클릭 닫기는 Modal에서 처리.
 export function useDialog({ open, onClose }: UseDialogOptions) {
   const panelRef = useRef<HTMLDivElement>(null);
+  const onCloseRef = useRef(onClose);
+
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  });
 
   useEffect(() => {
     if (!open) return;
@@ -22,7 +27,7 @@ export function useDialog({ open, onClose }: UseDialogOptions) {
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        onClose();
+        onCloseRef.current();
         return;
       }
       if (event.key !== "Tab") return;
@@ -51,7 +56,7 @@ export function useDialog({ open, onClose }: UseDialogOptions) {
       document.body.style.overflow = previousOverflow;
       previouslyFocused?.focus();
     };
-  }, [open, onClose]);
+  }, [open]);
 
   return { panelRef };
 }

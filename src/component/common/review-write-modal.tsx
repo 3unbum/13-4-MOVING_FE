@@ -66,12 +66,11 @@ export default function ReviewWriteModal({
       onClose={onClose}
       position={isMd ? "center" : "bottom"}
       labelledBy={titleId}
-      className={clsx(
-        "gap-8 p-8",
+      className={
         isMd
-          ? "w-150 min-w-150 rounded-[32px]"
+          ? "w-150 min-w-150 gap-8 rounded-[32px] p-8"
           : "w-93.75 min-w-93.75 gap-6.5 rounded-t-[32px] px-6 py-8"
-      )}
+      }
     >
       <ModalHeader id={titleId} title="리뷰 쓰기" size={size} onClose={onClose} />
 
