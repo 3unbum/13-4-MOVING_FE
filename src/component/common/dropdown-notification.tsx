@@ -40,7 +40,7 @@ export interface DropdownNotificationProps {
  *   </button>
  *   {open ? (
  *     <DropdownNotification
- *       className="absolute z-1010 ..."
+ *       className="absolute z-[var(--z-gnb-dropdown)] ..."
  *       containerRef={wrapRef}
  *       onClose={() => setOpen(false)}
  *     >

@@ -126,9 +126,8 @@ export default function Sort({
         <ul
           id={listId}
           aria-label="정렬 옵션"
-          // TODO: z-index 토큰(--z-filter-dropdown) PR 머지 후 z-filter-dropdown으로 교체
           className={clsx(
-            "border-line-100 absolute top-full left-0 z-100 flex flex-col overflow-hidden rounded-lg border bg-gray-50",
+            "border-line-100 absolute top-full left-0 z-[var(--z-filter-dropdown)] flex flex-col overflow-hidden rounded-lg border bg-gray-50",
             isSm ? "mt-1.5 w-[91px]" : "mt-2 w-[114px]"
           )}
         >

@@ -206,9 +206,8 @@ function SingleList({ id, size, options, value, onSelect }: SingleListProps) {
     <ul
       id={id}
       aria-label="필터 옵션"
-      // TODO: z-index 토큰(--z-filter-dropdown) PR 머지 후 z-filter-dropdown으로 교체
       className={clsx(
-        "absolute z-100 flex flex-col overflow-hidden bg-gray-50",
+        "absolute z-[var(--z-filter-dropdown)] flex flex-col overflow-hidden bg-gray-50",
         isSm
           ? "border-line-200 top-[47px] -left-px w-[106px] rounded-lg border shadow-[4px_4px_10px_rgba(191,191,191,0.2)]"
           : "border-line-200 top-[61px] left-0 w-40 rounded-xl border shadow-[4px_4px_5px_rgba(224,224,224,0.25)]"
@@ -301,9 +300,8 @@ function DoubleList({ id, size, columns, value, onSelect }: DoubleListProps) {
       id={id}
       role="group"
       aria-label="지역 필터 옵션"
-      // TODO: z-index 토큰(--z-filter-dropdown) PR 머지 후 z-filter-dropdown으로 교체
       className={clsx(
-        "absolute -left-px z-100 overflow-hidden bg-gray-50",
+        "absolute -left-px z-[var(--z-filter-dropdown)] overflow-hidden bg-gray-50",
         isSm
           ? "border-line-200 top-[47px] max-h-45 rounded-lg border shadow-[4px_4px_10px_rgba(191,191,191,0.2)]"
           : "top-[61px] max-h-80 rounded-2xl shadow-[4px_4px_5px_rgba(224,224,224,0.25)]"
