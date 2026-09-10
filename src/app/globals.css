@@ -35,6 +35,9 @@
   --color-black-500: #111111;
   --color-black-black-300: #373737;
   --color-black-black-400: #262524;
+  /* 피그마 Black/Black-400 변수가 프레임마다 값이 다름(#262524 / #1f1f1f).
+     Card-list 견적 금액 계열이 #1f1f1f라 값 기준으로 별도 토큰 분리 */
+  --color-black-black-450: #1f1f1f;
 
   /* Primary orange (brand) */
   --color-orange-100: #feeeea;
@@ -52,6 +55,9 @@
   --color-background-200: #f7f7f7;
   --color-background-300: #efefef;
   --color-background-background-100: #fafafa;
+
+  /* Overlay — Card-list 반려/이사완료 카드를 덮는 딤 처리 */
+  --color-overlay-dim: rgba(4, 4, 4, 0.64);
 
   /* Line */
   --color-line-100: #f2f2f2;

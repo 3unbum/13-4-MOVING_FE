@@ -1,6 +1,5 @@
 import type { HTMLAttributes } from "react";
-import likeActive from "@/assets/icons/like-md-red-active.svg";
-import likeDefault from "@/assets/icons/like-md-default.svg";
+import { FavoriteCount } from "@/component/common/card-parts";
 import CheckboxButton from "@/component/common/checkbox-button";
 import MoveTypeChip from "@/component/common/chip-move-type";
 import type { ServiceCode } from "@/component/common/chip-region";
@@ -8,19 +7,15 @@ import MoverMeta from "@/component/common/mover-meta";
 import MoverName from "@/component/common/mover-name";
 import ProfileAvatar from "@/component/common/profile-avatar";
 import clsx from "clsx";
-import Image from "next/image";
 
 type CardMoverSize = "sm" | "md" | "lg";
-// 카드 상단 칩에 표시할 값. MoveTypeChip의 variant와 동일한 타입입니다.
-// ⚠️ 이사 종류(SMALL/HOME/OFFICE)와 지정 요청 여부(TARGETED)는 원래 별개 개념입니다
-//    — 전자는 quotation_request.category, 후자는 targeted_request 조인 결과.
-//    기사님 찾기 카드는 칩이 하나뿐이라 합쳐 받지만, 둘을 동시에 표시해야 하는
-//    카드(받은 요청 등)가 나오면 category + isTargeted로 분리해야 합니다.
-type MoveType = ServiceCode | "TARGETED";
 
 interface CardMoverProps extends HTMLAttributes<HTMLElement> {
   size?: CardMoverSize;
-  moveType: MoveType;
+  /** 이사 종류 - quotation_request.category */
+  category: ServiceCode;
+  /** 지정 견젹 요청 여부 - targeted_request 조인 결과. 별도 칩으로 나란히 표시. */
+  isTargeted?: boolean;
   /** 기사님 한 줄 소개 (제목) */
   title: string;
   /** 상세 설명. sm에서는 표시하지 않음 */
@@ -41,47 +36,11 @@ interface CardMoverProps extends HTMLAttributes<HTMLElement> {
   className?: string;
 }
 
-/** 찜 하트 + 개수. onClick이 없으면 표시 전용 */
-function FavoriteCount({
-  count,
-  isFavorited = false,
-  showCount = true,
-  onClick,
-}: {
-  count: number;
-  isFavorited?: boolean;
-  showCount?: boolean;
-  onClick?: () => void;
-}) {
-  const content = (
-    <>
-      <Image src={isFavorited ? likeActive : likeDefault} alt="" className="size-6 shrink-0" />
-      {showCount && <span className="text-14 text-gray-gray-500">{count}</span>}
-    </>
-  );
-
-  // 핸들러가 없으면 불필요한 버튼 시맨틱을 만들지 않음
-  if (!onClick) {
-    return <div className="flex shrink-0 items-center justify-center gap-0.5">{content}</div>;
-  }
-
-  return (
-    <button
-      type="button"
-      aria-label="찜하기"
-      aria-pressed={isFavorited}
-      onClick={onClick}
-      className="flex shrink-0 cursor-pointer items-center justify-center gap-0.5"
-    >
-      {content}
-    </button>
-  );
-}
-
-// 사용법: <CardMover size="lg" moveType="소형이사" title="..." nickname="김코드" ... />
+// 사용법: <CardMover size="lg" category="SMALL" isTargeted title="..." nickName="김코드" ... />
 export default function CardMover({
   size = "md",
-  moveType,
+  category,
+  isTargeted = false,
   title,
   description,
   nickName,
@@ -105,7 +64,8 @@ export default function CardMover({
   const cardClass = clsx(
     "border-line-100 flex flex-col border-[0.5px] bg-white",
     "shadow-[-2px_-2px_10px_0_rgba(220,220,220,0.2),2px_2px_10px_0_rgba(220,220,220,0.2)]",
-    isLg ? "w-[1200px] rounded-[20px] px-7 py-6" : "w-[327px] rounded-2xl p-5",
+    "w-full",
+    isLg ? "rounded-[20px] px-7 py-6" : "rounded-2xl p-5",
     isMd && "gap-2",
     className
   );
@@ -114,8 +74,11 @@ export default function CardMover({
     return (
       <article className={cardClass} {...props}>
         <div className="flex w-full flex-col items-start gap-3">
-          <div className="flex h-[34px] w-full items-center justify-between">
-            <MoveTypeChip variant={moveType} size="md" />
+          <div className="flex h-8.5 w-full items-center justify-between">
+            <div className="flex items-center gap-2">
+              <MoveTypeChip variant={category} size="md" />
+              {isTargeted && <MoveTypeChip variant="TARGETED" size="md" />}
+            </div>
             {selectable && (
               <CheckboxButton
                 shape="square"
@@ -163,7 +126,10 @@ export default function CardMover({
   if (isMd) {
     return (
       <article className={cardClass} {...props}>
-        <MoveTypeChip variant={moveType} size="sm" />
+        <div className="flex items-center gap-2">
+          <MoveTypeChip variant={category} size="sm" />
+          {isTargeted && <MoveTypeChip variant="TARGETED" size="sm" />}
+        </div>
 
         <div className="flex w-full flex-col gap-4">
           <div className="flex w-full flex-col">
@@ -178,8 +144,8 @@ export default function CardMover({
           <div className="flex w-full items-center gap-2">
             <ProfileAvatar src={profileImage} alt={nickName} size="sm" />
 
-            <div className="flex flex-col gap-1">
-              <div className="flex w-[215px] items-center justify-between">
+            <div className="flex min-w-0 flex-1 flex-col gap-1">
+              <div className="flex w-full items-center justify-between">
                 <MoverName nickName={nickName} size="md" />
                 <FavoriteCount
                   count={favoriteCount}
@@ -204,7 +170,10 @@ export default function CardMover({
   return (
     <article className={clsx(cardClass, "items-end")} {...props}>
       <div className="flex w-full flex-col gap-3">
-        <MoveTypeChip variant={moveType} size="sm" />
+        <div className="flex items-center gap-2">
+          <MoveTypeChip variant={category} size="sm" />
+          {isTargeted && <MoveTypeChip variant="TARGETED" size="sm" />}
+        </div>
 
         <div className="flex w-full flex-col items-start gap-4">
           <p className="text-16 text-black-black-300 w-full font-semibold">{title}</p>
