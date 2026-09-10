@@ -60,7 +60,7 @@ function MoverBox({
         bordered && "rounded-xl border border-gray-300 py-3 pr-5 pl-3"
       )}
     >
-      <ProfileAvatar src={profileImage} alt={nickName} size="sm" />
+      <ProfileAvatar src={profileImage} alt={nickName} size="50" />
 
       <div className={clsx("flex min-w-px flex-1 flex-col items-start", isLg ? "gap-2" : "gap-1")}>
         <div className="flex w-full items-center justify-between">

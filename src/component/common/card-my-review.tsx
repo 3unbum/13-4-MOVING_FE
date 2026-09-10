@@ -1,5 +1,6 @@
 import MoveTypeChip from "@/component/common/chip-move-type";
 import type { ServiceCode } from "@/component/common/chip-region";
+import InfoItem from "@/component/common/info-item";
 import MoverName from "@/component/common/mover-name";
 import ProfileAvatar from "@/component/common/profile-avatar";
 import RatingStars from "@/component/common/rating-stars";
@@ -25,36 +26,6 @@ interface CardMyReviewProps extends HTMLAttributes<HTMLElement> {
   content: string;
   /** 표시용으로 이미 포맷된 문자열 (예: "2024.07.02") - sm에서만 표시 */
   createdAt?: string;
-}
-
-/**
- * 이사 정보 한 쌍.
- * `MovingInfo`와 값이 달라(폰트・색・구분선) 이 카드 전용.
- */
-function InfoItem({
-  label,
-  value,
-  size,
-}: {
-  label: string;
-  value: string;
-  size: CardMyReviewSize;
-}) {
-  const isLg = size === "lg";
-
-  return (
-    <div className="win-w-0 flex flex-col items-start justify-center">
-      <span className={clsx("text-gray-gray-500", isLg ? "text-14" : "text-12")}>{label}</span>
-      <span
-        className={clsx(
-          "text-black-100 max-w-full truncate font-medium",
-          isLg ? "text-14" : "text-13"
-        )}
-      >
-        {value}
-      </span>
-    </div>
-  );
 }
 
 /** lg의 세로 구분선 */
@@ -109,7 +80,7 @@ export default function CardMyReview({
     return (
       <article className={cardClass} {...props}>
         <div className="flex w-full items-start gap-5">
-          <ProfileAvatar src={profileImage} alt={nickName} size="md" />
+          <ProfileAvatar src={profileImage} alt={nickName} size="80" />
 
           <div className="flex min-w-0 flex-1 flex-col items-start gap-2">
             <div className="flex w-full flex-col items-start justify-center">
@@ -123,11 +94,26 @@ export default function CardMyReview({
         </div>
 
         <div className="flex w-full items-center gap-5">
-          <InfoItem label="출발지" value={from} size={size} />
+          <InfoItem
+            label="출발지"
+            value={from}
+            labelClassName={isLg ? "text-14" : "text-12"}
+            valueClassName={clsx("text-black-100 font-medium", isLg ? "text-14" : "text-13")}
+          />
           <VerticalLine />
-          <InfoItem label="도착지" value={to} size={size} />
+          <InfoItem
+            label="도착지"
+            value={to}
+            labelClassName={isLg ? "text-14" : "text-12"}
+            valueClassName={clsx("text-black-100 font-medium", isLg ? "text-14" : "text-13")}
+          />
           <VerticalLine />
-          <InfoItem label="이사일" value={movingDate} size={size} />
+          <InfoItem
+            label="이사일"
+            value={movingDate}
+            labelClassName={isLg ? "text-14" : "text-12"}
+            valueClassName={clsx("text-black-100 font-medium", isLg ? "text-14" : "text-13")}
+          />
         </div>
 
         {review}
@@ -146,16 +132,31 @@ export default function CardMyReview({
 
         <div className="flex w-full items-center justify-between">
           <MoverName nickName={nickName} size="lg" />
-          <ProfileAvatar src={profileImage} alt={nickName} size="sm" />
+          <ProfileAvatar src={profileImage} alt={nickName} size="50" />
         </div>
       </div>
 
       <hr className="border-line-100 w-full border-t" />
 
       <div className="flex w-full items-center gap-4">
-        <InfoItem label="출발지" value={from} size={size} />
-        <InfoItem label="도착지" value={to} size={size} />
-        <InfoItem label="이사일" value={movingDate} size={size} />
+        <InfoItem
+          label="출발지"
+          value={from}
+          labelClassName={isLg ? "text-14" : "text-12"}
+          valueClassName={clsx("text-black-100 font-medium", isLg ? "text-14" : "text-13")}
+        />
+        <InfoItem
+          label="도착지"
+          value={to}
+          labelClassName={isLg ? "text-14" : "text-12"}
+          valueClassName={clsx("text-black-100 font-medium", isLg ? "text-14" : "text-13")}
+        />
+        <InfoItem
+          label="이사일"
+          value={movingDate}
+          labelClassName={isLg ? "text-14" : "text-12"}
+          valueClassName={clsx("text-black-100 font-medium", isLg ? "text-14" : "text-13")}
+        />
       </div>
 
       <hr className="border-line-100 w-full border-t" />

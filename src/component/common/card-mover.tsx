@@ -90,7 +90,7 @@ export default function CardMover({
           </div>
 
           <div className="flex w-full items-start gap-5">
-            <ProfileAvatar src={profileImage} alt={nickName} size="lg" />
+            <ProfileAvatar src={profileImage} alt={nickName} size="134" />
 
             <div className="flex min-w-px flex-1 flex-col gap-5 self-stretch py-1">
               <div className="flex w-full flex-col">
@@ -142,7 +142,7 @@ export default function CardMover({
           <hr className="border-line-100 w-full border-t" />
 
           <div className="flex w-full items-center gap-2">
-            <ProfileAvatar src={profileImage} alt={nickName} size="sm" />
+            <ProfileAvatar src={profileImage} alt={nickName} size="50" />
 
             <div className="flex min-w-0 flex-1 flex-col gap-1">
               <div className="flex w-full items-center justify-between">
@@ -179,7 +179,7 @@ export default function CardMover({
           <p className="text-16 text-black-black-300 w-full font-semibold">{title}</p>
 
           <div className="flex w-full items-center gap-2">
-            <ProfileAvatar src={profileImage} alt={nickName} size="sm" />
+            <ProfileAvatar src={profileImage} alt={nickName} size="50" />
 
             <div className="flex min-w-px flex-1 flex-col gap-1">
               <div className="flex w-full items-center gap-1">
