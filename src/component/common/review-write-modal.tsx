@@ -83,7 +83,7 @@ export default function ReviewWriteModal({
 
           <div className="flex w-full items-center justify-between">
             <MoverName nickName={moverNickName} size={isMd ? "md" : "sm"} />
-            <ProfileAvatar src={moverProfileImage} alt={moverNickName} size="sm" />
+            <ProfileAvatar src={moverProfileImage} alt={moverNickName} size="50" />
           </div>
 
           <hr className="border-line-100 w-full border-t" />
