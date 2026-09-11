@@ -73,7 +73,7 @@ export default function CardWritableReview({
     "rounded-[20px]",
     isLg && "gap-6 px-10 py-8",
     isMd && "gap-10 p-8",
-    isSm && "gap-5 px-5 py-6",
+    isSm && "gap-5 px-5 py-5",
     className
   );
 
