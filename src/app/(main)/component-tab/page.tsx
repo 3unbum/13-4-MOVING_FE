@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import Tab from "@/component/common/tab";
-import TabList from "@/component/common/tab-list";
+import Tab from "@/components/common/Tab";
+import TabList from "@/components/common/TabList";
 
 export default function TabPage() {
   const [quoteTab, setQuoteTab] = useState<"waiting" | "received">("waiting");

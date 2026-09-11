@@ -2,8 +2,8 @@
 
 import clsx from "clsx";
 import { useId } from "react";
-import Button from "@/component/common/button";
-import Modal, { ModalHeader } from "@/component/common/modal";
+import Button from "@/components/common/Button";
+import Modal, { ModalHeader } from "@/components/common/Modal";
 
 type InfoRequiredModalSize = "sm" | "md";
 

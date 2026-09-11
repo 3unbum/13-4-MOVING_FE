@@ -1,6 +1,6 @@
 "use client";
 
-import SelectCard from "@/component/common/select-card";
+import SelectCard from "@/components/common/SelectCard";
 import { useState } from "react";
 
 const MOVE_TYPES = ["SMALL", "HOME", "OFFICE"] as const;

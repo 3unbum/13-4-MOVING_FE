@@ -1,10 +1,10 @@
 "use client";
 
 import { useId } from "react";
-import Button from "@/component/common/button";
-import CheckboxButton from "@/component/common/checkbox-button";
-import Chip, { SERVICES, SERVICE_LABELS, type ServiceCode } from "@/component/common/chip-region";
-import Modal, { ModalHeader } from "@/component/common/modal";
+import Button from "@/components/common/Button";
+import CheckboxButton from "@/components/common/CheckboxButton";
+import Chip, { SERVICES, SERVICE_LABELS, type ServiceCode } from "@/components/filter/ChipRegion";
+import Modal, { ModalHeader } from "@/components/common/Modal";
 
 interface FilterModalProps {
   open: boolean;

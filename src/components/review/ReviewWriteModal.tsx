@@ -7,14 +7,14 @@ import starLgActive from "@/assets/icons/star-lg-active.svg";
 import starLgDefault from "@/assets/icons/star-lg-default.svg";
 import starMdActive from "@/assets/icons/star-md-active.svg";
 import starMdDefault from "@/assets/icons/star-md-default.svg";
-import Button from "@/component/common/button";
-import type { ServiceCode } from "@/component/common/chip-region";
-import MoveTypeChip from "@/component/common/chip-move-type";
-import InputTextArea from "@/component/common/input-textarea";
-import Modal, { ModalHeader } from "@/component/common/modal";
-import MoverName from "@/component/common/mover-name";
-import MovingInfo from "@/component/common/moving-info";
-import ProfileAvatar from "@/component/common/profile-avatar";
+import Button from "@/components/common/Button";
+import type { ServiceCode } from "@/components/filter/ChipRegion";
+import MoveTypeChip from "@/components/filter/ChipMoveType";
+import InputTextArea from "@/components/common/InputTextarea";
+import Modal, { ModalHeader } from "@/components/common/Modal";
+import MoverName from "@/components/mover/MoverName";
+import MovingInfo from "@/components/quote/MovingInfo";
+import ProfileAvatar from "@/components/common/ProfileAvatar";
 
 type ReviewWriteModalSize = "sm" | "md";
 

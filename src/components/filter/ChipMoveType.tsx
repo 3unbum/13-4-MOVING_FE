@@ -9,7 +9,7 @@ import solidHomeSm from "@/assets/icons/solid-home-sm.svg";
 import clsx from "clsx";
 import Image from "next/image";
 import type { HTMLAttributes } from "react";
-import type { ServiceCode } from "./chip-region";
+import type { ServiceCode } from "./ChipRegion";
 
 // TARGETED는 BE ServiceType이 아니라 FE에서 판단하는 지정견적요청 표시 — isTargeted는 응답 필드가 아니라 요청 목록 조회용 쿼리 파라미터라 category enum에 못 낌
 type MoveTypeChipVariant = ServiceCode | "TARGETED";

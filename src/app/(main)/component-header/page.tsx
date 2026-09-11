@@ -1,4 +1,4 @@
-import Header from "@/component/common/header";
+import Header from "@/components/common/Header";
 export default function Page() {
   const page = ["견적요청", "견적 상세", "찜한 기사님"];
   return (

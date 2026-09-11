@@ -1,4 +1,4 @@
-import ProgressBar from "@/component/common/progress-bar";
+import ProgressBar from "@/components/common/ProgressBar";
 
 const integerAverageData = {
   "1": 0,

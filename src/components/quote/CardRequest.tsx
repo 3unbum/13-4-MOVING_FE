@@ -1,6 +1,6 @@
-import MoveTypeChip from "@/component/common/chip-move-type";
-import type { ServiceCode } from "@/component/common/chip-region";
-import MovingInfo from "@/component/common/moving-info";
+import MoveTypeChip from "@/components/filter/ChipMoveType";
+import type { ServiceCode } from "@/components/filter/ChipRegion";
+import MovingInfo from "@/components/quote/MovingInfo";
 import clsx from "clsx";
 import type { HTMLAttributes, ReactNode } from "react";
 

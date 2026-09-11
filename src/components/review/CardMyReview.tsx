@@ -1,9 +1,9 @@
-import MoveTypeChip from "@/component/common/chip-move-type";
-import type { ServiceCode } from "@/component/common/chip-region";
-import InfoItem from "@/component/common/info-item";
-import MoverName from "@/component/common/mover-name";
-import ProfileAvatar from "@/component/common/profile-avatar";
-import RatingStars from "@/component/common/rating-stars";
+import MoveTypeChip from "@/components/filter/ChipMoveType";
+import type { ServiceCode } from "@/components/filter/ChipRegion";
+import InfoItem from "@/components/common/InfoItem";
+import MoverName from "@/components/mover/MoverName";
+import ProfileAvatar from "@/components/common/ProfileAvatar";
+import RatingStars from "@/components/common/RatingStars";
 import clsx from "clsx";
 import type { HTMLAttributes } from "react";
 

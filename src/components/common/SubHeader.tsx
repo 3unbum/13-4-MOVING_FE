@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import type { HTMLAttributes } from "react";
-import { SERVICE_LABELS, type ServiceCode } from "./chip-region";
+import { SERVICE_LABELS, type ServiceCode } from "@/components/filter/ChipRegion";
 
 type SubHeaderSize = "sm" | "md" | "lg";
 

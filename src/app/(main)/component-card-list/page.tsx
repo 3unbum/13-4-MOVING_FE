@@ -1,17 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import { CardEstimateHistory, CardPendingHistory } from "@/component/common/card-estimate";
-import CardMover from "@/component/common/card-mover";
-import CardMyReview from "@/component/common/card-my-review";
-import CardReview from "@/component/common/card-review";
-import CardWritableReview from "@/component/common/card-writable-review";
+import { CardEstimateHistory, CardPendingHistory } from "@/components/quote/CardEstimate";
+import CardMover from "@/components/mover/CardMover";
+import CardMyReview from "@/components/review/CardMyReview";
+import CardReview from "@/components/review/CardReview";
+import CardWritableReview from "@/components/review/CardWritableReview";
 import {
   CardCompleted,
   CardCustomerQuotation,
   CardReceivedRequest,
   CardRejectedRequest,
-} from "@/component/common/card-quotation";
+} from "@/components/quote/CardQuotation";
 
 const MOCK = {
   category: "SMALL",

@@ -1,11 +1,11 @@
 import type { HTMLAttributes } from "react";
-import { FavoriteCount } from "@/component/common/card-parts";
-import CheckboxButton from "@/component/common/checkbox-button";
-import MoveTypeChip from "@/component/common/chip-move-type";
-import type { ServiceCode } from "@/component/common/chip-region";
-import MoverMeta from "@/component/common/mover-meta";
-import MoverName from "@/component/common/mover-name";
-import ProfileAvatar from "@/component/common/profile-avatar";
+import { FavoriteCount } from "@/components/common/CardParts";
+import CheckboxButton from "@/components/common/CheckboxButton";
+import MoveTypeChip from "@/components/filter/ChipMoveType";
+import type { ServiceCode } from "@/components/filter/ChipRegion";
+import MoverMeta from "@/components/mover/MoverMeta";
+import MoverName from "@/components/mover/MoverName";
+import ProfileAvatar from "@/components/common/ProfileAvatar";
 import clsx from "clsx";
 
 type CardMoverSize = "sm" | "md" | "lg";

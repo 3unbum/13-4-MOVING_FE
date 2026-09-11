@@ -1,13 +1,13 @@
 import writingIcon from "@/assets/icons/writing-md.svg";
-import Button from "@/component/common/button";
+import Button from "@/components/common/Button";
 import {
   CardOverlay,
   ConfirmedBadge,
   ElapsedTime,
   PriceFooter,
-} from "@/component/common/card-parts";
-import CardRequest from "@/component/common/card-request";
-import type { ServiceCode } from "@/component/common/chip-region";
+} from "@/components/common/CardParts";
+import CardRequest from "@/components/quote/CardRequest";
+import type { ServiceCode } from "@/components/filter/ChipRegion";
 import clsx from "clsx";
 import Image from "next/image";
 

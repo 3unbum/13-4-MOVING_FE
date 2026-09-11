@@ -1,13 +1,13 @@
 "use client";
 
-import AddressChip from "@/component/common/chip-address";
+import AddressChip from "@/components/address/ChipAddress";
 import Chip, {
   REGION_LABELS,
   REGIONS,
   SERVICE_LABELS,
   SERVICES,
-} from "@/component/common/chip-region";
-import MoveTypeChip from "@/component/common/chip-move-type";
+} from "@/components/filter/ChipRegion";
+import MoveTypeChip from "@/components/filter/ChipMoveType";
 import { Fragment, useState } from "react";
 
 // GET /estimate/mover-requests 응답 예시 (mover가 받은 요청 목록) — category는 raw enum(SMALL/HOME/OFFICE) 그대로 내려옴

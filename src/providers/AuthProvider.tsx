@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
-import { authService, type AccountResponse } from "@/lib/services/auth.service";
+import { authService, type AccountResponse } from "@/lib/services/auth-service";
 import { ApiError } from "@/lib/utils/api-error";
 
 interface AuthContextValue {

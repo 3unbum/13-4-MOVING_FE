@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import type { ButtonHTMLAttributes } from "react";
-import AddressChip from "@/component/common/chip-address";
+import AddressChip from "@/components/address/ChipAddress";
 
 type AddressCardSize = "sm" | "md";
 
