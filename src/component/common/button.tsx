@@ -2,7 +2,7 @@ import clsx from "clsx";
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 
 type ButtonVariant = "solid" | "outlined";
-type ButtonSize = "xs" | "sm" | "md";
+type ButtonSize = "xs" | "sm" | "md" | "lg";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   // solid: 배경을 채운 primary CTA / outlined: 테두리만 있는 보조 CTA — 크기·형태가 같아 한 컴포넌트로 관리
@@ -11,6 +11,7 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   // - xs: 높이 44px, radius 12px, 폰트 18px (헤더/GNB 로그인 버튼 등 좁은 공간용, Figma 로그인 버튼 기준)
   // - sm: 높이 54px, radius 12px, 폰트 16px, 아이콘 간격 4px (Figma 모바일 프레임 기준)
   // - md: 높이 60px, radius 16px, 폰트 18px, 아이콘 간격 8px (Figma 태블릿/PC 프레임 기준)
+  // - lg: 높이 64px, radius 16px, 폰트 18px, 아이콘 간격 8px (모달 등 md보다 큰 CTA가 필요한 맥락용)
   size?: ButtonSize;
   // 라벨 뒤에 붙는 아이콘 — 없으면 텍스트만 있는 버튼
   icon?: ReactNode;
@@ -22,6 +23,7 @@ const SIZE_STYLE: Record<ButtonSize, string> = {
   xs: "text-18 h-11 gap-1 rounded-xl",
   sm: "text-16 h-[54px] gap-1 rounded-xl",
   md: "text-18 h-[60px] gap-2 rounded-2xl",
+  lg: "text-18 h-16 gap-2 rounded-2xl",
 };
 
 // 버튼은 항상 w-full(부모 폭에 꽉 참) — 부모가 폭을 제어해야 함
