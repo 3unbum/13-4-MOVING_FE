@@ -60,6 +60,11 @@
   /* Overlay — Card-list 반려/이사완료 카드를 덮는 딤 처리 */
   --color-overlay-dim: rgba(4, 4, 4, 0.64);
 
+  /* 모달·토스트 패널 그림자 */
+  --shadow-modal: 4px 4px 5px 0px rgba(169, 169, 169, 0.2);
+  /* 주소 카드 그림자 */
+  --shadow-address-card: 2px 2px 5px 0px rgba(224, 224, 224, 0.2);
+
   /* Line */
   --color-line-100: #f2f2f2;
   --color-line-200: var(--color-gray-200);
@@ -71,8 +76,12 @@
   /* Z-index */
   --z-gnb: 1000;
   --z-gnb-dropdown: 1010;
+  --z-modal: 1100;
+  --z-toast: 1200;
   --z-filter-dropdown: 100;
   --z-datepicker: 100;
+  --z-index-modal: var(--z-modal);
+  --z-index-toast: var(--z-toast);
 
   /* 타이포그래피: font-size + line-height는 한 세트로 관리, font-weight는 text-*와 조합해서 각자 커스텀 */
   --text-50: 50px;
