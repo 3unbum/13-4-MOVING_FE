@@ -4,6 +4,7 @@ import clsx from "clsx";
 import { useId } from "react";
 import Button from "@/component/common/button";
 import Modal, { ModalHeader } from "@/component/common/modal";
+import ModalButton from "@/component/common/modal-button";
 
 type InfoRequiredModalSize = "sm" | "md";
 
@@ -45,9 +46,15 @@ export default function InfoRequiredModal({
       <p className="text-18 text-black-300 min-h-0 w-full flex-1 overflow-y-auto font-medium">
         {message}
       </p>
-      <Button variant="solid" size={isMd ? "md" : "sm"} className="shrink-0" onClick={onAction}>
-        {actionLabel}
-      </Button>
+      {isMd ? (
+        <ModalButton className="shrink-0" onClick={onAction}>
+          {actionLabel}
+        </ModalButton>
+      ) : (
+        <Button variant="solid" size="sm" className="shrink-0" onClick={onAction}>
+          {actionLabel}
+        </Button>
+      )}
     </Modal>
   );
 }
