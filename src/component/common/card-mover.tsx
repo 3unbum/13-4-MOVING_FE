@@ -62,8 +62,8 @@ export default function CardMover({
   const isMd = size === "md";
 
   const cardClass = clsx(
-    "border-line-100 flex flex-col border-[0.5px] bg-white",
-    "shadow-[-2px_-2px_10px_0_rgba(220,220,220,0.2),2px_2px_10px_0_rgba(220,220,220,0.2)]",
+    "flex flex-col bg-white",
+    "shadow-[inset_0_0_0_0.5px_var(--color-line-100),-2px_-2px_10px_0_rgba(220,220,220,0.2),2px_2px_10px_0_rgba(220,220,220,0.2)]",
     "w-full",
     isLg ? "rounded-[20px] px-7 py-6" : "rounded-2xl p-5",
     isMd && "gap-2",
@@ -90,7 +90,7 @@ export default function CardMover({
           </div>
 
           <div className="flex w-full items-start gap-5">
-            <ProfileAvatar src={profileImage} alt={nickName} size="lg" />
+            <ProfileAvatar src={profileImage} alt={nickName} size="134" />
 
             <div className="flex min-w-px flex-1 flex-col gap-5 self-stretch py-1">
               <div className="flex w-full flex-col">
@@ -139,10 +139,10 @@ export default function CardMover({
             )}
           </div>
 
-          <hr className="border-line-100 w-full border-t" />
+          <hr className="h-0 w-full border-0 shadow-[0_0_0_0.5px_var(--color-line-100)]" />
 
           <div className="flex w-full items-center gap-2">
-            <ProfileAvatar src={profileImage} alt={nickName} size="sm" />
+            <ProfileAvatar src={profileImage} alt={nickName} size="50" />
 
             <div className="flex min-w-0 flex-1 flex-col gap-1">
               <div className="flex w-full items-center justify-between">
@@ -179,7 +179,7 @@ export default function CardMover({
           <p className="text-16 text-black-black-300 w-full font-semibold">{title}</p>
 
           <div className="flex w-full items-center gap-2">
-            <ProfileAvatar src={profileImage} alt={nickName} size="sm" />
+            <ProfileAvatar src={profileImage} alt={nickName} size="50" />
 
             <div className="flex min-w-px flex-1 flex-col gap-1">
               <div className="flex w-full items-center gap-1">
