@@ -101,7 +101,9 @@ export default function QuoteActionModal({
             size={isMd ? "lg" : "sm"}
           />
 
-          {isMd && <hr className="border-line-100 w-full border-t" />}
+          {isMd && (
+            <hr className="h-0 w-full border-0 shadow-[0_0_0_0.5px_var(--color-line-100)]" />
+          )}
         </div>
 
         <div className="flex w-full flex-col items-start gap-4">

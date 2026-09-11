@@ -57,8 +57,8 @@ export default function CardRequest({
   return (
     <article
       className={clsx(
-        "border-line-100 relative flex flex-col items-start border-[0.5px] bg-white",
-        "shadow-[-2px_-2px_10px_0_rgba(220,220,220,0.2),2px_2px_10px_0_rgba(220,220,220,0.2)]",
+        "relative flex flex-col items-start bg-white",
+        "shadow-[inset_0_0_0_0.5px_var(--color-line-100),-2px_-2px_10px_0_rgba(220,220,220,0.2),2px_2px_10px_0_rgba(220,220,220,0.2)]",
         "w-full",
         isLg ? "gap-8 rounded-[20px] px-10 py-8" : "gap-6 rounded-[20px] px-5 py-6",
         className
@@ -86,7 +86,7 @@ export default function CardRequest({
             <span className="min-w-0 truncate">{customerName}</span>
             <span className="shrink-0">고객님</span>
           </p>
-          <hr className="border-line-100 w-full border-t" />
+          <hr className="h-0 w-full border-0 shadow-[0_0_0_0.5px_var(--color-line-100)]" />
         </div>
 
         <MovingInfo from={from} to={to} movingDate={movingDate} size={size} />

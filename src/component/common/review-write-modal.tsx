@@ -83,10 +83,10 @@ export default function ReviewWriteModal({
 
           <div className="flex w-full items-center justify-between">
             <MoverName nickName={moverNickName} size={isMd ? "md" : "sm"} />
-            <ProfileAvatar src={moverProfileImage} alt={moverNickName} size="sm" />
+            <ProfileAvatar src={moverProfileImage} alt={moverNickName} size="50" />
           </div>
 
-          <hr className="border-line-100 w-full border-t" />
+          <hr className="h-0 w-full border-0 shadow-[0_0_0_0.5px_var(--color-line-100)]" />
 
           <MovingInfo
             from={fromAddress}
@@ -95,7 +95,7 @@ export default function ReviewWriteModal({
             size={isMd ? "lg" : "sm"}
           />
 
-          <hr className="border-line-100 w-full border-t" />
+          <hr className="h-0 w-full border-0 shadow-[0_0_0_0.5px_var(--color-line-100)]" />
         </div>
 
         <div className="flex w-full flex-col items-start gap-3">

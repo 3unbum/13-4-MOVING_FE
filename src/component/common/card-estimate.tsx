@@ -60,7 +60,7 @@ function MoverBox({
         bordered && "rounded-xl border border-gray-300 py-3 pr-5 pl-3"
       )}
     >
-      <ProfileAvatar src={profileImage} alt={nickName} size="sm" />
+      <ProfileAvatar src={profileImage} alt={nickName} size="50" />
 
       <div className={clsx("flex min-w-px flex-1 flex-col items-start", isLg ? "gap-2" : "gap-1")}>
         <div className="flex w-full items-center justify-between">
@@ -229,8 +229,8 @@ export function CardPendingHistory({
   return (
     <article
       className={clsx(
-        "border-line-100 flex flex-col items-start border-[0.5px] bg-white",
-        "shadow-[-2px_-2px_10px_0_rgba(220,220,220,0.2),2px_2px_10px_0_rgba(220,220,220,0.2)]",
+        "flex flex-col items-start bg-white",
+        "shadow-[inset_0_0_0_0.5px_var(--color-line-100),-2px_-2px_10px_0_rgba(220,220,220,0.2),2px_2px_10px_0_rgba(220,220,220,0.2)]",
         "w-full",
         isLg ? "gap-10 rounded-[20px] px-10 py-8" : "gap-7 rounded-[20px] px-5 py-6",
         className
