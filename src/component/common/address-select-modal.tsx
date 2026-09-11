@@ -5,7 +5,6 @@ import { useId } from "react";
 import AddressCard from "@/component/common/address-card";
 import Button from "@/component/common/button";
 import InputSearchbar from "@/component/common/input-searchbar";
-import ModalButton from "@/component/common/modal-button";
 import Modal, { ModalHeader } from "@/component/common/modal";
 
 type AddressSelectModalSize = "sm" | "md";
@@ -88,21 +87,15 @@ export default function AddressSelectModal({
         )}
       </div>
 
-      {isMd ? (
-        <ModalButton className="shrink-0" disabled={!canConfirm} onClick={onConfirm}>
-          선택완료
-        </ModalButton>
-      ) : (
-        <Button
-          variant="solid"
-          size="sm"
-          className="shrink-0"
-          disabled={!canConfirm}
-          onClick={onConfirm}
-        >
-          선택완료
-        </Button>
-      )}
+      <Button
+        variant="solid"
+        size={isMd ? "lg" : "sm"}
+        className="shrink-0"
+        disabled={!canConfirm}
+        onClick={onConfirm}
+      >
+        선택완료
+      </Button>
     </Modal>
   );
 }

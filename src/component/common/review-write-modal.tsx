@@ -8,7 +8,6 @@ import starLgDefault from "@/assets/icons/star-lg-default.svg";
 import starMdActive from "@/assets/icons/star-md-active.svg";
 import starMdDefault from "@/assets/icons/star-md-default.svg";
 import Button from "@/component/common/button";
-import ModalButton from "@/component/common/modal-button";
 import type { ServiceCode } from "@/component/common/chip-region";
 import MoveTypeChip from "@/component/common/chip-move-type";
 import InputTextArea from "@/component/common/input-textarea";
@@ -120,21 +119,15 @@ export default function ReviewWriteModal({
         </div>
       </div>
 
-      {isMd ? (
-        <ModalButton className="shrink-0" disabled={!isValid} onClick={onSubmit}>
-          리뷰 등록
-        </ModalButton>
-      ) : (
-        <Button
-          variant="solid"
-          size="sm"
-          className="shrink-0"
-          disabled={!isValid}
-          onClick={onSubmit}
-        >
-          리뷰 등록
-        </Button>
-      )}
+      <Button
+        variant="solid"
+        size={isMd ? "lg" : "sm"}
+        className="shrink-0"
+        disabled={!isValid}
+        onClick={onSubmit}
+      >
+        리뷰 등록
+      </Button>
     </Modal>
   );
 }

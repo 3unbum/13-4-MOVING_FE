@@ -3,7 +3,6 @@
 import clsx from "clsx";
 import { useId } from "react";
 import Button from "@/component/common/button";
-import ModalButton from "@/component/common/modal-button";
 import type { ServiceCode } from "@/component/common/chip-region";
 import MoveTypeChip from "@/component/common/chip-move-type";
 import InputTextArea from "@/component/common/input-textarea";
@@ -147,21 +146,15 @@ export default function QuoteActionModal({
         </div>
       </div>
 
-      {isMd ? (
-        <ModalButton className="shrink-0" disabled={!isValid} onClick={onSubmit}>
-          {isSend ? "견적 보내기" : "반려하기"}
-        </ModalButton>
-      ) : (
-        <Button
-          variant="solid"
-          size="sm"
-          className="shrink-0"
-          disabled={!isValid}
-          onClick={onSubmit}
-        >
-          {isSend ? "견적 보내기" : "반려하기"}
-        </Button>
-      )}
+      <Button
+        variant="solid"
+        size={isMd ? "lg" : "sm"}
+        className="shrink-0"
+        disabled={!isValid}
+        onClick={onSubmit}
+      >
+        {isSend ? "견적 보내기" : "반려하기"}
+      </Button>
     </Modal>
   );
 }
