@@ -86,7 +86,7 @@ export default function CardRequest({
             <span className="min-w-0 truncate">{customerName}</span>
             <span className="shrink-0">고객님</span>
           </p>
-          <hr className="w-full border-t" />
+          <hr className="border-line-100 w-full border-t" />
         </div>
 
         <MovingInfo from={from} to={to} movingDate={movingDate} size={size} />
