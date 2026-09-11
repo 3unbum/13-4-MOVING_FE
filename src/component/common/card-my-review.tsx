@@ -97,14 +97,14 @@ export default function CardMyReview({
           <InfoItem
             label="출발지"
             value={from}
-            labelClassName={isLg ? "text-14" : "text-12"}
+            labelClassName={isLg ? "text-14" : "text-12 leading-[18px]"}
             valueClassName={clsx("text-black-100 font-medium", isLg ? "text-14" : "text-13")}
           />
           <VerticalLine />
           <InfoItem
             label="도착지"
             value={to}
-            labelClassName={isLg ? "text-14" : "text-12"}
+            labelClassName={isLg ? "text-14" : "text-12 leading-[18px]"}
             valueClassName={clsx("text-black-100 font-medium", isLg ? "text-14" : "text-13")}
           />
           <VerticalLine />
@@ -136,35 +136,35 @@ export default function CardMyReview({
         </div>
       </div>
 
-      <hr className="border-line-100 w-full border-t" />
+      <hr className="h-0 w-full border-0 shadow-[0_0_0_0.5px_var(--color-line-100)]" />
 
       <div className="flex w-full items-center gap-4">
         <InfoItem
           label="출발지"
           value={from}
-          labelClassName={isLg ? "text-14" : "text-12"}
+          labelClassName={isLg ? "text-14" : "text-12 leading-[18px]"}
           valueClassName={clsx("text-black-100 font-medium", isLg ? "text-14" : "text-13")}
         />
         <InfoItem
           label="도착지"
           value={to}
-          labelClassName={isLg ? "text-14" : "text-12"}
+          labelClassName={isLg ? "text-14" : "text-12 leading-[18px]"}
           valueClassName={clsx("text-black-100 font-medium", isLg ? "text-14" : "text-13")}
         />
         <InfoItem
           label="이사일"
           value={movingDate}
-          labelClassName={isLg ? "text-14" : "text-12"}
+          labelClassName={isLg ? "text-14" : "text-12 leading-[18px]"}
           valueClassName={clsx("text-black-100 font-medium", isLg ? "text-14" : "text-13")}
         />
       </div>
 
-      <hr className="border-line-100 w-full border-t" />
+      <hr className="h-0 w-full border-0 shadow-[0_0_0_0.5px_var(--color-line-100)]" />
 
       {review}
 
       {createdAt && (
-        <p className="text-12 text-gray-gray-300 flex w-full justify-end gap-1.5">
+        <p className="text-12 text-gray-gray-300 flex w-full justify-end gap-1.5 leading-4.5">
           <span>작성일</span>
           <span>{createdAt}</span>
         </p>

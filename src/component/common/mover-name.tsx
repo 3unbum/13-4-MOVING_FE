@@ -37,7 +37,13 @@ export default function MoverName({
       className={clsx("flex gap-1", stacked ? "flex-col items-start" : "items-center", className)}
       {...props}
     >
-      {showLogo && <Image src={logoMark} alt="" className="h-5.75 w-5 shrink-0" />}
+      {showLogo && (
+        <Image
+          src={logoMark}
+          alt={logoMark}
+          className="pc:h-5.75 tablet:h-5.75 h-[18.2px] w-5 shrink-0"
+        />
+      )}
       <span
         className={clsx(
           "text-black-300 flex items-center gap-1 whitespace-nowrap",

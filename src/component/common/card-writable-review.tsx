@@ -73,7 +73,7 @@ export default function CardWritableReview({
     "rounded-[20px]",
     isLg && "gap-6 px-10 py-8",
     isMd && "gap-10 p-8",
-    isSm && "gap-5 px-5 py-5",
+    isSm && "gap-5 px-5 py-6",
     className
   );
 
@@ -179,10 +179,12 @@ export default function CardWritableReview({
           </div>
 
           <div className="flex w-full items-center gap-2">
-            <div className="flex min-w-0 flex-1 flex-col items-start gap-1">
+            <div className="flex min-w-0 flex-1 flex-col items-start">
               <MoverName nickName={nickName} size="lg" stacked />
               {description && (
-                <p className="text-12 text-gray-gray-500 w-full truncate">{description}</p>
+                <p className="text-12 text-gray-gray-500 w-full truncate leading-4.5">
+                  {description}
+                </p>
               )}
             </div>
             <ProfileAvatar src={profileImage} alt={nickName} size="64" />

@@ -139,7 +139,7 @@ export default function CardMover({
             )}
           </div>
 
-          <hr className="border-line-100 w-full border-t" />
+          <hr className="h-0 w-full border-0 shadow-[0_0_0_0.5px_var(--color-line-100)]" />
 
           <div className="flex w-full items-center gap-2">
             <ProfileAvatar src={profileImage} alt={nickName} size="50" />
