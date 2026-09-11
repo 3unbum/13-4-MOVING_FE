@@ -45,7 +45,7 @@ export default function InfoRequiredModal({
       <p className="text-18 text-black-300 min-h-0 w-full flex-1 overflow-y-auto font-medium">
         {message}
       </p>
-      <Button variant="solid" size={isMd ? "md" : "sm"} className="shrink-0" onClick={onAction}>
+      <Button variant="solid" size={isMd ? "lg" : "sm"} className="shrink-0" onClick={onAction}>
         {actionLabel}
       </Button>
     </Modal>
