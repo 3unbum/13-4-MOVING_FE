@@ -56,6 +56,20 @@ export default function ButtonPage() {
       </section>
 
       <section className="flex flex-col gap-3">
+        <h2 className="text-14 font-semibold text-gray-500">solid / lg</h2>
+        <Button size="lg">Primary CTA 버튼</Button>
+        <Button size="lg" disabled>
+          Primary CTA 버튼
+        </Button>
+        <Button size="lg" icon={<Image src={writingIcon} alt="" className="size-6" />}>
+          Primary CTA 버튼
+        </Button>
+        <Button size="lg" disabled icon={<Image src={writingIcon} alt="" className="size-6" />}>
+          Primary CTA 버튼
+        </Button>
+      </section>
+
+      <section className="flex flex-col gap-3">
         <h2 className="text-14 font-semibold text-gray-500">outlined / sm</h2>
         <Button variant="outlined" size="sm">
           Primary CTA 버튼
@@ -71,6 +85,16 @@ export default function ButtonPage() {
           Primary CTA 버튼
         </Button>
         <Button variant="outlined" size="md" disabled>
+          Primary CTA 버튼
+        </Button>
+      </section>
+
+      <section className="flex flex-col gap-3">
+        <h2 className="text-14 font-semibold text-gray-500">outlined / lg</h2>
+        <Button variant="outlined" size="lg">
+          Primary CTA 버튼
+        </Button>
+        <Button variant="outlined" size="lg" disabled>
           Primary CTA 버튼
         </Button>
       </section>
