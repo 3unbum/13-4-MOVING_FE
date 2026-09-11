@@ -89,7 +89,7 @@ export default function AddressSelectModal({
 
       <Button
         variant="solid"
-        size={isMd ? "md" : "sm"}
+        size={isMd ? "lg" : "sm"}
         className="shrink-0"
         disabled={!canConfirm}
         onClick={onConfirm}

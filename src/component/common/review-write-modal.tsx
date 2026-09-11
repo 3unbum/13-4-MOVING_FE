@@ -121,7 +121,7 @@ export default function ReviewWriteModal({
 
       <Button
         variant="solid"
-        size={isMd ? "md" : "sm"}
+        size={isMd ? "lg" : "sm"}
         className="shrink-0"
         disabled={!isValid}
         onClick={onSubmit}
