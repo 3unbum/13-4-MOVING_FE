@@ -52,8 +52,14 @@ src/
 │   ├── fonts/            # PretendardVariable.ttf (next/font/local)
 │   ├── icons/            # SVG 아이콘
 │   └── images/           # common/, landing/ 등 목적별 하위 폴더
-├── component/
-│   └── common/           # 공통 컴포넌트
+├── components/
+│   ├── common/           # 2개 이상 도메인에서 재사용되는 범용 UI (Button, Modal, Tab, Header 등)
+│   ├── layout/           # GNB 등 레이아웃 전용
+│   ├── mover/            # 기사 도메인 전용 (CardMover, MoverMeta 등)
+│   ├── review/           # 리뷰 도메인 전용
+│   ├── quote/            # 견적 도메인 전용
+│   ├── address/          # 주소 도메인 전용
+│   └── filter/           # 검색/필터 도메인 전용 (지역·이사종류 칩 포함)
 ├── hooks/                # 커스텀 훅
 ├── lib/
 │   ├── actions/          # 서버 액션
@@ -62,6 +68,7 @@ src/
 └── providers/            # QueryProvider 등 개별 provider 구현체
 ```
 
+- `components/` 배치 기준: 2개 이상 도메인(기사/리뷰/견적/주소/필터 등)에서 재사용 + 특정 도메인 데이터 모양에 의존 안 함 → `common/`. 특정 도메인 전용이면 해당 도메인 폴더(`mover/`, `review/`, `quote/`, `address/`, `filter/`, `layout/`)로
 - `customer` / `mover`는 (같은 `/login` 등 페이지명이 겹쳐서) URL 충돌 방지 위해 일반 폴더로 분리 — `/customer/...`, `/mover/...`. 각자 `layout.tsx`에서 공통 UI/가드 처리
 - `(auth)/customer`·`(protected)/customer` (mover도 동일)처럼 같은 이름 폴더가 서로 다른 그룹에 있을 수 있음 — 그룹은 URL에 안 보이니 두 그룹에 걸쳐 같은 하위 경로(예: 양쪽에 `page.tsx` 루트)를 만들면 URL 충돌남. `(auth)`는 로그인/회원가입, `(protected)`는 로그인 후 페이지로 하위 경로 안 겹치게 유지
 - 절대경로 import는 `@/*` → `src/*` 로 매핑되어 있음 (`tsconfig.json`)
@@ -93,15 +100,16 @@ src/
 
 ### 파일 · 폴더
 
-> 파일명은 전부 kebab-case로 통일 (컴포넌트도 포함). Next.js가 이름을 강제하는 특수 파일(`page.tsx`, `layout.tsx`, `loading.tsx`, `not-found.tsx` 등)만 예외. `check-file` ESLint 룰로 강제됨 (자동수정 안 됨, 직접 이름 변경 필요)
+> 컴포넌트 파일(`src/components/**`)·provider 파일(`src/providers/**`)은 PascalCase, 훅 파일(`src/hooks/**`)은 camelCase, 그 외 파일명은 kebab-case로 통일. Next.js가 이름을 강제하는 특수 파일(`page.tsx`, `layout.tsx`, `loading.tsx`, `not-found.tsx` 등)만 예외. `check-file` ESLint 룰로 강제됨 (자동수정 안 됨, 직접 이름 변경 필요)
 
-| 대상          | 케이스                     | 예시                     |
-| ------------- | -------------------------- | ------------------------ |
-| 컴포넌트 파일 | kebab-case                 | `mover-card.tsx`         |
-| 훅 파일       | kebab-case (`use-` 접두어) | `use-mover-list.ts`      |
-| 유틸 파일     | kebab-case                 | `format-date.ts`         |
-| 라우트 폴더   | kebab-case                 | `app/quotation-request/` |
-| 일반 폴더     | kebab-case                 | `component/`, `hooks/`   |
+| 대상          | 케이스                                             | 예시                                                 |
+| ------------- | -------------------------------------------------- | ---------------------------------------------------- |
+| 컴포넌트 파일 | PascalCase                                         | `MoverCard.tsx`                                      |
+| provider 파일 | PascalCase                                         | `AuthProvider.tsx`                                   |
+| 훅 파일       | camelCase (`use` 접두어)                           | `useMoverList.ts`                                    |
+| `lib/` 파일   | kebab-case (역할 접미사는 하이픈, dot-suffix 금지) | `auth-service.ts`, `api-client.ts`, `format-date.ts` |
+| 라우트 폴더   | kebab-case                                         | `app/quotation-request/`                             |
+| 일반 폴더     | kebab-case                                         | `components/mover/`, `hooks/`                        |
 
 ### API 엔드포인트 (참고: BE가 정의, FE는 이 규칙대로 호출)
 

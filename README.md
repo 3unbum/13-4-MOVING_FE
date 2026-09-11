@@ -112,7 +112,7 @@ src/
 │   ├── loading.tsx
 │   └── globals.css       # 디자인 토큰 · 폰트 · 반응형 브레이크포인트
 ├── assets/               # fonts · icons · images
-├── component/            # 공통 컴포넌트
+├── components/            # common(범용) + 도메인별(layout·mover·review·quote·address·filter) 컴포넌트
 ├── hooks/                # 커스텀 훅
 ├── lib/                  # actions · services · utils
 └── providers/            # QueryProvider 등 개별 provider 구현체
