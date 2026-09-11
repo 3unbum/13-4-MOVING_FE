@@ -34,6 +34,7 @@ AGENT.md / 팀 컨벤션 문서에서 참조하는 세부 설정 문서입니다
 | `unused-imports/no-unused-vars`         | 안 쓰는 변수는 warning (`_` 접두어 붙이면 무시)                                                                                                                   |
 | `no-multiple-empty-lines`               | 빈 줄 2개 이상 연속되면 `--fix` 시 1개로 압축, 파일 끝 빈 줄은 0개                                                                                                |
 | `check-file/filename-naming-convention` | `src/components/**`·`src/providers/**`는 PascalCase, `src/hooks/**`는 camelCase, 그 외 `src/**/*.ts(x)`는 kebab-case 강제 (자동수정 안 됨, 직접 이름 바꿔야 통과) |
+| `check-file/filename-blocklist`         | `src/hooks/**` 파일명은 반드시 `use`로 시작 (케이스 검사와 별개로 접두어 자체를 강제)                                                                             |
 
 - 명령어: `npm run lint` (검사만), `npx eslint . --fix` (자동수정까지)
 

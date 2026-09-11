@@ -48,6 +48,12 @@ const eslintConfig = defineConfig([
         },
         { ignoreMiddleExtensions: true },
       ],
+      // 훅 파일명은 반드시 use로 시작 (camelCase 검사와 별개로 접두어 자체를 강제)
+      "check-file/filename-blocklist": [
+        "error",
+        { "src/hooks/**/!(use*).{ts,tsx}": "" },
+        { errorMessage: "Hook file names must start with use." },
+      ],
     },
   },
   // Override default ignores of eslint-config-next.
