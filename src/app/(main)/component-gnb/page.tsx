@@ -1,6 +1,6 @@
 "use client";
 
-import Gnb, { type GnbNotification } from "@/component/common/gnb";
+import Gnb, { type GnbNotification } from "@/components/layout/Gnb";
 import clsx from "clsx";
 import { useState } from "react";
 

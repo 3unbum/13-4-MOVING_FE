@@ -1,12 +1,12 @@
 "use client";
 
-import DropdownDateTrigger from "@/component/common/dropdown-date-trigger";
+import DropdownDateTrigger from "@/components/common/DropdownDateTrigger";
 import DropdownNotification, {
   DropdownNotificationItem,
-} from "@/component/common/dropdown-notification";
-import DropdownProfile from "@/component/common/dropdown-profile";
-import Filter from "@/component/common/filter";
-import Sort from "@/component/common/sort";
+} from "@/components/layout/DropdownNotification";
+import DropdownProfile from "@/components/layout/DropdownProfile";
+import Filter from "@/components/common/Filter";
+import Sort from "@/components/common/Sort";
 import { useState } from "react";
 
 const SERVICE_OPTIONS = [

@@ -1,16 +1,16 @@
-import Button from "@/component/common/button";
+import Button from "@/components/common/Button";
 import {
   ConfirmedBadge,
   FavoriteCount,
   PendingBadge,
   PriceFooter,
   PriceInline,
-} from "@/component/common/card-parts";
-import MoveTypeChip from "@/component/common/chip-move-type";
-import type { ServiceCode } from "@/component/common/chip-region";
-import MoverMeta from "@/component/common/mover-meta";
-import MoverName from "@/component/common/mover-name";
-import ProfileAvatar from "@/component/common/profile-avatar";
+} from "@/components/common/CardParts";
+import MoveTypeChip from "@/components/filter/ChipMoveType";
+import type { ServiceCode } from "@/components/filter/ChipRegion";
+import MoverMeta from "@/components/mover/MoverMeta";
+import MoverName from "@/components/mover/MoverName";
+import ProfileAvatar from "@/components/common/ProfileAvatar";
 import clsx from "clsx";
 import type { HTMLAttributes } from "react";
 

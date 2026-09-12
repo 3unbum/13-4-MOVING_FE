@@ -1,4 +1,4 @@
-import SubHeader from "@/component/common/sub-header";
+import SubHeader from "@/components/common/SubHeader";
 
 const MOCK = {
   userId: 63,

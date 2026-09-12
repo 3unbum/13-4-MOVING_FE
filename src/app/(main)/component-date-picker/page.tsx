@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import DatePicker from "@/component/common/date-picker";
+import DatePicker from "@/components/common/DatePicker";
 
 export default function DatePickerPage() {
   const [date, setDate] = useState<Date>();

@@ -5,7 +5,7 @@ import Image from "next/image";
 import type { ReactNode } from "react";
 import xMd from "@/assets/icons/x-md.svg";
 import xSm from "@/assets/icons/x-sm.svg";
-import { useDialog } from "@/hooks/use-dialog";
+import { useDialog } from "@/hooks/useDialog";
 
 type ModalPosition = "center" | "bottom";
 type ModalHeaderSize = "sm" | "md";

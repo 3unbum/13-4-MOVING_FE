@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import InputSearchbar from "@/component/common/input-searchbar";
-import InputTextArea from "@/component/common/input-textarea";
-import InputTextField from "@/component/common/input-textfield";
+import InputSearchbar from "@/components/common/InputSearchbar";
+import InputTextArea from "@/components/common/InputTextarea";
+import InputTextField from "@/components/common/InputTextfield";
 
 export default function ComponentInputPage() {
   const [searchSm, setSearchSm] = useState("");

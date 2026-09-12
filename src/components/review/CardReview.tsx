@@ -1,4 +1,4 @@
-import RatingStars from "@/component/common/rating-stars";
+import RatingStars from "@/components/common/RatingStars";
 import clsx from "clsx";
 import type { HTMLAttributes } from "react";
 

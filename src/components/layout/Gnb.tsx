@@ -7,12 +7,12 @@ import profileLgDefault from "@/assets/icons/profile-lg-default.svg";
 import profileMdDefault from "@/assets/icons/profile-md-default.svg";
 import logoLg from "@/assets/images/common/logo-icon-text-lg.svg";
 import logoSm from "@/assets/images/common/logo-icon-text-sm.svg";
-import Button from "@/component/common/button";
+import Button from "@/components/common/Button";
 import DropdownNotification, {
   DropdownNotificationItem,
-} from "@/component/common/dropdown-notification";
-import DropdownProfile, { type DropdownProfileOption } from "@/component/common/dropdown-profile";
-import GnbMenu, { getGnbNavItems, LOGOUT_NAV, type GnbRole } from "@/component/common/gnb-menu";
+} from "@/components/layout/DropdownNotification";
+import DropdownProfile, { type DropdownProfileOption } from "@/components/layout/DropdownProfile";
+import GnbMenu, { getGnbNavItems, LOGOUT_NAV, type GnbRole } from "@/components/layout/GnbMenu";
 import clsx from "clsx";
 import Image from "next/image";
 import Link from "next/link";

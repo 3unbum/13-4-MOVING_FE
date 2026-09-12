@@ -2,13 +2,13 @@
 
 import clsx from "clsx";
 import { useId } from "react";
-import Button from "@/component/common/button";
-import type { ServiceCode } from "@/component/common/chip-region";
-import MoveTypeChip from "@/component/common/chip-move-type";
-import InputTextArea from "@/component/common/input-textarea";
-import InputTextField from "@/component/common/input-textfield";
-import Modal, { ModalHeader } from "@/component/common/modal";
-import MovingInfo from "@/component/common/moving-info";
+import Button from "@/components/common/Button";
+import type { ServiceCode } from "@/components/filter/ChipRegion";
+import MoveTypeChip from "@/components/filter/ChipMoveType";
+import InputTextArea from "@/components/common/InputTextarea";
+import InputTextField from "@/components/common/InputTextfield";
+import Modal, { ModalHeader } from "@/components/common/Modal";
+import MovingInfo from "@/components/quote/MovingInfo";
 
 type QuoteActionVariant = "send" | "reject";
 type QuoteActionSize = "sm" | "md";

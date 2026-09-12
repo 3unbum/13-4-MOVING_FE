@@ -27,13 +27,14 @@ AGENT.md / 팀 컨벤션 문서에서 참조하는 세부 설정 문서입니다
 
 `eslint-config-next`(core-web-vitals + typescript) 기반에 아래 커스텀 룰 추가:
 
-| 룰                                      | 내용                                                                                    |
-| --------------------------------------- | --------------------------------------------------------------------------------------- |
-| `no-restricted-imports`                 | 상위 폴더 상대경로(`../`) import 금지 → `@/` 절대경로 사용 (같은 폴더 `./`는 허용)      |
-| `unused-imports/no-unused-imports`      | 안 쓰는 import는 `--fix` 시 자동 삭제 (`@typescript-eslint/no-unused-vars`는 대신 꺼둠) |
-| `unused-imports/no-unused-vars`         | 안 쓰는 변수는 warning (`_` 접두어 붙이면 무시)                                         |
-| `no-multiple-empty-lines`               | 빈 줄 2개 이상 연속되면 `--fix` 시 1개로 압축, 파일 끝 빈 줄은 0개                      |
-| `check-file/filename-naming-convention` | `src/**/*.ts(x)` 파일명은 kebab-case 강제 (자동수정 안 됨, 직접 이름 바꿔야 통과)       |
+| 룰                                      | 내용                                                                                                                                                              |
+| --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `no-restricted-imports`                 | 상위 폴더 상대경로(`../`) import 금지 → `@/` 절대경로 사용 (같은 폴더 `./`는 허용)                                                                                |
+| `unused-imports/no-unused-imports`      | 안 쓰는 import는 `--fix` 시 자동 삭제 (`@typescript-eslint/no-unused-vars`는 대신 꺼둠)                                                                           |
+| `unused-imports/no-unused-vars`         | 안 쓰는 변수는 warning (`_` 접두어 붙이면 무시)                                                                                                                   |
+| `no-multiple-empty-lines`               | 빈 줄 2개 이상 연속되면 `--fix` 시 1개로 압축, 파일 끝 빈 줄은 0개                                                                                                |
+| `check-file/filename-naming-convention` | `src/components/**`·`src/providers/**`는 PascalCase, `src/hooks/**`는 camelCase, 그 외 `src/**/*.ts(x)`는 kebab-case 강제 (자동수정 안 됨, 직접 이름 바꿔야 통과) |
+| `check-file/filename-blocklist`         | `src/hooks/**` 파일명은 반드시 `use`로 시작 (케이스 검사와 별개로 접두어 자체를 강제)                                                                             |
 
 - 명령어: `npm run lint` (검사만), `npx eslint . --fix` (자동수정까지)
 
@@ -45,7 +46,7 @@ AGENT.md / 팀 컨벤션 문서에서 참조하는 세부 설정 문서입니다
    - `*.ts, *.tsx, *.js, *.jsx, *.mjs` → `eslint --fix` 실행 후 `prettier --write`
    - `*.json, *.css, *.md` → `prettier --write`
    - **자동으로 고쳐지는 것**: 코드 포맷(따옴표·들여쓰기·줄바꿈), Tailwind 클래스 순서, 빈 줄 2개 이상 연속, 안 쓰는 import
-   - **자동으로 안 고쳐지고 커밋이 막히는 것**: 상위 폴더 상대경로(`../`) import 사용, kebab-case 아닌 파일명 등 — 이 경우 터미널(또는 VSCode Source Control 출력창)에 어떤 파일 몇 번째 줄에서 무슨 규칙에 걸렸는지 에러로 뜨며, **직접 코드를 고쳐야** 커밋이 진행됨
+   - **자동으로 안 고쳐지고 커밋이 막히는 것**: 상위 폴더 상대경로(`../`) import 사용, 폴더별 지정 케이스(PascalCase/camelCase/kebab-case) 위반 파일명 등 — 이 경우 터미널(또는 VSCode Source Control 출력창)에 어떤 파일 몇 번째 줄에서 무슨 규칙에 걸렸는지 에러로 뜨며, **직접 코드를 고쳐야** 커밋이 진행됨
 2. **commit-msg (commitlint)** — 커밋 메시지 형식 검사 (`{type}: {내용}`, type 5종만 허용)
 
 > 새로 이 저장소를 받는 팀원은 최초 1회 `npm install`을 실행해야 `pre-commit`/`commit-msg` 훅이 정상 동작함.

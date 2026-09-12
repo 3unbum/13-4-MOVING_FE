@@ -5,7 +5,7 @@ import { addMonths, subMonths } from "date-fns";
 import { DayPicker } from "react-day-picker";
 import Image from "next/image";
 import clsx from "clsx";
-import Button from "./button";
+import Button from "./Button";
 import calendarIcon from "@/assets/icons/calendar-md.svg";
 import chevronDownIcon from "@/assets/icons/chevron-down-lg-active.svg";
 import chevronLeftIcon from "@/assets/icons/chevron-left-thin-md.svg";

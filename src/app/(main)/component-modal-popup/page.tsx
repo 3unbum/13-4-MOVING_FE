@@ -1,16 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Button from "@/component/common/button";
+import Button from "@/components/common/Button";
 import AddressSelectModal, {
   type AddressSelectResult,
-} from "@/component/common/address-select-modal";
-import FilterModal from "@/component/common/filter-modal";
-import InfoRequiredModal from "@/component/common/info-required-modal";
-import QuoteActionModal from "@/component/common/quote-action-modal";
-import ReviewWriteModal from "@/component/common/review-write-modal";
-import Toast from "@/component/common/toast";
-import type { ServiceCode } from "@/component/common/chip-region";
+} from "@/components/address/AddressSelectModal";
+import FilterModal from "@/components/filter/FilterModal";
+import InfoRequiredModal from "@/components/quote/InfoRequiredModal";
+import QuoteActionModal from "@/components/quote/QuoteActionModal";
+import ReviewWriteModal from "@/components/review/ReviewWriteModal";
+import Toast from "@/components/common/Toast";
+import type { ServiceCode } from "@/components/filter/ChipRegion";
 
 const MOCK_RESULTS: AddressSelectResult[] = [
   {

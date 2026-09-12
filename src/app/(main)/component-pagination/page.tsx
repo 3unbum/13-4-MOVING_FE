@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Pagination from "@/component/common/pagination";
+import Pagination from "@/components/common/Pagination";
 
 export default function PaginationPage() {
   const [page1, setPage1] = useState(1);

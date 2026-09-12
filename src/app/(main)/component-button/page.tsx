@@ -3,10 +3,10 @@
 import { useState } from "react";
 import Image from "next/image";
 import writingIcon from "@/assets/icons/writing-md.svg";
-import Button from "@/component/common/button";
-import CheckboxButton from "@/component/common/checkbox-button";
-import EtcButton from "@/component/common/etc-button";
-import FilterButton from "@/component/common/filter-button";
+import Button from "@/components/common/Button";
+import CheckboxButton from "@/components/common/CheckboxButton";
+import EtcButton from "@/components/common/EtcButton";
+import FilterButton from "@/components/common/FilterButton";
 
 export default function ButtonPage() {
   const [likedSm, setLikedSm] = useState(false);

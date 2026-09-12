@@ -1,6 +1,6 @@
-import { QueryProvider } from "@/providers/query-provider";
+import { QueryProvider } from "@/providers/QueryProvider";
 import { type ReactNode } from "react";
-import { AuthProvider } from "@/providers/auth-provider";
+import { AuthProvider } from "@/providers/AuthProvider";
 
 export default function Providers({ children }: { children: ReactNode }) {
   return (

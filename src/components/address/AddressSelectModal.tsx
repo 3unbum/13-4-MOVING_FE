@@ -2,10 +2,10 @@
 
 import clsx from "clsx";
 import { useId } from "react";
-import AddressCard from "@/component/common/address-card";
-import Button from "@/component/common/button";
-import InputSearchbar from "@/component/common/input-searchbar";
-import Modal, { ModalHeader } from "@/component/common/modal";
+import AddressCard from "@/components/address/AddressCard";
+import Button from "@/components/common/Button";
+import InputSearchbar from "@/components/common/InputSearchbar";
+import Modal, { ModalHeader } from "@/components/common/Modal";
 
 type AddressSelectModalSize = "sm" | "md";
 
