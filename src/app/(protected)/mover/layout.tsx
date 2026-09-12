@@ -1,17 +1,10 @@
-"use client";
-
 import { type ReactNode } from "react";
-import { useRoleGuard } from "@/hooks/use-role-guard";
+import { requireRole } from "@/lib/auth/guards";
 
-export default function MoverProtectedLayout({ children }: { children: ReactNode }) {
-  const { isChecking, authError } = useRoleGuard({
-    role: "MOVER",
-    loginPath: "/mover/login",
-    profileRegisterPath: "/mover/profile-register",
-  });
-
-  if (authError) return <div>계정 정보를 불러오지 못했습니다. 새로고침 후 다시 시도해주세요.</div>;
-  if (isChecking) return null;
+// hasProfile 하드 게이트는 여기가 아니라 (with-profile) 레이아웃이 담당 — 이 레이아웃이
+// 하면 profile-register까지 감싸게 돼서 등록 페이지로 리다이렉트해도 다시 걸린다(무한루프).
+export default async function MoverProtectedLayout({ children }: { children: ReactNode }) {
+  await requireRole("MOVER", "/mover/login");
 
   return <div>{children}</div>;
 }
