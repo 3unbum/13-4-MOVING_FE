@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import Button from "@/component/common/button";
+import Button from "@/components/common/Button";
 
 const COMPONENT_ROUTES = [
   { label: "Button", slug: "button" },
