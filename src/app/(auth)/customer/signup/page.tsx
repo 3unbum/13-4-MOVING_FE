@@ -2,7 +2,8 @@
 
 import Image, { type StaticImageData } from "next/image";
 import Link from "next/link";
-import type { ReactNode } from "react";
+import { useRouter } from "next/navigation";
+import { useId, useState, type ReactNode } from "react";
 import { useForm } from "react-hook-form";
 import loginGoogleMd from "@/assets/images/common/login-google-md.svg";
 import loginGoogleSm from "@/assets/images/common/login-google-sm.svg";
@@ -13,6 +14,9 @@ import loginNaverSm from "@/assets/images/common/login-naver-sm.svg";
 import logoTextXl from "@/assets/images/common/logo-text-xl.svg";
 import Button from "@/components/common/Button";
 import InputTextField from "@/components/common/InputTextfield";
+import Modal, { ModalHeader } from "@/components/common/Modal";
+import { authService } from "@/lib/services/auth-service";
+import { ApiError } from "@/lib/utils/api-error";
 
 interface CustomerSignupFormValues {
   name: string;
@@ -59,20 +63,38 @@ const PHONE_PATTERN = /^01[016789]\d{7,8}$/;
 // 영문 + 숫자 + 특수문자 포함 8자 이상 — BE auth.schema.ts의 PASSWORD_RULE과 동일
 const PASSWORD_PATTERN = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
 
-// TODO: authService에 signup 엔드포인트가 추가되면 실제 요청으로 교체.
-// 실패 시(409 EMAIL_ALREADY_EXISTS 등) ApiError.message를 폼 전체 에러로 보여주고,
-// 성공 시(hasProfile: false) 프로필 등록 페이지로 이동.
 export default function CustomerSignupPage() {
+  const router = useRouter();
+  const modalTitleId = useId();
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const {
     register,
     handleSubmit,
     getValues,
+    setError,
     formState: { errors, isSubmitting, isValid },
   } = useForm<CustomerSignupFormValues>({ mode: "onChange" });
 
   const onSubmit = async (values: CustomerSignupFormValues) => {
-    console.info("회원가입 시도", values);
+    const { passwordConfirm: _passwordConfirm, ...signupValues } = values;
+    try {
+      await authService.signup({ role: "CUSTOMER", ...signupValues });
+      // 가입 직후엔 hasProfile이 항상 false — 바로 등록시키지 않고 모달로 물어본다.
+      setIsProfileModalOpen(true);
+    } catch (error) {
+      if (error instanceof ApiError && error.code === "EMAIL_ALREADY_EXISTS") {
+        setError("email", { message: error.message });
+        return;
+      }
+      const message =
+        error instanceof ApiError ? error.message : "회원가입 중 문제가 발생했습니다.";
+      setError("root", { message });
+    }
   };
+
+  // 모달을 닫는 모든 경로(오버레이 클릭·esc·"아니오")는 동일하게 랜딩으로 보낸다 —
+  // 가입 페이지(비로그인 전용 (auth) 그룹)에 로그인된 채로 남아있게 두지 않기 위함.
+  const skipProfileRegister = () => router.push("/");
 
   return (
     <main className="tablet:bg-orange-400 tablet:py-16 flex flex-1 flex-col items-center justify-center bg-white px-6 py-10">
@@ -180,6 +202,10 @@ export default function CustomerSignupPage() {
                     value: PASSWORD_PATTERN,
                     message: "비밀번호는 영문, 숫자, 특수문자를 포함해 8자 이상이어야 합니다.",
                   },
+                  // password가 바뀔 때마다 passwordConfirm도 같이 재검증 — 안 그러면 이미
+                  // 일치했던 확인란이, 비밀번호를 나중에 다시 고쳐도 새로 건드리기 전까진
+                  // 계속 "일치함"으로 남아있음(제출 시점엔 어차피 다시 걸러지지만 버튼 활성화 상태가 그새 부정확해짐).
+                  deps: ["passwordConfirm"],
                 })}
               />
             </div>
@@ -206,6 +232,10 @@ export default function CustomerSignupPage() {
               />
             </div>
           </div>
+
+          {errors.root?.message && (
+            <p className="text-13 tablet:text-16 text-center text-red-200">{errors.root.message}</p>
+          )}
 
           <Button
             type="submit"
@@ -235,6 +265,35 @@ export default function CustomerSignupPage() {
           </div>
         </div>
       </div>
+
+      <Modal
+        open={isProfileModalOpen}
+        onClose={skipProfileRegister}
+        labelledBy={modalTitleId}
+        className="tablet:w-152 tablet:min-w-152 w-93.75 min-w-93.75 gap-10 rounded-[32px] px-6 pt-8 pb-10"
+      >
+        <ModalHeader
+          id={modalTitleId}
+          title="프로필을 등록하시겠어요?"
+          size="md"
+          onClose={skipProfileRegister}
+        />
+        <p className="text-18 text-black-300 w-full font-medium">
+          프로필을 등록하면 견적 요청, 찜하기 등 무빙의 모든 서비스를 바로 이용할 수 있어요.
+        </p>
+        <div className="flex w-full gap-3">
+          <Button variant="outlined" size="lg" onClick={skipProfileRegister}>
+            다음에 할게요
+          </Button>
+          <Button
+            variant="solid"
+            size="lg"
+            onClick={() => router.push("/customer/profile-register")}
+          >
+            등록하러 가기
+          </Button>
+        </div>
+      </Modal>
     </main>
   );
 }

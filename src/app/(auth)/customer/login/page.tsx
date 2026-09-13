@@ -2,6 +2,7 @@
 
 import Image, { type StaticImageData } from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 import { useForm } from "react-hook-form";
 import loginGoogleMd from "@/assets/images/common/login-google-md.svg";
@@ -13,6 +14,9 @@ import loginNaverSm from "@/assets/images/common/login-naver-sm.svg";
 import logoTextXl from "@/assets/images/common/logo-text-xl.svg";
 import Button from "@/components/common/Button";
 import InputTextField from "@/components/common/InputTextfield";
+import { authService } from "@/lib/services/auth-service";
+import { ApiError } from "@/lib/utils/api-error";
+import { useAuth } from "@/providers/AuthProvider";
 
 interface CustomerLoginFormValues {
   email: string;
@@ -54,20 +58,32 @@ function AuxText({ children }: { children: ReactNode }) {
   );
 }
 
-// TODO: 로그인 성공 후 리다이렉트 — hasProfile true면 로그인 전 마지막 페이지가 기사님찾기(/movers)였으면 그리로, 랜딩(/)이었으면 /customer/my-quotes로.
-// "마지막 페이지" 판별은 document.referrer(SPA 라우팅에서 안 바뀜)나 sessionStorage(effect 순서 레이스 위험) 말고
-// 로그인 버튼에 ?redirect= 쿼리파라미터 실어 넘기는 방식 추천.
+// TODO: "로그인 전 마지막 페이지"로 되돌리는 건 아직 미구현 — 지금은 항상 랜딩("/")으로 보낸다.
+// document.referrer(SPA 라우팅에서 안 바뀜)나 sessionStorage(effect 순서 레이스 위험) 대신
+// 로그인 버튼에 ?redirect= 쿼리파라미터를 실어 넘기는 방식을 추천 — 다만 useSearchParams는
+// 프로덕션 빌드 시 Suspense 경계가 필요해서, 다른 페이지들이 실제로 이 파라미터를 넘기기
+// 시작할 때 페이지를 Suspense로 감싸며 함께 추가하는 게 낫다.
+// hasProfile: false를 여기서 강제로 등록 페이지로 보내지 않는 이유 — customer는 프로필이 선택사항이라
+// 견적요청/내견적 등 실제로 필요한 페이지에서만 개별적으로 유도한다.
 export default function CustomerLoginPage() {
+  const router = useRouter();
+  const { refetch } = useAuth();
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors, isSubmitting, isValid },
   } = useForm<CustomerLoginFormValues>({ mode: "onChange" });
 
-  // TODO: authService에 login 엔드포인트가 추가되면 실제 요청으로 교체 (현재는 /auth/me, /auth/logout만 존재).
-  // 실패 시(401 등) ApiError.message를 폼 전체 에러로 보여주고, 성공 시 AuthProvider.refetch() 후 위 리다이렉트 규칙대로 이동.
   const onSubmit = async (values: CustomerLoginFormValues) => {
-    console.info("로그인 시도", values);
+    try {
+      await authService.login({ role: "CUSTOMER", ...values });
+      await refetch();
+      router.push("/");
+    } catch (error) {
+      const message = error instanceof ApiError ? error.message : "로그인 중 문제가 발생했습니다.";
+      setError("root", { message });
+    }
   };
 
   return (
@@ -141,6 +157,12 @@ export default function CustomerLoginPage() {
                 />
               </div>
             </div>
+
+            {errors.root?.message && (
+              <p className="text-13 tablet:text-16 text-center text-red-200">
+                {errors.root.message}
+              </p>
+            )}
 
             {/* 모바일 54px vs 태블릿·PC 60px — form 안에 submit 버튼이 중복 마운트되지 않도록 한 인스턴스에 breakpoint별 className만 덮어씀 */}
             <Button
