@@ -4,7 +4,8 @@ import xMd from "@/assets/icons/x-md.svg";
 import { cn } from "@/lib/utils/cn";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, type ReactNode } from "react";
+import { type ReactNode } from "react";
+import { useDialog } from "@/hooks/useDialog";
 
 export type GnbRole = "customer" | "mover";
 
@@ -55,23 +56,9 @@ export default function GnbMenu({
 }: GnbMenuProps) {
   const menuItems = items ?? (role === "mover" ? MOVER_NAV : CUSTOMER_NAV);
 
-  // 드로워 열릴 때 배경 스크롤 잠금
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") onClose();
-    };
-    document.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [isOpen, onClose]);
+  // Escape 닫기 + 배경 스크롤 락 + 포커스 트랩 — 모달과 같은 useDialog를 쓴다
+  // (Notion "Hook 분리 후보 취합"에서 김은진님이 제안하신 항목)
+  const { panelRef } = useDialog({ open: isOpen, onClose });
 
   if (!isOpen) return null;
 
@@ -88,7 +75,11 @@ export default function GnbMenu({
         aria-label="메뉴 닫기"
         onClick={onClose}
       />
-      <nav className={cn("absolute top-0 right-0 flex h-full w-55 flex-col bg-gray-50", className)}>
+      <nav
+        ref={panelRef}
+        tabIndex={-1}
+        className={cn("absolute top-0 right-0 flex h-full w-55 flex-col bg-gray-50", className)}
+      >
         <div className="border-line-100 flex h-13.5 items-center justify-end border-b px-4 py-2.5">
           <button type="button" aria-label="메뉴 닫기" onClick={onClose} className="size-6">
             <Image src={xMd} alt="" width={24} height={24} className="size-6" />

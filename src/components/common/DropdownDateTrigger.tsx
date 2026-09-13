@@ -4,7 +4,8 @@ import calendarMd from "@/assets/icons/calendar-md.svg";
 import chevronDownLgDark from "@/assets/icons/chevron-down-lg-dark.svg";
 import { cn } from "@/lib/utils/cn";
 import Image from "next/image";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useRef, useState, type ReactNode } from "react";
+import { useOutsideClose } from "@/hooks/useOutsideClose";
 
 export interface DropdownDateTriggerProps {
   /** 트리거에 표시할 날짜 텍스트 (포맷은 상위/DatePicker 담당) */
@@ -101,30 +102,12 @@ export default function DropdownDateTrigger({
     onOpenChange?.(next);
   };
 
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const handlePointerDown = (event: MouseEvent) => {
-      if (!closeOnOutsideClick) return;
-      if (!rootRef.current?.contains(event.target as Node)) {
-        setOpen(false);
-      }
-    };
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handlePointerDown);
-    document.addEventListener("keydown", handleKeyDown);
-    return () => {
-      document.removeEventListener("mousedown", handlePointerDown);
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- open·옵션 변경 시에만 재구독
-  }, [isOpen, closeOnOutsideClick]);
+  useOutsideClose({
+    isOpen,
+    onClose: () => setOpen(false),
+    ref: rootRef,
+    closeOnOutsideClick,
+  });
 
   return (
     <div ref={rootRef} className={cn("relative w-full", className)}>
