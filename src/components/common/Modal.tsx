@@ -1,6 +1,6 @@
 "use client";
 
-import clsx from "clsx";
+import { cn } from "@/lib/utils/cn";
 import Image from "next/image";
 import type { ReactNode } from "react";
 import xMd from "@/assets/icons/x-md.svg";
@@ -34,7 +34,7 @@ export default function Modal({
   return (
     <div className="z-modal bg-overlay-dim fixed inset-0 overflow-auto">
       <div
-        className={clsx(
+        className={cn(
           "flex min-h-full",
           position === "bottom" ? "items-end justify-center" : "items-center justify-center p-4"
         )}
@@ -48,7 +48,7 @@ export default function Modal({
           aria-modal="true"
           aria-labelledby={labelledBy}
           tabIndex={-1}
-          className={clsx(
+          className={cn(
             "shadow-modal relative flex min-h-0 flex-none flex-col items-stretch overflow-hidden bg-gray-50 outline-none",
             position === "bottom" ? "max-h-dvh" : "max-h-[calc(100dvh-2rem)]",
             className
@@ -75,7 +75,7 @@ export function ModalHeader({ id, title, size = "sm", onClose }: ModalHeaderProp
     <div className="flex w-full shrink-0 items-center justify-between bg-gray-50">
       <p
         id={id}
-        className={clsx(
+        className={cn(
           "text-black-black-400 shrink-0 whitespace-nowrap",
           isMd ? "text-24 font-semibold" : "text-18 font-bold"
         )}

@@ -2,7 +2,7 @@
 
 import chevronDownSm from "@/assets/icons/chevron-down-sm.svg";
 import chevronUpSm from "@/assets/icons/chevron-up-sm.svg";
-import clsx from "clsx";
+import { cn } from "@/lib/utils/cn";
 import Image from "next/image";
 import { useEffect, useId, useRef, useState } from "react";
 
@@ -84,7 +84,7 @@ export default function Sort({
   };
 
   return (
-    <div ref={rootRef} className={clsx("relative inline-flex", className)}>
+    <div ref={rootRef} className={cn("relative inline-flex", className)}>
       <button
         type="button"
         disabled={disabled}
@@ -92,7 +92,7 @@ export default function Sort({
         aria-expanded={isOpen}
         aria-controls={listId}
         onClick={() => setIsOpen((prev) => !prev)}
-        className={clsx(
+        className={cn(
           "inline-flex items-center justify-center rounded-lg bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50",
           isSm
             ? "gap-0.5 py-1.5 pr-1.5 pl-2"
@@ -100,7 +100,7 @@ export default function Sort({
         )}
       >
         <span
-          className={clsx(
+          className={cn(
             "text-center whitespace-nowrap",
             isSm
               ? isOpen
@@ -126,7 +126,7 @@ export default function Sort({
         <ul
           id={listId}
           aria-label="정렬 옵션"
-          className={clsx(
+          className={cn(
             "border-line-100 absolute top-full left-0 z-[var(--z-filter-dropdown)] flex flex-col overflow-hidden rounded-lg border bg-gray-50",
             isSm ? "mt-1.5 w-[91px]" : "mt-2 w-[114px]"
           )}
@@ -141,7 +141,7 @@ export default function Sort({
                   type="button"
                   aria-current={option.value === value ? "true" : undefined}
                   onClick={() => handleSelect(option.value)}
-                  className={clsx(
+                  className={cn(
                     "text-black-black-400 hover:bg-background-200 flex w-full items-center bg-gray-50 font-medium",
                     isSm ? "text-12 h-8 py-1.5 pr-1.5 pl-2.5" : "text-14 px-3 py-2",
                     isFirst && "rounded-t-lg",

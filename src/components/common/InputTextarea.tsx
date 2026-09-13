@@ -1,6 +1,6 @@
 "use client";
 
-import clsx from "clsx";
+import { cn } from "@/lib/utils/cn";
 import { forwardRef, useId } from "react";
 import type { TextareaHTMLAttributes } from "react";
 
@@ -28,14 +28,14 @@ const InputTextArea = forwardRef<HTMLTextAreaElement, InputTextAreaProps>(functi
   const message = errorMessage ?? helperText;
 
   return (
-    <div className={clsx("flex w-full flex-col gap-2", className)}>
+    <div className={cn("flex w-full flex-col gap-2", className)}>
       {label && (
         <label htmlFor={textareaId} className="sr-only">
           {label}
         </label>
       )}
       <div
-        className={clsx(
+        className={cn(
           "h-40 w-full overflow-hidden rounded-2xl border bg-gray-50 transition-colors",
           isError ? "border-red-200" : "border-line-200 focus-within:border-orange-400",
           disabled && "opacity-40"
@@ -45,7 +45,7 @@ const InputTextArea = forwardRef<HTMLTextAreaElement, InputTextAreaProps>(functi
           ref={ref}
           id={textareaId}
           disabled={disabled}
-          className={clsx(
+          className={cn(
             "text-black-400 h-full w-full resize-none bg-transparent py-3.5 font-normal placeholder:text-gray-400 focus:outline-none disabled:cursor-not-allowed",
             "[&::-webkit-scrollbar]:w-1.25 [&::-webkit-scrollbar-thumb]:cursor-default [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-track]:my-3 [&::-webkit-scrollbar-track]:bg-transparent",
             size === "sm" ? "text-16 px-4" : "text-18 px-6"
@@ -55,7 +55,7 @@ const InputTextArea = forwardRef<HTMLTextAreaElement, InputTextAreaProps>(functi
       </div>
       {message && (
         <p
-          className={clsx(
+          className={cn(
             "font-medium",
             size === "sm" ? "text-13" : "text-16",
             isError ? "text-red-200" : "text-gray-400"

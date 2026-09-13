@@ -11,7 +11,7 @@ import type { ServiceCode } from "@/components/filter/ChipRegion";
 import MoverMeta from "@/components/mover/MoverMeta";
 import MoverName from "@/components/mover/MoverName";
 import ProfileAvatar from "@/components/common/ProfileAvatar";
-import clsx from "clsx";
+import { cn } from "@/lib/utils/cn";
 import type { HTMLAttributes } from "react";
 
 type CardSize = "sm" | "lg";
@@ -55,14 +55,14 @@ function MoverBox({
 
   return (
     <div
-      className={clsx(
+      className={cn(
         "flex w-full items-end gap-3",
         bordered && "rounded-xl border border-gray-300 py-3 pr-5 pl-3"
       )}
     >
       <ProfileAvatar src={profileImage} alt={nickName} size="50" />
 
-      <div className={clsx("flex min-w-px flex-1 flex-col items-start", isLg ? "gap-2" : "gap-1")}>
+      <div className={cn("flex min-w-px flex-1 flex-col items-start", isLg ? "gap-2" : "gap-1")}>
         <div className="flex w-full items-center justify-between">
           <MoverName nickName={nickName} size={isLg ? "lg" : "sm"} showLogo={showLogo} />
           <FavoriteCount
@@ -131,11 +131,11 @@ export function CardEstimateHistory({
 
   return (
     <article
-      className={clsx("flex flex-col items-end bg-white py-5", "w-full", isLg && "px-2", className)}
+      className={cn("flex flex-col items-end bg-white py-5", "w-full", isLg && "px-2", className)}
       {...props}
     >
-      <div className={clsx("flex w-full flex-col items-start", isLg ? "gap-5" : "gap-4")}>
-        <div className={clsx("flex w-full flex-col items-start", isLg ? "gap-5" : "gap-4")}>
+      <div className={cn("flex w-full flex-col items-start", isLg ? "gap-5" : "gap-4")}>
+        <div className={cn("flex w-full flex-col items-start", isLg ? "gap-5" : "gap-4")}>
           <div className="flex items-center gap-2">
             <MoveTypeChip variant={category} size={isLg ? "md" : "sm"} />
             {isTargeted && <MoveTypeChip variant="TARGETED" size={isLg ? "md" : "sm"} />}
@@ -144,7 +144,7 @@ export function CardEstimateHistory({
           <div className="flex w-full flex-col gap-4">
             {/* lg는 제목 줄 오른쪽에 배지, sm은 금액 줄 왼쪽에 배지 */}
             <div
-              className={clsx(
+              className={cn(
                 "flex w-full",
                 isLg ? "items-center justify-between" : "flex-col items-start"
               )}
@@ -153,7 +153,7 @@ export function CardEstimateHistory({
                   피그마는 고정 텍스트라 nowrap이지만, 그대로 두면 배지를 밀어내고 카드를 넘칩니다.
                   min-w-0이 있어야 flex 안에서 축소됩니다. */}
               <p
-                className={clsx(
+                className={cn(
                   "text-black-black-300 w-full min-w-0 truncate font-semibold",
                   isLg ? "text-18" : "text-16"
                 )}
@@ -169,7 +169,7 @@ export function CardEstimateHistory({
         </div>
 
         <div
-          className={clsx("flex h-8 w-full items-center", isLg ? "justify-end" : "justify-between")}
+          className={cn("flex h-8 w-full items-center", isLg ? "justify-end" : "justify-between")}
         >
           {!isLg && (isConfirmed ? <ConfirmedBadge /> : <PendingBadge />)}
           <PriceInline price={price} size={size} />
@@ -228,7 +228,7 @@ export function CardPendingHistory({
 
   return (
     <article
-      className={clsx(
+      className={cn(
         "flex flex-col items-start bg-white",
         "shadow-[inset_0_0_0_0.5px_var(--color-line-100),-2px_-2px_10px_0_rgba(220,220,220,0.2),2px_2px_10px_0_rgba(220,220,220,0.2)]",
         "w-full",
@@ -238,9 +238,9 @@ export function CardPendingHistory({
       {...props}
     >
       <div className="flex w-full flex-col items-start gap-3">
-        <div className={clsx("flex w-full flex-col items-start", isLg ? "gap-6" : "gap-4")}>
+        <div className={cn("flex w-full flex-col items-start", isLg ? "gap-6" : "gap-4")}>
           <div
-            className={clsx(
+            className={cn(
               "flex w-full items-center justify-between",
               isLg ? "min-h-8.5" : "min-h-6.5"
             )}
@@ -254,7 +254,7 @@ export function CardPendingHistory({
 
           <div className="flex w-full flex-col gap-7.5">
             <p
-              className={clsx(
+              className={cn(
                 "text-black-black-300 w-full min-w-0 truncate font-semibold",
                 isLg ? "text-18" : "text-16"
               )}
@@ -269,7 +269,7 @@ export function CardPendingHistory({
       </div>
 
       {/* lg는 [상세보기][견적 확정하기] 가로, sm은 [견적 확정하기][상세보기] 세로 — 순서가 반대입니다 */}
-      <div className={clsx("flex w-full gap-2.75", !isLg && "flex-col")}>
+      <div className={cn("flex w-full gap-2.75", !isLg && "flex-col")}>
         {isLg ? (
           <>
             <Button variant="outlined" size="sm" onClick={onDetailClick}>

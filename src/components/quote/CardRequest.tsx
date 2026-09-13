@@ -1,7 +1,7 @@
 import MoveTypeChip from "@/components/filter/ChipMoveType";
 import type { ServiceCode } from "@/components/filter/ChipRegion";
 import MovingInfo from "@/components/quote/MovingInfo";
-import clsx from "clsx";
+import { cn } from "@/lib/utils/cn";
 import type { HTMLAttributes, ReactNode } from "react";
 
 type CardRequestSize = "sm" | "lg";
@@ -56,7 +56,7 @@ export default function CardRequest({
 
   return (
     <article
-      className={clsx(
+      className={cn(
         "relative flex flex-col items-start bg-white",
         "shadow-[inset_0_0_0_0.5px_var(--color-line-100),-2px_-2px_10px_0_rgba(220,220,220,0.2),2px_2px_10px_0_rgba(220,220,220,0.2)]",
         "w-full",
@@ -65,10 +65,10 @@ export default function CardRequest({
       )}
       {...props}
     >
-      <div className={clsx("flex w-full flex-col items-start", isLg ? "gap-6" : "gap-4")}>
+      <div className={cn("flex w-full flex-col items-start", isLg ? "gap-6" : "gap-4")}>
         {/* headerRight가 있는 카드만 헤더가 34px로 커집니다 (배지·경과시간이 칩보다 높음) */}
         <div
-          className={clsx(
+          className={cn(
             "flex w-full items-center justify-between",
             headerRight ? "min-h-8.5" : "min-h-8"
           )}

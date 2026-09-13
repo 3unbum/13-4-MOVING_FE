@@ -4,7 +4,7 @@ import type { ServiceCode } from "@/components/filter/ChipRegion";
 import InfoItem from "@/components/common/InfoItem";
 import MoverName from "@/components/mover/MoverName";
 import ProfileAvatar from "@/components/common/ProfileAvatar";
-import clsx from "clsx";
+import { cn } from "@/lib/utils/cn";
 import type { HTMLAttributes } from "react";
 
 type CardWritableReviewSize = "sm" | "md" | "lg";
@@ -67,7 +67,7 @@ export default function CardWritableReview({
   const isMd = size === "md";
   const isSm = size === "sm";
 
-  const cardClass = clsx(
+  const cardClass = cn(
     "flex w-full flex-col bg-white",
     "shadow-[inset_0_0_0_0.5px_var(--color-line-100),-2px_-2px_10px_0_rgba(220,220,220,0.2),2px_2px_10px_0_rgba(220,220,220,0.2)]",
     "rounded-[20px]",
@@ -78,7 +78,7 @@ export default function CardWritableReview({
   );
 
   // 이사 정보 값 — lg·md는 16, sm은 14. 셋 다 regular
-  const infoValueClass = clsx("text-black-500", isSm ? "text-14" : "text-16");
+  const infoValueClass = cn("text-black-500", isSm ? "text-14" : "text-16");
 
   const writeButton = (
     <Button variant="solid" size="sm" disabled={disabled} onClick={onWriteClick}>

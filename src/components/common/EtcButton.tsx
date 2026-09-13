@@ -1,4 +1,4 @@
-import clsx from "clsx";
+import { cn } from "@/lib/utils/cn";
 import Image from "next/image";
 import type { ButtonHTMLAttributes } from "react";
 import clipIconMd from "@/assets/icons/clip-lg.svg";
@@ -71,7 +71,7 @@ export default function EtcButton({
       type={type}
       aria-pressed={kind === "like" ? active : undefined}
       aria-label={ariaLabel ?? DEFAULT_ARIA_LABEL[kind]}
-      className={clsx(
+      className={cn(
         "flex shrink-0 items-center justify-center transition-colors",
         CONTAINER_SIZE[size],
         (kind === "like" || kind === "clip") &&

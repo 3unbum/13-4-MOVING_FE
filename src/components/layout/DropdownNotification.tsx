@@ -1,7 +1,7 @@
 "use client";
 
 import xMd from "@/assets/icons/x-md.svg";
-import clsx from "clsx";
+import { cn } from "@/lib/utils/cn";
 import Image from "next/image";
 import {
   useEffect,
@@ -91,20 +91,20 @@ export default function DropdownNotification({
       id={listId}
       role="menu"
       aria-label="알림"
-      className={clsx(
+      className={cn(
         "border-line-200 inline-flex flex-col overflow-hidden rounded-3xl border bg-gray-50 pt-2.5 shadow-[2px_2px_8px_rgba(0,0,0,0.06)]",
         isSm ? "w-78" : "w-[359px]",
         className
       )}
     >
       <div
-        className={clsx(
+        className={cn(
           "flex w-full items-center justify-between bg-gray-50",
           isSm ? "py-3.5 pr-7 pl-8" : "py-3.5 pr-7 pl-10"
         )}
       >
         <div
-          className={clsx(
+          className={cn(
             "font-bold",
             isSm ? "text-16 text-black-300" : "text-18 text-black-black-400"
           )}
@@ -192,7 +192,7 @@ export function DropdownNotificationItem({
       type="button"
       role="menuitem"
       onClick={onClick}
-      className={clsx(
+      className={cn(
         "border-line-200 hover:bg-background-300 flex w-full shrink-0 flex-col items-start justify-center gap-0.5 border-b bg-gray-50 text-left last:border-b-0",
         isSm ? "px-8 py-3" : "px-10 py-4",
         className
@@ -201,7 +201,7 @@ export function DropdownNotificationItem({
       <span
         ref={messageRef}
         style={wrap ? { width: MESSAGE_WIDTH[size] } : undefined}
-        className={clsx(
+        className={cn(
           "text-black-black-400 font-medium",
           isSm ? "text-14" : "text-16",
           wrap ? "whitespace-normal" : "whitespace-nowrap"
@@ -210,7 +210,7 @@ export function DropdownNotificationItem({
         {message}
       </span>
       <span
-        className={clsx(
+        className={cn(
           "text-gray-gray-300 shrink-0 font-medium whitespace-nowrap",
           isSm ? "text-13" : "text-14"
         )}

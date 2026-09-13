@@ -4,7 +4,7 @@ import chevronDownLgDark from "@/assets/icons/chevron-down-lg-dark.svg";
 import chevronDownSmDark from "@/assets/icons/chevron-down-sm-dark.svg";
 import chevronUpLgOrange from "@/assets/icons/chevron-up-lg-orange.svg";
 import chevronUpSmOrange from "@/assets/icons/chevron-up-sm-orange.svg";
-import clsx from "clsx";
+import { cn } from "@/lib/utils/cn";
 import Image from "next/image";
 import { useEffect, useId, useRef, useState } from "react";
 
@@ -120,7 +120,7 @@ export default function Filter(props: FilterProps) {
   };
 
   return (
-    <div ref={rootRef} className={clsx("relative inline-flex", className)}>
+    <div ref={rootRef} className={cn("relative inline-flex", className)}>
       <button
         type="button"
         disabled={disabled}
@@ -128,7 +128,7 @@ export default function Filter(props: FilterProps) {
         aria-controls={listId}
         onClick={() => setIsOpen((prev) => !prev)}
         aria-label={`필터: ${triggerLabel}`}
-        className={clsx(
+        className={cn(
           "flex items-center justify-start border border-solid text-left disabled:cursor-not-allowed disabled:opacity-50",
           isSm
             ? "gap-1.5 rounded-lg py-1.5 pr-2.5 pl-3.5"
@@ -143,7 +143,7 @@ export default function Filter(props: FilterProps) {
         )}
       >
         <span
-          className={clsx(
+          className={cn(
             "text-left font-medium whitespace-nowrap",
             isSm ? "text-14" : "text-16 w-23",
             isOpen ? "text-orange-400" : "text-black-black-400"
@@ -164,7 +164,7 @@ export default function Filter(props: FilterProps) {
           alt=""
           width={isSm ? 20 : 36}
           height={isSm ? 20 : 36}
-          className={clsx("shrink-0", isSm ? "size-5" : "ml-auto size-9")}
+          className={cn("shrink-0", isSm ? "size-5" : "ml-auto size-9")}
         />
       </button>
 
@@ -206,7 +206,7 @@ function SingleList({ id, size, options, value, onSelect }: SingleListProps) {
     <ul
       id={id}
       aria-label="필터 옵션"
-      className={clsx(
+      className={cn(
         "absolute z-[var(--z-filter-dropdown)] flex flex-col overflow-hidden bg-gray-50",
         isSm
           ? "border-line-200 top-[47px] -left-px w-[106px] rounded-lg border shadow-[4px_4px_10px_rgba(191,191,191,0.2)]"
@@ -223,14 +223,14 @@ function SingleList({ id, size, options, value, onSelect }: SingleListProps) {
               type="button"
               aria-current={option.value === value ? "true" : undefined}
               onClick={() => onSelect(option.value)}
-              className={clsx(
+              className={cn(
                 "text-black-black-400 hover:bg-background-200 flex w-full items-center justify-start bg-gray-50 text-left font-medium",
                 isSm ? "text-14 h-10 px-3.5" : "text-16 h-15 pl-5",
                 isFirst && (isSm ? "rounded-t-lg" : "rounded-t-xl"),
                 isLast && (isSm ? "rounded-b-lg" : "rounded-b-xl")
               )}
             >
-              <span className={clsx("shrink-0 text-left", isSm ? "w-[61px]" : "w-23")}>
+              <span className={cn("shrink-0 text-left", isSm ? "w-[61px]" : "w-23")}>
                 {option.label}
               </span>
             </button>
@@ -300,7 +300,7 @@ function DoubleList({ id, size, columns, value, onSelect }: DoubleListProps) {
       id={id}
       role="group"
       aria-label="지역 필터 옵션"
-      className={clsx(
+      className={cn(
         "absolute -left-px z-[var(--z-filter-dropdown)] overflow-hidden bg-gray-50",
         isSm
           ? "border-line-200 top-[47px] max-h-45 rounded-lg border shadow-[4px_4px_10px_rgba(191,191,191,0.2)]"
@@ -310,7 +310,7 @@ function DoubleList({ id, size, columns, value, onSelect }: DoubleListProps) {
       <div className="relative h-full max-h-[inherit]">
         <div
           ref={scrollRef}
-          className={clsx(
+          className={cn(
             "flex max-h-[inherit] overflow-y-auto",
             "[scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
           )}
@@ -327,7 +327,7 @@ function DoubleList({ id, size, columns, value, onSelect }: DoubleListProps) {
         {showThumb ? (
           <div
             aria-hidden
-            className={clsx(
+            className={cn(
               "bg-gray-gray-200 pointer-events-none absolute rounded-full",
               isSm ? "right-1 w-1" : "right-1.5 w-1.5"
             )}
@@ -363,7 +363,7 @@ function Column({ options, value, onSelect, size, side }: ColumnProps) {
               type="button"
               aria-current={option.value === value ? "true" : undefined}
               onClick={() => onSelect(option.value)}
-              className={clsx(
+              className={cn(
                 "text-black-black-400 hover:bg-background-200 flex items-center justify-start bg-gray-50 text-left font-medium",
                 isSm ? "text-14 h-9 w-[75px] px-3.5 py-4" : "text-18 h-16 w-[164px] px-6 py-4",
                 isLeft && !isSm && "border-line-200 border-l",

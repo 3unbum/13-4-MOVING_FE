@@ -8,7 +8,7 @@ import {
 } from "@/components/common/CardParts";
 import CardRequest from "@/components/quote/CardRequest";
 import type { ServiceCode } from "@/components/filter/ChipRegion";
-import clsx from "clsx";
+import { cn } from "@/lib/utils/cn";
 import Image from "next/image";
 
 type CardSize = "sm" | "lg";
@@ -97,7 +97,7 @@ export function CardReceivedRequest({
       size={size}
       headerRight={<ElapsedTime>{elapsedTime}</ElapsedTime>}
       footer={
-        <div className={clsx("flex w-full", isLg ? "gap-2.75" : "flex-col gap-2.75")}>
+        <div className={cn("flex w-full", isLg ? "gap-2.75" : "flex-col gap-2.75")}>
           {isLg ? (
             <>
               {rejectButton}

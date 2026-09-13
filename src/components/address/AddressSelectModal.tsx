@@ -1,6 +1,6 @@
 "use client";
 
-import clsx from "clsx";
+import { cn } from "@/lib/utils/cn";
 import { useId } from "react";
 import AddressCard from "@/components/address/AddressCard";
 import Button from "@/components/common/Button";
@@ -54,7 +54,7 @@ export default function AddressSelectModal({
       open={open}
       onClose={onClose}
       labelledBy={titleId}
-      className={clsx(
+      className={cn(
         isMd
           ? "w-152 min-w-152 gap-10 rounded-[32px] px-6 pt-8 pb-10"
           : "w-[292px] min-w-[292px] gap-7.5 rounded-3xl px-4 py-6"

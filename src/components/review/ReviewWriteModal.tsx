@@ -1,6 +1,6 @@
 "use client";
 
-import clsx from "clsx";
+import { cn } from "@/lib/utils/cn";
 import Image from "next/image";
 import { useId } from "react";
 import starLgActive from "@/assets/icons/star-lg-active.svg";
@@ -99,14 +99,14 @@ export default function ReviewWriteModal({
         </div>
 
         <div className="flex w-full flex-col items-start gap-3">
-          <p className={clsx("text-black-300 font-semibold", isMd ? "text-18" : "text-16")}>
+          <p className={cn("text-black-300 font-semibold", isMd ? "text-18" : "text-16")}>
             평점을 선택해 주세요
           </p>
           <StarRatingInput size={size} value={rating} onChange={onRatingChange} />
         </div>
 
         <div className="flex w-full flex-col items-start gap-3">
-          <p className={clsx("text-black-300 font-semibold", isMd ? "text-18" : "text-16")}>
+          <p className={cn("text-black-300 font-semibold", isMd ? "text-18" : "text-16")}>
             상세 후기를 작성해 주세요
           </p>
           <InputTextArea

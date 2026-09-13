@@ -1,4 +1,4 @@
-import clsx from "clsx";
+import { cn } from "@/lib/utils/cn";
 import Image from "next/image";
 import type { ButtonHTMLAttributes } from "react";
 import filterIconActive from "@/assets/icons/filter-active.svg";
@@ -25,7 +25,7 @@ export default function FilterButton({
       type={type}
       aria-pressed={active}
       aria-label={ariaLabel ?? "필터"}
-      className={clsx(
+      className={cn(
         "flex size-8 shrink-0 items-center justify-center rounded-lg border p-1 transition-colors",
         active
           ? "border-orange-400 bg-orange-100"

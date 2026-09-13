@@ -6,7 +6,7 @@ import solidDocumentMd from "@/assets/icons/solid-document-md.svg";
 import solidDocumentSm from "@/assets/icons/solid-document-sm.svg";
 import solidHomeMd from "@/assets/icons/solid-home-md.svg";
 import solidHomeSm from "@/assets/icons/solid-home-sm.svg";
-import clsx from "clsx";
+import { cn } from "@/lib/utils/cn";
 import Image from "next/image";
 import type { HTMLAttributes } from "react";
 import type { ServiceCode } from "./ChipRegion";
@@ -53,7 +53,7 @@ export default function MoveTypeChip({
 
   return (
     <span
-      className={clsx(
+      className={cn(
         "inline-flex shrink-0 items-center self-start pr-1.75",
         isMd ? "gap-1 rounded-md py-1 pl-1.25" : "gap-0.5 rounded py-0.5 pl-1",
         isMd ? "text-14" : "text-13",
