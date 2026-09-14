@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { addMonths, subMonths } from "date-fns";
 import { DayPicker } from "react-day-picker";
 import Image from "next/image";
@@ -10,6 +10,7 @@ import calendarIcon from "@/assets/icons/calendar-md.svg";
 import chevronDownIcon from "@/assets/icons/chevron-down-lg-active.svg";
 import chevronLeftIcon from "@/assets/icons/chevron-left-thin-md.svg";
 import chevronRightIcon from "@/assets/icons/chevron-right-thin-md.svg";
+import { useOutsideClose } from "@/hooks/useOutsideClose";
 
 interface DatePickerProps {
   /** 선택된 이사 예정일. 아직 선택 전이면 undefined */
@@ -132,15 +133,13 @@ export default function DatePicker({ value, onChange, className }: DatePickerPro
     if (value) setMonth(value);
   }
 
-  // 팝오버 바깥 클릭 시 닫기
-  useEffect(() => {
-    if (!open) return;
-    const handleClickOutside = (e: MouseEvent) => {
-      if (!popoverRef.current?.contains(e.target as Node)) setOpen(false);
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [open]);
+  // 팝오버 바깥 클릭 시 닫기 (기존 동작 유지 — Escape 닫기는 없음)
+  useOutsideClose({
+    isOpen: open,
+    onClose: () => setOpen(false),
+    ref: popoverRef,
+    closeOnEscape: false,
+  });
 
   return (
     <div className={cn("relative", className)}>

@@ -7,9 +7,17 @@ interface UseDialogOptions {
   onClose: () => void;
 }
 
-// Escape 닫기, 배경 스크롤 락, 포커스 트랩. 바깥 클릭 닫기는 Modal에서 처리.
-export function useDialog({ open, onClose }: UseDialogOptions) {
-  const panelRef = useRef<HTMLDivElement>(null);
+/**
+ * Escape 닫기, 배경 스크롤 락, 포커스 트랩. 바깥 클릭 닫기는 Modal에서 처리.
+ *
+ * 제네릭 T는 panelRef를 붙일 태그 — Modal은 <div>, GnbMenu는 <nav>.
+ * 기본값이 HTMLDivElement라 기존 호출부는 그대로 쓸 수 있다.
+ */
+export function useDialog<T extends HTMLElement = HTMLDivElement>({
+  open,
+  onClose,
+}: UseDialogOptions) {
+  const panelRef = useRef<T>(null);
   const onCloseRef = useRef(onClose);
 
   useEffect(() => {
