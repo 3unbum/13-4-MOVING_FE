@@ -1,9 +1,9 @@
 "use client";
 
-import Image, { type StaticImageData } from "next/image";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useId, useState, type ReactNode } from "react";
+import { useId, useState } from "react";
 import { useForm } from "react-hook-form";
 import loginGoogleMd from "@/assets/images/common/login-google-md.svg";
 import loginGoogleSm from "@/assets/images/common/login-google-sm.svg";
@@ -12,6 +12,10 @@ import loginKakaoSm from "@/assets/images/common/login-kakao-sm.svg";
 import loginNaverMd from "@/assets/images/common/login-naver-md.svg";
 import loginNaverSm from "@/assets/images/common/login-naver-sm.svg";
 import logoTextXl from "@/assets/images/common/logo-text-xl.svg";
+import AuxText from "@/components/auth/AuxText";
+import SocialLoginButton, {
+  type SocialLoginButtonProps,
+} from "@/components/auth/SocialLoginButton";
 import Button from "@/components/common/Button";
 import InputTextField from "@/components/common/InputTextfield";
 import Modal, { ModalHeader } from "@/components/common/Modal";
@@ -26,36 +30,11 @@ interface CustomerSignupFormValues {
   passwordConfirm: string;
 }
 
-interface SocialLoginButtonProps {
-  label: string;
-  sm: StaticImageData;
-  md: StaticImageData;
-}
-
-// 구글/카카오/네이버 원형 아이콘 — 모바일(54px)·태블릿·PC(72px) 각각 전용 에셋으로 교체(스케일링 아님)
-function SocialLoginButton({ label, sm, md }: SocialLoginButtonProps) {
-  return (
-    <button type="button" aria-label={label} className="shrink-0">
-      <Image src={sm} alt="" className="tablet:hidden size-14" />
-      <Image src={md} alt="" className="tablet:block hidden size-18" />
-    </button>
-  );
-}
-
 const SOCIAL_PROVIDERS: SocialLoginButtonProps[] = [
   { label: "구글로 회원가입", sm: loginGoogleSm, md: loginGoogleMd },
   { label: "카카오로 회원가입", sm: loginKakaoSm, md: loginKakaoMd },
   { label: "네이버로 회원가입", sm: loginNaverSm, md: loginNaverMd },
 ];
-
-// 기사님이신가요? / 이미 무빙 회원이신가요? / SNS 계정으로 간편 가입하기 — 모바일 12px(black-100) vs 태블릿·PC 18~20px(black-200)로 크기·색이 함께 바뀜
-function AuxText({ children }: { children: ReactNode }) {
-  return (
-    <p className="tablet:text-18 pc:text-20 text-black-100 tablet:text-black-200 text-12 flex items-center justify-center gap-1 whitespace-nowrap">
-      {children}
-    </p>
-  );
-}
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 // 지역번호(01[016789]) + 7~8자리 — BE auth.schema.ts의 phoneNumber 정규식과 동일
