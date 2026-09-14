@@ -22,7 +22,7 @@ export default function SocialLoginSection({ actionLabel }: SocialLoginSectionPr
             className="shrink-0"
           >
             {/* 모바일(54px)·태블릿·PC(72px) 각각 전용 에셋으로 교체(스케일링 아님) */}
-            <Image src={provider.sm} alt="" className="tablet:hidden size-14" />
+            <Image src={provider.sm} alt="" className="tablet:hidden size-13.5" />
             <Image src={provider.md} alt="" className="tablet:block hidden size-18" />
           </button>
         ))}

@@ -3,7 +3,7 @@ import Button from "@/components/common/Button";
 
 interface AuthSubmitButtonProps {
   disabled: boolean;
-  // 서버 에러 등 특정 필드에 속하지 않는 에러(RHF errors.root) — 버튼 바로 위에 표시
+  // 특정 필드에 속하지 않는 폼 전체 에러(RHF errors.root)
   errorMessage?: string;
   children: ReactNode;
 }
@@ -19,7 +19,7 @@ export default function AuthSubmitButton({
       {errorMessage && (
         <p className="text-13 tablet:text-16 text-center text-red-200">{errorMessage}</p>
       )}
-      {/* 모바일 54px vs 태블릿·PC 60px — 버튼이 중복 마운트되지 않도록 한 인스턴스에 breakpoint별 className만 덮어씀 */}
+      {/* Button size는 반응형이 아니라 sm(54px) 하나만 쓰고, 태블릿 이상은 className으로 md 값(60px)을 덮어씀 */}
       <Button
         type="submit"
         size="sm"

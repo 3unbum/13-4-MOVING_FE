@@ -10,11 +10,20 @@ interface FormFieldProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "si
 
 export default function FormField({ label, id, errorMessage, ref, ...props }: FormFieldProps) {
   return (
-    <div className="flex flex-col gap-2">
-      <label htmlFor={id} className="tablet:text-18 pc:text-20 text-black-black-400 text-14">
+    <div className="tablet:gap-4 flex flex-col gap-2">
+      <label htmlFor={id} className="tablet:text-20 text-black-black-400 text-14">
         {label}
       </label>
-      <InputTextField id={id} size="sm" errorMessage={errorMessage} ref={ref} {...props} />
+      {/* size="sm" 높이(54px)는 Figma와 맞지만 태블릿 이상 폰트는 18px이 필요 — InputTextField(공통
+          컴포넌트)는 안 건드리고 [&_input] 선택자로 내부 input만 직접 타겟팅해서 해결 */}
+      <InputTextField
+        id={id}
+        size="sm"
+        className="tablet:[&_input]:text-18"
+        errorMessage={errorMessage}
+        ref={ref}
+        {...props}
+      />
     </div>
   );
 }
