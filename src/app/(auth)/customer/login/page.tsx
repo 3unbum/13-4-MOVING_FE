@@ -4,19 +4,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
-import loginGoogleMd from "@/assets/images/common/login-google-md.svg";
-import loginGoogleSm from "@/assets/images/common/login-google-sm.svg";
-import loginKakaoMd from "@/assets/images/common/login-kakao-md.svg";
-import loginKakaoSm from "@/assets/images/common/login-kakao-sm.svg";
-import loginNaverMd from "@/assets/images/common/login-naver-md.svg";
-import loginNaverSm from "@/assets/images/common/login-naver-sm.svg";
 import logoTextXl from "@/assets/images/common/logo-text-xl.svg";
 import AuxText from "@/components/auth/AuxText";
-import SocialLoginButton, {
-  type SocialLoginButtonProps,
-} from "@/components/auth/SocialLoginButton";
+import SocialLoginButton from "@/components/auth/SocialLoginButton";
 import Button from "@/components/common/Button";
 import InputTextField from "@/components/common/InputTextfield";
+import { SOCIAL_PROVIDERS } from "@/constants/auth/social-provider";
+import { EMAIL_PATTERN, PASSWORD_PATTERN } from "@/constants/auth/validation";
 import { authService } from "@/lib/services/auth-service";
 import { ApiError } from "@/lib/utils/api-error";
 import { useAuth } from "@/providers/AuthProvider";
@@ -25,16 +19,6 @@ interface CustomerLoginFormValues {
   email: string;
   password: string;
 }
-
-const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-// 영문 + 숫자 + 특수문자 포함 8자 이상 — 회원가입 규칙과 동일한 형식 검사(피그마 디자인 기준). BE loginSchema는 이 규칙을 강제하지 않음(min(1)만 검사).
-const PASSWORD_PATTERN = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
-
-const SOCIAL_PROVIDERS: SocialLoginButtonProps[] = [
-  { label: "구글로 로그인", sm: loginGoogleSm, md: loginGoogleMd },
-  { label: "카카오로 로그인", sm: loginKakaoSm, md: loginKakaoMd },
-  { label: "네이버로 로그인", sm: loginNaverSm, md: loginNaverMd },
-];
 
 // TODO: "로그인 전 마지막 페이지"로 되돌리는 건 아직 미구현 — 지금은 항상 랜딩("/")으로 보낸다.
 // document.referrer(SPA 라우팅에서 안 바뀜)나 sessionStorage(effect 순서 레이스 위험) 대신
@@ -127,6 +111,7 @@ export default function CustomerLoginPage() {
                   errorMessage={errors.password?.message}
                   {...register("password", {
                     required: "비밀번호를 입력해 주세요",
+                    // 회원가입 규칙과 동일한 형식 검사(피그마 디자인 기준). BE loginSchema는 이 규칙을 강제하지 않음(min(1)만 검사).
                     pattern: {
                       value: PASSWORD_PATTERN,
                       message: "비밀번호가 올바르지 않습니다.",
@@ -167,7 +152,12 @@ export default function CustomerLoginPage() {
           </AuxText>
           <div className="tablet:gap-8 flex items-start gap-6">
             {SOCIAL_PROVIDERS.map((provider) => (
-              <SocialLoginButton key={provider.label} {...provider} />
+              <SocialLoginButton
+                key={provider.name}
+                label={`${provider.name}로 로그인`}
+                sm={provider.sm}
+                md={provider.md}
+              />
             ))}
           </div>
         </div>

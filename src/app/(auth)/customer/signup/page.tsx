@@ -5,20 +5,14 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useId, useState } from "react";
 import { useForm } from "react-hook-form";
-import loginGoogleMd from "@/assets/images/common/login-google-md.svg";
-import loginGoogleSm from "@/assets/images/common/login-google-sm.svg";
-import loginKakaoMd from "@/assets/images/common/login-kakao-md.svg";
-import loginKakaoSm from "@/assets/images/common/login-kakao-sm.svg";
-import loginNaverMd from "@/assets/images/common/login-naver-md.svg";
-import loginNaverSm from "@/assets/images/common/login-naver-sm.svg";
 import logoTextXl from "@/assets/images/common/logo-text-xl.svg";
 import AuxText from "@/components/auth/AuxText";
-import SocialLoginButton, {
-  type SocialLoginButtonProps,
-} from "@/components/auth/SocialLoginButton";
+import SocialLoginButton from "@/components/auth/SocialLoginButton";
 import Button from "@/components/common/Button";
 import InputTextField from "@/components/common/InputTextfield";
 import Modal, { ModalHeader } from "@/components/common/Modal";
+import { SOCIAL_PROVIDERS } from "@/constants/auth/social-provider";
+import { EMAIL_PATTERN, PASSWORD_PATTERN, PHONE_PATTERN } from "@/constants/auth/validation";
 import { authService } from "@/lib/services/auth-service";
 import { ApiError } from "@/lib/utils/api-error";
 
@@ -29,18 +23,6 @@ interface CustomerSignupFormValues {
   password: string;
   passwordConfirm: string;
 }
-
-const SOCIAL_PROVIDERS: SocialLoginButtonProps[] = [
-  { label: "구글로 회원가입", sm: loginGoogleSm, md: loginGoogleMd },
-  { label: "카카오로 회원가입", sm: loginKakaoSm, md: loginKakaoMd },
-  { label: "네이버로 회원가입", sm: loginNaverSm, md: loginNaverMd },
-];
-
-const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-// 지역번호(01[016789]) + 7~8자리 — BE auth.schema.ts의 phoneNumber 정규식과 동일
-const PHONE_PATTERN = /^01[016789]\d{7,8}$/;
-// 영문 + 숫자 + 특수문자 포함 8자 이상 — BE auth.schema.ts의 PASSWORD_RULE과 동일
-const PASSWORD_PATTERN = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
 
 export default function CustomerSignupPage() {
   const router = useRouter();
@@ -239,7 +221,12 @@ export default function CustomerSignupPage() {
           </AuxText>
           <div className="tablet:gap-8 flex items-start gap-6">
             {SOCIAL_PROVIDERS.map((provider) => (
-              <SocialLoginButton key={provider.label} {...provider} />
+              <SocialLoginButton
+                key={provider.name}
+                label={`${provider.name}로 회원가입`}
+                sm={provider.sm}
+                md={provider.md}
+              />
             ))}
           </div>
         </div>
