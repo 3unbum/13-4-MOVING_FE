@@ -23,7 +23,7 @@ export default function ProfileRegisterModal({
       open={open}
       onClose={onSkip}
       labelledBy={titleId}
-      className="tablet:w-152 tablet:min-w-152 w-93.75 min-w-93.75 gap-10 rounded-4xl px-6 pt-8 pb-10"
+      className="tablet:w-152 tablet:min-w-152 w-[calc(100vw-2rem)] max-w-93.75 min-w-0 gap-10 rounded-4xl px-6 pt-8 pb-10"
     >
       <ModalHeader id={titleId} title="프로필을 등록하시겠어요?" size="md" onClose={onSkip} />
       <p className="text-18 text-black-300 w-full font-medium">
