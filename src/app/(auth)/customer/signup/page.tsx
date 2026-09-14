@@ -1,25 +1,22 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import Image from "next/image";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useId, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
-import logoTextXl from "@/assets/images/common/logo-text-xl.svg";
-import AuxText from "@/components/auth/AuxText";
-import SocialLoginButton from "@/components/auth/SocialLoginButton";
-import Button from "@/components/common/Button";
-import InputTextField from "@/components/common/InputTextfield";
-import Modal, { ModalHeader } from "@/components/common/Modal";
-import { SOCIAL_PROVIDERS } from "@/constants/auth/social-provider";
+import AuthCard from "@/components/auth/AuthCard";
+import AuthHeader from "@/components/auth/AuthHeader";
+import AuthSubmitButton from "@/components/auth/AuthSubmitButton";
+import AuthSwitchLink from "@/components/auth/AuthSwitchLink";
+import FormField from "@/components/auth/FormField";
+import ProfileRegisterModal from "@/components/auth/ProfileRegisterModal";
+import SocialLoginSection from "@/components/auth/SocialLoginSection";
 import { authService } from "@/lib/services/auth-service";
 import { signupSchema, type CustomerSignupFormValues } from "@/lib/schemas/auth-schema";
 import { ApiError } from "@/lib/utils/api-error";
 
 export default function CustomerSignupPage() {
   const router = useRouter();
-  const modalTitleId = useId();
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const {
     register,
@@ -45,29 +42,13 @@ export default function CustomerSignupPage() {
     }
   };
 
-  // 모달을 닫는 모든 경로(오버레이 클릭·esc·"아니오")는 동일하게 랜딩으로 보낸다 —
-  // 가입 페이지(비로그인 전용 (auth) 그룹)에 로그인된 채로 남아있게 두지 않기 위함.
+  // 모달을 닫는 모든 경로는 랜딩으로 — 비로그인 전용 (auth) 그룹에 로그인된 채로 남지 않게 하기 위함.
   const skipProfileRegister = () => router.push("/");
 
   return (
-    <main className="tablet:bg-orange-400 tablet:py-16 flex flex-1 flex-col items-center justify-center bg-white px-6 py-10">
-      <div className="tablet:max-w-130 tablet:gap-11 tablet:rounded-[32px] tablet:bg-gray-50 tablet:px-10 tablet:py-11 pc:max-w-185 pc:gap-12 pc:rounded-[40px] pc:px-12.5 pc:py-12 flex w-full max-w-100 flex-col items-center gap-10">
-        <div className="flex w-full flex-col items-center gap-2">
-          <Link href="/" aria-label="무빙 홈" className="shrink-0">
-            <Image
-              src={logoTextXl}
-              alt="무빙"
-              className="tablet:h-16 pc:h-20 h-16 w-auto"
-              priority
-            />
-          </Link>
-          <AuxText>
-            <span className="font-normal">기사님이신가요?</span>
-            <Link href="/mover/signup" className="font-semibold text-orange-400 underline">
-              기사님 전용 페이지
-            </Link>
-          </AuxText>
-        </div>
+    <>
+      <AuthCard>
+        <AuthHeader moverHref="/mover/signup" />
 
         <form
           onSubmit={handleSubmit(onSubmit)}
@@ -75,169 +56,73 @@ export default function CustomerSignupPage() {
           noValidate
         >
           <div className="tablet:gap-6 flex flex-col gap-4">
-            <div className="flex flex-col gap-2">
-              <label
-                htmlFor="name"
-                className="tablet:text-18 pc:text-20 text-black-black-400 text-14"
-              >
-                이름
-              </label>
-              <InputTextField
-                id="name"
-                size="sm"
-                type="text"
-                placeholder="이름을 입력해 주세요"
-                autoComplete="name"
-                errorMessage={errors.name?.message}
-                {...register("name")}
-              />
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <label
-                htmlFor="email"
-                className="tablet:text-18 pc:text-20 text-black-black-400 text-14"
-              >
-                이메일
-              </label>
-              <InputTextField
-                id="email"
-                size="sm"
-                type="email"
-                placeholder="이메일을 입력해 주세요"
-                autoComplete="email"
-                errorMessage={errors.email?.message}
-                {...register("email")}
-              />
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <label
-                htmlFor="phoneNumber"
-                className="tablet:text-18 pc:text-20 text-black-black-400 text-14"
-              >
-                전화번호
-              </label>
-              <InputTextField
-                id="phoneNumber"
-                size="sm"
-                type="tel"
-                placeholder="숫자만 입력해 주세요"
-                autoComplete="tel"
-                errorMessage={errors.phoneNumber?.message}
-                {...register("phoneNumber")}
-              />
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <label
-                htmlFor="password"
-                className="tablet:text-18 pc:text-20 text-black-black-400 text-14"
-              >
-                비밀번호
-              </label>
-              <InputTextField
-                id="password"
-                size="sm"
-                type="password"
-                placeholder="비밀번호를 입력해 주세요"
-                autoComplete="new-password"
-                errorMessage={errors.password?.message}
-                {...register("password", {
-                  // password가 바뀔 때마다 passwordConfirm도 같이 재검증 — zod 스키마의 refine()으로
-                  // 옮겨졌어도, resolver 유무와 무관하게 RHF는 바뀐 필드만 재검증 트리거를 걸기
-                  // 때문에 여전히 필요하다(안 그러면 이미 일치했던 확인란이 password를 나중에
-                  // 다시 고쳐도 새로 건드리기 전까진 "일치함"으로 남아있음).
-                  deps: ["passwordConfirm"],
-                })}
-              />
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <label
-                htmlFor="passwordConfirm"
-                className="tablet:text-18 pc:text-20 text-black-black-400 text-14"
-              >
-                비밀번호 확인
-              </label>
-              <InputTextField
-                id="passwordConfirm"
-                size="sm"
-                type="password"
-                placeholder="비밀번호 다시 한번 입력해 주세요"
-                autoComplete="new-password"
-                errorMessage={errors.passwordConfirm?.message}
-                {...register("passwordConfirm")}
-              />
-            </div>
+            <FormField
+              id="name"
+              label="이름"
+              type="text"
+              placeholder="이름을 입력해 주세요"
+              autoComplete="name"
+              errorMessage={errors.name?.message}
+              {...register("name")}
+            />
+            <FormField
+              id="email"
+              label="이메일"
+              type="email"
+              placeholder="이메일을 입력해 주세요"
+              autoComplete="email"
+              errorMessage={errors.email?.message}
+              {...register("email")}
+            />
+            <FormField
+              id="phoneNumber"
+              label="전화번호"
+              type="tel"
+              placeholder="숫자만 입력해 주세요"
+              autoComplete="tel"
+              errorMessage={errors.phoneNumber?.message}
+              {...register("phoneNumber")}
+            />
+            <FormField
+              id="password"
+              label="비밀번호"
+              type="password"
+              placeholder="비밀번호를 입력해 주세요"
+              autoComplete="new-password"
+              errorMessage={errors.password?.message}
+              // RHF는 바뀐 필드만 재검증하므로, password 변경 시 passwordConfirm의 일치 검사도 다시 돌리려면 필요
+              {...register("password", { deps: ["passwordConfirm"] })}
+            />
+            <FormField
+              id="passwordConfirm"
+              label="비밀번호 확인"
+              type="password"
+              placeholder="비밀번호 다시 한번 입력해 주세요"
+              autoComplete="new-password"
+              errorMessage={errors.passwordConfirm?.message}
+              {...register("passwordConfirm")}
+            />
           </div>
 
-          {errors.root?.message && (
-            <p className="text-13 tablet:text-16 text-center text-red-200">{errors.root.message}</p>
-          )}
-
-          <Button
-            type="submit"
-            size="sm"
-            disabled={isSubmitting || !isValid}
-            className="tablet:h-15 tablet:gap-2 tablet:rounded-2xl tablet:text-18"
-          >
+          <AuthSubmitButton disabled={isSubmitting || !isValid} errorMessage={errors.root?.message}>
             회원가입
-          </Button>
+          </AuthSubmitButton>
         </form>
 
-        <AuxText>
-          <span className="font-normal">이미 무빙 회원이신가요?</span>
-          <Link href="/customer/login" className="font-semibold text-orange-400 underline">
-            로그인하기
-          </Link>
-        </AuxText>
-
-        <div className="tablet:gap-8 flex w-full flex-col items-center gap-6">
-          <AuxText>
-            <span className="font-normal">SNS 계정으로 간편 가입하기</span>
-          </AuxText>
-          <div className="tablet:gap-8 flex items-start gap-6">
-            {SOCIAL_PROVIDERS.map((provider) => (
-              <SocialLoginButton
-                key={provider.name}
-                label={`${provider.name}로 회원가입`}
-                sm={provider.sm}
-                md={provider.md}
-              />
-            ))}
-          </div>
-        </div>
-      </div>
-
-      <Modal
-        open={isProfileModalOpen}
-        onClose={skipProfileRegister}
-        labelledBy={modalTitleId}
-        className="tablet:w-152 tablet:min-w-152 w-93.75 min-w-93.75 gap-10 rounded-[32px] px-6 pt-8 pb-10"
-      >
-        <ModalHeader
-          id={modalTitleId}
-          title="프로필을 등록하시겠어요?"
-          size="md"
-          onClose={skipProfileRegister}
+        <AuthSwitchLink
+          prompt="이미 무빙 회원이신가요?"
+          href="/customer/login"
+          linkText="로그인하기"
         />
-        <p className="text-18 text-black-300 w-full font-medium">
-          프로필을 등록하면 견적 요청, 찜하기 등 무빙의 모든 서비스를 바로 이용할 수 있어요.
-        </p>
-        <div className="flex w-full gap-3">
-          <Button variant="outlined" size="lg" onClick={skipProfileRegister}>
-            다음에 할게요
-          </Button>
-          <Button
-            variant="solid"
-            size="lg"
-            onClick={() => router.push("/customer/profile-register")}
-          >
-            등록하러 가기
-          </Button>
-        </div>
-      </Modal>
-    </main>
+
+        <SocialLoginSection actionLabel="회원가입" />
+      </AuthCard>
+
+      <ProfileRegisterModal
+        open={isProfileModalOpen}
+        onSkip={skipProfileRegister}
+        onRegister={() => router.push("/customer/profile-register")}
+      />
+    </>
   );
 }
