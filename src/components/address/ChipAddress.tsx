@@ -1,4 +1,4 @@
-import clsx from "clsx";
+import { cn } from "@/lib/utils/cn";
 import type { HTMLAttributes, ReactNode } from "react";
 
 type AddressChipSize = "sm" | "md";
@@ -19,7 +19,7 @@ export default function AddressChip({
 
   return (
     <span
-      className={clsx(
+      className={cn(
         "inline-flex items-center self-start rounded-full bg-orange-100 py-0.5 font-semibold text-orange-400",
         isMd ? "text-14 w-13.5 justify-center px-1" : "text-12 px-1.5",
         className

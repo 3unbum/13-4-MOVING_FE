@@ -1,4 +1,4 @@
-import clsx from "clsx";
+import { cn } from "@/lib/utils/cn";
 
 interface InfoItemProps {
   label: string;
@@ -30,9 +30,9 @@ export default function InfoItem({
   className,
 }: InfoItemProps) {
   return (
-    <div className={clsx("flex min-w-0 flex-col items-start justify-center", className)}>
-      <span className={clsx("text-gray-gray-500", labelClassName)}>{label}</span>
-      <span className={clsx("max-w-full truncate", valueClassName)}>{value}</span>
+    <div className={cn("flex min-w-0 flex-col items-start justify-center", className)}>
+      <span className={cn("text-gray-gray-500", labelClassName)}>{label}</span>
+      <span className={cn("max-w-full truncate", valueClassName)}>{value}</span>
     </div>
   );
 }

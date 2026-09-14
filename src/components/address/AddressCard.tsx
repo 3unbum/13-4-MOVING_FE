@@ -1,4 +1,4 @@
-import clsx from "clsx";
+import { cn } from "@/lib/utils/cn";
 import type { ButtonHTMLAttributes } from "react";
 import AddressChip from "@/components/address/ChipAddress";
 
@@ -28,26 +28,26 @@ export default function AddressCard({
     <button
       type="button"
       aria-pressed={selected}
-      className={clsx(
+      className={cn(
         "shadow-address-card flex w-full flex-col items-start gap-4 rounded-2xl border px-4 pt-5 pb-6 text-left transition-colors",
         selected ? "border-orange-500 bg-orange-100" : "border-line-100 bg-gray-50",
         className
       )}
       {...props}
     >
-      <p className={clsx("text-black-black-400 font-semibold", isMd ? "text-16" : "text-14")}>
+      <p className={cn("text-black-black-400 font-semibold", isMd ? "text-16" : "text-14")}>
         {zipCode}
       </p>
       <div className="flex w-full flex-col items-start gap-4">
         <div className="flex w-full items-center gap-2">
           <AddressChip size={isMd ? "md" : "sm"}>도로명</AddressChip>
-          <p className={clsx("text-black-black-400 min-w-0 flex-1", isMd ? "text-16" : "text-14")}>
+          <p className={cn("text-black-black-400 min-w-0 flex-1", isMd ? "text-16" : "text-14")}>
             {roadAddress}
           </p>
         </div>
         <div className="flex w-full items-center gap-2">
           <AddressChip size={isMd ? "md" : "sm"}>지번</AddressChip>
-          <p className={clsx("text-black-black-400 min-w-0 flex-1", isMd ? "text-16" : "text-14")}>
+          <p className={cn("text-black-black-400 min-w-0 flex-1", isMd ? "text-16" : "text-14")}>
             {lotAddress}
           </p>
         </div>

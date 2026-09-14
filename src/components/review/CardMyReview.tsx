@@ -4,7 +4,7 @@ import InfoItem from "@/components/common/InfoItem";
 import MoverName from "@/components/mover/MoverName";
 import ProfileAvatar from "@/components/common/ProfileAvatar";
 import RatingStars from "@/components/common/RatingStars";
-import clsx from "clsx";
+import { cn } from "@/lib/utils/cn";
 import type { HTMLAttributes } from "react";
 
 type CardMyReviewSize = "sm" | "lg";
@@ -59,7 +59,7 @@ export default function CardMyReview({
 }: CardMyReviewProps) {
   const isLg = size === "lg";
 
-  const cardClass = clsx(
+  const cardClass = cn(
     "flex w-full flex-col bg-white",
     "shadow-[inset_0_0_0_0.5px_var(--color-line-100),-2px_-2px_10px_0_rgba(220,220,220,0.2),2px_2px_10px_0_rgba(220,220,220,0.2)]",
     "rounded-[20px]",
@@ -70,7 +70,7 @@ export default function CardMyReview({
   const review = (
     <div className="flex w-full flex-col items-start gap-3">
       <RatingStars rating={rating} />
-      <p className={clsx("text-black-black-400 w-full font-medium", isLg ? "text-18" : "text-16")}>
+      <p className={cn("text-black-black-400 w-full font-medium", isLg ? "text-18" : "text-16")}>
         {content}
       </p>
     </div>
@@ -98,21 +98,21 @@ export default function CardMyReview({
             label="출발지"
             value={from}
             labelClassName={isLg ? "text-14" : "text-12 leading-[18px]"}
-            valueClassName={clsx("text-black-100 font-medium", isLg ? "text-14" : "text-13")}
+            valueClassName={cn("text-black-100 font-medium", isLg ? "text-14" : "text-13")}
           />
           <VerticalLine />
           <InfoItem
             label="도착지"
             value={to}
             labelClassName={isLg ? "text-14" : "text-12 leading-[18px]"}
-            valueClassName={clsx("text-black-100 font-medium", isLg ? "text-14" : "text-13")}
+            valueClassName={cn("text-black-100 font-medium", isLg ? "text-14" : "text-13")}
           />
           <VerticalLine />
           <InfoItem
             label="이사일"
             value={movingDate}
             labelClassName={isLg ? "text-14" : "text-12"}
-            valueClassName={clsx("text-black-100 font-medium", isLg ? "text-14" : "text-13")}
+            valueClassName={cn("text-black-100 font-medium", isLg ? "text-14" : "text-13")}
           />
         </div>
 
@@ -143,19 +143,19 @@ export default function CardMyReview({
           label="출발지"
           value={from}
           labelClassName={isLg ? "text-14" : "text-12 leading-[18px]"}
-          valueClassName={clsx("text-black-100 font-medium", isLg ? "text-14" : "text-13")}
+          valueClassName={cn("text-black-100 font-medium", isLg ? "text-14" : "text-13")}
         />
         <InfoItem
           label="도착지"
           value={to}
           labelClassName={isLg ? "text-14" : "text-12 leading-[18px]"}
-          valueClassName={clsx("text-black-100 font-medium", isLg ? "text-14" : "text-13")}
+          valueClassName={cn("text-black-100 font-medium", isLg ? "text-14" : "text-13")}
         />
         <InfoItem
           label="이사일"
           value={movingDate}
           labelClassName={isLg ? "text-14" : "text-12 leading-[18px]"}
-          valueClassName={clsx("text-black-100 font-medium", isLg ? "text-14" : "text-13")}
+          valueClassName={cn("text-black-100 font-medium", isLg ? "text-14" : "text-13")}
         />
       </div>
 

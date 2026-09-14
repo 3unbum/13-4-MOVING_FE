@@ -1,7 +1,7 @@
 "use client";
 
 import Gnb, { type GnbNotification } from "@/components/layout/Gnb";
-import clsx from "clsx";
+import { cn } from "@/lib/utils/cn";
 import { useState } from "react";
 
 type PreviewState = "logout" | "customer" | "mover";
@@ -54,7 +54,7 @@ export default function ComponentGnbPreviewPage() {
             key={value}
             type="button"
             onClick={() => setState(value)}
-            className={clsx(
+            className={cn(
               "text-14 rounded-lg px-3 py-1.5",
               state === value
                 ? "bg-orange-400 font-semibold text-white"

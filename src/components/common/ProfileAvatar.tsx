@@ -1,6 +1,6 @@
 import profile140 from "@/assets/images/common/프로필_140.png";
 import profile50 from "@/assets/images/common/프로필_50.png";
-import clsx from "clsx";
+import { cn } from "@/lib/utils/cn";
 import Image, { type StaticImageData } from "next/image";
 
 /**
@@ -52,7 +52,7 @@ export default function ProfileAvatar({
 }: ProfileAvatarProps) {
   return (
     <div
-      className={clsx(
+      className={cn(
         "bg-black-300 relative shrink-0 overflow-hidden rounded-xl",
         SIZE_CLASS[size],
         className

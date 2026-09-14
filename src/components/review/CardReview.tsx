@@ -1,5 +1,5 @@
 import RatingStars from "@/components/common/RatingStars";
-import clsx from "clsx";
+import { cn } from "@/lib/utils/cn";
 import type { HTMLAttributes } from "react";
 
 type CardReviewSize = "sm" | "lg";
@@ -19,7 +19,7 @@ function Divider({ size }: { size: CardReviewSize }) {
   return (
     <span
       aria-hidden
-      className={clsx("bg-line-200 w-px shrink-0", size === "lg" ? "h-3.5" : "h-3")}
+      className={cn("bg-line-200 w-px shrink-0", size === "lg" ? "h-3.5" : "h-3")}
     />
   );
 }
@@ -45,7 +45,7 @@ export default function CardReview({
 
   return (
     <article
-      className={clsx(
+      className={cn(
         "flex w-full flex-col items-start bg-white",
         isLg ? "gap-6 py-6" : "gap-4 py-5",
         className
@@ -53,12 +53,10 @@ export default function CardReview({
       {...props}
     >
       <div className="flex flex-col items-start gap-2">
-        <div className={clsx("flex items-center", isLg ? "gap-3.5" : "gap-3")}>
-          <span className={clsx("text-black-black-400", isLg ? "text-18" : "text-14")}>
-            {writer}
-          </span>
+        <div className={cn("flex items-center", isLg ? "gap-3.5" : "gap-3")}>
+          <span className={cn("text-black-black-400", isLg ? "text-18" : "text-14")}>{writer}</span>
           <Divider size={size} />
-          <span className={clsx("text-gray-gray-300", isLg ? "text-18" : "text-14")}>
+          <span className={cn("text-gray-gray-300", isLg ? "text-18" : "text-14")}>
             {createdAt}
           </span>
         </div>
@@ -66,7 +64,7 @@ export default function CardReview({
         <RatingStars rating={rating} />
       </div>
 
-      <p className={clsx("text-black-500 w-full", isLg ? "text-18" : "text-14")}>{content}</p>
+      <p className={cn("text-black-500 w-full", isLg ? "text-18" : "text-14")}>{content}</p>
     </article>
   );
 }

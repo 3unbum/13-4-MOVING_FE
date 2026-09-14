@@ -1,4 +1,4 @@
-import clsx from "clsx";
+import { cn } from "@/lib/utils/cn";
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 
 type ButtonVariant = "solid" | "outlined";
@@ -43,7 +43,7 @@ export default function Button({
   return (
     <button
       type={type}
-      className={clsx(
+      className={cn(
         "flex w-full items-center justify-center px-4 font-semibold transition-colors",
         SIZE_STYLE[size],
         variant === "solid"

@@ -1,5 +1,5 @@
 import logoMark from "@/assets/icons/logo-mark-sm.svg";
-import clsx from "clsx";
+import { cn } from "@/lib/utils/cn";
 import Image from "next/image";
 import type { HTMLAttributes } from "react";
 
@@ -34,7 +34,7 @@ export default function MoverName({
 }: MoverNameProps) {
   return (
     <div
-      className={clsx("flex gap-1", stacked ? "flex-col items-start" : "items-center", className)}
+      className={cn("flex gap-1", stacked ? "flex-col items-start" : "items-center", className)}
       {...props}
     >
       {showLogo && (
@@ -45,10 +45,7 @@ export default function MoverName({
         />
       )}
       <span
-        className={clsx(
-          "text-black-300 flex items-center gap-1 whitespace-nowrap",
-          SIZE_CLASS[size]
-        )}
+        className={cn("text-black-300 flex items-center gap-1 whitespace-nowrap", SIZE_CLASS[size])}
       >
         <span>{nickName}</span>
         <span>기사님</span>

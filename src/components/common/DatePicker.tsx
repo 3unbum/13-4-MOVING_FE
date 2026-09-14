@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { addMonths, subMonths } from "date-fns";
 import { DayPicker } from "react-day-picker";
 import Image from "next/image";
-import clsx from "clsx";
+import { cn } from "@/lib/utils/cn";
 import Button from "./Button";
 import calendarIcon from "@/assets/icons/calendar-md.svg";
 import chevronDownIcon from "@/assets/icons/chevron-down-lg-active.svg";
@@ -143,7 +143,7 @@ export default function DatePicker({ value, onChange, className }: DatePickerPro
   }, [open]);
 
   return (
-    <div className={clsx("relative", className)}>
+    <div className={cn("relative", className)}>
       <div className="tablet:block hidden w-100" ref={popoverRef}>
         <button
           type="button"

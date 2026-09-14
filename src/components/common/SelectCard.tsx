@@ -2,7 +2,7 @@ import checkIcon from "@/assets/icons/check.svg";
 import homeImg from "@/assets/images/common/이사유형_가정이사.png";
 import officeImg from "@/assets/images/common/이사유형_사무실이사.png";
 import smallImg from "@/assets/images/common/이사유형_소형이사.png";
-import clsx from "clsx";
+import { cn } from "@/lib/utils/cn";
 import Image, { type StaticImageData } from "next/image";
 import type { ButtonHTMLAttributes } from "react";
 
@@ -48,7 +48,7 @@ export default function SelectCard({
     <button
       type="button"
       aria-pressed={selected}
-      className={clsx(
+      className={cn(
         "relative flex items-start gap-2 rounded-2xl border-2 px-4 py-5 text-left",
         isMd ? "w-64 flex-col items-end gap-4 pb-4" : "w-81.75 justify-end",
         selected
@@ -59,13 +59,13 @@ export default function SelectCard({
       {...props}
     >
       <div
-        className={clsx(
+        className={cn(
           "flex min-w-0 flex-1 items-start gap-2",
           isMd ? "w-full flex-none flex-row" : "flex-col"
         )}
       >
         <span
-          className={clsx(
+          className={cn(
             "flex size-4.5 shrink-0 items-center justify-center rounded-full border",
             selected ? "border-orange-400 bg-orange-400" : "border-line-200 bg-gray-50"
           )}
@@ -74,15 +74,12 @@ export default function SelectCard({
         </span>
         <span className="flex flex-col items-start">
           <span
-            className={clsx(
-              "text-16 font-semibold",
-              selected ? "text-orange-400" : "text-black-500"
-            )}
+            className={cn("text-16 font-semibold", selected ? "text-orange-400" : "text-black-500")}
           >
             {LABELS[variant]}
           </span>
           <span
-            className={clsx(
+            className={cn(
               "text-14 whitespace-nowrap",
               selected ? "text-orange-400" : "text-gray-gray-500"
             )}

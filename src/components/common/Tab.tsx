@@ -1,4 +1,4 @@
-import clsx from "clsx";
+import { cn } from "@/lib/utils/cn";
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 
 interface TabProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -25,7 +25,7 @@ export default function Tab({
       aria-selected={active}
       aria-controls={controls}
       tabIndex={active ? 0 : -1}
-      className={clsx(
+      className={cn(
         "text-14 flex h-[54px] shrink-0 items-center border-b-2 border-solid whitespace-nowrap",
         "pc:h-auto pc:py-4 pc:text-20",
         active

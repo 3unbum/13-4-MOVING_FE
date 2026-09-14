@@ -1,6 +1,6 @@
 "use client";
 
-import clsx from "clsx";
+import { cn } from "@/lib/utils/cn";
 import Image from "next/image";
 import { useId, useState } from "react";
 import type { InputHTMLAttributes } from "react";
@@ -58,7 +58,7 @@ export default function InputSearchbar({
         if (disabled) return;
         onSearch?.(value);
       }}
-      className={clsx(
+      className={cn(
         "bg-background-100 flex w-full items-center rounded-2xl transition-colors",
         isMd ? "h-16 gap-2 px-6" : "h-13 gap-1.5 px-4",
         disabled && "cursor-not-allowed opacity-40",
@@ -70,7 +70,7 @@ export default function InputSearchbar({
         <Image
           src={isMd ? searchIconLg : searchIconMd}
           alt=""
-          className={clsx("shrink-0", isMd ? "size-9" : "size-6")}
+          className={cn("shrink-0", isMd ? "size-9" : "size-6")}
         />
       )}
       <label htmlFor={inputId} className="sr-only">
@@ -91,7 +91,7 @@ export default function InputSearchbar({
         }}
         disabled={disabled}
         placeholder={placeholder}
-        className={clsx(
+        className={cn(
           "text-black-400 min-w-0 flex-1 bg-transparent font-normal placeholder:text-gray-400 focus:outline-none disabled:cursor-not-allowed",
           isMd ? "text-18" : "text-14"
         )}
@@ -99,7 +99,7 @@ export default function InputSearchbar({
       />
       {/* 포커스 중: 우측에 지우기(값 있을 때만) + 검색 제출 버튼 */}
       {isFocused && (
-        <div className={clsx("flex shrink-0 items-center", isMd ? "gap-4" : "gap-3")}>
+        <div className={cn("flex shrink-0 items-center", isMd ? "gap-4" : "gap-3")}>
           {hasValue && (
             <button
               type="button"

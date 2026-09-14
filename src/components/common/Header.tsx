@@ -1,4 +1,4 @@
-import clsx from "clsx";
+import { cn } from "@/lib/utils/cn";
 import type { HTMLAttributes, ReactNode } from "react";
 
 type HeaderSize = "sm" | "md" | "lg";
@@ -19,7 +19,7 @@ export default function Header({ children, size = "sm", className, ...props }: H
 
   return (
     <section
-      className={clsx(
+      className={cn(
         "text-18 text-black-500 bg-gray-50 font-semibold",
         !isMd && !isLg && SM_SIZE,
         isMd && MD_SIZE,
