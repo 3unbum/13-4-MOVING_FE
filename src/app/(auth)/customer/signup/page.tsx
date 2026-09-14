@@ -16,9 +16,11 @@ import SocialLoginSection from "@/components/auth/SocialLoginSection";
 import { authService } from "@/lib/services/auth-service";
 import { signupSchema, type CustomerSignupFormValues } from "@/lib/schemas/auth-schema";
 import { ApiError } from "@/lib/utils/api-error";
+import { useAuth } from "@/providers/AuthProvider";
 
 export default function CustomerSignupPage() {
   const router = useRouter();
+  const { refetch } = useAuth();
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const {
     register,
@@ -31,6 +33,9 @@ export default function CustomerSignupPage() {
     const { passwordConfirm: _passwordConfirm, ...signupValues } = values;
     try {
       await authService.signup({ role: "CUSTOMER", ...signupValues });
+      // 회원가입 성공 시 BE가 로그인과 동일하게 토큰을 발급하므로, AuthProvider(루트에서 마운트 시 1회만
+      // 조회)에도 반영되도록 refetch — 안 하면 이후 페이지에서 useAuth()가 계속 비로그인 상태로 남는다.
+      await refetch();
       // 가입 직후엔 hasProfile이 항상 false — 바로 등록시키지 않고 모달로 물어본다.
       setIsProfileModalOpen(true);
     } catch (error) {
