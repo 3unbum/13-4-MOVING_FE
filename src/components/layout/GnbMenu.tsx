@@ -58,7 +58,7 @@ export default function GnbMenu({
 
   // Escape 닫기 + 배경 스크롤 락 + 포커스 트랩 — 모달과 같은 useDialog를 쓴다
   // (Notion "Hook 분리 후보 취합"에서 김은진님이 제안하신 항목)
-  const { panelRef } = useDialog({ open: isOpen, onClose });
+  const { panelRef } = useDialog<HTMLElement>({ open: isOpen, onClose });
 
   if (!isOpen) return null;
 
