@@ -12,6 +12,7 @@ import {
   type ReactNode,
   type RefObject,
 } from "react";
+import { useOutsideClose } from "@/hooks/useOutsideClose";
 
 export interface DropdownNotificationProps {
   /** 패널 헤더 (기본: 알림) */
@@ -62,28 +63,13 @@ export default function DropdownNotification({
   const listId = useId();
   const isSm = size === "sm";
 
-  useEffect(() => {
-    const handlePointerDown = (event: MouseEvent) => {
-      if (!closeOnOutsideClick) return;
-      const boundary = containerRef?.current ?? panelRef.current;
-      if (!boundary?.contains(event.target as Node)) {
-        onClose?.();
-      }
-    };
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        onClose?.();
-      }
-    };
-
-    document.addEventListener("mousedown", handlePointerDown);
-    document.addEventListener("keydown", handleKeyDown);
-    return () => {
-      document.removeEventListener("mousedown", handlePointerDown);
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [closeOnOutsideClick, containerRef, onClose]);
+  // 이 컴포넌트는 상위가 {open ? <Dropdown /> : null}로 렌더하므로 마운트 = 열린 상태
+  useOutsideClose({
+    isOpen: true,
+    onClose: () => onClose?.(),
+    ref: containerRef ?? panelRef,
+    closeOnOutsideClick,
+  });
 
   return (
     <div
