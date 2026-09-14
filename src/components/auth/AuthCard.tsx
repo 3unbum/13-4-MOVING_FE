@@ -23,12 +23,12 @@ export default function AuthCard({ children, mascotTabletSrc, mascotPcSrc }: Aut
               <Image
                 src={mascotTabletSrc}
                 alt=""
-                className="tablet:block pc:hidden pointer-events-none absolute top-186 left-125.75 hidden h-61.5 w-60 object-contain object-left-bottom"
+                className="tablet:block pc:hidden pointer-events-none absolute top-186 left-125.75 hidden h-61.5 w-60 object-contain object-bottom-left"
               />
               <Image
                 src={mascotPcSrc}
                 alt=""
-                className="pc:block pointer-events-none absolute top-134 left-170 hidden h-98 w-95.5 object-contain object-left-bottom"
+                className="pc:block pointer-events-none absolute top-134 left-170 hidden h-98 w-95.5 object-contain object-bottom-left"
               />
             </>
           )}
