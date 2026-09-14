@@ -6,6 +6,7 @@ import AddressCard from "@/components/address/AddressCard";
 import Button from "@/components/common/Button";
 import InputSearchbar from "@/components/common/InputSearchbar";
 import Modal, { ModalHeader } from "@/components/common/Modal";
+import type { RegionCode } from "@/components/filter/ChipRegion";
 
 type AddressSelectModalSize = "sm" | "md";
 
@@ -15,6 +16,7 @@ export interface AddressSelectResult {
   zipCode: string;
   roadAddress: string;
   lotAddress: string;
+  region: RegionCode;
 }
 
 interface AddressSelectModalProps {
