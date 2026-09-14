@@ -1,5 +1,6 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -12,17 +13,9 @@ import Button from "@/components/common/Button";
 import InputTextField from "@/components/common/InputTextfield";
 import Modal, { ModalHeader } from "@/components/common/Modal";
 import { SOCIAL_PROVIDERS } from "@/constants/auth/social-provider";
-import { EMAIL_PATTERN, PASSWORD_PATTERN, PHONE_PATTERN } from "@/constants/auth/validation";
 import { authService } from "@/lib/services/auth-service";
+import { signupSchema, type CustomerSignupFormValues } from "@/lib/schemas/auth-schema";
 import { ApiError } from "@/lib/utils/api-error";
-
-interface CustomerSignupFormValues {
-  name: string;
-  email: string;
-  phoneNumber: string;
-  password: string;
-  passwordConfirm: string;
-}
 
 export default function CustomerSignupPage() {
   const router = useRouter();
@@ -31,10 +24,9 @@ export default function CustomerSignupPage() {
   const {
     register,
     handleSubmit,
-    getValues,
     setError,
     formState: { errors, isSubmitting, isValid },
-  } = useForm<CustomerSignupFormValues>({ mode: "onChange" });
+  } = useForm<CustomerSignupFormValues>({ resolver: zodResolver(signupSchema), mode: "onChange" });
 
   const onSubmit = async (values: CustomerSignupFormValues) => {
     const { passwordConfirm: _passwordConfirm, ...signupValues } = values;
@@ -97,7 +89,7 @@ export default function CustomerSignupPage() {
                 placeholder="이름을 입력해 주세요"
                 autoComplete="name"
                 errorMessage={errors.name?.message}
-                {...register("name", { required: "이름을 입력해 주세요" })}
+                {...register("name")}
               />
             </div>
 
@@ -115,10 +107,7 @@ export default function CustomerSignupPage() {
                 placeholder="이메일을 입력해 주세요"
                 autoComplete="email"
                 errorMessage={errors.email?.message}
-                {...register("email", {
-                  required: "이메일을 입력해 주세요",
-                  pattern: { value: EMAIL_PATTERN, message: "올바른 이메일 형식이 아닙니다." },
-                })}
+                {...register("email")}
               />
             </div>
 
@@ -136,10 +125,7 @@ export default function CustomerSignupPage() {
                 placeholder="숫자만 입력해 주세요"
                 autoComplete="tel"
                 errorMessage={errors.phoneNumber?.message}
-                {...register("phoneNumber", {
-                  required: "전화번호를 입력해 주세요",
-                  pattern: { value: PHONE_PATTERN, message: "올바른 전화번호 형식이 아닙니다." },
-                })}
+                {...register("phoneNumber")}
               />
             </div>
 
@@ -158,14 +144,10 @@ export default function CustomerSignupPage() {
                 autoComplete="new-password"
                 errorMessage={errors.password?.message}
                 {...register("password", {
-                  required: "비밀번호를 입력해 주세요",
-                  pattern: {
-                    value: PASSWORD_PATTERN,
-                    message: "비밀번호는 영문, 숫자, 특수문자를 포함해 8자 이상이어야 합니다.",
-                  },
-                  // password가 바뀔 때마다 passwordConfirm도 같이 재검증 — 안 그러면 이미
-                  // 일치했던 확인란이, 비밀번호를 나중에 다시 고쳐도 새로 건드리기 전까진
-                  // 계속 "일치함"으로 남아있음(제출 시점엔 어차피 다시 걸러지지만 버튼 활성화 상태가 그새 부정확해짐).
+                  // password가 바뀔 때마다 passwordConfirm도 같이 재검증 — zod 스키마의 refine()으로
+                  // 옮겨졌어도, resolver 유무와 무관하게 RHF는 바뀐 필드만 재검증 트리거를 걸기
+                  // 때문에 여전히 필요하다(안 그러면 이미 일치했던 확인란이 password를 나중에
+                  // 다시 고쳐도 새로 건드리기 전까진 "일치함"으로 남아있음).
                   deps: ["passwordConfirm"],
                 })}
               />
@@ -185,11 +167,7 @@ export default function CustomerSignupPage() {
                 placeholder="비밀번호 다시 한번 입력해 주세요"
                 autoComplete="new-password"
                 errorMessage={errors.passwordConfirm?.message}
-                {...register("passwordConfirm", {
-                  required: "비밀번호 다시 한번 입력해 주세요",
-                  validate: (value) =>
-                    value === getValues("password") || "비밀번호가 일치하지 않습니다.",
-                })}
+                {...register("passwordConfirm")}
               />
             </div>
           </div>

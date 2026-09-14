@@ -1,5 +1,6 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -10,15 +11,10 @@ import SocialLoginButton from "@/components/auth/SocialLoginButton";
 import Button from "@/components/common/Button";
 import InputTextField from "@/components/common/InputTextfield";
 import { SOCIAL_PROVIDERS } from "@/constants/auth/social-provider";
-import { EMAIL_PATTERN, PASSWORD_PATTERN } from "@/constants/auth/validation";
 import { authService } from "@/lib/services/auth-service";
+import { loginSchema, type CustomerLoginFormValues } from "@/lib/schemas/auth-schema";
 import { ApiError } from "@/lib/utils/api-error";
 import { useAuth } from "@/providers/AuthProvider";
-
-interface CustomerLoginFormValues {
-  email: string;
-  password: string;
-}
 
 // TODO: "로그인 전 마지막 페이지"로 되돌리는 건 아직 미구현 — 지금은 항상 랜딩("/")으로 보낸다.
 // document.referrer(SPA 라우팅에서 안 바뀜)나 sessionStorage(effect 순서 레이스 위험) 대신
@@ -35,7 +31,7 @@ export default function CustomerLoginPage() {
     handleSubmit,
     setError,
     formState: { errors, isSubmitting, isValid },
-  } = useForm<CustomerLoginFormValues>({ mode: "onChange" });
+  } = useForm<CustomerLoginFormValues>({ resolver: zodResolver(loginSchema), mode: "onChange" });
 
   const onSubmit = async (values: CustomerLoginFormValues) => {
     try {
@@ -89,10 +85,7 @@ export default function CustomerLoginPage() {
                   placeholder="이메일을 입력해 주세요"
                   autoComplete="email"
                   errorMessage={errors.email?.message}
-                  {...register("email", {
-                    required: "이메일을 입력해 주세요",
-                    pattern: { value: EMAIL_PATTERN, message: "올바른 이메일 형식이 아닙니다." },
-                  })}
+                  {...register("email")}
                 />
               </div>
               <div className="flex flex-col gap-2">
@@ -109,14 +102,7 @@ export default function CustomerLoginPage() {
                   placeholder="비밀번호를 입력해 주세요"
                   autoComplete="current-password"
                   errorMessage={errors.password?.message}
-                  {...register("password", {
-                    required: "비밀번호를 입력해 주세요",
-                    // 회원가입 규칙과 동일한 형식 검사(피그마 디자인 기준). BE loginSchema는 이 규칙을 강제하지 않음(min(1)만 검사).
-                    pattern: {
-                      value: PASSWORD_PATTERN,
-                      message: "비밀번호가 올바르지 않습니다.",
-                    },
-                  })}
+                  {...register("password")}
                 />
               </div>
             </div>
