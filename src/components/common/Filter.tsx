@@ -7,6 +7,7 @@ import chevronUpSmOrange from "@/assets/icons/chevron-up-sm-orange.svg";
 import { cn } from "@/lib/utils/cn";
 import Image from "next/image";
 import { useEffect, useId, useRef, useState } from "react";
+import { useOutsideClose } from "@/hooks/useOutsideClose";
 
 export interface FilterOption {
   value: string;
@@ -91,28 +92,11 @@ export default function Filter(props: FilterProps) {
   const selectedLabel = flatOptions.find((option) => option.value === value)?.label;
   const triggerLabel = label ?? selectedLabel ?? "선택";
 
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const handlePointerDown = (event: MouseEvent) => {
-      if (!rootRef.current?.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    };
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setIsOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handlePointerDown);
-    document.addEventListener("keydown", handleKeyDown);
-    return () => {
-      document.removeEventListener("mousedown", handlePointerDown);
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [isOpen]);
+  useOutsideClose({
+    isOpen,
+    onClose: () => setIsOpen(false),
+    ref: rootRef,
+  });
 
   const handleSelect = (nextValue: string) => {
     onChange(nextValue);

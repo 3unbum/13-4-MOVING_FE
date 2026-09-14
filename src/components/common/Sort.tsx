@@ -4,7 +4,8 @@ import chevronDownSm from "@/assets/icons/chevron-down-sm.svg";
 import chevronUpSm from "@/assets/icons/chevron-up-sm.svg";
 import { cn } from "@/lib/utils/cn";
 import Image from "next/image";
-import { useEffect, useId, useRef, useState } from "react";
+import { useId, useRef, useState } from "react";
+import { useOutsideClose } from "@/hooks/useOutsideClose";
 
 export interface SortOption {
   value: string;
@@ -55,28 +56,11 @@ export default function Sort({
   const selectedLabel =
     options.find((option) => option.value === value)?.label ?? options[0]?.label;
 
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const handlePointerDown = (event: MouseEvent) => {
-      if (!rootRef.current?.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    };
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setIsOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handlePointerDown);
-    document.addEventListener("keydown", handleKeyDown);
-    return () => {
-      document.removeEventListener("mousedown", handlePointerDown);
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [isOpen]);
+  useOutsideClose({
+    isOpen,
+    onClose: () => setIsOpen(false),
+    ref: rootRef,
+  });
 
   const handleSelect = (nextValue: string) => {
     onChange(nextValue);
