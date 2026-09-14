@@ -33,6 +33,7 @@ interface QuotationRequestMobileProps {
   departure: AddressSearchController;
   arrival: AddressSearchController;
   canSubmit: boolean;
+  isSubmitting: boolean;
   onSubmit: () => void;
 }
 
@@ -44,6 +45,7 @@ export default function QuotationRequestMobile({
   departure,
   arrival,
   canSubmit,
+  isSubmitting,
   onSubmit,
 }: QuotationRequestMobileProps) {
   const [step, setStep] = useState(1);
@@ -61,8 +63,8 @@ export default function QuotationRequestMobile({
   const goPrev = () => setStep((prev) => Math.max(prev - 1, 1));
   const goNext = () => setStep((prev) => Math.min(prev + 1, TOTAL_STEPS));
   const isLastStep = step === TOTAL_STEPS;
-  // 스텝별로 그 스텝에서 채워야 하는 값만 검사 — 2단계는 날짜, 마지막 단계는 전체(canSubmit)
-  const isNextDisabled = step === 2 ? !date : isLastStep ? !canSubmit : false;
+  // 스텝별로 그 스텝에서 채워야 하는 값만 검사 — 2단계는 날짜, 마지막 단계는 전체(canSubmit) + 중복 제출 방지
+  const isNextDisabled = step === 2 ? !date : isLastStep ? !canSubmit || isSubmitting : false;
 
   return (
     <div className="tablet:hidden mt-9 mb-8.5 bg-white px-6">

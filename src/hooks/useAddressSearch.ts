@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { searchAddress } from "@/lib/services/address-service";
 import type { AddressSelectResult } from "@/components/address/AddressSelectModal";
 
@@ -20,7 +20,10 @@ export function useAddressSearch() {
 
   const open = useCallback(() => setIsOpen(true), []);
 
+  const abortControllerRef = useRef<AbortController | null>(null);
+
   const close = useCallback(() => {
+    abortControllerRef.current?.abort();
     setIsOpen(false);
     setSearchValue("");
     setResults([]);
@@ -28,7 +31,17 @@ export function useAddressSearch() {
   }, []);
 
   const search = useCallback(async (query: string) => {
-    setResults(query.trim() ? await searchAddress(query) : []);
+    // 이전 요청이 늦게 도착해 더 최신 검색어 결과를 덮어쓰는 걸 막기 위해, 새 요청 시작 시 이전 요청을 취소한다
+    abortControllerRef.current?.abort();
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
+    try {
+      setResults(query.trim() ? await searchAddress(query, controller.signal) : []);
+    } catch (error) {
+      if (error instanceof DOMException && error.name === "AbortError") return;
+      setResults([]);
+    }
   }, []);
 
   // 모달 열려있는 동안 타이핑하는 대로 결과 목록을 갱신

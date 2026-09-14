@@ -47,7 +47,7 @@ export default function CustomerQuotationRequestsPage() {
     arrival.detail.trim().length > 0;
 
   const handleSubmit = async () => {
-    if (!canSubmit || !date || !departure.value || !arrival.value) return;
+    if (!canSubmit || !date || !departure.value || !arrival.value || isSubmitting) return;
 
     setIsSubmitting(true);
     try {
@@ -93,6 +93,7 @@ export default function CustomerQuotationRequestsPage() {
           departure={departure}
           arrival={arrival}
           canSubmit={canSubmit}
+          isSubmitting={isSubmitting}
           onSubmit={handleSubmit}
         />
         <QuotationRequestDesktop
@@ -103,6 +104,7 @@ export default function CustomerQuotationRequestsPage() {
           departure={departure}
           arrival={arrival}
           canSubmit={canSubmit}
+          isSubmitting={isSubmitting}
           onSubmit={handleSubmit}
         />
       </div>

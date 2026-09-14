@@ -28,11 +28,11 @@ function formatTriggerLabel(date: Date) {
   return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일`;
 }
 
-// 오늘 이전 날짜는 선택 불가
+// 오늘 포함 이전 날짜는 선택 불가 — BE가 이사 예정일을 내일 이후로만 허용함(quotation-request.schema.ts)
 function isPastDate(date: Date) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  return date < today;
+  return date <= today;
 }
 
 // 컨벤션(sm=모바일 · md=PC)에 맞춤 — 값은 그대로, 라벨만 컨벤션대로 정리

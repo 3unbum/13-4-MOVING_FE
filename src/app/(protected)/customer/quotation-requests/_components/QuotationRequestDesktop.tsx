@@ -16,6 +16,7 @@ interface QuotationRequestDesktopProps {
   departure: AddressSearchController;
   arrival: AddressSearchController;
   canSubmit: boolean;
+  isSubmitting: boolean;
   onSubmit: () => void;
 }
 
@@ -27,6 +28,7 @@ export default function QuotationRequestDesktop({
   departure,
   arrival,
   canSubmit,
+  isSubmitting,
   onSubmit,
 }: QuotationRequestDesktopProps) {
   const departureDetailRef = useRef<HTMLInputElement>(null);
@@ -138,7 +140,12 @@ export default function QuotationRequestDesktop({
       </main>
       <div className="pc:hidden tablet:mt-14.25 tablet:flex tablet:justify-end">
         <div className="w-50">
-          <Button variant="solid" size="lg" disabled={!canSubmit} onClick={onSubmit}>
+          <Button
+            variant="solid"
+            size="lg"
+            disabled={!canSubmit || isSubmitting}
+            onClick={onSubmit}
+          >
             견적 요청하기
           </Button>
         </div>
