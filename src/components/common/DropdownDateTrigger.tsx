@@ -2,7 +2,7 @@
 
 import calendarMd from "@/assets/icons/calendar-md.svg";
 import chevronDownLgDark from "@/assets/icons/chevron-down-lg-dark.svg";
-import clsx from "clsx";
+import { cn } from "@/lib/utils/cn";
 import Image from "next/image";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 
@@ -127,7 +127,7 @@ export default function DropdownDateTrigger({
   }, [isOpen, closeOnOutsideClick]);
 
   return (
-    <div ref={rootRef} className={clsx("relative w-full", className)}>
+    <div ref={rootRef} className={cn("relative w-full", className)}>
       <button
         type="button"
         disabled={disabled}
@@ -135,7 +135,7 @@ export default function DropdownDateTrigger({
         aria-expanded={isOpen}
         aria-label={`날짜 선택: ${label}`}
         onClick={() => setOpen(!isOpen)}
-        className={clsx(
+        className={cn(
           "flex h-[50px] w-full items-center rounded-xl bg-gray-50 py-4 pr-3 pl-5 disabled:cursor-not-allowed disabled:opacity-50",
           isOpen ? "border-2 border-orange-400" : "border-gray-gray-100 border"
         )}

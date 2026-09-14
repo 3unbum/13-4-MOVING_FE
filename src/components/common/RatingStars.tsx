@@ -1,6 +1,6 @@
 import starActive from "@/assets/icons/star-sm-active.svg";
 import starDefault from "@/assets/icons/star-sm-default.svg";
-import clsx from "clsx";
+import { cn } from "@/lib/utils/cn";
 import Image from "next/image";
 
 const MAX_RATING = 5;
@@ -24,7 +24,7 @@ export default function RatingStars({ rating, className }: RatingStarsProps) {
 
   return (
     <div
-      className={clsx("flex items-start", className)}
+      className={cn("flex items-start", className)}
       role="img"
       aria-label={`별점 ${rating}점 (5점 만점)`}
     >

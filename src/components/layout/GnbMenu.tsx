@@ -1,7 +1,7 @@
 "use client";
 
 import xMd from "@/assets/icons/x-md.svg";
-import clsx from "clsx";
+import { cn } from "@/lib/utils/cn";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, type ReactNode } from "react";
@@ -88,9 +88,7 @@ export default function GnbMenu({
         aria-label="메뉴 닫기"
         onClick={onClose}
       />
-      <nav
-        className={clsx("absolute top-0 right-0 flex h-full w-55 flex-col bg-gray-50", className)}
-      >
+      <nav className={cn("absolute top-0 right-0 flex h-full w-55 flex-col bg-gray-50", className)}>
         <div className="border-line-100 flex h-13.5 items-center justify-end border-b px-4 py-2.5">
           <button type="button" aria-label="메뉴 닫기" onClick={onClose} className="size-6">
             <Image src={xMd} alt="" width={24} height={24} className="size-6" />

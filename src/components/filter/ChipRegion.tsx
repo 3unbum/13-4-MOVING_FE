@@ -1,4 +1,4 @@
-import clsx from "clsx";
+import { cn } from "@/lib/utils/cn";
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 
 type ChipSize = "sm" | "md";
@@ -75,7 +75,7 @@ export default function Chip({
     <button
       type="button"
       aria-pressed={selected}
-      className={clsx(
+      className={cn(
         "self-start rounded-full border whitespace-nowrap",
         isMd ? "text-18 px-5 py-2.5" : "text-14 px-3 py-1.5",
         weightClass,

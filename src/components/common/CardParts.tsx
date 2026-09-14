@@ -1,7 +1,7 @@
 import checkCircleOrange from "@/assets/icons/check-circle-orange-sm.svg";
 import likeDefault from "@/assets/icons/like-md-default.svg";
 import likeRedActive from "@/assets/icons/like-md-red-active.svg";
-import clsx from "clsx";
+import { cn } from "@/lib/utils/cn";
 import Image from "next/image";
 import type { ReactNode } from "react";
 
@@ -31,7 +31,7 @@ export function FavoriteCount({
   const content = (
     <>
       <Image src={isFavorited ? likeRedActive : likeDefault} alt="" className="size-6 shrink-0" />
-      {showCount && <span className={clsx("text-14", countClassName)}>{count}</span>}
+      {showCount && <span className={cn("text-14", countClassName)}>{count}</span>}
     </>
   );
 
@@ -62,7 +62,7 @@ export function ConfirmedBadge({ visible = true }: { visible?: boolean }) {
   return (
     <span
       aria-hidden={!visible}
-      className={clsx(
+      className={cn(
         "text-16 flex shrink-0 items-center justify-center gap-1 font-bold text-orange-400",
         !visible && "opacity-0"
       )}
@@ -97,13 +97,13 @@ export function PriceFooter({ price, size = "sm" }: { price: number; size?: "sm"
 
   return (
     <div
-      className={clsx(
+      className={cn(
         "border-line-200 flex w-full items-end justify-between border-t",
         isLg ? "h-13" : "h-11.75"
       )}
     >
       <span
-        className={clsx(
+        className={cn(
           "font-medium",
           isLg ? "text-16 text-black-black-450" : "text-14 text-gray-gray-300"
         )}
@@ -111,7 +111,7 @@ export function PriceFooter({ price, size = "sm" }: { price: number; size?: "sm"
         견적 금액
       </span>
       <span
-        className={clsx(
+        className={cn(
           "text-black-black-450 font-bold whitespace-nowrap",
           isLg ? "text-24" : "text-18"
         )}
@@ -132,7 +132,7 @@ export function PriceInline({ price, size = "sm" }: { price: number; size?: "sm"
   return (
     <div className="flex items-center gap-3 whitespace-nowrap">
       <span className="text-14 text-gray-gray-500 font-medium">견적 금액</span>
-      <span className={clsx("text-black-black-400 font-bold", isLg ? "text-24" : "text-18")}>
+      <span className={cn("text-black-black-400 font-bold", isLg ? "text-24" : "text-18")}>
         {price.toLocaleString()}원
       </span>
     </div>

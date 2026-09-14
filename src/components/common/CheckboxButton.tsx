@@ -1,4 +1,4 @@
-import clsx from "clsx";
+import { cn } from "@/lib/utils/cn";
 import Image from "next/image";
 import type { InputHTMLAttributes } from "react";
 import checkIcon from "@/assets/icons/check.svg";
@@ -24,7 +24,7 @@ export default function CheckboxButton({
 }: CheckboxButtonProps) {
   return (
     <label
-      className={clsx(
+      className={cn(
         "group relative inline-flex shrink-0 cursor-pointer items-center justify-center",
         shape === "round" ? "size-6" : "size-9",
         className
@@ -32,7 +32,7 @@ export default function CheckboxButton({
     >
       <input type="checkbox" className="sr-only" {...props} />
       <span
-        className={clsx(
+        className={cn(
           "border-line-200 flex items-center justify-center border bg-gray-50 transition-colors",
           "group-has-[:checked]:border-orange-400 group-has-[:checked]:bg-orange-400",
           "group-has-[:disabled]:cursor-not-allowed group-has-[:disabled]:opacity-40",
@@ -44,7 +44,7 @@ export default function CheckboxButton({
         <Image
           src={checkIcon}
           alt=""
-          className={clsx(
+          className={cn(
             "h-auto opacity-0 transition-opacity group-has-[:checked]:opacity-100",
             shape === "round" ? "w-2" : "w-3"
           )}

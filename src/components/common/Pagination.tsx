@@ -1,6 +1,6 @@
 "use client";
 
-import clsx from "clsx";
+import { cn } from "@/lib/utils/cn";
 import Image from "next/image";
 import chevronLeftDefault from "@/assets/icons/chevron-left-md.svg";
 import chevronLeftActive from "@/assets/icons/chevron-left-md-active.svg";
@@ -96,16 +96,13 @@ export default function Pagination({
   const isLastPage = currentPage === totalPages;
   const styles = size ? SIZE_STYLES[size] : RESPONSIVE_STYLES;
 
-  const buttonBase = clsx(
+  const buttonBase = cn(
     "flex shrink-0 items-center justify-center bg-gray-50 disabled:cursor-not-allowed",
     styles.button
   );
 
   return (
-    <nav
-      aria-label="페이지네이션"
-      className={clsx("flex items-center", styles.gapOuter, className)}
-    >
+    <nav aria-label="페이지네이션" className={cn("flex items-center", styles.gapOuter, className)}>
       <button
         type="button"
         aria-label="이전 페이지"
@@ -136,12 +133,12 @@ export default function Pagination({
               type="button"
               aria-current={page === currentPage ? "page" : undefined}
               onClick={() => onPageChange(page)}
-              className={clsx(
+              className={cn(
                 buttonBase,
                 styles.text,
                 page === currentPage
                   ? "text-black-black-400 font-semibold"
-                  : clsx(styles.inactiveWeight, "text-gray-gray-200")
+                  : cn(styles.inactiveWeight, "text-gray-gray-200")
               )}
             >
               {page}

@@ -13,7 +13,7 @@ import DropdownNotification, {
 } from "@/components/layout/DropdownNotification";
 import DropdownProfile, { type DropdownProfileOption } from "@/components/layout/DropdownProfile";
 import GnbMenu, { getGnbNavItems, LOGOUT_NAV, type GnbRole } from "@/components/layout/GnbMenu";
-import clsx from "clsx";
+import { cn } from "@/lib/utils/cn";
 import Image from "next/image";
 import Link from "next/link";
 import { useRef, useState, type ReactNode } from "react";
@@ -112,7 +112,7 @@ export default function Gnb({
   return (
     <>
       <header
-        className={clsx(
+        className={cn(
           "flex w-full items-center bg-gray-50",
           "h-13.5 px-6 py-2.5",
           "tablet:px-18",
@@ -308,7 +308,7 @@ function LogoSm({ className }: { className?: string }) {
       alt="무빙"
       width={88}
       height={34}
-      className={clsx("h-8.5 w-22 max-w-none", className)}
+      className={cn("h-8.5 w-22 max-w-none", className)}
       priority
     />
   );

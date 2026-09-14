@@ -1,6 +1,6 @@
 "use client";
 
-import clsx from "clsx";
+import { cn } from "@/lib/utils/cn";
 import { useId } from "react";
 import Button from "@/components/common/Button";
 import type { ServiceCode } from "@/components/filter/ChipRegion";
@@ -73,7 +73,7 @@ export default function QuoteActionModal({
       onClose={onClose}
       position={isMd ? "center" : "bottom"}
       labelledBy={titleId}
-      className={clsx(
+      className={cn(
         "px-6 pt-8 pb-10",
         isMd
           ? "w-152 min-w-152 gap-10 rounded-[32px]"
@@ -109,7 +109,7 @@ export default function QuoteActionModal({
         <div className="flex w-full flex-col items-start gap-4">
           {isSend ? (
             <>
-              <p className={clsx("text-black-300 font-semibold", isMd ? "text-18" : "text-16")}>
+              <p className={cn("text-black-300 font-semibold", isMd ? "text-18" : "text-16")}>
                 견적가를 입력해 주세요
               </p>
               <InputTextField
@@ -120,7 +120,7 @@ export default function QuoteActionModal({
                 value={price}
                 onChange={(event) => onPriceChange?.(event.target.value.replace(/\D/g, ""))}
               />
-              <p className={clsx("text-black-300 font-semibold", isMd ? "text-18" : "text-16")}>
+              <p className={cn("text-black-300 font-semibold", isMd ? "text-18" : "text-16")}>
                 코멘트를 입력해 주세요
               </p>
               <InputTextArea
@@ -132,7 +132,7 @@ export default function QuoteActionModal({
             </>
           ) : (
             <>
-              <p className={clsx("text-black-300 font-semibold", isMd ? "text-20" : "text-16")}>
+              <p className={cn("text-black-300 font-semibold", isMd ? "text-20" : "text-16")}>
                 반려 사유를 입력해 주세요
               </p>
               <InputTextArea

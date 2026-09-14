@@ -1,4 +1,4 @@
-import clsx from "clsx";
+import { cn } from "@/lib/utils/cn";
 import type { HTMLAttributes } from "react";
 
 type ToastSize = "sm" | "md";
@@ -16,7 +16,7 @@ export default function Toast({ message, size = "sm", className, ...props }: Toa
     <div
       role="status"
       aria-live="polite"
-      className={clsx(
+      className={cn(
         "z-toast shadow-modal fixed bottom-10 left-1/2 -translate-x-1/2 bg-orange-200 font-semibold text-orange-400",
         isMd ? "text-18 rounded-2xl px-8 py-5" : "text-16 rounded-xl px-6 py-3.5",
         className

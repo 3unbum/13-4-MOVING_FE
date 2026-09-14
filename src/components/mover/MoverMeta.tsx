@@ -1,5 +1,5 @@
 import starActive from "@/assets/icons/star-sm-active.svg";
-import clsx from "clsx";
+import { cn } from "@/lib/utils/cn";
 import Image from "next/image";
 
 interface MoverMetaProps {
@@ -23,7 +23,7 @@ export default function MoverMeta({
   className,
 }: MoverMetaProps) {
   return (
-    <div className={clsx("text-13 flex items-center gap-2 font-medium", className)}>
+    <div className={cn("text-13 flex items-center gap-2 font-medium", className)}>
       <span className="flex items-center gap-0.5">
         <Image src={starActive} alt="" className="size-5 shrink-0" />
         <span className="text-black-300">{rating.toFixed(1)}</span>

@@ -1,6 +1,6 @@
 "use client";
 
-import clsx from "clsx";
+import { cn } from "@/lib/utils/cn";
 import Image from "next/image";
 import { forwardRef, useId, useState } from "react";
 import type { InputHTMLAttributes } from "react";
@@ -43,14 +43,14 @@ const InputTextField = forwardRef<HTMLInputElement, InputTextFieldProps>(functio
   const message = errorMessage ?? helperText;
 
   return (
-    <div className={clsx("flex w-full flex-col", size === "sm" ? "gap-1" : "gap-2", className)}>
+    <div className={cn("flex w-full flex-col", size === "sm" ? "gap-1" : "gap-2", className)}>
       {label && (
         <label htmlFor={inputId} className="sr-only">
           {label}
         </label>
       )}
       <div
-        className={clsx(
+        className={cn(
           "flex w-full items-center rounded-2xl border bg-gray-50 px-3.5 transition-colors",
           size === "sm" ? "h-[54px]" : "h-16",
           isError
@@ -64,7 +64,7 @@ const InputTextField = forwardRef<HTMLInputElement, InputTextFieldProps>(functio
           id={inputId}
           type={isPassword && isPasswordVisible ? "text" : type}
           disabled={disabled}
-          className={clsx(
+          className={cn(
             "text-black-400 min-w-0 flex-1 bg-transparent font-normal placeholder:text-gray-400 focus:outline-none disabled:cursor-not-allowed",
             size === "sm" ? "text-16" : "text-18"
           )}
@@ -88,7 +88,7 @@ const InputTextField = forwardRef<HTMLInputElement, InputTextFieldProps>(functio
       </div>
       {message && (
         <p
-          className={clsx(
+          className={cn(
             "font-medium",
             size === "sm" ? "text-13" : "text-16",
             isError ? "text-red-200" : "text-gray-400"
