@@ -11,10 +11,15 @@ export default function GlobalGnb() {
   const router = useRouter();
   const { account, isAuthenticated, logout } = useAuth();
 
-  const handleProfileSelect = (value: string) => {
+  const handleProfileSelect = async (value: string) => {
     if (value !== "logout") return;
-    logout();
-    router.push("/");
+    try {
+      await logout();
+      router.push("/");
+    } catch (error) {
+      // 네트워크 오류·5xx — 로그아웃 실패, 현재 화면 유지 (성공 시에만 이동)
+      console.error("로그아웃에 실패했어요", error);
+    }
   };
 
   return (

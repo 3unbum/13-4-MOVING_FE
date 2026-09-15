@@ -18,9 +18,13 @@ function isRateLimited(ip: string): boolean {
   const timestamps = (requestTimestampsByIp.get(ip) ?? []).filter(
     (ts) => now - ts < RATE_LIMIT_WINDOW_MS
   );
+  if (timestamps.length >= RATE_LIMIT_MAX_REQUESTS) {
+    requestTimestampsByIp.set(ip, timestamps);
+    return true;
+  }
   timestamps.push(now);
   requestTimestampsByIp.set(ip, timestamps);
-  return timestamps.length > RATE_LIMIT_MAX_REQUESTS;
+  return false;
 }
 
 interface KakaoAddressDocument {

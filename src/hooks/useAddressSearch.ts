@@ -5,7 +5,7 @@ import { searchAddress } from "@/lib/services/address-service";
 import type { AddressSelectResult } from "@/components/address/AddressSelectModal";
 
 // 타이핑 멈추고 이 정도 지나면 검색 — 매 키 입력마다 API 부르지 않으려는 디바운스
-const SEARCH_DEBOUNCE_MS = 150;
+const SEARCH_DEBOUNCE_MS = 300;
 
 // 출발지/도착지 하나당 하나씩 붙이는 훅 — 모달 열림 상태, 검색, 선택, 확정값, 상세주소를 한 번에 관리한다.
 // 상세주소 입력창 포커스용 ref는 실제 렌더링하는 컴포넌트(모바일/데스크톱) 쪽에서 로컬로 관리한다 —
@@ -44,6 +44,15 @@ export function useAddressSearch() {
     }
   }, []);
 
+  const onSearchChange = useCallback((query: string) => {
+    // 검색어가 바뀌는 순간 이전 검색 결과/선택값은 더 이상 유효하지 않으니 바로 비운다.
+    // 실제 API 호출은 기존 debounce(search)가 그대로 처리한다.
+    abortControllerRef.current?.abort();
+    setSearchValue(query);
+    setResults([]);
+    setSelectedId(undefined);
+  }, []);
+
   // 모달 열려있는 동안 타이핑하는 대로 결과 목록을 갱신
   useEffect(() => {
     if (!isOpen) return;
@@ -63,7 +72,7 @@ export function useAddressSearch() {
     open,
     close,
     searchValue,
-    onSearchChange: setSearchValue,
+    onSearchChange,
     onSearch: search,
     results,
     selectedId,
