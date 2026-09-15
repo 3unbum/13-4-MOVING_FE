@@ -6,10 +6,17 @@ import QuoteEmptyState from "@/components/quote/QuoteEmptyState";
 import Sort from "@/components/common/Sort";
 import { SERVICE_LABELS } from "@/components/filter/ChipRegion";
 import { cn } from "@/lib/utils/cn";
-import type { MockEstimate, MockQuotationRequest } from "@/lib/mocks/my-quotes";
+import type { Estimate } from "@/lib/services/estimate-service";
+import type { QuotationRequest } from "@/lib/services/quotation-request-service";
+
+/** 요청 1건 + 거기 달린 견적들 = 화면의 블록 하나 */
+export interface PastQuoteBlock {
+  request: QuotationRequest;
+  estimates: Estimate[];
+}
 
 interface PastQuotesPanelProps {
-  requests: MockQuotationRequest[];
+  blocks: PastQuoteBlock[];
 }
 
 const FILTER_OPTIONS = [
@@ -52,20 +59,22 @@ function InfoRow({ label, value }: { label: string; value: string }) {
 }
 
 /** 견적서 한 장 — size만 다른 두 벌을 CSS로 전환합니다 (JS 미디어쿼리는 첫 렌더에 깜빡임) */
-function EstimateRow({ estimate }: { estimate: MockEstimate }) {
+function EstimateRow({ estimate }: { estimate: Estimate }) {
   const common = {
-    category: estimate.category,
+    category: estimate.quotationRequest.category,
     isTargeted: estimate.isTargeted,
-    title: estimate.title,
-    price: estimate.price,
-    isConfirmed: estimate.isConfirmed,
-    nickName: estimate.nickName,
-    profileImage: estimate.profileImage,
-    rating: estimate.rating,
-    reviewCount: estimate.reviewCount,
-    career: estimate.career,
-    confirmedCount: estimate.confirmedCount,
-    favoriteCount: estimate.favoriteCount,
+    // 카드 제목은 기사님 한 줄 소개입니다
+    title: estimate.mover.bio,
+    // REJECTED(반려)면 price가 null입니다
+    price: estimate.price ?? 0,
+    isConfirmed: estimate.estimateStatus === "CONFIRMED",
+    nickName: estimate.mover.nickName,
+    profileImage: estimate.mover.image,
+    rating: estimate.mover.avgRating,
+    reviewCount: estimate.mover.reviewCount,
+    career: estimate.mover.career,
+    confirmedCount: estimate.mover.confirmedCount,
+    favoriteCount: estimate.mover.favoriteCount,
   };
 
   return (
@@ -86,22 +95,22 @@ function EstimateRow({ estimate }: { estimate: MockEstimate }) {
  * 대기 중인 견적과 달리 요청 1건이 블록 하나가 되고, 그 안에 견적 목록이 들어갑니다.
  * PC·태블릿은 좌(견적 정보)/우(견적서 목록) 2단, 모바일은 세로 1단입니다.
  */
-export default function PastQuotesPanel({ requests }: PastQuotesPanelProps) {
+export default function PastQuotesPanel({ blocks }: PastQuotesPanelProps) {
   // 필터는 요청 블록마다 독립이라 id별로 들고 있습니다
   const [filters, setFilters] = useState<Record<number, string>>({});
 
-  if (requests.length === 0) {
+  if (blocks.length === 0) {
     return <QuoteEmptyState message={"아직 받았던 견적이 없어요."} />;
   }
 
   return (
     <div className="bg-background-background-100 tablet:gap-8 tablet:px-18 tablet:py-10 pc:gap-10 pc:px-10 pc:py-12 flex flex-1 flex-col items-center gap-6 px-6 py-8">
-      {requests.map((request) => {
+      {blocks.map(({ request, estimates: allEstimates }) => {
         const filter = filters[request.id] ?? "all";
         const estimates =
           filter === "confirmed"
-            ? request.estimates.filter((e) => e.isConfirmed)
-            : request.estimates;
+            ? allEstimates.filter((e) => e.estimateStatus === "CONFIRMED")
+            : allEstimates;
 
         return (
           <section
@@ -134,7 +143,7 @@ export default function PastQuotesPanel({ requests }: PastQuotesPanelProps) {
               <div className="flex items-center gap-2">
                 <h3 className="text-16 text-black-500 tablet:text-18 font-semibold">견적서 목록</h3>
                 <span className="text-16 tablet:text-18 font-semibold text-orange-400">
-                  {request.estimates.length}
+                  {allEstimates.length}
                 </span>
               </div>
 

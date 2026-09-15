@@ -1,23 +1,43 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Tab from "@/components/common/Tab";
 import TabList from "@/components/common/TabList";
 import PastQuotesPanel from "@/components/quote/PastQuotesPanel";
 import PendingQuotesPanel from "@/components/quote/PendingQuotesPanel";
-import { MOCK_ACTIVE_REQUEST, MOCK_PAST_REQUESTS } from "@/lib/mocks/my-quotes";
+import { usePastQuotes, usePendingQuotes } from "@/hooks/useMyQuotes";
 
 type QuoteTab = "pending" | "past";
+
+/** 조회 실패 시 — 카드 대신 이유를 보여줍니다 */
+function QuoteError() {
+  return (
+    <div className="bg-background-background-100 text-14 text-gray-gray-400 flex flex-1 items-center justify-center px-6 py-20">
+      견적을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.
+    </div>
+  );
+}
+
+/** 로딩 — 스켈레톤은 컴포넌트 단위로 하기로 했으나(9/6 멘토링) 이 페이지는 후속 작업으로 둡니다 */
+function QuoteLoading() {
+  return <div className="bg-background-background-100 flex flex-1" aria-busy="true" />;
+}
 
 /**
  * 내 견적 관리 (페이지 8) — 탭 2개.
  *
- * TODO: 데이터는 아직 목업입니다. BE가 견적 목록에 기사님 정보를 포함하지 않아
- * (estimate 테이블 컬럼만 응답) 카드를 채울 수 없습니다 — BE 이슈 #80 머지 후
- * `src/lib/mocks/my-quotes.ts`를 지우고 실제 API로 교체합니다.
+ * 데이터는 BE #80(견적 응답에 기사님 정보 포함) 위에서 동작합니다.
+ * 그 전 응답으로는 카드에 넣을 이름·평점·경력이 없습니다.
  */
 export default function MyQuotesTabs() {
+  const router = useRouter();
   const [tab, setTab] = useState<QuoteTab>("pending");
+
+  const pending = usePendingQuotes();
+  const past = usePastQuotes();
+
+  const openDetail = (estimateId: number) => router.push(`/customer/my-quotes/${estimateId}`);
 
   return (
     // 빈 상태를 세로 가운데 두려면 높이가 필요한데, 상위 레이아웃((protected)/customer)이
@@ -54,7 +74,19 @@ export default function MyQuotesTabs() {
           tabIndex={0}
           className="flex flex-1 flex-col"
         >
-          <PendingQuotesPanel request={MOCK_ACTIVE_REQUEST} />
+          {pending.error ? (
+            <QuoteError />
+          ) : pending.isLoading ? (
+            <QuoteLoading />
+          ) : (
+            <PendingQuotesPanel
+              request={pending.request}
+              estimates={pending.estimates}
+              onDetailClick={openDetail}
+              // TODO: 견적 확정 API(#29) 연동 — 확정 모달 흐름이 정해지면 붙입니다
+              onConfirmClick={openDetail}
+            />
+          )}
         </div>
       )}
 
@@ -66,7 +98,13 @@ export default function MyQuotesTabs() {
           tabIndex={0}
           className="flex flex-1 flex-col"
         >
-          <PastQuotesPanel requests={MOCK_PAST_REQUESTS} />
+          {past.error ? (
+            <QuoteError />
+          ) : past.isLoading ? (
+            <QuoteLoading />
+          ) : (
+            <PastQuotesPanel blocks={past.blocks} />
+          )}
         </div>
       )}
     </div>

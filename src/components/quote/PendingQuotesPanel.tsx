@@ -1,29 +1,47 @@
 import { CardPendingHistory } from "@/components/quote/CardEstimate";
 import QuoteEmptyState from "@/components/quote/QuoteEmptyState";
 import SubHeader from "@/components/common/SubHeader";
-import type { MockEstimate, MockQuotationRequest } from "@/lib/mocks/my-quotes";
+import type { Estimate } from "@/lib/services/estimate-service";
+import type { QuotationRequest } from "@/lib/services/quotation-request-service";
 
 interface PendingQuotesPanelProps {
   /** 활성 견적 요청. 없으면(요청 자체를 안 한 상태) 빈 상태로 갈립니다 */
-  request: MockQuotationRequest | null;
+  request: QuotationRequest | null;
+  estimates: Estimate[];
+  onDetailClick?: (estimateId: number) => void;
+  onConfirmClick?: (estimateId: number) => void;
 }
 
 /** 카드 한 장 — size만 다른 두 벌을 CSS로 전환합니다 */
-function EstimateCard({ estimate, size }: { estimate: MockEstimate; size: "sm" | "lg" }) {
+function EstimateCard({
+  estimate,
+  size,
+  onDetailClick,
+  onConfirmClick,
+}: {
+  estimate: Estimate;
+  size: "sm" | "lg";
+  onDetailClick?: () => void;
+  onConfirmClick?: () => void;
+}) {
   return (
     <CardPendingHistory
       size={size}
-      category={estimate.category}
+      category={estimate.quotationRequest.category}
       isTargeted={estimate.isTargeted}
-      title={estimate.title}
-      price={estimate.price}
-      nickName={estimate.nickName}
-      profileImage={estimate.profileImage}
-      rating={estimate.rating}
-      reviewCount={estimate.reviewCount}
-      career={estimate.career}
-      confirmedCount={estimate.confirmedCount}
-      favoriteCount={estimate.favoriteCount}
+      // 카드 제목은 기사님 한 줄 소개입니다
+      title={estimate.mover.bio}
+      // REJECTED면 price가 null이지만 이 탭은 PENDING만 다룹니다
+      price={estimate.price ?? 0}
+      nickName={estimate.mover.nickName}
+      profileImage={estimate.mover.image}
+      rating={estimate.mover.avgRating}
+      reviewCount={estimate.mover.reviewCount}
+      career={estimate.mover.career}
+      confirmedCount={estimate.mover.confirmedCount}
+      favoriteCount={estimate.mover.favoriteCount}
+      onDetailClick={onDetailClick}
+      onConfirmClick={onConfirmClick}
     />
   );
 }
@@ -37,7 +55,12 @@ function EstimateCard({ estimate, size }: { estimate: MockEstimate; size: "sm" |
  * 카드 size와 SubHeader size는 JS 미디어쿼리 대신 CSS로 전환합니다 —
  * 첫 렌더 깜빡임이 없고, 서버 컴포넌트로 둘 수 있습니다.
  */
-export default function PendingQuotesPanel({ request }: PendingQuotesPanelProps) {
+export default function PendingQuotesPanel({
+  request,
+  estimates,
+  onDetailClick,
+  onConfirmClick,
+}: PendingQuotesPanelProps) {
   // 요청 자체가 없으면 SubHeader에 채울 값이 없어 통째로 숨깁니다 (피그마에 없는 화면 — 9/11 회의록 기준)
   if (!request) {
     return (
@@ -71,9 +94,14 @@ export default function PendingQuotesPanel({ request }: PendingQuotesPanelProps)
         size="md"
         className="tablet:flex pc:hidden tablet:py-9 hidden bg-gray-50"
       />
-      <SubHeader {...subHeaderProps} size="lg" className="pc:flex pc:py-5 hidden bg-gray-50" />
+      {/* lg 기본값 pr-100 pl-80(합 720)은 피그마 1920 기준이라 1280에서는 내용 영역이
+          560px만 남아 "울산 남구"가 줄바꿈됩니다. 배경은 전체 폭을 유지해야 해서
+          바깥 div가 배경을, 안쪽 SubHeader가 카드 그리드(1140)와 같은 폭을 맡습니다. */}
+      <div className="pc:block hidden bg-gray-50">
+        <SubHeader {...subHeaderProps} size="lg" className="mx-auto w-full max-w-285 px-0 py-8" />
+      </div>
 
-      {request.estimates.length === 0 ? (
+      {estimates.length === 0 ? (
         // 유일하게 피그마에 있는 빈 상태 (510:40203 / 510:40174 / 510:40230)
         <QuoteEmptyState
           showIllustration
@@ -86,17 +114,24 @@ export default function PendingQuotesPanel({ request }: PendingQuotesPanelProps)
               좌우 여백은 패딩이 아니라 max-w + 중앙정렬로 잡습니다 — 피그마 여백(1920 기준 390)을
               패딩으로 그대로 옮기면 1280에서 카드가 짓눌립니다(1140 중앙정렬이면 1280에서 70). */}
           <div className="tablet:max-w-150 tablet:gap-8 pc:max-w-285 pc:grid-cols-2 pc:gap-6 grid w-full max-w-81.75 grid-cols-1 gap-8">
-            {request.estimates.map((estimate) => (
-              // 그리드 칸 하나 = 카드 하나. 안에서 sm/lg 두 벌을 CSS로 전환합니다
-              <div key={estimate.id}>
-                <div className="tablet:hidden">
-                  <EstimateCard estimate={estimate} size="sm" />
+            {estimates.map((estimate) => {
+              const handlers = {
+                onDetailClick: () => onDetailClick?.(estimate.id),
+                onConfirmClick: () => onConfirmClick?.(estimate.id),
+              };
+
+              return (
+                // 그리드 칸 하나 = 카드 하나. 안에서 sm/lg 두 벌을 CSS로 전환합니다
+                <div key={estimate.id}>
+                  <div className="tablet:hidden">
+                    <EstimateCard estimate={estimate} size="sm" {...handlers} />
+                  </div>
+                  <div className="tablet:block hidden">
+                    <EstimateCard estimate={estimate} size="lg" {...handlers} />
+                  </div>
                 </div>
-                <div className="tablet:block hidden">
-                  <EstimateCard estimate={estimate} size="lg" />
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       )}
