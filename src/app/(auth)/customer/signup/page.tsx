@@ -14,7 +14,7 @@ import FormField from "@/components/auth/FormField";
 import ProfileRegisterModal from "@/components/auth/ProfileRegisterModal";
 import SocialLoginSection from "@/components/auth/SocialLoginSection";
 import { authService } from "@/lib/services/auth-service";
-import { signupSchema, type CustomerSignupFormValues } from "@/lib/schemas/auth-schema";
+import { signupSchema, type SignupFormValues } from "@/lib/schemas/auth-schema";
 import { ApiError } from "@/lib/utils/api-error";
 import { useAuth } from "@/providers/AuthProvider";
 
@@ -27,9 +27,9 @@ export default function CustomerSignupPage() {
     handleSubmit,
     setError,
     formState: { errors, isSubmitting, isValid },
-  } = useForm<CustomerSignupFormValues>({ resolver: zodResolver(signupSchema), mode: "onChange" });
+  } = useForm<SignupFormValues>({ resolver: zodResolver(signupSchema), mode: "onChange" });
 
-  const onSubmit = async (values: CustomerSignupFormValues) => {
+  const onSubmit = async (values: SignupFormValues) => {
     const { passwordConfirm: _passwordConfirm, ...signupValues } = values;
     try {
       await authService.signup({ role: "CUSTOMER", ...signupValues });
@@ -130,7 +130,7 @@ export default function CustomerSignupPage() {
             <AuthSwitchLink
               prompt="이미 무빙 회원이신가요?"
               href="/customer/login"
-              linkText="로그인하기"
+              linkText="로그인"
             />
           </div>
 
