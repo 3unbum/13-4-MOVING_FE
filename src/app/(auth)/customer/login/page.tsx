@@ -36,7 +36,7 @@ export default function CustomerLoginPage() {
       await refetch();
       // customer는 프로필이 선택사항이라 강제 이동은 안 시키고, 아직 등록 안 한 계정에만 모달로 유도한다.
       if (result.hasProfile) {
-        router.push("/");
+        router.replace("/");
       } else {
         setIsProfileModalOpen(true);
       }
@@ -46,7 +46,7 @@ export default function CustomerLoginPage() {
     }
   };
 
-  const skipProfileRegister = () => router.push("/");
+  const skipProfileRegister = () => router.replace("/");
 
   return (
     <>
@@ -110,7 +110,7 @@ export default function CustomerLoginPage() {
       <ProfileRegisterModal
         open={isProfileModalOpen}
         onSkip={skipProfileRegister}
-        onRegister={() => router.push("/customer/profile-register")}
+        onRegister={() => router.replace("/customer/profile-register")}
       />
     </>
   );

@@ -50,7 +50,7 @@ export default function CustomerSignupPage() {
   };
 
   // 모달을 닫는 모든 경로는 랜딩으로 — 비로그인 전용 (auth) 그룹에 로그인된 채로 남지 않게 하기 위함.
-  const skipProfileRegister = () => router.push("/");
+  const skipProfileRegister = () => router.replace("/");
 
   return (
     <>
@@ -93,7 +93,7 @@ export default function CustomerSignupPage() {
                   id="phoneNumber"
                   label="전화번호"
                   type="tel"
-                  placeholder="숫자만 입력해 주세요"
+                  placeholder="하이픈(-) 없이 숫자만 입력해 주세요"
                   autoComplete="tel"
                   errorMessage={errors.phoneNumber?.message}
                   {...register("phoneNumber")}
@@ -141,7 +141,7 @@ export default function CustomerSignupPage() {
       <ProfileRegisterModal
         open={isProfileModalOpen}
         onSkip={skipProfileRegister}
-        onRegister={() => router.push("/customer/profile-register")}
+        onRegister={() => router.replace("/customer/profile-register")}
       />
     </>
   );
