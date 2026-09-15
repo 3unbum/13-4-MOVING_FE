@@ -18,12 +18,14 @@ const MOCK_RESULTS: AddressSelectResult[] = [
     zipCode: "04538",
     roadAddress: "서울 중구 세종대로 110",
     lotAddress: "서울 중구 태평로1가 31",
+    region: "SEOUL",
   },
   {
     id: "13529-판교역로-235",
     zipCode: "13529",
     roadAddress: "경기 성남시 분당구 판교역로 235",
     lotAddress: "경기 성남시 분당구 삼평동 683",
+    region: "GYEONGGI",
   },
 ];
 

@@ -49,8 +49,8 @@ export default function SelectCard({
       type="button"
       aria-pressed={selected}
       className={cn(
-        "relative flex items-start gap-2 rounded-2xl border-2 px-4 py-5 text-left",
-        isMd ? "w-64 flex-col items-end gap-4 pb-4" : "w-81.75 justify-end",
+        "relative flex h-55.5 w-full flex-1 items-start gap-2 rounded-2xl border-2 px-4 py-5 text-left",
+        isMd ? "flex-col items-end gap-4 pb-4" : "justify-end",
         selected
           ? "border-orange-400 bg-orange-100"
           : "bg-background-200 hover:bg-background-300 border-transparent hover:border-gray-300",
@@ -88,8 +88,8 @@ export default function SelectCard({
           </span>
         </span>
       </div>
-      <div className="size-30 shrink-0">
-        <Image src={IMAGES[variant]} alt="" />
+      <div className="relative size-30 shrink-0">
+        <Image src={IMAGES[variant]} alt="" fill className="object-contain" />
       </div>
     </button>
   );
