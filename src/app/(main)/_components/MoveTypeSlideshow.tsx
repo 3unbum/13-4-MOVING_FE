@@ -1,6 +1,6 @@
 "use client";
 
-import { animate, useMotionValue } from "motion/react";
+import { animate, useMotionValue, useReducedMotion } from "motion/react";
 import { useEffect } from "react";
 import type { SelectCardVariant } from "@/components/common/SelectCard";
 import MoveTypeSlideCard from "./MoveTypeSlideCard";
@@ -13,15 +13,17 @@ const ROTATION_DURATION_S = 15;
 // 위치·크기·투명도를 그 각도에서 파생시킨다.
 export default function MoveTypeSlideshow() {
   const angle = useMotionValue(0);
+  const prefersReducedMotion = useReducedMotion();
 
   useEffect(() => {
+    if (prefersReducedMotion) return;
     const controls = animate(angle, 360, {
       duration: ROTATION_DURATION_S,
       repeat: Infinity,
       ease: "linear",
     });
     return () => controls.stop();
-  }, [angle]);
+  }, [angle, prefersReducedMotion]);
 
   return (
     <div className="pc:flex-1 relative h-56 px-4 pt-4" style={{ perspective: 800 }}>
