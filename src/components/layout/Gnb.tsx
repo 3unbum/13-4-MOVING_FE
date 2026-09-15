@@ -12,7 +12,9 @@ import DropdownNotification, {
   DropdownNotificationItem,
 } from "@/components/layout/DropdownNotification";
 import DropdownProfile, { type DropdownProfileOption } from "@/components/layout/DropdownProfile";
-import GnbMenu, { getGnbNavItems, LOGOUT_NAV, type GnbRole } from "@/components/layout/GnbMenu";
+import GnbMenu from "@/components/layout/GnbMenu";
+import { getGnbNavItems, LOGOUT_NAV, type GnbRole } from "@/constants/gnb/nav";
+import { getGnbProfileOptions } from "@/constants/gnb/profile";
 import { cn } from "@/lib/utils/cn";
 import Image from "next/image";
 import Link from "next/link";
@@ -42,19 +44,6 @@ interface GnbProps {
   onProfileSelect?: (value: string) => void;
 }
 
-// TODO: 라우트·로그아웃 액션 확정 후 상위에서 profileOptions로 주입하거나 여기서 연결 등 후속작업 진행
-const CUSTOMER_PROFILE_OPTIONS: DropdownProfileOption[] = [
-  { value: "edit", label: "프로필 수정" },
-  { value: "favorite", label: "찜한 기사님" },
-  { value: "review", label: "이사 리뷰" },
-  { value: "logout", label: "로그아웃", tone: "muted" },
-];
-
-const MOVER_PROFILE_OPTIONS: DropdownProfileOption[] = [
-  { value: "mypage", label: "마이페이지" },
-  { value: "logout", label: "로그아웃", tone: "muted" },
-];
-
 /**
  * 공통 GNB — sm/md/lg는 tablet·pc 브레이크포인트로 대응
  *
@@ -79,8 +68,7 @@ export default function Gnb({
   const actionsRef = useRef<HTMLDivElement>(null);
 
   const navItems = getGnbNavItems(isLoggedIn, role);
-  const menuOptions =
-    profileOptions ?? (role === "mover" ? MOVER_PROFILE_OPTIONS : CUSTOMER_PROFILE_OPTIONS);
+  const menuOptions = profileOptions ?? getGnbProfileOptions(role);
   const profileHeader = userName
     ? `${userName} ${role === "mover" ? "기사님" : "고객님"}`
     : undefined;
@@ -131,7 +119,7 @@ export default function Gnb({
               <nav className="pc:flex hidden h-full items-center gap-10" aria-label="주요 메뉴">
                 {navItems.map((item) => (
                   <Link
-                    key={item.href}
+                    key={item.id}
                     href={item.href}
                     className="text-18 text-black-500 flex h-22 items-center justify-center py-4 font-bold"
                   >
@@ -245,7 +233,7 @@ export default function Gnb({
             <nav className="pc:block relative hidden h-6.5 flex-1" aria-label="주요 메뉴">
               {LOGOUT_NAV.map((item) => (
                 <Link
-                  key={item.href}
+                  key={item.id}
                   href={item.href}
                   className="text-18 text-black-500 absolute top-1/2 left-0 w-20.5 -translate-y-1/2 text-center font-bold whitespace-nowrap"
                 >

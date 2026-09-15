@@ -10,7 +10,7 @@ export const loginSchema = z.object({
   password: z.string().min(1, "비밀번호를 입력해 주세요"),
 });
 
-export type CustomerLoginFormValues = z.infer<typeof loginSchema>;
+export type LoginFormValues = z.infer<typeof loginSchema>;
 
 export const signupSchema = z
   .object({
@@ -34,4 +34,4 @@ export const signupSchema = z
     path: ["passwordConfirm"],
   });
 
-export type CustomerSignupFormValues = z.infer<typeof signupSchema>;
+export type SignupFormValues = z.infer<typeof signupSchema>;

@@ -1,18 +1,12 @@
 "use client";
 
 import xMd from "@/assets/icons/x-md.svg";
+import { CUSTOMER_NAV, MOVER_NAV, type GnbNavItem, type GnbRole } from "@/constants/gnb/nav";
+import { useDialog } from "@/hooks/useDialog";
 import { cn } from "@/lib/utils/cn";
 import Image from "next/image";
 import Link from "next/link";
 import { type ReactNode } from "react";
-import { useDialog } from "@/hooks/useDialog";
-
-export type GnbRole = "customer" | "mover";
-
-export interface GnbNavItem {
-  label: string;
-  href: string;
-}
 
 interface GnbMenuProps {
   /** 역할별 기본 메뉴. items를 직접 넘기면 role보다 우선 */
@@ -23,24 +17,6 @@ interface GnbMenuProps {
   /** 메뉴 하단 추가 액션 (비로그인 시 로그인 등) */
   footer?: ReactNode;
   className?: string;
-}
-
-export const CUSTOMER_NAV: GnbNavItem[] = [
-  { label: "견적 요청", href: "/customer/quotation-requests" },
-  { label: "기사님 찾기", href: "/movers" },
-  { label: "내 견적 관리", href: "/customer/my-quotes" },
-];
-
-export const MOVER_NAV: GnbNavItem[] = [
-  { label: "받은 요청", href: "/mover/requests" },
-  { label: "내 견적 관리", href: "/mover/my-quotes" },
-];
-
-export const LOGOUT_NAV: GnbNavItem[] = [{ label: "기사님 찾기", href: "/movers" }];
-
-export function getGnbNavItems(isLoggedIn: boolean, role: GnbRole): GnbNavItem[] {
-  if (!isLoggedIn) return LOGOUT_NAV;
-  return role === "mover" ? MOVER_NAV : CUSTOMER_NAV;
 }
 
 export default function GnbMenu({
@@ -84,7 +60,7 @@ export default function GnbMenu({
         </div>
         <ul className="flex flex-col">
           {menuItems.map((item) => (
-            <li key={item.href}>
+            <li key={item.id}>
               <Link
                 href={item.href}
                 onClick={onClose}
