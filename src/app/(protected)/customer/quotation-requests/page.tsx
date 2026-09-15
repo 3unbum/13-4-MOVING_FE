@@ -80,7 +80,7 @@ export default function CustomerQuotationRequestsPage() {
   return (
     <div
       className={
-        "pc:pt-10 pc:pb-19 pc:bg-background-background-100 tablet: bg-background-background-100 tablet:py-9.25 tablet:px-2.75"
+        "pc:pt-10 pc:pb-19 pc:bg-background-background-100 tablet:bg-background-background-100 tablet:py-9.25 tablet:px-2.75"
       }
     >
       <div className="pc:max-w-223.5 tablet:max-w-175 mx-auto w-full">
