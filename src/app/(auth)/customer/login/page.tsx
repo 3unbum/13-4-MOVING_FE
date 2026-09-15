@@ -50,7 +50,12 @@ export default function CustomerLoginPage() {
 
   return (
     <>
-      <AuthCard mascotTabletSrc={avatarMd} mascotPcSrc={avatarLg}>
+      <AuthCard
+        mascotTabletSrc={avatarMd}
+        mascotPcSrc={avatarLg}
+        mascotTabletPositionClassName="-bottom-18.5 left-125.75"
+        mascotPcPositionClassName="-bottom-13 left-170"
+      >
         <AuthHeader prompt="기사님이신가요?" href="/mover/login" linkText="기사님 전용 페이지" />
 
         {/* Figma 모바일은 header↔content 40px, content↔social 48px로 다른데 AuthCard는 gap 하나뿐이라

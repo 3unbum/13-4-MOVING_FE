@@ -54,7 +54,12 @@ export default function CustomerSignupPage() {
 
   return (
     <>
-      <AuthCard mascotTabletSrc={avatarMd} mascotPcSrc={avatarLg}>
+      <AuthCard
+        mascotTabletSrc={avatarMd}
+        mascotPcSrc={avatarLg}
+        mascotTabletPositionClassName="-bottom-19.5 left-125.75"
+        mascotPcPositionClassName="-bottom-8.5 left-170"
+      >
         <AuthHeader prompt="기사님이신가요?" href="/mover/signup" linkText="기사님 전용 페이지" />
 
         {/* login과 동일 이유(자세한 설명은 login/page.tsx 참고) — header↔content 40px, content↔social 48px 분리 */}

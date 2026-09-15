@@ -1,16 +1,27 @@
 import Image, { type StaticImageData } from "next/image";
 import type { ReactNode } from "react";
+import { cn } from "@/lib/utils/cn";
 
 interface AuthCardProps {
   children: ReactNode;
   // 마스코트 이미지(둘 다 있어야 렌더링) — customer: avatartion_md/lg, mover: car-sm/md
   mascotTabletSrc?: StaticImageData;
   mascotPcSrc?: StaticImageData;
+  // 카드 높이가 페이지마다 달라 좌표도 페이지별로 달라짐 — Figma 실측값을 호출부에서 bottom/left 클래스로 전달
+  // (bottom 기준: 카드 하단에서부터의 거리라 폼 필드 수·간격 변화로 카드 높이가 바뀌어도 위치가 안 깨짐)
+  mascotTabletPositionClassName?: string;
+  mascotPcPositionClassName?: string;
 }
 
 // overflow-x-clip: mascot가 삐져나가 생기는 가로 스크롤만 막음(overflow-hidden은 세로축도 auto로 승격시켜 이중 스크롤 유발)
 // 배경은 main이 아닌 fixed 레이어: 폼이 길어져도 항상 뷰포트 전체를 덮기 위함
-export default function AuthCard({ children, mascotTabletSrc, mascotPcSrc }: AuthCardProps) {
+export default function AuthCard({
+  children,
+  mascotTabletSrc,
+  mascotPcSrc,
+  mascotTabletPositionClassName,
+  mascotPcPositionClassName,
+}: AuthCardProps) {
   return (
     <>
       <div className="tablet:bg-orange-400 tablet:block fixed inset-0 -z-10 hidden" aria-hidden />
@@ -23,12 +34,18 @@ export default function AuthCard({ children, mascotTabletSrc, mascotPcSrc }: Aut
               <Image
                 src={mascotTabletSrc}
                 alt=""
-                className="tablet:block pc:hidden pointer-events-none absolute top-186 left-125.75 hidden h-61.5 w-60 object-contain object-bottom-left"
+                className={cn(
+                  "tablet:block pc:hidden pointer-events-none absolute hidden h-61.5 w-60 object-contain object-bottom-left",
+                  mascotTabletPositionClassName
+                )}
               />
               <Image
                 src={mascotPcSrc}
                 alt=""
-                className="pc:block pointer-events-none absolute top-134 left-170 hidden h-98 w-95.5 object-contain object-bottom-left"
+                className={cn(
+                  "pc:block pointer-events-none absolute hidden h-98 w-95.5 object-contain object-bottom-left",
+                  mascotPcPositionClassName
+                )}
               />
             </>
           )}
