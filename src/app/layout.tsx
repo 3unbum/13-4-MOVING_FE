@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import Providers from "./providers";
+import GlobalGnb from "@/components/layout/GlobalGnb";
 
 const pretendard = localFont({
   src: "../assets/fonts/PretendardVariable.ttf",
@@ -18,7 +19,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="ko" className={`${pretendard.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col">
-        <Providers>{children}</Providers>
+        <Providers>
+          <GlobalGnb />
+          {children}
+        </Providers>
       </body>
     </html>
   );

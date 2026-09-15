@@ -7,6 +7,27 @@ interface UseDialogOptions {
   onClose: () => void;
 }
 
+// 모바일/데스크톱 버전이 항상 같이 마운트돼있어서(CSS로만 화면 전환) 같은 모달이 동시에 두 인스턴스 열릴 수 있음 —
+// 각자 body.overflow를 저장/복원하면 먼저 닫힌 쪽이 남은 쪽의 "hidden"을 원래값으로 착각해서 스크롤이 안 풀림.
+// 그래서 인스턴스별로 저장/복원하지 않고, 열린 모달 개수를 세서 0→1일 때만 잠그고 1→0일 때만 푼다.
+let lockCount = 0;
+let previousBodyOverflow = "";
+
+function lockScroll() {
+  if (lockCount === 0) {
+    previousBodyOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+  }
+  lockCount++;
+}
+
+function unlockScroll() {
+  lockCount = Math.max(0, lockCount - 1);
+  if (lockCount === 0) {
+    document.body.style.overflow = previousBodyOverflow;
+  }
+}
+
 /**
  * Escape 닫기, 배경 스크롤 락, 포커스 트랩. 바깥 클릭 닫기는 Modal에서 처리.
  *
@@ -29,8 +50,7 @@ export function useDialog<T extends HTMLElement = HTMLDivElement>({
 
     // 닫힌 뒤 원래 포커스로 되돌리기 위해 열어 두기 전 엘리먼트를 기억
     const previouslyFocused = document.activeElement as HTMLElement | null;
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    lockScroll();
     panelRef.current?.focus();
 
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -64,7 +84,7 @@ export function useDialog<T extends HTMLElement = HTMLDivElement>({
     document.addEventListener("keydown", handleKeyDown);
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
-      document.body.style.overflow = previousOverflow;
+      unlockScroll();
       previouslyFocused?.focus();
     };
   }, [open]);

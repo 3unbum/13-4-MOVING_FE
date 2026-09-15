@@ -33,9 +33,43 @@ export interface MoverAccountResponse {
 /** role을 모르는 쪽(AuthProvider 등)에서 쓰는 유니온 — `role` 필드로 좁힌다. */
 export type AccountResponse = CustomerAccountResponse | MoverAccountResponse;
 
+export type UserRole = "CUSTOMER" | "MOVER";
+
+export interface SignupPayload {
+  role: UserRole;
+  name: string;
+  email: string;
+  phoneNumber: string;
+  password: string;
+}
+
+export interface LoginPayload {
+  role: UserRole;
+  email: string;
+  password: string;
+}
+
+export interface AuthResult {
+  user: { id: number; role: UserRole; name: string; email: string };
+  /** 가입 직후엔 항상 false. 로그인 응답에서만 실제 프로필 등록 여부를 반영한다. */
+  hasProfile: boolean;
+}
+
 export const authService = {
   /** 호출 전에 role을 몰라도 되는 유일한 계정 조회 — BE가 accessToken의 role로 분기해준다. */
   getMyAccount: () => cookieFetch<AccountResponse>("/auth/me"),
 
   logout: () => cookieFetch<void>("/auth/logout", { method: "POST" }),
+
+  signup: (payload: SignupPayload) =>
+    cookieFetch<AuthResult>("/auth/signup", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    }),
+
+  login: (payload: LoginPayload) =>
+    cookieFetch<AuthResult>("/auth/login", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    }),
 };

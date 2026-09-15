@@ -38,13 +38,16 @@ const eslintConfig = defineConfig([
       ],
       // 빈 줄 2줄 이상 연속되면 --fix 시 1줄로 압축
       "no-multiple-empty-lines": ["error", { max: 1, maxEOF: 0 }],
-      // 컴포넌트(src/components/**)·provider(src/providers/**)는 PascalCase, 훅(src/hooks/**)은 camelCase, 그 외 src 파일명은 kebab-case 강제 (자동수정 안 됨, 직접 이름 바꿔야 함)
+      // 컴포넌트(src/components/**)·provider(src/providers/**)는 PascalCase, 훅(src/hooks/**)은 camelCase,
+      // 페이지 로컬 컴포넌트 폴더(**/_components/**)도 PascalCase, 그 외 src 파일명은 kebab-case 강제 (자동수정 안 됨, 직접 이름 바꿔야 함)
       "check-file/filename-naming-convention": [
         "error",
         {
           "src/{components,providers}/**/*.{ts,tsx}": "PASCAL_CASE",
           "src/hooks/**/*.{ts,tsx}": "CAMEL_CASE",
-          "src/!(components|providers|hooks)/**/*.{ts,tsx}": "KEBAB_CASE",
+          "src/**/_components/**/*.{ts,tsx}": "PASCAL_CASE",
+          "src/!(components|providers|hooks)/*.{ts,tsx}": "KEBAB_CASE",
+          "src/!(components|providers|hooks)/**/!(_components)/*.{ts,tsx}": "KEBAB_CASE",
         },
         { ignoreMiddleExtensions: true },
       ],

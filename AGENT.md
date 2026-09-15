@@ -100,16 +100,17 @@ src/
 
 ### 파일 · 폴더
 
-> 컴포넌트 파일(`src/components/**`)·provider 파일(`src/providers/**`)은 PascalCase, 훅 파일(`src/hooks/**`)은 camelCase, 그 외 파일명은 kebab-case로 통일. Next.js가 이름을 강제하는 특수 파일(`page.tsx`, `layout.tsx`, `loading.tsx`, `not-found.tsx` 등)만 예외. `check-file` ESLint 룰로 강제됨 (자동수정 안 됨, 직접 이름 변경 필요)
+> 컴포넌트 파일(`src/components/**`)·provider 파일(`src/providers/**`)·페이지 로컬 컴포넌트 폴더(`**/_components/**`)는 PascalCase, 훅 파일(`src/hooks/**`)은 camelCase, 그 외 파일명은 kebab-case로 통일. Next.js가 이름을 강제하는 특수 파일(`page.tsx`, `layout.tsx`, `loading.tsx`, `not-found.tsx` 등)만 예외. `check-file` ESLint 룰로 강제됨 (자동수정 안 됨, 직접 이름 변경 필요)
 
-| 대상          | 케이스                                             | 예시                                                 |
-| ------------- | -------------------------------------------------- | ---------------------------------------------------- |
-| 컴포넌트 파일 | PascalCase                                         | `MoverCard.tsx`                                      |
-| provider 파일 | PascalCase                                         | `AuthProvider.tsx`                                   |
-| 훅 파일       | camelCase (`use` 접두어)                           | `useMoverList.ts`                                    |
-| `lib/` 파일   | kebab-case (역할 접미사는 하이픈, dot-suffix 금지) | `auth-service.ts`, `api-client.ts`, `format-date.ts` |
-| 라우트 폴더   | kebab-case                                         | `app/quotation-request/`                             |
-| 일반 폴더     | kebab-case                                         | `components/mover/`, `hooks/`                        |
+| 대상                                         | 케이스                                             | 예시                                                 |
+| -------------------------------------------- | -------------------------------------------------- | ---------------------------------------------------- |
+| 컴포넌트 파일                                | PascalCase                                         | `MoverCard.tsx`                                      |
+| provider 파일                                | PascalCase                                         | `AuthProvider.tsx`                                   |
+| 페이지 로컬 컴포넌트 파일 (`_components/**`) | PascalCase                                         | `QuotationRequestDesktop.tsx`                        |
+| 훅 파일                                      | camelCase (`use` 접두어)                           | `useMoverList.ts`                                    |
+| `lib/` 파일                                  | kebab-case (역할 접미사는 하이픈, dot-suffix 금지) | `auth-service.ts`, `api-client.ts`, `format-date.ts` |
+| 라우트 폴더                                  | kebab-case                                         | `app/quotation-request/`                             |
+| 일반 폴더                                    | kebab-case                                         | `components/mover/`, `hooks/`                        |
 
 ### API 엔드포인트 (참고: BE가 정의, FE는 이 규칙대로 호출)
 
