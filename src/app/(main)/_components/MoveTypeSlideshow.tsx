@@ -26,7 +26,10 @@ export default function MoveTypeSlideshow() {
   }, [angle, prefersReducedMotion]);
 
   return (
-    <div className="pc:flex-1 relative h-56 px-4 pt-4" style={{ perspective: 800 }}>
+    <div
+      className="pc:flex-1 tablet:h-[269.5px] relative h-56 px-4 pt-4"
+      style={{ perspective: 800 }}
+    >
       {VARIANTS.map((variant, index) => (
         <MoveTypeSlideCard key={variant} variant={variant} angle={angle} offsetDeg={index * 120} />
       ))}

@@ -21,12 +21,12 @@ export default function HomePage() {
         <article className="absolute inset-0 flex flex-col items-center justify-center gap-5">
           <HeaderCarImage />
           <div className="flex flex-col items-center gap-2 text-center">
-            <p className="text-20 tablet:text-32 font-bold text-white">
+            <h1 className="text-20 tablet:text-32 font-bold text-white">
               이사업체, 어떻게 고르세요?
-            </p>
-            <p className="text-16 text-gray-gray-200 tablet:text-18 font-normal">
+            </h1>
+            <h2 className="text-16 text-gray-gray-200 tablet:text-18 font-normal">
               무빙은 여러 견적을 한눈에 비교해 <br /> 이사업체 선정 과정을 간편하게 바꿔드려요
-            </p>
+            </h2>
           </div>
         </article>
       </header>
@@ -64,10 +64,6 @@ export default function HomePage() {
           />
         </section>
         <section>
-          <p className="text-20 text-black-black-400 tablet:text-32 pc:mt-[7.99%] pc:ml-[21.71%] absolute mt-[56.33px] ml-[31.75px] text-left font-bold">
-            여러 업체의 견적을
-            <br /> 한눈에 비교하고 선택해요
-          </p>
           <Image
             src={img4_sm}
             width={375}
@@ -86,7 +82,7 @@ export default function HomePage() {
             src={img4_lg}
             width={1920}
             height={1081}
-            alt="img4_md"
+            alt="img4_lg"
             className="tablet:hidden pc:block hidden h-auto w-full"
           />
         </section>

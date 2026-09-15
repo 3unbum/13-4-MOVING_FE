@@ -104,7 +104,9 @@ export default function MoveTypeSlideCard({ variant, angle, offsetDeg }: MoveTyp
         rotateY,
         borderColor,
         backgroundColor,
-        ...(isTabletUp ? { width, height } : { scale }),
+        width: isTabletUp ? width : MOBILE_WIDTH,
+        height: isTabletUp ? height : "auto",
+        scale: isTabletUp ? 1 : scale,
       }}
     >
       <motion.div className="relative shrink-0" style={{ width: imageSize, height: imageSize }}>
