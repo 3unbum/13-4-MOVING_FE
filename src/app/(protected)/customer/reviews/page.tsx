@@ -88,14 +88,16 @@ export default function CustomerReviewsPage() {
   const items = data?.items ?? [];
   const isEmpty = !isPending && items.length === 0;
   // BE는 커서 페이지라 totalCount가 없다. 지금까지 연 페이지 + 다음 커서 여부로 오프셋 UI를 구성한다.
-  const totalPages = data?.nextCursor ? page + 1 : Math.max(page, 1);
+  // keepPreviousData 구간에는 이전 페이지 nextCursor로 한 장을 더 열면 안 된다.
+  const totalPages = !isPlaceholderData && data?.nextCursor ? page + 1 : Math.max(page, 1);
 
   const handlePageChange = (nextPage: number) => {
     // 다음 페이지 커서는 지금 응답의 nextCursor다. effect로 동기화하면 렌더가 한 번 더 돈다.
-    if (nextPage === page + 1 && data?.nextCursor) {
+    if (nextPage === page + 1) {
+      if (isPlaceholderData || !data?.nextCursor) return;
       setCursorByTab((current) => ({
         ...current,
-        [tab]: { ...current[tab], [nextPage]: data.nextCursor ?? undefined },
+        [tab]: { ...current[tab], [nextPage]: data.nextCursor },
       }));
     }
     setPageByTab((current) => ({ ...current, [tab]: nextPage }));
