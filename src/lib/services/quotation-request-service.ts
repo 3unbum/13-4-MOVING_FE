@@ -37,6 +37,9 @@ export interface QuotationRequest {
   updatedAt: string;
 }
 
+/** 요청 이력 조회 페이지 크기 — BE 스키마의 상한값(`limit.max(50)`)입니다 */
+const HISTORY_PAGE_LIMIT = 50;
+
 export const quotationRequestService = {
   create: (payload: CreateQuotationRequestPayload) =>
     cookieFetch<{ id: number }>("/quotation-requests", {
@@ -55,8 +58,14 @@ export const quotationRequestService = {
   /**
    * 내 요청 이력 (#17).
    *
+   * BE `limit` 기본값이 10이라 안 넘기면 11번째 요청부터 화면에서 누락됩니다.
+   * 활성 요청은 동시에 1건만 가능해(`ACTIVE_REQUEST_EXISTS`) 이력이 쌓이는 속도가
+   * 느리고 피그마에도 페이지네이션 UI가 없어, BE 최대값(50)으로 한 번에 받습니다.
+   *
    * 응답에 `page`·`totalPages`·`totalCount`가 함께 오지만 `cookieFetch`가 `data`만
-   * 꺼내므로 배열만 받습니다. 페이지네이션 UI가 필요해지면 그때 raw 응답을 쓰세요.
+   * 꺼내므로 배열만 받습니다. 이력이 50건을 넘길 일이 생기면 그때 raw 응답으로
+   * `totalPages`를 읽어 페이지네이션 UI를 붙이세요.
    */
-  getHistory: (page = 1) => cookieFetch<QuotationRequest[]>(`/quotation-requests?page=${page}`),
+  getHistory: (page = 1) =>
+    cookieFetch<QuotationRequest[]>(`/quotation-requests?page=${page}&limit=${HISTORY_PAGE_LIMIT}`),
 };
