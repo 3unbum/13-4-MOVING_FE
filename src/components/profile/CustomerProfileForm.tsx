@@ -25,6 +25,9 @@ import { cn } from "@/lib/utils/cn";
 export default function CustomerProfileForm() {
   const router = useRouter();
   const [submitError, setSubmitError] = useState<string | undefined>();
+  // ProfileImageUpload가 서버 업로드 중일 때는 제출을 막아야 함 — onChange가 업로드 완료 후에만
+  // 호출되므로, 업로드 중 제출하면 새 이미지 URL이 반영되기 전에 폼이 전송될 수 있다
+  const [isImageUploading, setIsImageUploading] = useState(false);
 
   const {
     control,
@@ -70,7 +73,11 @@ export default function CustomerProfileForm() {
             name="image"
             control={control}
             render={({ field }) => (
-              <ProfileImageUpload value={field.value} onChange={field.onChange} />
+              <ProfileImageUpload
+                value={field.value}
+                onChange={field.onChange}
+                onUploadingChange={setIsImageUploading}
+              />
             )}
           />
         </div>
@@ -144,7 +151,7 @@ export default function CustomerProfileForm() {
         type="submit"
         size="sm"
         className="pc:h-15 pc:gap-2 pc:rounded-2xl pc:text-18"
-        disabled={isSubmitting}
+        disabled={isSubmitting || isImageUploading}
       >
         {isSubmitting ? "등록 중..." : "시작하기"}
       </Button>

@@ -17,7 +17,8 @@ export const moverProfileSchema = z.object({
   nickName: z.string().min(1, "별명을 입력해주세요"),
   // register(..., { valueAsNumber: true })로 이미 숫자로 변환된 값이 들어온다는 전제 —
   // z.coerce를 쓰면 useForm 입출력 타입이 갈라져 resolver 타입 에러가 남
-  career: z.number().int().min(0, "경력은 0 이상이어야 합니다"),
+  // setValueAs가 빈 입력을 undefined로 보존하므로(0으로 치환 금지) 필수 검증은 여기서 잡힌다
+  career: z.number({ message: "경력을 입력해주세요" }).int().min(0, "경력은 0 이상이어야 합니다"),
   bio: z.string().min(1, "한 줄 소개를 입력해주세요"),
   description: z.string().min(1, "상세 설명을 입력해주세요"),
   services: z.array(z.enum(serviceValues)).min(1, "제공 서비스를 1개 이상 선택해주세요"),

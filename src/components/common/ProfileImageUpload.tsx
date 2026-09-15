@@ -15,6 +15,8 @@ interface ProfileImageUploadProps {
   // 업로드 완료 시 서버 imageUrl(POST /profiles/image 응답)을 부모(RHF)에 전달, 실패/제거 시 undefined
   value?: string;
   onChange: (imageUrl: string | undefined) => void;
+  // 업로드 진행 상태를 부모에 알림 — 부모 폼은 업로드 중엔 제출 버튼을 막는 데 사용
+  onUploadingChange?: (isUploading: boolean) => void;
   disabled?: boolean;
 }
 
@@ -25,6 +27,7 @@ interface ProfileImageUploadProps {
 export default function ProfileImageUpload({
   value,
   onChange,
+  onUploadingChange,
   disabled = false,
 }: ProfileImageUploadProps) {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -51,6 +54,7 @@ export default function ProfileImageUpload({
     const localPreview = URL.createObjectURL(file);
     setPreviewUrl(localPreview);
     setIsUploading(true);
+    onUploadingChange?.(true);
 
     try {
       const { imageUrl } = await profileService.uploadImage(file);
@@ -58,9 +62,12 @@ export default function ProfileImageUpload({
     } catch {
       setError("이미지 업로드에 실패했어요. 다시 시도해주세요");
       setPreviewUrl(value);
-      onChange(undefined);
+      // 교체 업로드 실패 시 기존 값을 유지 — undefined로 지우면 미리보기(기존 이미지로 복원)와
+      // 실제 제출값이 어긋나 버린다
+      onChange(value);
     } finally {
       setIsUploading(false);
+      onUploadingChange?.(false);
     }
   }
 

@@ -34,6 +34,9 @@ function FieldLabel({ children, required = true }: { children: string; required?
 export default function MoverProfileForm() {
   const router = useRouter();
   const [submitError, setSubmitError] = useState<string | undefined>();
+  // ProfileImageUpload가 서버 업로드 중일 때는 제출을 막아야 함 — onChange가 업로드 완료 후에만
+  // 호출되므로, 업로드 중 제출하면 새 이미지 URL이 반영되기 전에 폼이 전송될 수 있다
+  const [isImageUploading, setIsImageUploading] = useState(false);
 
   const {
     control,
@@ -87,7 +90,11 @@ export default function MoverProfileForm() {
               name="image"
               control={control}
               render={({ field }) => (
-                <ProfileImageUpload value={field.value} onChange={field.onChange} />
+                <ProfileImageUpload
+                  value={field.value}
+                  onChange={field.onChange}
+                  onUploadingChange={setIsImageUploading}
+                />
               )}
             />
           </div>
@@ -97,6 +104,7 @@ export default function MoverProfileForm() {
           <div className="flex flex-col gap-4">
             <FieldLabel>별명</FieldLabel>
             <InputTextField
+              label="별명"
               placeholder="사이트에 노출될 별명을 입력해 주세요"
               size="sm"
               className="pc:[&_input]:text-18"
@@ -110,13 +118,22 @@ export default function MoverProfileForm() {
           <div className="flex flex-col gap-4">
             <FieldLabel>경력</FieldLabel>
             <InputTextField
+              label="경력"
               type="text"
               inputMode="numeric"
               placeholder="기사님의 경력을 입력해 주세요"
               size="sm"
               className="pc:[&_input]:text-18"
               errorMessage={errors.career?.message}
-              {...register("career", { setValueAs: (v) => (v === "" ? 0 : Number(v)) })}
+              {...register("career", {
+                setValueAs: (v) => {
+                  if (v == null || (typeof v === "string" && v.trim() === "")) {
+                    return undefined;
+                  }
+                  const number = Number(v);
+                  return Number.isNaN(number) ? undefined : number;
+                },
+              })}
             />
           </div>
 
@@ -125,6 +142,7 @@ export default function MoverProfileForm() {
           <div className="flex flex-col gap-4">
             <FieldLabel>한 줄 소개</FieldLabel>
             <InputTextField
+              label="한 줄 소개"
               placeholder="한 줄 소개를 입력해 주세요"
               size="sm"
               className="pc:[&_input]:text-18"
@@ -138,6 +156,7 @@ export default function MoverProfileForm() {
           <div className="flex flex-col gap-4">
             <FieldLabel>상세 설명</FieldLabel>
             <InputTextArea
+              label="상세 설명"
               placeholder="상세 내용을 입력해 주세요"
               size="sm"
               className="pc:[&_textarea]:px-6 pc:[&_textarea]:text-18"
@@ -203,7 +222,7 @@ export default function MoverProfileForm() {
           type="submit"
           size="sm"
           className="pc:h-15 pc:gap-2 pc:rounded-2xl pc:text-18"
-          disabled={isSubmitting}
+          disabled={isSubmitting || isImageUploading}
         >
           {isSubmitting ? "등록 중..." : "시작하기"}
         </Button>
