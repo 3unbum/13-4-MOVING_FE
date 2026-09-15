@@ -14,7 +14,7 @@ import FormField from "@/components/auth/FormField";
 import ProfileRegisterModal from "@/components/auth/ProfileRegisterModal";
 import SocialLoginSection from "@/components/auth/SocialLoginSection";
 import { authService } from "@/lib/services/auth-service";
-import { loginSchema, type CustomerLoginFormValues } from "@/lib/schemas/auth-schema";
+import { loginSchema, type LoginFormValues } from "@/lib/schemas/auth-schema";
 import { ApiError } from "@/lib/utils/api-error";
 import { useAuth } from "@/providers/AuthProvider";
 
@@ -28,9 +28,9 @@ export default function CustomerLoginPage() {
     handleSubmit,
     setError,
     formState: { errors, isSubmitting, isValid },
-  } = useForm<CustomerLoginFormValues>({ resolver: zodResolver(loginSchema), mode: "onChange" });
+  } = useForm<LoginFormValues>({ resolver: zodResolver(loginSchema), mode: "onChange" });
 
-  const onSubmit = async (values: CustomerLoginFormValues) => {
+  const onSubmit = async (values: LoginFormValues) => {
     try {
       const result = await authService.login({ role: "CUSTOMER", ...values });
       await refetch();
