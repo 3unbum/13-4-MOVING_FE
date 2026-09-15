@@ -138,7 +138,7 @@ export default function QuotationRequestDesktop({
           </div>
         </section>
       </main>
-      <div className="pc:hidden tablet:mt-14.25 tablet:flex tablet:justify-end">
+      <div className="tablet:mt-14.25 tablet:flex tablet:justify-end">
         <div className="w-50">
           <Button
             variant="solid"

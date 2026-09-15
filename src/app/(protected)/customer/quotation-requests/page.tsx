@@ -5,7 +5,6 @@
 "use client";
 
 import AddressSelectModal from "@/components/address/AddressSelectModal";
-import Button from "@/components/common/Button";
 import Toast from "@/components/common/Toast";
 import { SERVICES as MOVE_TYPES } from "@/components/filter/ChipRegion";
 import { useAddressSearch } from "@/hooks/useAddressSearch";
@@ -81,7 +80,7 @@ export default function CustomerQuotationRequestsPage() {
   return (
     <div
       className={
-        "pc:relative pc:pt-10 pc:pb-19 pc:bg-background-background-100 tablet: bg-background-background-100 tablet:py-9.25 tablet:px-2.75"
+        "pc:pt-10 pc:pb-19 pc:bg-background-background-100 tablet: bg-background-background-100 tablet:py-9.25 tablet:px-2.75"
       }
     >
       <div className="pc:max-w-223.5 tablet:max-w-175 mx-auto w-full">
@@ -107,19 +106,6 @@ export default function CustomerQuotationRequestsPage() {
           isSubmitting={isSubmitting}
           onSubmit={handleSubmit}
         />
-      </div>
-      {/* PC 전용 — 카드 폭(max-w-223.5) 제약 밖, 카드 하단 우측에 딱 붙여서 페이지랑 같이 스크롤. 태블릿은 카드 안(QuotationRequestDesktop 내부)에 자체 CTA가 있음 */}
-      <div className="pc:absolute pc:right-21 pc:bottom-21 pc:block hidden">
-        <div className="w-50">
-          <Button
-            variant="solid"
-            size="lg"
-            disabled={!canSubmit || isSubmitting}
-            onClick={handleSubmit}
-          >
-            견적 요청하기
-          </Button>
-        </div>
       </div>
       {errorMessage && <Toast message={errorMessage} />}
       <AddressSelectModal
