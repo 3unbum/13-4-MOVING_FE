@@ -25,21 +25,18 @@ interface GnbMenuProps {
   className?: string;
 }
 
-// TODO: 고객용 메뉴 - 페이지 라우트 확정 후 실제 경로로 교체
 export const CUSTOMER_NAV: GnbNavItem[] = [
-  { label: "견적 요청", href: "/component-gnb" },
-  { label: "기사님 찾기", href: "/" },
-  { label: "내 견적 관리", href: "/component-gnb" },
+  { label: "견적 요청", href: "/customer/quotation-requests" },
+  { label: "기사님 찾기", href: "/movers" },
+  { label: "내 견적 관리", href: "/customer/my-quotes" },
 ];
 
-// TODO: 기사용 메뉴 - 페이지 라우트 확정 후 실제 경로로 교체
 export const MOVER_NAV: GnbNavItem[] = [
-  { label: "받은 요청", href: "/component-gnb" },
-  { label: "내 견적 관리", href: "/component-gnb" },
+  { label: "받은 요청", href: "/mover/requests" },
+  { label: "내 견적 관리", href: "/mover/my-quotes" },
 ];
 
-// TODO: 비로그인 메뉴 - 페이지 라우트 확정 후 실제 경로로 교체
-export const LOGOUT_NAV: GnbNavItem[] = [{ label: "기사님 찾기", href: "/component-gnb" }];
+export const LOGOUT_NAV: GnbNavItem[] = [{ label: "기사님 찾기", href: "/movers" }];
 
 export function getGnbNavItems(isLoggedIn: boolean, role: GnbRole): GnbNavItem[] {
   if (!isLoggedIn) return LOGOUT_NAV;
