@@ -47,7 +47,6 @@ export default function MoverProfileForm() {
     defaultValues: {
       image: undefined,
       nickName: "",
-      career: 0,
       bio: "",
       description: "",
       services: [],
@@ -77,7 +76,7 @@ export default function MoverProfileForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="pc:gap-12 flex w-full flex-col gap-8">
+    <form onSubmit={handleSubmit(onSubmit)} className="pc:gap-12 flex w-full flex-col gap-6">
       <div className="pc:grid pc:grid-cols-2 pc:items-start pc:gap-x-30 pc:gap-y-8 flex flex-col gap-5">
         <div className="pc:gap-8 flex flex-col gap-5">
           <div className="flex flex-col gap-4">
@@ -93,39 +92,42 @@ export default function MoverProfileForm() {
             />
           </div>
 
-          <div className="border-line-100 h-px w-full" />
+          <div className="bg-line-100 h-px w-full" />
 
           <div className="flex flex-col gap-4">
             <FieldLabel>별명</FieldLabel>
             <InputTextField
               placeholder="사이트에 노출될 별명을 입력해 주세요"
-              size="md"
+              size="sm"
+              className="pc:[&_input]:text-18"
               errorMessage={errors.nickName?.message}
               {...register("nickName")}
             />
           </div>
 
-          <div className="border-line-100 h-px w-full" />
+          <div className="bg-line-100 h-px w-full" />
 
           <div className="flex flex-col gap-4">
             <FieldLabel>경력</FieldLabel>
             <InputTextField
-              type="number"
-              min={0}
+              type="text"
+              inputMode="numeric"
               placeholder="기사님의 경력을 입력해 주세요"
-              size="md"
+              size="sm"
+              className="pc:[&_input]:text-18"
               errorMessage={errors.career?.message}
-              {...register("career", { valueAsNumber: true })}
+              {...register("career", { setValueAs: (v) => (v === "" ? 0 : Number(v)) })}
             />
           </div>
 
-          <div className="border-line-100 h-px w-full" />
+          <div className="bg-line-100 h-px w-full" />
 
           <div className="flex flex-col gap-4">
             <FieldLabel>한 줄 소개</FieldLabel>
             <InputTextField
               placeholder="한 줄 소개를 입력해 주세요"
-              size="md"
+              size="sm"
+              className="pc:[&_input]:text-18"
               errorMessage={errors.bio?.message}
               {...register("bio")}
             />
@@ -137,13 +139,14 @@ export default function MoverProfileForm() {
             <FieldLabel>상세 설명</FieldLabel>
             <InputTextArea
               placeholder="상세 내용을 입력해 주세요"
-              size="md"
+              size="sm"
+              className="pc:[&_textarea]:px-6 pc:[&_textarea]:text-18"
               errorMessage={errors.description?.message}
               {...register("description")}
             />
           </div>
 
-          <div className="border-line-100 h-px w-full" />
+          <div className="bg-line-100 h-px w-full" />
 
           <div className="flex flex-col gap-4">
             <FieldLabel>제공 서비스</FieldLabel>
@@ -168,7 +171,7 @@ export default function MoverProfileForm() {
             )}
           </div>
 
-          <div className="border-line-100 h-px w-full" />
+          <div className="bg-line-100 h-px w-full" />
 
           <div className="flex flex-col gap-4">
             <FieldLabel>서비스 가능 지역</FieldLabel>
@@ -195,14 +198,14 @@ export default function MoverProfileForm() {
         </div>
       </div>
 
-      <div className="pc:w-125 w-full">
+      <div className="pc:w-125 pc:self-end w-full">
         <Button
           type="submit"
           size="sm"
           className="pc:h-15 pc:gap-2 pc:rounded-2xl pc:text-18"
           disabled={isSubmitting}
         >
-          {isSubmitting ? "등록 중..." : "등록하기"}
+          {isSubmitting ? "등록 중..." : "시작하기"}
         </Button>
       </div>
 
