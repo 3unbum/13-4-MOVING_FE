@@ -45,6 +45,15 @@ export interface EstimateListQuery {
   take?: number;
 }
 
+/**
+ * 한 요청이 받을 수 있는 견적 상한 — 일반 5건 + 지정 3명.
+ *
+ * BE 목록 API의 `take` 기본값이 4라 안 넘기면 뒤쪽 견적이 잘립니다.
+ * 이 화면들은 상한이 8로 정해져 있고 피그마에도 더보기 UI가 없어,
+ * 페이지네이션 대신 한 번에 전부 받습니다.
+ */
+export const ESTIMATE_LIMIT_PER_REQUEST = 8;
+
 function toSearchParams(query: EstimateListQuery = {}) {
   const params = new URLSearchParams();
   if (query.status) params.set("status", query.status);

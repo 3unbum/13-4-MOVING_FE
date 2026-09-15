@@ -1,7 +1,7 @@
 "use client";
 
 import { useQueries, useQuery } from "@tanstack/react-query";
-import { estimateService } from "@/lib/services/estimate-service";
+import { ESTIMATE_LIMIT_PER_REQUEST, estimateService } from "@/lib/services/estimate-service";
 import { quotationRequestService } from "@/lib/services/quotation-request-service";
 
 export const myQuotesKeys = {
@@ -20,7 +20,7 @@ export function usePendingQuotes() {
 
   const estimates = useQuery({
     queryKey: myQuotesKeys.pendingEstimates,
-    queryFn: () => estimateService.getPending(),
+    queryFn: () => estimateService.getPending({ take: ESTIMATE_LIMIT_PER_REQUEST }),
     // 활성 요청이 없으면 견적도 있을 수 없어 호출을 아낍니다
     enabled: Boolean(activeRequest.data),
   });
@@ -54,7 +54,7 @@ export function usePastQuotes() {
   const estimateQueries = useQueries({
     queries: pastRequests.map((request) => ({
       queryKey: myQuotesKeys.requestEstimates(request.id),
-      queryFn: () => estimateService.getByRequest(request.id),
+      queryFn: () => estimateService.getByRequest(request.id, { take: ESTIMATE_LIMIT_PER_REQUEST }),
     })),
   });
 
