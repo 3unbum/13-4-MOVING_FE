@@ -1,6 +1,7 @@
 import { cookieFetch } from "@/lib/utils/api-client";
-import type { RegionCode } from "@/components/filter/ChipRegion";
-import type { ServiceCode } from "@/components/filter/ChipRegion";
+import type { RegionCode, ServiceCode } from "@/components/filter/ChipRegion";
+
+export type QuotationStatus = "PENDING" | "ASSIGNED" | "COMPLETED" | "EXPIRED";
 
 export interface QuotationRequestAddress {
   postalCode: string;
@@ -17,10 +18,54 @@ export interface CreateQuotationRequestPayload {
   to: QuotationRequestAddress;
 }
 
+/** 조회 응답 — 생성 payload와 달리 주소가 `fromXxx`·`toXxx`로 평탄화돼 옵니다 */
+export interface QuotationRequest {
+  id: number;
+  userId: number;
+  category: ServiceCode;
+  movingDate: string;
+  fromPostalCode: string;
+  fromRegion: RegionCode;
+  fromAddress: string;
+  fromDetailAddress: string;
+  toPostalCode: string;
+  toRegion: RegionCode;
+  toAddress: string;
+  toDetailAddress: string;
+  quotationStatus: QuotationStatus;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/** 요청 이력 조회 페이지 크기 — BE 스키마의 상한값(`limit.max(50)`)입니다 */
+const HISTORY_PAGE_LIMIT = 50;
+
 export const quotationRequestService = {
   create: (payload: CreateQuotationRequestPayload) =>
     cookieFetch<{ id: number }>("/quotation-requests", {
       method: "POST",
       body: JSON.stringify(payload),
     }),
+
+  /**
+   * 활성 요청 1건 (#16). 없으면 null이 옵니다.
+   *
+   * 목록(#17)과 같은 경로라 `status=pending`으로 갈립니다 —
+   * 이때만 배열이 아니라 객체 하나가 내려옵니다.
+   */
+  getActive: () => cookieFetch<QuotationRequest | null>("/quotation-requests?status=pending"),
+
+  /**
+   * 내 요청 이력 (#17).
+   *
+   * BE `limit` 기본값이 10이라 안 넘기면 11번째 요청부터 화면에서 누락됩니다.
+   * 활성 요청은 동시에 1건만 가능해(`ACTIVE_REQUEST_EXISTS`) 이력이 쌓이는 속도가
+   * 느리고 피그마에도 페이지네이션 UI가 없어, BE 최대값(50)으로 한 번에 받습니다.
+   *
+   * 응답에 `page`·`totalPages`·`totalCount`가 함께 오지만 `cookieFetch`가 `data`만
+   * 꺼내므로 배열만 받습니다. 이력이 50건을 넘길 일이 생기면 그때 raw 응답으로
+   * `totalPages`를 읽어 페이지네이션 UI를 붙이세요.
+   */
+  getHistory: (page = 1) =>
+    cookieFetch<QuotationRequest[]>(`/quotation-requests?page=${page}&limit=${HISTORY_PAGE_LIMIT}`),
 };
