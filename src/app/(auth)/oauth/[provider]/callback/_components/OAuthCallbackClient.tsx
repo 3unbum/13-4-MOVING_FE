@@ -55,7 +55,16 @@ export default function OAuthCallbackClient(props: OAuthCallbackClientProps) {
 
   // 로그인·가입이 끝난 뒤 공통 처리 — 이메일 로그인과 동일하게 customer만 프로필 등록을 모달로 묻는다.
   const finishAuth = async (role: UserRole, hasProfile: boolean) => {
-    await refetch();
+    try {
+      await refetch();
+    } catch {
+      // 로그인·가입 자체는 성공(쿠키 발급 완료)이고 계정 조회만 실패한 상태 — 모달의 onCompleted에서
+      // 호출될 땐 이 함수를 await하는 쪽이 없어, 여기서 안 잡으면 화면이 "처리 중"에 그대로 멈춘다.
+      setErrorMessage("계정 정보를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.");
+      setStatus("error");
+      return;
+    }
+
     if (role === "MOVER") {
       router.replace(hasProfile ? "/mover/requests" : "/mover/profile-register");
       return;
