@@ -172,7 +172,7 @@ export default function CustomerFavoritesPage() {
         </section>
       )}
 
-      {toastMessage != null && <Toast message={toastMessage} />}
+      {toastMessage != null && <Toast message={toastMessage} size={isPc ? "md" : "sm"} />}
     </div>
   );
 }
