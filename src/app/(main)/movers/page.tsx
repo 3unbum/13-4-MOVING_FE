@@ -175,7 +175,7 @@ export default function MoversPage() {
                 value={search}
                 onChange={setSearch}
                 label="기사님 별명 검색"
-                placeholder="텍스트를 입력해 주세요."
+                placeholder="찾으시는 기사님을 입력해주세요"
               />
               <InputSearchbar
                 size="md"
@@ -183,7 +183,7 @@ export default function MoversPage() {
                 value={search}
                 onChange={setSearch}
                 label="기사님 별명 검색"
-                placeholder="텍스트를 입력해 주세요."
+                placeholder="찾으시는 기사님을 입력해주세요"
               />
             </div>
 
