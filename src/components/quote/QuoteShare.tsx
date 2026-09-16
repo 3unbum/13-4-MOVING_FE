@@ -13,6 +13,8 @@ import { cn } from "@/lib/utils/cn";
 interface QuoteShareProps {
   /** 피그마: PC "견적서 공유하기" / 모바일 "나만 알긴 아쉬운 기사님인가요?" */
   title: string;
+  /** 공유 대상 — 요구사항이 "기사님 상세 페이지 URL"을 공유하도록 정하고 있습니다 */
+  moverId: number;
   className?: string;
 }
 
@@ -51,18 +53,25 @@ function ShareButton({
 }
 
 /**
- * 견적서 공유 — 링크 복사 / 카카오 / 페이스북.
+ * 견적서 공유 — 세 버튼 모두 기사님 상세 페이지 링크를 복사합니다.
  *
- * 링크 복사만 실제 동작합니다. 카카오는 JS SDK 앱키가, 페이스북은 앱 등록이 필요해
- * MVP 범위 밖입니다(API 명세의 공유 통계도 심화 이월). UI는 피그마대로 두고
- * 두 버튼은 공유 URL을 클립보드로 복사하는 동작으로 대체합니다.
+ * 공유 대상은 지금 보고 있는 견적 상세가 아니라 **기사님 상세 페이지**입니다.
+ * 견적 상세는 로그인이 필요한 데다 BE가 소유권을 검증해서, 링크를 받은 사람은
+ * 로그인해도 남의 견적이라 열 수 없습니다. 요구사항도 기사님 상세 URL을
+ * 공유하도록 정하고 있습니다("...무빙에서 확인해 보세요! <기사님 상세 페이지 URL>").
+ *
+ * 카카오·페이스북 SNS 연동은 아직입니다 — 카카오는 JavaScript 키 발급과 콘솔에
+ * 도메인 등록이, 페이스북은 공유 대화상자 연결이 필요합니다. 그때까지 두 버튼도
+ * 링크 복사로 동작하며, 라벨을 실제 동작에 맞춰 "링크 복사하기"로 둡니다
+ * (버튼 자체는 피그마에 있으므로 없애지 않습니다).
  */
-export default function QuoteShare({ title, className }: QuoteShareProps) {
+export default function QuoteShare({ title, moverId, className }: QuoteShareProps) {
   const [toast, setToast] = useState<string | null>(null);
 
   const copyLink = async (message: string) => {
     try {
-      await navigator.clipboard.writeText(window.location.href);
+      const url = new URL(`/movers/${moverId}`, window.location.origin);
+      await navigator.clipboard.writeText(url.toString());
       setToast(message);
     } catch {
       // 클립보드는 https·사용자 제스처 등 조건이 안 맞으면 거부됩니다
@@ -85,18 +94,19 @@ export default function QuoteShare({ title, className }: QuoteShareProps) {
           <Image src={clipLg} alt="" className="pc:block hidden size-9" />
         </ShareButton>
 
-        {/* TODO: 카카오 JS SDK 연동 — 앱키 발급 후. 지금은 링크 복사로 대체 */}
+        {/* TODO: 카카오 JS SDK 연동 — JavaScript 키 발급 + 도메인 등록 후.
+            연동 전까지는 동작이 링크 복사이므로 라벨도 그대로 둡니다 */}
         <ShareButton
-          label="카카오톡으로 공유하기"
+          label="링크 복사하기 (카카오톡 공유는 준비 중)"
           variant="kakao"
           onClick={() => copyLink("링크가 복사되었어요!")}
         >
           <Image src={kakao} alt="" className="pc:size-7 size-6" />
         </ShareButton>
 
-        {/* TODO: 페이스북 공유 — 앱 등록 후. 지금은 링크 복사로 대체 */}
+        {/* TODO: 페이스북 공유 대화상자 연결. 연동 전까지는 라벨도 링크 복사 */}
         <ShareButton
-          label="페이스북으로 공유하기"
+          label="링크 복사하기 (페이스북 공유는 준비 중)"
           variant="facebook"
           onClick={() => copyLink("링크가 복사되었어요!")}
         >
