@@ -139,9 +139,22 @@ export default function CustomerReviewsPage() {
     }, 3000);
   };
 
-  // abort 시점엔 토스트를 안 띄우되, 서버에 PATCH가 이미 들어갔을 수 있어 목록은 다시 받는다.
-  const refreshReviewQueries = () =>
+  // abort 시점엔 토스트를 안 띄우되, 서버에 PATCH가 이미 들어갔을 수 있어 지금 보고 있는 목록만 다시 받는다.
+  const refreshActiveReviewQueries = () =>
     queryClient.invalidateQueries({ queryKey: reviewQueryKeys.all });
+
+  // 성공 후 작성 가능 목록은 1페이지로 돌아간다. 지금 페이지를 그대로 invalidate하면
+  // 곧 버려질 페이지 refetch가 한 번 더 나간다. 전부 stale만 찍고 1페이지만 다시 받는다.
+  const refreshAfterWriteSuccess = async () => {
+    await queryClient.invalidateQueries({
+      queryKey: reviewQueryKeys.all,
+      refetchType: "none",
+    });
+    await queryClient.refetchQueries({
+      queryKey: reviewQueryKeys.writable(1, undefined),
+      type: "all",
+    });
+  };
 
   const handleSubmitReview = async () => {
     if (!selected || isSubmitting) return;
@@ -155,17 +168,17 @@ export default function CustomerReviewsPage() {
         controller.signal
       );
       if (controller.signal.aborted) {
-        await refreshReviewQueries();
+        await refreshActiveReviewQueries();
         return;
       }
       closeWriteModal();
       setPageByTab((current) => ({ ...current, writable: 1 }));
       setCursorByTab((current) => ({ ...current, writable: { 1: undefined } }));
-      await refreshReviewQueries();
+      await refreshAfterWriteSuccess();
       showToast("리뷰가 등록되었어요");
     } catch (error) {
       if (controller.signal.aborted || (error instanceof Error && error.name === "AbortError")) {
-        await refreshReviewQueries();
+        await refreshActiveReviewQueries();
         return;
       }
       showToast(
