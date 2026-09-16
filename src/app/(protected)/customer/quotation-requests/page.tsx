@@ -114,7 +114,7 @@ export default function CustomerQuotationRequestsPage() {
         onConfirm={() => router.push("/customer/profile-register")}
         onCancel={() => {
           // 직접 진입(북마크·새 탭)이면 돌아갈 곳이 없어 빈 화면이 된다 — 랜딩으로 보낸다
-          if (window.history.length > 1 && document.referrer) router.back();
+          if (window.history.length > 1) router.back();
           else router.replace("/");
         }}
       />
