@@ -22,7 +22,8 @@ interface CardWritableReviewProps extends HTMLAttributes<HTMLElement> {
   to: string;
   /** 표시용으로 이미 포맷된 문자열 */
   movingDate: string;
-  price: number;
+  /** BE 작성 가능 목록은 금액을 안 내려줘서 없으면 금액 영역을 숨긴다 */
+  price?: number;
   /** 이미 리뷰를 썼거나 작성 기간이 지나면 버튼이 비활성화됩니다 */
   disabled?: boolean;
   onWriteClick?: () => void;
@@ -104,12 +105,14 @@ export default function CardWritableReview({
               <MoveTypeChip variant={category} size="md" />
             </div>
 
-            <div className="flex w-40 shrink-0 flex-col items-end">
-              <span className="text-16 text-gray-gray-500 font-medium">견적 금액</span>
-              <span className="text-24 text-black-black-400 font-bold whitespace-nowrap">
-                {price.toLocaleString()}원
-              </span>
-            </div>
+            {price != null ? (
+              <div className="flex w-40 shrink-0 flex-col items-end">
+                <span className="text-16 text-gray-gray-500 font-medium">견적 금액</span>
+                <span className="text-24 text-black-black-400 font-bold whitespace-nowrap">
+                  {price.toLocaleString()}원
+                </span>
+              </div>
+            ) : null}
           </div>
         </div>
 
@@ -152,13 +155,17 @@ export default function CardWritableReview({
             <InfoItem label="도착지" value={to} valueClassName={infoValueClass} />
             <VerticalLine />
             <InfoItem label="이사일" value={movingDate} valueClassName={infoValueClass} />
-            <VerticalLine />
-            <div className="flex shrink-0 flex-col items-end">
-              <span className="text-14 text-gray-gray-500">견적금액</span>
-              <span className="text-18 text-black-black-400 font-bold whitespace-nowrap">
-                {price.toLocaleString()}원
-              </span>
-            </div>
+            {price != null ? (
+              <>
+                <VerticalLine />
+                <div className="flex shrink-0 flex-col items-end">
+                  <span className="text-14 text-gray-gray-500">견적금액</span>
+                  <span className="text-18 text-black-black-400 font-bold whitespace-nowrap">
+                    {price.toLocaleString()}원
+                  </span>
+                </div>
+              </>
+            ) : null}
           </div>
         </div>
 
@@ -200,12 +207,14 @@ export default function CardWritableReview({
           <InfoItem label="이사일" value={movingDate} valueClassName={infoValueClass} />
         </div>
 
-        <div className="border-line-200 flex h-11.75 w-full items-end justify-between border-t">
-          <span className="text-14 text-gray-gray-300 font-medium">견적 금액</span>
-          <span className="text-18 text-black-black-400 font-bold whitespace-nowrap">
-            {price.toLocaleString()}원
-          </span>
-        </div>
+        {price != null ? (
+          <div className="border-line-200 flex h-11.75 w-full items-end justify-between border-t">
+            <span className="text-14 text-gray-gray-300 font-medium">견적 금액</span>
+            <span className="text-18 text-black-black-400 font-bold whitespace-nowrap">
+              {price.toLocaleString()}원
+            </span>
+          </div>
+        ) : null}
       </div>
 
       {writeButton}
