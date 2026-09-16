@@ -50,7 +50,7 @@ function ResponsiveMoverCard({
 }: {
   mover: MoverCardViewModel;
   isFavorited: boolean;
-  onFavoriteClick: () => void;
+  onFavoriteClick?: () => void;
   onNavigate: () => void;
 }) {
   const shared = {
@@ -107,9 +107,10 @@ export default function MoversPage() {
   );
 
   // ── 서버 상태 ──
-  const { favoritedIds, toggleFavorite, getFavoriteCount } = useToggleMoverFavorite({
-    onRequireLogin: () => setLoginModalOpen(true),
-  });
+  const { favoritedIds, isFavoritesLoading, toggleFavorite, getFavoriteCount } =
+    useToggleMoverFavorite({
+      onRequireLogin: () => setLoginModalOpen(true),
+    });
 
   const {
     data: sidebarFavorites,
@@ -283,7 +284,11 @@ export default function MoversPage() {
                       <ResponsiveMoverCard
                         mover={{ ...mover, favoriteCount }}
                         isFavorited={favoritedIds.has(mover.id)}
-                        onFavoriteClick={() => toggleFavorite(mover.id, favoriteCount)}
+                        onFavoriteClick={
+                          isFavoritesLoading
+                            ? undefined
+                            : () => toggleFavorite(mover.id, favoriteCount)
+                        }
                         onNavigate={() => router.push(`/movers/${mover.id}`)}
                       />
                     </li>
@@ -332,7 +337,11 @@ export default function MoversPage() {
                           confirmedCount={mover.confirmedCount}
                           favoriteCount={favoriteCount}
                           isFavorited={favoritedIds.has(mover.id)}
-                          onFavoriteClick={() => toggleFavorite(mover.id, favoriteCount)}
+                          onFavoriteClick={
+                            isFavoritesLoading
+                              ? undefined
+                              : () => toggleFavorite(mover.id, favoriteCount)
+                          }
                         />
                       </li>
                     );

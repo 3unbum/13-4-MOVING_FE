@@ -124,12 +124,15 @@ export function useToggleMoverFavorite(options?: { onRequireLogin?: () => void }
     },
   });
 
+  // 찜 ID Set 확정 전 토글 시 create/remove가 뒤바뀔 수 있음
+  const isFavoritesLoading = isCustomer && favoritesQuery.isPending;
+
   const toggleFavorite = (moverId: number, currentCount: number) => {
     if (!isAuthenticated) {
       options?.onRequireLogin?.();
       return;
     }
-    if (!isCustomer || pendingMoverIdsRef.current.has(moverId)) {
+    if (!isCustomer || isFavoritesLoading || pendingMoverIdsRef.current.has(moverId)) {
       return;
     }
     markPending(moverId);
@@ -146,6 +149,7 @@ export function useToggleMoverFavorite(options?: { onRequireLogin?: () => void }
   return {
     isCustomer,
     favoritedIds,
+    isFavoritesLoading,
     toggleFavorite,
     getFavoriteCount,
     isToggling: (moverId: number) => pendingMoverIds.has(moverId),
