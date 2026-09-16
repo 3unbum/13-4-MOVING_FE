@@ -10,7 +10,7 @@ interface FavoritesEmptyFallbackProps {
 export default function FavoritesEmptyFallback({ onFindMovers }: FavoritesEmptyFallbackProps) {
   return (
     <div className="flex w-full flex-1 flex-col items-center justify-center">
-      <div className="pc:w-[955px] pc:px-45 pc:py-45 flex w-[327px] flex-col items-center justify-center">
+      <div className="pc:w-[955px] pc:max-w-none pc:px-45 pc:py-45 flex w-full max-w-[327px] flex-col items-center justify-center">
         <div className="pc:gap-8 flex w-full flex-col items-center gap-6">
           <div className="relative h-[196px] w-[240px] overflow-hidden">
             <Image
