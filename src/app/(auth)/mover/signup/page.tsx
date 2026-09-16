@@ -124,7 +124,7 @@ export default function MoverSignupPage() {
           <AuthSwitchLink prompt="이미 무빙 회원이신가요?" href="/mover/login" linkText="로그인" />
         </div>
 
-        <SocialLoginSection actionLabel="회원가입" />
+        <SocialLoginSection actionLabel="회원가입" role="MOVER" />
       </div>
     </AuthCard>
   );

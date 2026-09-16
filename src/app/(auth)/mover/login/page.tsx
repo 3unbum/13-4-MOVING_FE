@@ -90,7 +90,7 @@ export default function MoverLoginPage() {
           />
         </div>
 
-        <SocialLoginSection actionLabel="로그인" />
+        <SocialLoginSection actionLabel="로그인" role="MOVER" />
       </div>
     </AuthCard>
   );
