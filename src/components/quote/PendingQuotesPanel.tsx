@@ -5,8 +5,10 @@ import type { Estimate } from "@/lib/services/estimate-service";
 import type { QuotationRequest } from "@/lib/services/quotation-request-service";
 
 interface PendingQuotesPanelProps {
-  /** 활성 견적 요청. 없으면(요청 자체를 안 한 상태) 빈 상태로 갈립니다 */
+  /** 확정 전(PENDING) 활성 요청. 없으면 빈 상태로 갈립니다 */
   request: QuotationRequest | null;
+  /** 요청은 있으나 이미 견적을 확정한 상태 — 빈 상태 문구가 갈립니다 */
+  hasConfirmedRequest?: boolean;
   estimates: Estimate[];
   onDetailClick?: (estimateId: number) => void;
   onConfirmClick?: (estimateId: number) => void;
@@ -31,7 +33,8 @@ function EstimateCard({
       isTargeted={estimate.isTargeted}
       // 카드 제목은 기사님 한 줄 소개입니다
       title={estimate.mover.bio}
-      // REJECTED면 price가 null이지만 이 탭은 PENDING만 다룹니다
+      // 이 탭은 확정 전(PENDING) 견적만 다뤄 price가 항상 있습니다.
+      // (금액이 없는 건 반려 견적뿐이고 그건 "받았던 견적" 탭에 나옵니다)
       price={estimate.price ?? 0}
       nickName={estimate.mover.nickName}
       profileImage={estimate.mover.image}
@@ -57,10 +60,18 @@ function EstimateCard({
  */
 export default function PendingQuotesPanel({
   request,
+  hasConfirmedRequest = false,
   estimates,
   onDetailClick,
   onConfirmClick,
 }: PendingQuotesPanelProps) {
+  // 확정을 마친 요청이 있는 상태. 이사가 끝나기 전까지는 새 요청을 할 수 없으므로
+  // ("한 번에 하나의 이사 정보만 활성" — BE가 ACTIVE_REQUEST_EXISTS로 막습니다)
+  // 요청 CTA 대신 확정한 견적을 어디서 볼 수 있는지 알려줍니다.
+  if (!request && hasConfirmedRequest) {
+    return <QuoteEmptyState message={"견적을 확정했어요.\n'받았던 견적'에서 확인할 수 있어요!"} />;
+  }
+
   // 요청 자체가 없으면 SubHeader에 채울 값이 없어 통째로 숨깁니다 (피그마에 없는 화면 — 9/11 회의록 기준)
   if (!request) {
     return (

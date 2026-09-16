@@ -4,17 +4,20 @@ import type { RegionCode, ServiceCode } from "@/components/filter/ChipRegion";
 export type QuotationStatus = "PENDING" | "ASSIGNED" | "COMPLETED" | "EXPIRED";
 
 /**
- * 아직 진행 중인 요청 상태 — 스키마 주석 기준입니다.
+ * 요청 상태 — 스키마 주석 기준입니다.
  *
  *   PENDING   견적 대기 (활성)
  *   ASSIGNED  기사님 확정, 이사 전 (활성)
  *   COMPLETED 이사일 경과
  *   EXPIRED   견적 없이 이사일 경과
  *
- * 활성 요청은 동시에 1건만 존재하고(`ACTIVE_REQUEST_EXISTS`), 이사일이 지나면
- * 배치가 COMPLETED/EXPIRED로 바꿉니다. BE도 같은 두 값으로 활성을 판단합니다.
+ * 활성 요청(PENDING·ASSIGNED)은 동시에 1건만 존재하고(`ACTIVE_REQUEST_EXISTS`),
+ * 이사일이 지나면 배치가 COMPLETED/EXPIRED로 바꿉니다. `getActive()`가 쓰는
+ * `?status=pending`도 이 두 값을 함께 조회합니다.
+ *
+ * 단 "내 견적 관리"의 탭 분기 기준은 활성 여부가 아니라 PENDING 하나입니다 —
+ * 확정(ASSIGNED) 이후는 "받았던 견적" 탭이 맡습니다. `useMyQuotes` 주석 참조.
  */
-export const ACTIVE_QUOTATION_STATUSES: QuotationStatus[] = ["PENDING", "ASSIGNED"];
 
 export interface QuotationRequestAddress {
   postalCode: string;

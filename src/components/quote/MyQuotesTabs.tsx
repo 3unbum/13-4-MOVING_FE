@@ -99,6 +99,7 @@ export default function MyQuotesTabs({ initialTab }: MyQuotesTabsProps) {
           ) : (
             <PendingQuotesPanel
               request={pending.request}
+              hasConfirmedRequest={pending.hasConfirmedRequest}
               estimates={pending.estimates}
               onDetailClick={openDetail}
               // TODO: 견적 확정 API(#29) 연동 — 확정 모달 흐름이 정해지면 붙입니다
