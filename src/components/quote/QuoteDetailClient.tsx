@@ -17,7 +17,7 @@ const TOAST_DURATION_MS = 3000;
 
 function DetailMessage({ children }: { children: React.ReactNode }) {
   return (
-    <div className="bg-background-background-100 text-14 text-gray-gray-400 flex min-h-dvh items-center justify-center px-6">
+    <div className="text-14 text-gray-gray-400 flex min-h-dvh items-center justify-center bg-gray-50 px-6">
       {children}
     </div>
   );
@@ -51,7 +51,7 @@ export default function QuoteDetailClient({ estimateId }: QuoteDetailClientProps
 
   if (isLoading) {
     return (
-      <div className="bg-background-background-100 min-h-dvh">
+      <div className="min-h-dvh bg-gray-50">
         <Loading />
       </div>
     );

@@ -70,11 +70,15 @@ function formatPrice(price: number | null) {
  */
 function InfoRow({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex items-start gap-6">
-      <span className="text-14 text-gray-gray-400 pc:text-18 pc:w-24 w-20 shrink-0 font-normal">
+    <div className="tablet:justify-start tablet:gap-0 flex items-start justify-between gap-6">
+      <span className="text-14 text-gray-gray-400 pc:text-18 tablet:w-28.25 shrink-0 font-normal">
         {label}
       </span>
-      <span className="text-14 text-black-300 pc:text-18 min-w-0 font-medium">{value}</span>
+      {/* 모바일(`1:9254`)은 값이 오른쪽 끝, 태블릿(`1:9184`)·PC(`1:9155`)는
+          라벨 폭 113px 뒤에서 시작해 왼쪽 정렬입니다. */}
+      <span className="text-14 text-black-300 pc:text-18 tablet:text-left min-w-0 text-right font-medium">
+        {value}
+      </span>
     </div>
   );
 }
@@ -131,10 +135,12 @@ export default function QuoteDetailView({
         />
       </div>
 
-      <div className="bg-background-background-100 tablet:px-18 pc:px-10 flex flex-1 justify-center px-6">
+      <div className="tablet:px-18 pc:px-10 flex flex-1 justify-center bg-gray-50 px-6">
         <div className="pc:max-w-285 pc:flex-row pc:gap-35 tablet:max-w-150 flex w-full max-w-81.75 flex-col">
-          {/* 좌: 본문 */}
-          <div className="flex min-w-0 flex-1 flex-col">
+          {/* 좌: 본문 — 피그마는 프로필과 각 블록이 같은 층에 나란히 놓입니다
+              (`1:9148` profile / `1:9147` Title / `1:9149` 견적가 / `1:9155` 견적 정보).
+              감싸는 컨테이너가 없어 중간 래퍼를 두지 않습니다. */}
+          <div className="pc:gap-6 flex min-w-0 flex-1 flex-col gap-5">
             {/* 히어로에 겹치는 프로필 */}
             {/* 피그마: 모바일 64(`1:9246`) / 태블릿 100(`1:9222`) / PC 134(`1:9148`).
                 ProfileAvatar가 size를 한 값만 받아 세 벌을 CSS로 전환합니다. */}
@@ -150,81 +156,77 @@ export default function QuoteDetailView({
               </div>
             </div>
 
-            <div className="pc:gap-6 pc:pt-6 flex flex-col gap-5 pt-5">
-              <div className="flex w-full items-start justify-between gap-3">
-                <div className="flex flex-wrap items-center gap-2">
-                  <MoveTypeChip variant={request.category} size="sm" />
-                  {isTargeted && <MoveTypeChip variant="TARGETED" size="sm" />}
-                </div>
-                {isPending && <PendingBadge />}
-                {isConfirmed && <ConfirmedBadge />}
+            <div className="flex w-full items-start justify-between gap-3">
+              <div className="flex flex-wrap items-center gap-2">
+                <MoveTypeChip variant={request.category} size="sm" />
+                {isTargeted && <MoveTypeChip variant="TARGETED" size="sm" />}
               </div>
+              {isPending && <PendingBadge />}
+              {isConfirmed && <ConfirmedBadge />}
+            </div>
 
-              <p className="text-18 text-black-300 pc:text-24 font-semibold">{mover.bio}</p>
+            <p className="text-18 text-black-300 pc:text-24 font-semibold">{mover.bio}</p>
 
-              <div className="border-line-100 flex flex-col gap-2 border-b pb-5">
-                <div className="flex w-full items-center justify-between">
-                  {/* 이름 텍스트 높이가 세 사이즈 모두 26px(text-18)입니다 —
+            <div className="border-line-100 flex flex-col gap-2 border-b pb-5">
+              <div className="flex w-full items-center justify-between">
+                {/* 이름 텍스트 높이가 세 사이즈 모두 26px(text-18)입니다 —
                       모바일 `I1:9248;1:4297` / PC `I1:9147;1:4211`. 반응형 분기가 아닙니다. */}
-                  <MoverName nickName={mover.nickName} size="xl" />
-                  {/* 피그마는 숫자가 먼저, 하트가 뒤 + 검은 하트라 CardParts의
+                <MoverName nickName={mover.nickName} size="xl" />
+                {/* 피그마는 숫자가 먼저, 하트가 뒤 + 검은 하트라 CardParts의
                       FavoriteCount(하트→숫자, 빨간 하트)를 그대로 쓸 수 없습니다 */}
-                  <div className="flex shrink-0 items-center gap-1">
-                    <span className="text-14 text-black-300 font-medium">
-                      {mover.favoriteCount}
-                    </span>
-                    <Image src={likeBlack} alt="" className="size-6" />
-                  </div>
-                </div>
-                <MoverMeta
-                  rating={mover.avgRating}
-                  reviewCount={mover.reviewCount}
-                  career={mover.career}
-                  confirmedCount={mover.confirmedCount}
-                />
-              </div>
-
-              {/* 견적가 — PC는 우측 사이드에도 있지만 본문에도 그대로 있습니다.
-                  정렬이 사이즈마다 다릅니다: 모바일(`1:9249`)은 라벨·값이 양 끝,
-                  태블릿(`1:9178`)·PC(`1:9149`)는 값이 113px에서 시작합니다. */}
-              <div className="border-line-100 tablet:justify-start flex items-center justify-between border-b pb-5">
-                <span className="text-16 text-black-300 pc:text-20 tablet:w-28.25 font-semibold">
-                  견적가
-                </span>
-                <span className="text-18 text-black-400 pc:text-24 font-bold">
-                  {formatPrice(estimate.price)}
-                </span>
-              </div>
-
-              <div className="pc:gap-6 flex flex-col gap-4">
-                <h2 className="text-16 text-black-300 pc:text-20 font-semibold">견적 정보</h2>
-                <div className="pc:gap-4 flex flex-col gap-3">
-                  <InfoRow label="견적 요청일" value={formatShortDate(request.createdAt)} />
-                  <InfoRow label="서비스" value={SERVICE_LABELS[request.category]} />
-                  <InfoRow label="이용일" value={formatMovingDate(request.movingDate)} />
-                  <InfoRow label="출발지" value={request.fromAddress} />
-                  <InfoRow label="도착지" value={request.toAddress} />
+                <div className="flex shrink-0 items-center gap-1">
+                  <span className="text-14 text-black-300 font-medium">{mover.favoriteCount}</span>
+                  <Image src={likeBlack} alt="" className="size-6" />
                 </div>
               </div>
-
-              {isUnconfirmed && (
-                <div className="bg-background-200 text-14 text-gray-gray-500 flex items-center gap-2 rounded-lg px-4 py-4 font-medium">
-                  <span aria-hidden>ⓘ</span>
-                  확정하지 않은 견적이에요!
-                </div>
-              )}
-
-              {/* 모바일·태블릿은 본문 안에 공유가 들어갑니다 (PC는 우측 사이드).
-                  하단 고정 CTA(110px)가 덮지 않도록 확정 대기일 때 여백을 더 둡니다. */}
-              <QuoteShare
-                title="나만 알긴 아쉬운 기사님인가요?"
-                moverId={mover.id}
-                className={cn(
-                  "pc:hidden border-line-100 border-t pt-6",
-                  isPending ? "pb-32" : "pb-8"
-                )}
+              <MoverMeta
+                rating={mover.avgRating}
+                reviewCount={mover.reviewCount}
+                career={mover.career}
+                confirmedCount={mover.confirmedCount}
               />
             </div>
+
+            {/* 견적가 — PC는 우측 사이드에도 있지만 본문에도 그대로 있습니다.
+                  정렬이 사이즈마다 다릅니다: 모바일(`1:9249`)은 라벨·값이 양 끝,
+                  태블릿(`1:9178`)·PC(`1:9149`)는 값이 113px에서 시작합니다. */}
+            <div className="border-line-100 tablet:justify-start flex items-center justify-between border-b pb-5">
+              <span className="text-16 text-black-300 pc:text-20 tablet:w-28.25 font-semibold">
+                견적가
+              </span>
+              <span className="text-18 text-black-400 pc:text-24 font-bold">
+                {formatPrice(estimate.price)}
+              </span>
+            </div>
+
+            <div className="pc:gap-6 flex flex-col gap-4">
+              <h2 className="text-16 text-black-300 pc:text-20 font-semibold">견적 정보</h2>
+              <div className="pc:gap-4 flex flex-col gap-3">
+                <InfoRow label="견적 요청일" value={formatShortDate(request.createdAt)} />
+                <InfoRow label="서비스" value={SERVICE_LABELS[request.category]} />
+                <InfoRow label="이용일" value={formatMovingDate(request.movingDate)} />
+                <InfoRow label="출발지" value={request.fromAddress} />
+                <InfoRow label="도착지" value={request.toAddress} />
+              </div>
+            </div>
+
+            {isUnconfirmed && (
+              <div className="bg-background-200 text-14 text-gray-gray-500 flex items-center gap-2 rounded-lg px-4 py-4 font-medium">
+                <span aria-hidden>ⓘ</span>
+                확정하지 않은 견적이에요!
+              </div>
+            )}
+
+            {/* 모바일·태블릿은 본문 안에 공유가 들어갑니다 (PC는 우측 사이드).
+                  하단 고정 CTA(110px)가 덮지 않도록 확정 대기일 때 여백을 더 둡니다. */}
+            <QuoteShare
+              title="나만 알기엔 아쉬운 기사님인가요?"
+              moverId={mover.id}
+              className={cn(
+                "pc:hidden border-line-100 border-t pt-6",
+                isPending ? "pb-32" : "pb-8"
+              )}
+            />
           </div>
 
           {/* 우: PC 전용 사이드 — 견적가 + 확정 버튼 + 공유 */}
@@ -261,7 +263,8 @@ export default function QuoteDetailView({
       </div>
 
       {/* 모바일·태블릿 하단 고정 CTA (피그마 `1:9227` 375 / `1:9172` 744 — 높이 110).
-          피그마에는 위쪽 구분선이 없습니다. */}
+          위쪽 구분선이 없고, 본문과 같은 흰 배경이라 경계가 보이지 않습니다
+          (피그마 변수 `gray/gray-50` = #FFFFFF). */}
       {isPending && (
         <div className="pc:hidden tablet:px-18 fixed inset-x-0 bottom-0 z-10 flex w-full justify-center bg-gray-50 px-6 py-7">
           {/* 하트 54 + 간격 8 + CTA (피그마 하트 x=0 w=54 / CTA x=62) */}
