@@ -7,8 +7,7 @@ export interface FavoriteMoverCard {
   image: string | null;
   avgRating: number;
   reviewCount: number;
-  /** BE 찜 카드에 아직 없으면 화면에서 0년으로 둔다 */
-  career?: number;
+  career: number;
   confirmedCount: number;
   favoriteCount: number;
   services: string[];

@@ -24,8 +24,7 @@ interface CardMoverProps extends HTMLAttributes<HTMLElement> {
   profileImage?: string | null;
   rating: number;
   reviewCount: number;
-  /** 찜 목록처럼 career가 없는 응답이면 생략한다 */
-  career?: number;
+  career: number;
   confirmedCount: number;
   favoriteCount: number;
   isFavorited?: boolean;

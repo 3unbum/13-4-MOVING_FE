@@ -140,7 +140,7 @@ export default function CustomerFavoritesPage() {
                     profileImage={item.image}
                     rating={item.avgRating}
                     reviewCount={item.reviewCount}
-                    career={item.career ?? 0}
+                    career={item.career}
                     confirmedCount={item.confirmedCount}
                     favoriteCount={item.favoriteCount}
                     isFavorited

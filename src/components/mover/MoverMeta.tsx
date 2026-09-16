@@ -5,8 +5,7 @@ import Image from "next/image";
 interface MoverMetaProps {
   rating: number;
   reviewCount: number;
-  /** 없으면 경력 칸을 숨긴다. 찜 API처럼 career를 안 주는 응답이 있다. */
-  career?: number;
+  career: number;
   confirmedCount: number;
   className?: string;
 }
@@ -31,15 +30,12 @@ export default function MoverMeta({
         <span className="text-gray-gray-300">({reviewCount})</span>
       </span>
 
-      {career !== undefined && (
-        <>
-          <Divider />
-          <span className="flex items-center gap-1">
-            <span className="text-gray-gray-300">경력</span>
-            <span className="text-black-300">{career}년</span>
-          </span>
-        </>
-      )}
+      <Divider />
+
+      <span className="flex items-center gap-1">
+        <span className="text-gray-gray-300">경력</span>
+        <span className="text-black-300">{career}년</span>
+      </span>
 
       <Divider />
 
