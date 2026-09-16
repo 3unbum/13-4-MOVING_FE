@@ -10,6 +10,7 @@ import MoverMeta from "@/components/mover/MoverMeta";
 import MoverName from "@/components/mover/MoverName";
 import MoveTypeChip from "@/components/filter/ChipMoveType";
 import { SERVICE_LABELS } from "@/components/filter/ChipRegion";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 import QuoteShare from "@/components/quote/QuoteShare";
 import { cn } from "@/lib/utils/cn";
 import type { Estimate } from "@/lib/services/estimate-service";
@@ -28,6 +29,8 @@ interface QuoteDetailViewProps {
   onToggleFavorite: () => void;
   isTogglingFavorite: boolean;
 }
+
+const TABLET_QUERY = "(min-width: 744px)";
 
 const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
 const KST_OFFSET_MS = 9 * 60 * 60 * 1000;
@@ -99,6 +102,7 @@ export default function QuoteDetailView({
   isTogglingFavorite,
 }: QuoteDetailViewProps) {
   const { mover, estimateStatus, isTargeted } = estimate;
+  const isTabletUp = useMediaQuery(TABLET_QUERY);
 
   // 견적 상태만으로는 부족합니다 — 요청이 이미 확정(ASSIGNED)되면 나머지 견적은
   // PENDING으로 남지만 더 이상 확정할 수 없습니다(BE가 `NO_ACTIVE_REQUEST`로 거부).
@@ -194,17 +198,17 @@ export default function QuoteDetailView({
 
             <div className="border-line-100 tablet:pb-8 pc:pb-9 flex flex-col gap-2 border-b pb-5">
               <div className="flex w-full items-center justify-between">
-                {/* 이름 텍스트 높이가 세 사이즈 모두 26px(text-18)입니다 —
-                      모바일 `I1:9248;1:4297` / PC `I1:9147;1:4211`. 반응형 분기가 아닙니다. */}
+                {/* 이름 크기가 사이즈마다 다릅니다 — 모바일 14(`I1:9248;1:4297` h=24) /
+                    태블릿·PC 18(`I1:9147;1:4211` h=26). weight는 둘 다 semibold입니다. */}
                 <MoverName
                   nickName={mover.nickName}
-                  size="xl"
+                  size={isTabletUp ? "xl" : "sm"}
                   textClassName="text-black-black-300 font-semibold"
                 />
                 {/* 피그마는 숫자가 먼저, 하트가 뒤 + 검은 하트라 CardParts의
                       FavoriteCount(하트→숫자, 빨간 하트)를 그대로 쓸 수 없습니다 */}
                 <div className="flex shrink-0 items-center gap-1">
-                  <span className="text-18 text-gray-gray-500 font-medium">
+                  <span className="text-14 tablet:text-18 text-gray-gray-500 font-medium">
                     {mover.favoriteCount}
                   </span>
                   <Image src={likeBlack} alt="" className="size-6" />

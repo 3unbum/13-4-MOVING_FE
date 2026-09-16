@@ -22,6 +22,11 @@ export interface SortProps {
   /** 선택 변경 시 상위 페이지로 전달 */
   onChange: (value: string) => void;
   size?: "sm" | "md" | "lg" | "xl";
+  /**
+   * 접근성 이름. 기본값은 "정렬"이지만 lg·xl은 필터로도 쓰여서
+   * 그대로 두면 스크린리더가 정렬로 읽습니다 (예: "견적 상태 필터").
+   */
+  label?: string;
   className?: string;
   disabled?: boolean;
 }
@@ -49,6 +54,7 @@ export default function Sort({
   value,
   onChange,
   size = "md",
+  label = "정렬",
   className,
   disabled = false,
 }: SortProps) {
@@ -81,7 +87,7 @@ export default function Sort({
       <button
         type="button"
         disabled={disabled}
-        aria-label={`정렬: ${selectedLabel}`}
+        aria-label={`${label}: ${selectedLabel}`}
         aria-expanded={isOpen}
         aria-controls={listId}
         onClick={() => setIsOpen((prev) => !prev)}
@@ -133,7 +139,7 @@ export default function Sort({
       {isOpen ? (
         <ul
           id={listId}
-          aria-label="정렬 옵션"
+          aria-label={`${label} 옵션`}
           className={cn(
             "border-line-100 absolute top-full left-0 z-[var(--z-filter-dropdown)] flex flex-col overflow-hidden rounded-lg border bg-gray-50",
             isSm

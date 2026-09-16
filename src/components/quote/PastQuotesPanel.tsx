@@ -208,6 +208,7 @@ export default function PastQuotesPanel({ blocks, onDetailClick }: PastQuotesPan
                 <div className="pc:hidden">
                   <Sort
                     size="lg"
+                    label="견적 상태 필터"
                     options={FILTER_OPTIONS}
                     value={filter}
                     onChange={(value) => setFilters((prev) => ({ ...prev, [request.id]: value }))}
@@ -216,6 +217,7 @@ export default function PastQuotesPanel({ blocks, onDetailClick }: PastQuotesPan
                 <div className="pc:block hidden">
                   <Sort
                     size="xl"
+                    label="견적 상태 필터"
                     options={FILTER_OPTIONS}
                     value={filter}
                     onChange={(value) => setFilters((prev) => ({ ...prev, [request.id]: value }))}

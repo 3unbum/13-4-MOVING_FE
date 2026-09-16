@@ -43,7 +43,9 @@ export function useFavoriteMover(moverId: number) {
   return {
     isFavorited,
     toggle: () => toggle.mutate(),
-    isToggling: toggle.isPending,
+    // 목록을 받기 전에는 isFavorited가 무조건 false라, 이미 찜한 기사님을 눌러도
+    // 해제가 아니라 추가가 나갑니다. 조회가 끝날 때까지 버튼을 잠급니다.
+    isToggling: favorites.isPending || toggle.isPending,
     error: toggle.error,
   };
 }

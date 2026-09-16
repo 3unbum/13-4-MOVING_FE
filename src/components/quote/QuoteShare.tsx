@@ -85,8 +85,10 @@ export default function QuoteShare({ title, moverId, moverNickName, className }:
       await navigator.clipboard.writeText(shareUrl());
       showToast(message);
     } catch {
-      // 클립보드는 https·사용자 제스처 등 조건이 안 맞으면 거부됩니다
-      showToast("링크 복사에 실패했어요. 주소창에서 복사해 주세요.");
+      // 클립보드는 https·사용자 제스처 등 조건이 안 맞으면 거부됩니다.
+      // 주소창은 견적 상세(로그인 필요)라 안내해봐야 못 여는 링크가 공유됩니다.
+      // 공유 대상 URL을 그대로 띄워 직접 복사할 수 있게 합니다.
+      showToast(`링크 복사에 실패했어요. ${shareUrl()}`);
     }
   };
 

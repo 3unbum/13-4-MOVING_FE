@@ -47,12 +47,28 @@ export function useKakaoSdk() {
       setIsReady(window.Kakao.isInitialized());
     };
 
+    // 실패한 스크립트를 남겨두면 다음 마운트가 이미 끝난 load를 기다리다 영영 멈춥니다.
+    // 지우고 나가야 네트워크가 복구됐을 때 다시 시도할 수 있습니다.
+    const fail = (script: HTMLScriptElement) => {
+      script.remove();
+      setIsReady(false);
+    };
+
     const existing = document.getElementById(SCRIPT_ID) as HTMLScriptElement | null;
     if (existing) {
-      // 이미 받아둔 경우 — 로드가 끝났으면 바로, 아니면 끝날 때 init
-      if (window.Kakao) init();
-      else existing.addEventListener("load", init, { once: true });
-      return;
+      if (window.Kakao) {
+        init();
+        return;
+      }
+      // 아직 받는 중 — 끝나면 init, 실패하면 태그를 치웁니다
+      const onLoad = () => (window.Kakao ? init() : fail(existing));
+      const onError = () => fail(existing);
+      existing.addEventListener("load", onLoad, { once: true });
+      existing.addEventListener("error", onError, { once: true });
+      return () => {
+        existing.removeEventListener("load", onLoad);
+        existing.removeEventListener("error", onError);
+      };
     }
 
     const script = document.createElement("script");
@@ -61,9 +77,17 @@ export function useKakaoSdk() {
     script.integrity = SDK_INTEGRITY;
     script.crossOrigin = "anonymous";
     script.async = true;
-    script.addEventListener("load", init, { once: true });
+    // SRI 불일치는 error로 오지만, 일부 브라우저는 load 후 전역이 비어 있기도 합니다
+    const onLoad = () => (window.Kakao ? init() : fail(script));
+    const onError = () => fail(script);
+    script.addEventListener("load", onLoad, { once: true });
+    script.addEventListener("error", onError, { once: true });
     document.head.appendChild(script);
-    // 스크립트는 다른 화면에서도 재사용하므로 언마운트 시 지우지 않습니다
+
+    return () => {
+      script.removeEventListener("load", onLoad);
+      script.removeEventListener("error", onError);
+    };
   }, []);
 
   return isReady;
