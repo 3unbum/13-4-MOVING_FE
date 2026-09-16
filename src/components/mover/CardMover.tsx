@@ -12,7 +12,7 @@ type CardMoverSize = "sm" | "md" | "lg";
 
 interface CardMoverProps extends HTMLAttributes<HTMLElement> {
   size?: CardMoverSize;
-  /** 기사님 제공 서비스 유형 (복수 가능) */
+  /** 기사님 제공 서비스 유형 (복수 가능). 유효한 값만 넘긴다. */
   categories: readonly ServiceCode[];
   /** 지정 견젹 요청 여부 - targeted_request 조인 결과. 별도 칩으로 나란히 표시. */
   isTargeted?: boolean;
@@ -28,7 +28,7 @@ interface CardMoverProps extends HTMLAttributes<HTMLElement> {
   confirmedCount: number;
   favoriteCount: number;
   isFavorited?: boolean;
-  /** lg에서만 노출되는 선택 체크박스 */
+  /** sm을 제외한 크기에서 노출되는 선택 체크박스 */
   selectable?: boolean;
   selected?: boolean;
   onSelectChange?: (selected: boolean) => void;
@@ -70,6 +70,20 @@ export default function CardMover({
     className
   );
 
+  const selectCheckbox = selectable ? (
+    <div
+      onClick={(event) => event.stopPropagation()}
+      onKeyDown={(event) => event.stopPropagation()}
+    >
+      <CheckboxButton
+        shape="square"
+        aria-label={`${nickName} 기사님 선택`}
+        checked={selected}
+        onChange={(e) => onSelectChange?.(e.target.checked)}
+      />
+    </div>
+  ) : null;
+
   if (isLg) {
     return (
       <article className={cardClass} {...props}>
@@ -81,14 +95,7 @@ export default function CardMover({
               ))}
               {isTargeted && <MoveTypeChip variant="TARGETED" size="md" />}
             </div>
-            {selectable && (
-              <CheckboxButton
-                shape="square"
-                aria-label={`${nickName} 기사님 선택`}
-                checked={selected}
-                onChange={(e) => onSelectChange?.(e.target.checked)}
-              />
-            )}
+            {selectCheckbox}
           </div>
 
           <div className="flex w-full items-start gap-5">
@@ -128,11 +135,14 @@ export default function CardMover({
   if (isMd) {
     return (
       <article className={cardClass} {...props}>
-        <div className="flex flex-wrap items-center gap-2">
-          {categories.map((category) => (
-            <MoveTypeChip key={category} variant={category} size="sm" />
-          ))}
-          {isTargeted && <MoveTypeChip variant="TARGETED" size="sm" />}
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            {categories.map((category) => (
+              <MoveTypeChip key={category} variant={category} size="sm" />
+            ))}
+            {isTargeted && <MoveTypeChip variant="TARGETED" size="sm" />}
+          </div>
+          {selectCheckbox}
         </div>
 
         <div className="flex w-full flex-col gap-4">

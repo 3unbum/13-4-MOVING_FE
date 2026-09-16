@@ -17,8 +17,11 @@ export default function Toast({ message, size = "sm", className, ...props }: Toa
       role="status"
       aria-live="polite"
       className={cn(
-        "z-toast shadow-modal fixed bottom-10 left-1/2 -translate-x-1/2 bg-orange-200 font-semibold text-orange-400",
-        isMd ? "text-18 rounded-2xl px-8 py-5" : "text-16 rounded-xl px-6 py-3.5",
+        // GNB(54px / PC 88px) 아래 16px. 피그마 toast-popup은 화면 상단 넓은 바.
+        "z-toast shadow-modal pc:top-[104px] fixed top-[70px] left-1/2 -translate-x-1/2 bg-orange-200 text-left font-semibold text-orange-400",
+        isMd
+          ? "text-18 pc:w-[1200px] w-[calc(100%-48px)] rounded-2xl px-8 py-5"
+          : "text-16 tablet:w-[640px] w-[calc(100%-48px)] rounded-xl px-6 py-3.5",
         className
       )}
       {...props}

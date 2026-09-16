@@ -22,6 +22,47 @@ export interface FavoriteListResult {
 export interface BulkDeleteResult {
   deletedCount: number;
   deletedMoverIds: number[];
+  /** 50개 단위 요청 중 일부가 실패한 경우 */
+  incomplete?: boolean;
+}
+
+/** BE bulkDelete는 요청당 최대 50명 */
+const BULK_DELETE_MAX = 50;
+
+async function removeInChunks(moverIds: number[]): Promise<BulkDeleteResult> {
+  const uniqueIds = [...new Set(moverIds)];
+  if (uniqueIds.length === 0) {
+    return { deletedCount: 0, deletedMoverIds: [] };
+  }
+
+  const deletedMoverIds: number[] = [];
+  let lastError: unknown;
+
+  for (let index = 0; index < uniqueIds.length; index += BULK_DELETE_MAX) {
+    const batch = uniqueIds.slice(index, index + BULK_DELETE_MAX);
+    try {
+      const result = await cookieFetch<BulkDeleteResult>("/favorites", {
+        method: "DELETE",
+        body: JSON.stringify({ moverIds: batch }),
+      });
+      deletedMoverIds.push(...result.deletedMoverIds);
+    } catch (error) {
+      lastError = error;
+      break;
+    }
+  }
+
+  if (deletedMoverIds.length === 0) {
+    throw lastError instanceof Error
+      ? lastError
+      : new Error("찜 해제에 실패했어요. 다시 시도해 주세요.");
+  }
+
+  return {
+    deletedCount: deletedMoverIds.length,
+    deletedMoverIds,
+    incomplete: lastError != null,
+  };
 }
 
 /**
@@ -41,9 +82,5 @@ export const favoriteService = {
       body: JSON.stringify({ moverId }),
     }),
 
-  remove: (moverIds: number[]) =>
-    cookieFetch<BulkDeleteResult>("/favorites", {
-      method: "DELETE",
-      body: JSON.stringify({ moverIds }),
-    }),
+  remove: removeInChunks,
 };

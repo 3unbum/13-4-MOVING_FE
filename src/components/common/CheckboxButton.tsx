@@ -45,7 +45,7 @@ export default function CheckboxButton({
           src={checkIcon}
           alt=""
           className={cn(
-            "h-auto opacity-0 transition-opacity group-has-[:checked]:opacity-100",
+            "pointer-events-none h-auto opacity-0 transition-opacity group-has-[:checked]:opacity-100",
             shape === "round" ? "w-2" : "w-3"
           )}
         />
