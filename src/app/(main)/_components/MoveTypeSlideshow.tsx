@@ -27,7 +27,7 @@ export default function MoveTypeSlideshow() {
 
   return (
     <div
-      className="pc:flex-1 tablet:h-[269.5px] relative h-56 px-4 pt-4"
+      className="pc:flex-1 tablet:h-[269.5px] relative h-56 overflow-x-clip px-4 pt-4"
       style={{ perspective: 800 }}
     >
       {VARIANTS.map((variant, index) => (
