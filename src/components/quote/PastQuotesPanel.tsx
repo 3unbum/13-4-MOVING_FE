@@ -72,8 +72,8 @@ function EstimateRow({ estimate, onClick }: { estimate: Estimate; onClick: () =>
     isTargeted: estimate.isTargeted,
     // 카드 제목은 기사님 한 줄 소개입니다
     title: estimate.mover.bio,
-    // REJECTED(반려)면 price가 null입니다
-    price: estimate.price ?? 0,
+    // REJECTED(반려)면 null — 카드가 "견적가 없음"으로 표기합니다
+    price: estimate.price,
     isConfirmed: estimate.estimateStatus === "CONFIRMED",
     nickName: estimate.mover.nickName,
     profileImage: estimate.mover.image,

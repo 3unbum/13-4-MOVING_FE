@@ -45,7 +45,15 @@ function formatMovingDate(iso: string) {
   return `${k.getUTCFullYear()}. ${p(k.getUTCMonth() + 1)}. ${p(k.getUTCDate())}(${WEEKDAYS[k.getUTCDay()]})`;
 }
 
-function formatPrice(price: number) {
+/**
+ * 견적가 표기.
+ *
+ * 반려(REJECTED) 견적은 `price`가 null입니다. `?? 0`으로 두면 화면에 "0원"이
+ * 찍혀 실제로 0원에 해주겠다는 제안처럼 읽힙니다 — 받았던 견적 탭에서 반려
+ * 견적 상세로 들어올 수 있으므로(시드 기준 15건) 값 없음을 그대로 밝힙니다.
+ */
+function formatPrice(price: number | null) {
+  if (price === null) return "견적가 없음";
   return `${price.toLocaleString("ko-KR")}원`;
 }
 
@@ -84,8 +92,6 @@ export default function QuoteDetailView({
   const isConfirmed = estimateStatus === "CONFIRMED";
   // 지난 요청에서 확정되지 않은 채 끝난 견적 — 하단에 안내가 붙습니다
   const isUnconfirmed = !isPending && !isConfirmed;
-
-  const price = estimate.price ?? 0;
 
   return (
     <div className="flex min-h-dvh flex-col">
@@ -159,7 +165,7 @@ export default function QuoteDetailView({
               <div className="border-line-100 flex items-center justify-between border-b pb-5">
                 <span className="text-16 text-black-300 pc:text-20 font-semibold">견적가</span>
                 <span className="text-18 text-black-400 pc:text-24 font-bold">
-                  {formatPrice(price)}
+                  {formatPrice(estimate.price)}
                 </span>
               </div>
 
@@ -185,6 +191,7 @@ export default function QuoteDetailView({
                   하단 고정 CTA(110px)가 덮지 않도록 확정 대기일 때 여백을 더 둡니다. */}
               <QuoteShare
                 title="나만 알긴 아쉬운 기사님인가요?"
+                moverId={mover.id}
                 className={cn(
                   "pc:hidden border-line-100 border-t pt-6",
                   isPending ? "pb-32" : "pb-8"
@@ -199,7 +206,9 @@ export default function QuoteDetailView({
               <>
                 <div className="flex flex-col gap-1">
                   <span className="text-16 text-black-300 font-semibold">견적가</span>
-                  <span className="text-24 text-black-400 font-bold">{formatPrice(price)}</span>
+                  <span className="text-24 text-black-400 font-bold">
+                    {formatPrice(estimate.price)}
+                  </span>
                 </div>
                 <Button
                   variant="solid"
@@ -214,6 +223,7 @@ export default function QuoteDetailView({
             )}
             <QuoteShare
               title="견적서 공유하기"
+              moverId={mover.id}
               className={cn(isPending && "border-line-100 border-t pt-6")}
             />
           </aside>

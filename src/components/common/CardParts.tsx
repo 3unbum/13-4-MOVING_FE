@@ -132,14 +132,21 @@ export function PriceFooter({ price, size = "sm" }: { price: number; size?: "sm"
  * 견적내역 카드의 금액 줄. 구분선이 없고 오른쪽 정렬이며
  * 라벨/금액 색이 PriceFooter와 다릅니다 (gray-500 / black-400).
  */
-export function PriceInline({ price, size = "sm" }: { price: number; size?: "sm" | "lg" }) {
+export function PriceInline({
+  price,
+  size = "sm",
+}: {
+  /** 반려(REJECTED) 견적은 금액이 없습니다 — null이면 "견적가 없음"으로 표기합니다 */
+  price: number | null;
+  size?: "sm" | "lg";
+}) {
   const isLg = size === "lg";
 
   return (
     <div className="flex items-center gap-3 whitespace-nowrap">
       <span className="text-14 text-gray-gray-500 font-medium">견적 금액</span>
       <span className={cn("text-black-black-400 font-bold", isLg ? "text-24" : "text-18")}>
-        {price.toLocaleString()}원
+        {price === null ? "견적가 없음" : `${price.toLocaleString()}원`}
       </span>
     </div>
   );

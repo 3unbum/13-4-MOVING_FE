@@ -90,7 +90,8 @@ interface CardEstimateHistoryProps extends HTMLAttributes<HTMLElement>, MoverInf
   isTargeted?: boolean;
   /** 기사님 한 줄 소개 */
   title: string;
-  price: number;
+  /** 반려(REJECTED) 견적은 금액이 없어 null이 옵니다 */
+  price: number | null;
   /** 확정된 견적이면 "확정견적" 배지가 붙습니다 */
   isConfirmed?: boolean;
 }
