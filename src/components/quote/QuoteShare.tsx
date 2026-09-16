@@ -66,10 +66,8 @@ function ShareButton({
  * 로그인해도 남의 견적이라 열 수 없습니다. 요구사항도 기사님 상세 URL을
  * 공유하도록 정하고 있습니다("...무빙에서 확인해 보세요! <기사님 상세 페이지 URL>").
  *
- * 카카오·페이스북 SNS 연동은 아직입니다 — 카카오는 JavaScript 키 발급과 콘솔에
- * 도메인 등록이, 페이스북은 공유 대화상자 연결이 필요합니다. 그때까지 두 버튼도
- * 링크 복사로 동작하며, 라벨을 실제 동작에 맞춰 "링크 복사하기"로 둡니다
- * (버튼 자체는 피그마에 있으므로 없애지 않습니다).
+ * 카카오는 JS SDK, 페이스북은 sharer를 씁니다. 카카오는 키(`NEXT_PUBLIC_KAKAO_JS_KEY`)가
+ * 없거나 SDK 로드에 실패하면, 페이스북은 팝업이 차단되면 링크 복사로 폴백합니다.
  */
 export default function QuoteShare({ title, moverId, moverNickName, className }: QuoteShareProps) {
   const [toast, setToast] = useState<string | null>(null);
@@ -119,6 +117,22 @@ export default function QuoteShare({ title, moverId, moverNickName, className }:
     }
   };
 
+  /**
+   * 페이스북 공유 — sharer는 앱 등록도 SDK도 필요 없습니다.
+   *
+   * 미리보기 카드는 페이스북이 공유 URL을 직접 크롤링해 만들기 때문에,
+   * 기사님 상세 페이지(#69)에 og 태그가 붙어야 제대로 나옵니다.
+   * localhost는 페이스북이 접근할 수 없어 로컬에서는 링크만 보입니다.
+   */
+  const shareToFacebook = () => {
+    const sharer = new URL("https://www.facebook.com/sharer/sharer.php");
+    sharer.searchParams.set("u", shareUrl());
+
+    // 팝업이 차단되면 사용자가 아무 반응도 못 보므로 링크 복사로 대신합니다
+    const popup = window.open(sharer.toString(), "_blank", "noopener,noreferrer");
+    if (!popup) void copyLink("링크가 복사되었어요!");
+  };
+
   return (
     <div className={cn("flex flex-col gap-3", className)}>
       <p className="text-16 text-black-300 pc:text-20 font-semibold">{title}</p>
@@ -141,12 +155,7 @@ export default function QuoteShare({ title, moverId, moverNickName, className }:
           <Image src={kakao} alt="" className="pc:size-7 size-6" />
         </ShareButton>
 
-        {/* TODO: 페이스북 공유 대화상자 연결. 연동 전까지는 라벨도 링크 복사 */}
-        <ShareButton
-          label="링크 복사하기 (페이스북 공유는 준비 중)"
-          variant="facebook"
-          onClick={() => copyLink("링크가 복사되었어요!")}
-        >
+        <ShareButton label="페이스북으로 공유하기" variant="facebook" onClick={shareToFacebook}>
           <Image src={facebookMd} alt="" className="pc:hidden size-6" />
           <Image src={facebookLg} alt="" className="pc:block hidden size-7" />
         </ShareButton>
