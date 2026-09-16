@@ -66,6 +66,15 @@ export const quotationRequestService = {
    * 꺼내므로 배열만 받습니다. 이력이 50건을 넘길 일이 생기면 그때 raw 응답으로
    * `totalPages`를 읽어 페이지네이션 UI를 붙이세요.
    */
+  /**
+   * 요청 상세 (#18).
+   *
+   * 견적 상세 화면의 "견적 정보" 블록에 출발지·도착지가 필요한데
+   * `GET /estimates/:id`의 `quotationRequest`에는 주소가 없어 여기서 따로 받습니다.
+   */
+  getById: (quotationRequestId: number) =>
+    cookieFetch<QuotationRequest>(`/quotation-requests/${quotationRequestId}`),
+
   getHistory: (page = 1) =>
     cookieFetch<QuotationRequest[]>(`/quotation-requests?page=${page}&limit=${HISTORY_PAGE_LIMIT}`),
 };
