@@ -12,8 +12,8 @@ type CardMoverSize = "sm" | "md" | "lg";
 
 interface CardMoverProps extends HTMLAttributes<HTMLElement> {
   size?: CardMoverSize;
-  /** 이사 종류 - quotation_request.category */
-  category: ServiceCode;
+  /** 기사님 제공 서비스 유형 (복수 가능) */
+  categories: readonly ServiceCode[];
   /** 지정 견젹 요청 여부 - targeted_request 조인 결과. 별도 칩으로 나란히 표시. */
   isTargeted?: boolean;
   /** 기사님 한 줄 소개 (제목) */
@@ -36,10 +36,10 @@ interface CardMoverProps extends HTMLAttributes<HTMLElement> {
   className?: string;
 }
 
-// 사용법: <CardMover size="lg" category="SMALL" isTargeted title="..." nickName="김코드" ... />
+// 사용법: <CardMover size="lg" categories={["SMALL", "HOME"]} isTargeted title="..." nickName="김코드" ... />
 export default function CardMover({
   size = "md",
-  category,
+  categories,
   isTargeted = false,
   title,
   description,
@@ -74,9 +74,11 @@ export default function CardMover({
     return (
       <article className={cardClass} {...props}>
         <div className="flex w-full flex-col items-start gap-3">
-          <div className="flex h-8.5 w-full items-center justify-between">
-            <div className="flex items-center gap-2">
-              <MoveTypeChip variant={category} size="md" />
+          <div className="flex min-h-8.5 w-full items-center justify-between">
+            <div className="flex flex-wrap items-center gap-2">
+              {categories.map((category) => (
+                <MoveTypeChip key={category} variant={category} size="md" />
+              ))}
               {isTargeted && <MoveTypeChip variant="TARGETED" size="md" />}
             </div>
             {selectable && (
@@ -126,8 +128,10 @@ export default function CardMover({
   if (isMd) {
     return (
       <article className={cardClass} {...props}>
-        <div className="flex items-center gap-2">
-          <MoveTypeChip variant={category} size="sm" />
+        <div className="flex flex-wrap items-center gap-2">
+          {categories.map((category) => (
+            <MoveTypeChip key={category} variant={category} size="sm" />
+          ))}
           {isTargeted && <MoveTypeChip variant="TARGETED" size="sm" />}
         </div>
 
@@ -170,8 +174,10 @@ export default function CardMover({
   return (
     <article className={cn(cardClass, "items-end")} {...props}>
       <div className="flex w-full flex-col gap-3">
-        <div className="flex items-center gap-2">
-          <MoveTypeChip variant={category} size="sm" />
+        <div className="flex flex-wrap items-center gap-2">
+          {categories.map((category) => (
+            <MoveTypeChip key={category} variant={category} size="sm" />
+          ))}
           {isTargeted && <MoveTypeChip variant="TARGETED" size="sm" />}
         </div>
 
