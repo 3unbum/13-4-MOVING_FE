@@ -125,6 +125,12 @@ export default function MoverProfileForm() {
               size="sm"
               className="pc:[&_input]:text-18"
               errorMessage={errors.career?.message}
+              // inputMode="numeric"은 키패드 힌트일 뿐 실제 입력을 막지 않음 — "1년"처럼 문자가
+              // 섞이거나, "1e5"처럼 Number()가 그대로 통과시켜버리는(=100000, int().min(0) 우회) 값이
+              // 들어올 수 있어 입력 단계에서 숫자 이외 문자를 바로 제거해야 함 (은범님 리뷰 코멘트)
+              onInput={(e) => {
+                e.currentTarget.value = e.currentTarget.value.replace(/\D/g, "");
+              }}
               {...register("career", {
                 setValueAs: (v) => {
                   if (v == null || (typeof v === "string" && v.trim() === "")) {
