@@ -3,6 +3,19 @@ import type { RegionCode, ServiceCode } from "@/components/filter/ChipRegion";
 
 export type QuotationStatus = "PENDING" | "ASSIGNED" | "COMPLETED" | "EXPIRED";
 
+/**
+ * 아직 진행 중인 요청 상태 — 스키마 주석 기준입니다.
+ *
+ *   PENDING   견적 대기 (활성)
+ *   ASSIGNED  기사님 확정, 이사 전 (활성)
+ *   COMPLETED 이사일 경과
+ *   EXPIRED   견적 없이 이사일 경과
+ *
+ * 활성 요청은 동시에 1건만 존재하고(`ACTIVE_REQUEST_EXISTS`), 이사일이 지나면
+ * 배치가 COMPLETED/EXPIRED로 바꿉니다. BE도 같은 두 값으로 활성을 판단합니다.
+ */
+export const ACTIVE_QUOTATION_STATUSES: QuotationStatus[] = ["PENDING", "ASSIGNED"];
+
 export interface QuotationRequestAddress {
   postalCode: string;
   region: RegionCode;

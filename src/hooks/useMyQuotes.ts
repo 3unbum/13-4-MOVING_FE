@@ -2,7 +2,10 @@
 
 import { useQueries, useQuery } from "@tanstack/react-query";
 import { ESTIMATE_LIMIT_PER_REQUEST, estimateService } from "@/lib/services/estimate-service";
-import { quotationRequestService } from "@/lib/services/quotation-request-service";
+import {
+  ACTIVE_QUOTATION_STATUSES,
+  quotationRequestService,
+} from "@/lib/services/quotation-request-service";
 
 export const myQuotesKeys = {
   activeRequest: ["quotation-requests", "active"] as const,
@@ -46,9 +49,12 @@ export function usePastQuotes() {
     queryFn: () => quotationRequestService.getHistory(),
   });
 
-  // 활성 요청은 "대기 중인 견적" 탭이 담당하므로 지난 요청만 남깁니다
+  // 활성 요청은 "대기 중인 견적" 탭이 담당하므로 지난 요청만 남깁니다.
+  // 활성 = PENDING(견적 대기) + ASSIGNED(확정, 이사 전) — 스키마 주석과 BE의
+  // `quotationStatus: { in: ["PENDING", "ASSIGNED"] }` 기준입니다.
+  // ASSIGNED를 빼먹으면 확정 후 이사 전인 요청이 두 탭에 동시에 나옵니다.
   const pastRequests = (history.data ?? []).filter(
-    (request) => request.quotationStatus !== "PENDING"
+    (request) => !ACTIVE_QUOTATION_STATUSES.includes(request.quotationStatus)
   );
 
   const estimateQueries = useQueries({
