@@ -130,9 +130,9 @@ export default function QuoteShare({ title, moverId, moverNickName, className }:
     const sharer = new URL("https://www.facebook.com/sharer/sharer.php");
     sharer.searchParams.set("u", shareUrl());
 
-    // 팝업이 차단되면 사용자가 아무 반응도 못 보므로 링크 복사로 대신합니다
-    const popup = window.open(sharer.toString(), "_blank", "noopener,noreferrer");
-    if (!popup) void copyLink("링크가 복사되었어요!");
+    // noopener를 주면 창이 정상적으로 열려도 반환값이 null이라 팝업 차단을 구분할 수
+    // 없습니다. 차단된 경우는 옆의 "링크 복사하기" 버튼이 대체 경로가 됩니다.
+    window.open(sharer.toString(), "_blank", "noopener,noreferrer");
   };
 
   return (
