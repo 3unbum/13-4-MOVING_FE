@@ -20,11 +20,15 @@ export default function RequireProfileModal({
 }: RequireProfileModalProps) {
   return (
     <Modal
+      labelledBy="require-profile-modal-title"
       open={open}
       onClose={() => {}}
       className="tablet:w-152 tablet:min-w-152 w-[calc(100vw-2rem)] max-w-93.75 min-w-0 gap-10 rounded-4xl px-4 py-8"
     >
-      <p className="text-32 text-black-300 w-full text-center font-bold">
+      <p
+        id="require-profile-modal-title"
+        className="text-32 text-black-300 w-full text-center font-bold"
+      >
         프로필을 등록하시겠어요?
       </p>
       <p className="text-24 text-gray-gray-400 w-full text-center font-semibold">
