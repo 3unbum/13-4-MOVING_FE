@@ -26,6 +26,7 @@
     "@tanstack/react-query-devtools": "^5.102.8",
     "clsx": "^2.1.1",
     "date-fns": "^4.4.0",
+    "motion": "^13.3.0",
     "next": "16.3.3",
     "next-flex-rating": "^1.0.4",
     "react": "19.2.8",

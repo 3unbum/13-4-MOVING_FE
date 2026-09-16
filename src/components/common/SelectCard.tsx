@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils/cn";
 import Image, { type StaticImageData } from "next/image";
 import type { ButtonHTMLAttributes } from "react";
 
-type SelectCardVariant = "SMALL" | "HOME" | "OFFICE";
+export type SelectCardVariant = "SMALL" | "HOME" | "OFFICE";
 type SelectCardSize = "sm" | "md";
 
 interface SelectCardProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -16,19 +16,19 @@ interface SelectCardProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 // BE ServiceType과 값 맞춤 (견적 요청 category로 그대로 전송)
-const LABELS: Record<SelectCardVariant, string> = {
+export const SELECT_CARD_LABELS: Record<SelectCardVariant, string> = {
   SMALL: "소형이사",
   HOME: "가정이사",
   OFFICE: "사무실이사",
 };
 
-const IMAGES: Record<SelectCardVariant, StaticImageData> = {
+export const SELECT_CARD_IMAGES: Record<SelectCardVariant, StaticImageData> = {
   SMALL: smallImg,
   HOME: homeImg,
   OFFICE: officeImg,
 };
 
-const SUBTITLES: Record<SelectCardVariant, string> = {
+export const SELECT_CARD_SUBTITLES: Record<SelectCardVariant, string> = {
   SMALL: "원룸, 투룸, 20평대 미만",
   HOME: "쓰리룸, 20평대 이상",
   OFFICE: "사무실, 상업공간",
@@ -76,7 +76,7 @@ export default function SelectCard({
           <span
             className={cn("text-16 font-semibold", selected ? "text-orange-400" : "text-black-500")}
           >
-            {LABELS[variant]}
+            {SELECT_CARD_LABELS[variant]}
           </span>
           <span
             className={cn(
@@ -84,12 +84,12 @@ export default function SelectCard({
               selected ? "text-orange-400" : "text-gray-gray-500"
             )}
           >
-            {SUBTITLES[variant]}
+            {SELECT_CARD_SUBTITLES[variant]}
           </span>
         </span>
       </div>
       <div className="relative size-30 shrink-0">
-        <Image src={IMAGES[variant]} alt="" fill className="object-contain" />
+        <Image src={SELECT_CARD_IMAGES[variant]} alt="" fill className="object-contain" />
       </div>
     </button>
   );
