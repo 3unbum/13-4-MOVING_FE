@@ -12,8 +12,8 @@ type CardMoverSize = "sm" | "md" | "lg";
 
 interface CardMoverProps extends HTMLAttributes<HTMLElement> {
   size?: CardMoverSize;
-  /** 이사 종류 - quotation_request.category */
-  category: ServiceCode;
+  /** 이사 종류 - quotation_request.category. 유효하지 않으면 칩을 숨긴다. */
+  category?: ServiceCode;
   /** 지정 견젹 요청 여부 - targeted_request 조인 결과. 별도 칩으로 나란히 표시. */
   isTargeted?: boolean;
   /** 기사님 한 줄 소개 (제목) */
@@ -71,7 +71,10 @@ export default function CardMover({
   );
 
   const selectCheckbox = selectable ? (
-    <div onClick={(event) => event.stopPropagation()}>
+    <div
+      onClick={(event) => event.stopPropagation()}
+      onKeyDown={(event) => event.stopPropagation()}
+    >
       <CheckboxButton
         shape="square"
         aria-label={`${nickName} 기사님 선택`}
@@ -87,7 +90,7 @@ export default function CardMover({
         <div className="flex w-full flex-col items-start gap-3">
           <div className="flex h-8.5 w-full items-center justify-between">
             <div className="flex items-center gap-2">
-              <MoveTypeChip variant={category} size="md" />
+              {category ? <MoveTypeChip variant={category} size="md" /> : null}
               {isTargeted && <MoveTypeChip variant="TARGETED" size="md" />}
             </div>
             {selectCheckbox}
@@ -132,7 +135,7 @@ export default function CardMover({
       <article className={cardClass} {...props}>
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
-            <MoveTypeChip variant={category} size="sm" />
+            {category ? <MoveTypeChip variant={category} size="sm" /> : null}
             {isTargeted && <MoveTypeChip variant="TARGETED" size="sm" />}
           </div>
           {selectCheckbox}
@@ -178,7 +181,7 @@ export default function CardMover({
     <article className={cn(cardClass, "items-end")} {...props}>
       <div className="flex w-full flex-col gap-3">
         <div className="flex items-center gap-2">
-          <MoveTypeChip variant={category} size="sm" />
+          {category ? <MoveTypeChip variant={category} size="sm" /> : null}
           {isTargeted && <MoveTypeChip variant="TARGETED" size="sm" />}
         </div>
 

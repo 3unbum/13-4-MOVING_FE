@@ -16,10 +16,10 @@ import FavoritesEmptyFallback from "./_components/FavoritesEmptyFallback";
 
 const TABLET_QUERY = "(min-width: 744px)";
 const PC_QUERY = "(min-width: 1280px)";
-const BULK_DELETE_MAX = 50;
 
-function toServiceCode(service: string | undefined): ServiceCode {
-  return service && service in SERVICE_LABELS ? (service as ServiceCode) : "SMALL";
+/** BE moverServices.service는 ServiceType. 유효한 값만 칩으로 쓴다. */
+function toServiceCode(services: string[]): ServiceCode | undefined {
+  return services.find((service): service is ServiceCode => service in SERVICE_LABELS);
 }
 
 export default function CustomerFavoritesPage() {
@@ -58,6 +58,10 @@ export default function CustomerFavoritesPage() {
         return next;
       });
       void queryClient.invalidateQueries({ queryKey: favoriteQueryKeys.all });
+      if (result.incomplete) {
+        showToast("일부만 해제됐어요. 다시 시도해 주세요.");
+        return;
+      }
       showToast(
         result.deletedCount > 1
           ? `찜한 기사님 ${result.deletedCount}명을 해제했어요`
@@ -86,7 +90,7 @@ export default function CustomerFavoritesPage() {
 
   const handleDelete = (moverIds: number[]) => {
     if (moverIds.length === 0 || deleteMutation.isPending) return;
-    deleteMutation.mutate(moverIds.slice(0, BULK_DELETE_MAX));
+    deleteMutation.mutate(moverIds);
   };
 
   return (
@@ -134,7 +138,7 @@ export default function CustomerFavoritesPage() {
                 <li key={item.id}>
                   <CardMover
                     size={cardSize}
-                    category={toServiceCode(item.services[0])}
+                    category={toServiceCode(item.services)}
                     title={item.bio}
                     nickName={item.nickName}
                     profileImage={item.image}
@@ -153,6 +157,7 @@ export default function CustomerFavoritesPage() {
                     tabIndex={0}
                     onClick={() => router.push(`/movers/${item.id}`)}
                     onKeyDown={(event) => {
+                      if (event.target !== event.currentTarget) return;
                       if (event.key === "Enter" || event.key === " ") {
                         event.preventDefault();
                         router.push(`/movers/${item.id}`);

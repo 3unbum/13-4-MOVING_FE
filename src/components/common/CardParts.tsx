@@ -48,6 +48,7 @@ export function FavoriteCount({
         event.stopPropagation();
         onClick();
       }}
+      onKeyDown={(event) => event.stopPropagation()}
       className="flex shrink-0 cursor-pointer items-center justify-center gap-0.5"
     >
       {content}
