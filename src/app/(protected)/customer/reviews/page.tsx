@@ -149,8 +149,8 @@ export default function CustomerReviewsPage() {
             className={cn(
               "flex w-full flex-col",
               tab === "writable"
-                ? "tablet:max-w-[600px] pc:w-[1120px]"
-                : "tablet:max-w-[588px] pc:w-[1120px]"
+                ? "tablet:max-w-[600px] pc:max-w-[1120px] pc:w-[1120px]"
+                : "tablet:max-w-[588px] pc:max-w-[1120px] pc:w-[1120px]"
             )}
           >
             <ul className="flex w-full flex-col gap-5">
