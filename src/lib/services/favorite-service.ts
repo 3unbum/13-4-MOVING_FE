@@ -5,9 +5,9 @@ export interface FavoriteMoverCard {
   nickName: string;
   bio: string;
   image: string | null;
+  career: number;
   avgRating: number;
   reviewCount: number;
-  career: number;
   confirmedCount: number;
   favoriteCount: number;
   services: string[];
@@ -29,47 +29,58 @@ export interface BulkDeleteResult {
 /** BE bulkDelete는 요청당 최대 50명 */
 const BULK_DELETE_MAX = 50;
 
-export const favoriteQueryKeys = {
-  all: ["favorites"] as const,
-  list: () => ["favorites", "list"] as const,
-};
+async function removeInChunks(moverIds: number[]): Promise<BulkDeleteResult> {
+  const uniqueIds = [...new Set(moverIds)];
+  if (uniqueIds.length === 0) {
+    return { deletedCount: 0, deletedMoverIds: [] };
+  }
 
+  const deletedMoverIds: number[] = [];
+  let lastError: unknown;
+
+  for (let index = 0; index < uniqueIds.length; index += BULK_DELETE_MAX) {
+    const batch = uniqueIds.slice(index, index + BULK_DELETE_MAX);
+    try {
+      const result = await cookieFetch<BulkDeleteResult>("/favorites", {
+        method: "DELETE",
+        body: JSON.stringify({ moverIds: batch }),
+      });
+      deletedMoverIds.push(...result.deletedMoverIds);
+    } catch (error) {
+      lastError = error;
+      break;
+    }
+  }
+
+  if (deletedMoverIds.length === 0) {
+    throw lastError instanceof Error
+      ? lastError
+      : new Error("찜 해제에 실패했어요. 다시 시도해 주세요.");
+  }
+
+  return {
+    deletedCount: deletedMoverIds.length,
+    deletedMoverIds,
+    incomplete: lastError != null,
+  };
+}
+
+/**
+ * 찜 API — requireAuth + CUSTOMER.
+ * cookieFetch로 쿠키·401 refresh를 태운다.
+ */
 export const favoriteService = {
-  /** limit 없이 호출하면 찜한 기사님 전체를 받는다. BE limit는 찾기 PC 좌측 3명용. */
-  list: () => cookieFetch<FavoriteListResult>("/favorites"),
-  bulkDelete: async (moverIds: number[]): Promise<BulkDeleteResult> => {
-    const uniqueIds = [...new Set(moverIds)];
-    if (uniqueIds.length === 0) {
-      return { deletedCount: 0, deletedMoverIds: [] };
-    }
-
-    const deletedMoverIds: number[] = [];
-    let lastError: unknown;
-
-    for (let index = 0; index < uniqueIds.length; index += BULK_DELETE_MAX) {
-      const batch = uniqueIds.slice(index, index + BULK_DELETE_MAX);
-      try {
-        const result = await cookieFetch<BulkDeleteResult>("/favorites", {
-          method: "DELETE",
-          body: JSON.stringify({ moverIds: batch }),
-        });
-        deletedMoverIds.push(...result.deletedMoverIds);
-      } catch (error) {
-        lastError = error;
-        break;
-      }
-    }
-
-    if (deletedMoverIds.length === 0) {
-      throw lastError instanceof Error
-        ? lastError
-        : new Error("찜 해제에 실패했어요. 다시 시도해 주세요.");
-    }
-
-    return {
-      deletedCount: deletedMoverIds.length,
-      deletedMoverIds,
-      incomplete: lastError != null,
-    };
+  /** limit 없으면 전체(하트 상태용), 있으면 최신 N명(사이드바, 최대 3) */
+  list: (limit?: number) => {
+    const path = limit != null ? `/favorites?limit=${limit}` : "/favorites";
+    return cookieFetch<FavoriteListResult>(path);
   },
+
+  create: (moverId: number) =>
+    cookieFetch<FavoriteMoverCard>("/favorites", {
+      method: "POST",
+      body: JSON.stringify({ moverId }),
+    }),
+
+  remove: removeInChunks,
 };

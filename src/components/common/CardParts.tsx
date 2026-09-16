@@ -44,7 +44,9 @@ export function FavoriteCount({
       type="button"
       aria-label="찜하기"
       aria-pressed={isFavorited}
+      // 찜 클릭·키보드가 부모 카드 이동으로 전파되지 않게 막음
       onClick={(event) => {
+        event.preventDefault();
         event.stopPropagation();
         onClick();
       }}

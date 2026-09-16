@@ -19,7 +19,12 @@ type FilterBaseProps = {
   value: string;
   /** 선택 변경 시 상위 페이지로 전달 */
   onChange: (value: string) => void;
-  /** 트리거 라벨 — 미지정 시 선택 옵션 라벨 사용 */
+  /**
+   * 트리거 플레이스홀더 (예: "지역", "서비스")
+   * - value가 ALL(미적용)일 때 표시
+   * - 구체 옵션 선택 시에는 해당 옵션 label 우선
+   * - 미지정 시 선택 옵션 라벨 사용
+   */
   label?: string;
   size?: "sm" | "md";
   className?: string;
@@ -90,7 +95,9 @@ export default function Filter(props: FilterProps) {
     isDouble && props.columns ? [...props.columns[0], ...props.columns[1]] : (props.options ?? []);
 
   const selectedLabel = flatOptions.find((option) => option.value === value)?.label;
-  const triggerLabel = label ?? selectedLabel ?? "선택";
+  // ALL = 필터 미적용 → 카테고리명 유지, 그 외엔 선택 지역/서비스명 표시
+  const triggerLabel =
+    value !== "ALL" && selectedLabel ? selectedLabel : (label ?? selectedLabel ?? "선택");
 
   useOutsideClose({
     isOpen,

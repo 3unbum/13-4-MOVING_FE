@@ -9,7 +9,8 @@ import Toast from "@/components/common/Toast";
 import { SERVICE_LABELS, type ServiceCode } from "@/components/filter/ChipRegion";
 import CardMover from "@/components/mover/CardMover";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
-import { favoriteQueryKeys, favoriteService } from "@/lib/services/favorite-service";
+import { favoriteQueryKeys } from "@/constants/query-keys/favorites";
+import { favoriteService } from "@/lib/services/favorite-service";
 import { ApiError } from "@/lib/utils/api-error";
 import { cn } from "@/lib/utils/cn";
 import FavoritesEmptyFallback from "./_components/FavoritesEmptyFallback";
@@ -18,8 +19,8 @@ const TABLET_QUERY = "(min-width: 744px)";
 const PC_QUERY = "(min-width: 1280px)";
 
 /** BE moverServices.service는 ServiceType. 유효한 값만 칩으로 쓴다. */
-function toServiceCode(services: string[]): ServiceCode | undefined {
-  return services.find((service): service is ServiceCode => service in SERVICE_LABELS);
+function toServiceCodes(services: string[]): ServiceCode[] {
+  return services.filter((service): service is ServiceCode => service in SERVICE_LABELS);
 }
 
 export default function CustomerFavoritesPage() {
@@ -35,7 +36,7 @@ export default function CustomerFavoritesPage() {
 
   const { data, isPending, isError } = useQuery({
     queryKey: favoriteQueryKeys.list(),
-    queryFn: favoriteService.list,
+    queryFn: () => favoriteService.list(),
   });
 
   const items = data?.items ?? [];
@@ -49,7 +50,7 @@ export default function CustomerFavoritesPage() {
   };
 
   const deleteMutation = useMutation({
-    mutationFn: (moverIds: number[]) => favoriteService.bulkDelete(moverIds),
+    mutationFn: (moverIds: number[]) => favoriteService.remove(moverIds),
     onSuccess: (result) => {
       const deleted = new Set(result.deletedMoverIds);
       setSelectedIds((current) => {
@@ -138,7 +139,7 @@ export default function CustomerFavoritesPage() {
                 <li key={item.id}>
                   <CardMover
                     size={cardSize}
-                    category={toServiceCode(item.services)}
+                    categories={toServiceCodes(item.services)}
                     title={item.bio}
                     nickName={item.nickName}
                     profileImage={item.image}
