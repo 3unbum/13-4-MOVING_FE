@@ -23,10 +23,7 @@ type AccessCheck =
   | { ok: true; provider: OAuthProviderKey; code: string; state: string }
   | { ok: false; reason: string };
 
-/**
- * 렌더링 시점에 판정 가능한 형식 검사만 한다 — "우리가 시작한 요청인지"(state 대조)는
- * sessionStorage가 필요해 SSR에서 못 읽으므로 effect에서 이어서 확인한다.
- */
+/** 형식 검사만 — state 대조는 sessionStorage가 필요해 SSR에서 못 읽으므로 effect에서 한다. */
 function checkAccess({
   provider,
   code,
@@ -44,23 +41,21 @@ export default function OAuthCallbackClient(props: OAuthCallbackClientProps) {
   const access = checkAccess(props);
   const router = useRouter();
   const { refetch } = useAuth();
-  // 렌더링 시점에 이미 판정 가능한 값이라 useEffect의 setState가 아닌 lazy initial state로 반영한다.
+  // 렌더링 시점에 판정 가능한 값이라 effect의 setState 대신 lazy initial state로 반영한다.
   const [status, setStatus] = useState<Status>(access.ok ? "exchanging" : "error");
   const [errorMessage, setErrorMessage] = useState(access.ok ? "" : access.reason);
-  // state 대조로 복원한 role — URL이 아니라 우리가 저장해둔 값이라 따로 검증할 필요가 없다.
   const [resolvedRole, setResolvedRole] = useState<UserRole | null>(null);
 
-  // code는 1회용이라 Strict Mode가 effect를 두 번 실행해도 요청은 한 번만 보내야 한다.
-  // cleanup으로 결과를 버리는 방식은 쓰면 안 됨 — 실제로 나간 유일한 요청의 응답까지 버려져 화면이 멈춘다.
+  // code는 1회용이라 Strict Mode가 effect를 두 번 실행해도 요청은 한 번만 나가야 한다.
+  // cleanup으로 결과를 버리면 유일하게 나간 요청의 응답까지 버려져 화면이 멈추므로 쓰면 안 된다.
   const hasRequestedRef = useRef(false);
 
-  // 로그인·가입이 끝난 뒤 공통 처리 — 이메일 로그인과 동일하게 customer만 프로필 등록을 모달로 묻는다.
+  // 이메일 로그인과 동일하게 customer만 프로필 등록을 모달로 묻는다.
   const finishAuth = async (role: UserRole, hasProfile: boolean) => {
     try {
       await refetch();
     } catch {
-      // 로그인·가입 자체는 성공(쿠키 발급 완료)이고 계정 조회만 실패한 상태 — 모달의 onCompleted에서
-      // 호출될 땐 이 함수를 await하는 쪽이 없어, 여기서 안 잡으면 화면이 "처리 중"에 그대로 멈춘다.
+      // 가입·로그인은 이미 성공했고 계정 조회만 실패한 상태 — 안 잡으면 화면이 "처리 중"에 멈춘다.
       setErrorMessage("계정 정보를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.");
       setStatus("error");
       return;
@@ -86,8 +81,7 @@ export default function OAuthCallbackClient(props: OAuthCallbackClientProps) {
     window.history.replaceState(null, "", window.location.pathname);
 
     (async () => {
-      // 이 브라우저가 시작한 인가 요청인지 확인 — 공격자가 만든 콜백 링크에는 짝이 되는 nonce가
-      // 저장돼 있지 않아 여기서 막힌다(로그인 CSRF 방지). role도 URL 대신 이 저장값에서 복원한다.
+      // 이 브라우저가 시작한 요청인지 확인 — 공격자가 만든 링크는 짝이 되는 nonce가 없어 여기서 막힌다.
       const role = consumeOAuthState(state);
       if (!role) {
         setErrorMessage("잘못된 접근입니다. 로그인을 다시 시도해 주세요.");

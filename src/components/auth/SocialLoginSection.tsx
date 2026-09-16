@@ -15,10 +15,7 @@ interface SocialLoginSectionProps {
 }
 
 export default function SocialLoginSection({ actionLabel, role }: SocialLoginSectionProps) {
-  /**
-   * nonce는 렌더가 아니라 클릭 시점에 만든다 — 렌더 중에 만들면 서버와 클라이언트 값이 달라져
-   * hydration이 깨지고, `<a href>`로 두면 새 탭·링크 복사처럼 nonce와 짝이 안 맞는 경로가 생긴다.
-   */
+  // nonce는 클릭 시점에 만든다 — 렌더 중에 만들면 서버와 클라이언트 값이 달라져 hydration이 깨진다.
   const startOAuth = (provider: OAuthProviderKey) => {
     const state = createOAuthState(role);
     window.location.assign(buildOAuthAuthorizeUrl(provider, state));

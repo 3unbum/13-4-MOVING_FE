@@ -15,7 +15,7 @@ interface OAuthPhoneModalProps {
   role: UserRole;
   // 프로필 등록 전 단계라 ProfileRegisterModal과 달리 "다음에"로 건너뛸 수 없다 — 닫으면 가입 자체를 취소한다.
   onCancel: () => void;
-  // 부모가 계정 조회·이동까지 처리하므로 Promise를 받는다 — 그걸 기다려야 isSubmitting이 끝까지 유지된다.
+  // 이걸 await해야 이동이 끝날 때까지 isSubmitting이 유지된다.
   onCompleted: (result: AuthResult) => void | Promise<void>;
 }
 
@@ -45,9 +45,7 @@ export default function OAuthPhoneModal({
     }
   };
 
-  /**
-   * 제출 중 닫기를 막음
-   */
+  // 서버에서 만들어진 계정은 되돌릴 수 없어, 제출 중엔 취소한 것처럼 보이게 두지 않는다.
   const handleClose = () => {
     if (isSubmitting) return;
     onCancel();
