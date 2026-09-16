@@ -40,6 +40,7 @@ type ModalKey =
   | "info-md"
   | "filter"
   | "review-sm"
+  | "review-tablet"
   | "review-md";
 
 export default function Page() {
@@ -117,10 +118,13 @@ export default function Page() {
       <h3 className="text-16 text-gray-gray-400">리뷰 쓰기 모달</h3>
       <section className="flex gap-3">
         <Button size="sm" className="w-40" onClick={() => setOpenModal("review-sm")}>
-          review · sm
+          review · 모바일
+        </Button>
+        <Button size="sm" className="w-40" onClick={() => setOpenModal("review-tablet")}>
+          review · 태블릿
         </Button>
         <Button size="sm" className="w-40" onClick={() => setOpenModal("review-md")}>
-          review · md
+          review · PC
         </Button>
       </section>
 
@@ -198,9 +202,12 @@ export default function Page() {
       />
 
       <ReviewWriteModal
-        open={openModal === "review-sm" || openModal === "review-md"}
+        open={
+          openModal === "review-sm" || openModal === "review-tablet" || openModal === "review-md"
+        }
         onClose={close}
-        size={openModal === "review-sm" ? "sm" : "md"}
+        size={openModal === "review-md" ? "md" : "sm"}
+        position={openModal === "review-sm" ? "bottom" : "center"}
         category={category}
         moverNickName="김코드"
         fromAddress="서울시 중구"
