@@ -8,13 +8,19 @@ import facebookLg from "@/assets/icons/facebook-lg.svg";
 import facebookMd from "@/assets/icons/facebook-md.svg";
 import kakao from "@/assets/icons/kakao.svg";
 import Toast from "@/components/common/Toast";
+import { useKakaoSdk } from "@/hooks/useKakaoSdk";
 import { cn } from "@/lib/utils/cn";
+
+/** 토스트 노출 시간 — QuoteDetailClient와 같은 값입니다 */
+const TOAST_DURATION_MS = 3000;
 
 interface QuoteShareProps {
   /** 피그마: PC "견적서 공유하기" / 모바일 "나만 알긴 아쉬운 기사님인가요?" */
   title: string;
   /** 공유 대상 — 요구사항이 "기사님 상세 페이지 URL"을 공유하도록 정하고 있습니다 */
   moverId: number;
+  /** 공유 문구에 들어갈 기사님 별명 */
+  moverNickName: string;
   className?: string;
 }
 
@@ -65,19 +71,52 @@ function ShareButton({
  * 링크 복사로 동작하며, 라벨을 실제 동작에 맞춰 "링크 복사하기"로 둡니다
  * (버튼 자체는 피그마에 있으므로 없애지 않습니다).
  */
-export default function QuoteShare({ title, moverId, className }: QuoteShareProps) {
+export default function QuoteShare({ title, moverId, moverNickName, className }: QuoteShareProps) {
   const [toast, setToast] = useState<string | null>(null);
+  const isKakaoReady = useKakaoSdk();
+
+  const shareUrl = () => new URL(`/movers/${moverId}`, window.location.origin).toString();
+
+  const showToast = (message: string) => {
+    setToast(message);
+    setTimeout(() => setToast(null), TOAST_DURATION_MS);
+  };
 
   const copyLink = async (message: string) => {
     try {
-      const url = new URL(`/movers/${moverId}`, window.location.origin);
-      await navigator.clipboard.writeText(url.toString());
-      setToast(message);
+      await navigator.clipboard.writeText(shareUrl());
+      showToast(message);
     } catch {
       // 클립보드는 https·사용자 제스처 등 조건이 안 맞으면 거부됩니다
-      setToast("링크 복사에 실패했어요. 주소창에서 복사해 주세요.");
+      showToast("링크 복사에 실패했어요. 주소창에서 복사해 주세요.");
     }
-    setTimeout(() => setToast(null), 3000);
+  };
+
+  /**
+   * 카카오톡 공유. 문구는 요구사항에 정해져 있습니다
+   * ("이사를 준비하시나요? OOO 기사님을 추천합니다. 무빙에서 확인해 보세요!").
+   *
+   * feed가 아니라 text 템플릿을 쓰는 이유는 `imageUrl`이 카카오 서버에서 접근
+   * 가능한 공개 URL이어야 하기 때문입니다. 배포 도메인이 정해지면 feed로 바꿀 수 있습니다.
+   */
+  const shareToKakao = () => {
+    const url = shareUrl();
+    if (!isKakaoReady || !window.Kakao) {
+      // 키가 없거나 SDK 로드 실패 — 링크 복사로 폴백합니다
+      void copyLink("링크가 복사되었어요!");
+      return;
+    }
+
+    try {
+      window.Kakao.Share.sendDefault({
+        objectType: "text",
+        text: `이사를 준비하시나요? ${moverNickName} 기사님을 추천합니다. 무빙에서 확인해 보세요!`,
+        link: { mobileWebUrl: url, webUrl: url },
+        buttonTitle: "기사님 정보 보러가기",
+      });
+    } catch {
+      void copyLink("링크가 복사되었어요!");
+    }
   };
 
   return (
@@ -94,12 +133,10 @@ export default function QuoteShare({ title, moverId, className }: QuoteShareProp
           <Image src={clipLg} alt="" className="pc:block hidden size-9" />
         </ShareButton>
 
-        {/* TODO: 카카오 JS SDK 연동 — JavaScript 키 발급 + 도메인 등록 후.
-            연동 전까지는 동작이 링크 복사이므로 라벨도 그대로 둡니다 */}
         <ShareButton
-          label="링크 복사하기 (카카오톡 공유는 준비 중)"
+          label={isKakaoReady ? "카카오톡으로 공유하기" : "링크 복사하기 (카카오톡 공유는 준비 중)"}
           variant="kakao"
-          onClick={() => copyLink("링크가 복사되었어요!")}
+          onClick={shareToKakao}
         >
           <Image src={kakao} alt="" className="pc:size-7 size-6" />
         </ShareButton>

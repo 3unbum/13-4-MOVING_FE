@@ -253,6 +253,7 @@ export default function QuoteDetailView({
             <QuoteShare
               title="나만 알기엔 아쉬운 기사님인가요?"
               moverId={mover.id}
+              moverNickName={mover.nickName}
               className={cn(
                 "pc:hidden border-line-100 border-t pt-6",
                 isPending ? "pb-32" : "pb-8"
@@ -288,7 +289,7 @@ export default function QuoteDetailView({
                 <hr className="border-line-100 my-10" />
               </>
             )}
-            <QuoteShare title="견적서 공유하기" moverId={mover.id} />
+            <QuoteShare title="견적서 공유하기" moverId={mover.id} moverNickName={mover.nickName} />
           </aside>
         </div>
       </div>
