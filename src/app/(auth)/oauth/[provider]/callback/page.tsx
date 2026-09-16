@@ -9,5 +9,7 @@ export default async function OAuthCallbackPage({ params, searchParams }: OAuthC
   const { provider } = await params;
   const { code, state, error } = await searchParams;
 
-  return <OAuthCallbackClient provider={provider} code={code} role={state} providerError={error} />;
+  return (
+    <OAuthCallbackClient provider={provider} code={code} state={state} providerError={error} />
+  );
 }
