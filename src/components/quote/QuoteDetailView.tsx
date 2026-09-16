@@ -144,7 +144,10 @@ export default function QuoteDetailView({
           {/* 좌: 본문 — 피그마는 프로필과 각 블록이 같은 층에 나란히 놓입니다
               (`1:9148` profile / `1:9147` Title / `1:9149` 견적가 / `1:9155` 견적 정보).
               감싸는 컨테이너가 없어 중간 래퍼를 두지 않습니다. */}
-          <div className="pc:w-185 pc:flex-none pc:gap-6 flex min-w-0 flex-1 flex-col gap-5">
+          {/* 블록 간격 — 모바일 20(`1:9247`) / 태블릿 32(`1:9176`).
+              PC(`1:9115`)는 절대 배치라 26·30·28로 제각각이어서 단일 gap으로는
+              셋 다 맞출 수 없습니다. 중앙값 28을 쓰고 최대 오차는 2px입니다. */}
+          <div className="pc:w-185 pc:flex-none tablet:gap-8 pc:gap-7 flex min-w-0 flex-1 flex-col gap-5">
             {/* 히어로에 겹치는 프로필 */}
             {/* 피그마: 모바일 64(`1:9246`) / 태블릿 100(`1:9222`) / PC 134(`1:9148`).
                 ProfileAvatar가 size를 한 값만 받아 세 벌을 CSS로 전환합니다. */}
@@ -171,7 +174,7 @@ export default function QuoteDetailView({
 
             <p className="text-18 text-black-300 pc:text-24 font-semibold">{mover.bio}</p>
 
-            <div className="border-line-100 flex flex-col gap-2 border-b pb-5">
+            <div className="border-line-100 tablet:pb-8 pc:pb-9 flex flex-col gap-2 border-b pb-5">
               <div className="flex w-full items-center justify-between">
                 {/* 이름 텍스트 높이가 세 사이즈 모두 26px(text-18)입니다 —
                       모바일 `I1:9248;1:4297` / PC `I1:9147;1:4211`. 반응형 분기가 아닙니다. */}
@@ -194,7 +197,7 @@ export default function QuoteDetailView({
             {/* 견적가 — PC는 우측 사이드에도 있지만 본문에도 그대로 있습니다.
                   정렬이 사이즈마다 다릅니다: 모바일(`1:9249`)은 라벨·값이 양 끝,
                   태블릿(`1:9178`)·PC(`1:9149`)는 값이 113px에서 시작합니다. */}
-            <div className="border-line-100 tablet:justify-start flex items-center justify-between border-b pb-5">
+            <div className="border-line-100 tablet:justify-start tablet:pb-8 pc:pb-9 flex items-center justify-between border-b pb-5">
               <span className="text-16 text-black-300 pc:text-20 tablet:w-28.25 font-semibold">
                 견적가
               </span>
@@ -203,9 +206,9 @@ export default function QuoteDetailView({
               </span>
             </div>
 
-            <div className="pc:gap-6 flex flex-col gap-4">
+            <div className="tablet:gap-8 pc:gap-7 flex flex-col gap-5">
               <h2 className="text-16 text-black-300 pc:text-20 font-semibold">견적 정보</h2>
-              <div className="pc:gap-4 flex flex-col gap-3">
+              <div className="tablet:gap-4 flex flex-col gap-3">
                 <InfoRow label="견적 요청일" value={formatShortDate(request.createdAt)} />
                 <InfoRow label="서비스" value={SERVICE_LABELS[request.category]} />
                 <InfoRow label="이용일" value={formatMovingDate(request.movingDate)} />

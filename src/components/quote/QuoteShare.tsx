@@ -81,10 +81,10 @@ export default function QuoteShare({ title, moverId, className }: QuoteShareProp
   };
 
   return (
-    <div className={cn("flex flex-col gap-4", className)}>
+    <div className={cn("flex flex-col gap-3", className)}>
       <p className="text-16 text-black-300 pc:text-20 font-semibold">{title}</p>
 
-      <div className="pc:gap-5 flex items-center gap-3">
+      <div className="pc:gap-4 flex items-center gap-3">
         <ShareButton
           label="링크 복사하기"
           variant="clip"
