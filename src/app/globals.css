@@ -50,6 +50,9 @@
   --color-red-100: #ffeef0;
   --color-red-200: #ff4f64;
   --color-yellow-100: #ffc149;
+  /* 카카오 브랜드 컬러 — 견적서 공유 버튼(피그마 button/share/kakao). 피그마 변수가 없는 고정값.
+     로그인 소셜 버튼은 배경이 SVG에 들어 있어(#fae300) 토큰을 쓰지 않습니다 */
+  --color-kakao-yellow: #fae100;
 
   /* Background */
   --color-background-100: #fcfcfc;
