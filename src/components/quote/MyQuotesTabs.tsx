@@ -103,7 +103,7 @@ export default function MyQuotesTabs() {
           ) : past.isLoading ? (
             <QuoteLoading />
           ) : (
-            <PastQuotesPanel blocks={past.blocks} />
+            <PastQuotesPanel blocks={past.blocks} onDetailClick={openDetail} />
           )}
         </div>
       )}
