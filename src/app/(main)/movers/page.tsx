@@ -54,7 +54,7 @@ function ResponsiveMoverCard({
   onNavigate: () => void;
 }) {
   const shared = {
-    category: mover.category,
+    categories: mover.categories,
     title: mover.title,
     description: mover.description,
     nickName: mover.nickName,
@@ -322,7 +322,7 @@ export default function MoversPage() {
                           {...navProps}
                           size="sm"
                           className="cursor-pointer"
-                          category={mover.category}
+                          categories={mover.categories}
                           title={mover.title}
                           nickName={mover.nickName}
                           profileImage={mover.profileImage}

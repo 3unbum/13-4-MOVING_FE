@@ -27,7 +27,7 @@ function toServiceCode(value: string | undefined): ServiceCode {
 export function mapMoverListItemToCard(item: MoverListItem) {
   return {
     id: item.id,
-    category: toServiceCode(item.services[0]),
+    categories: item.services.map(toServiceCode),
     title: item.bio,
     description: item.description,
     nickName: item.nickName,
@@ -44,7 +44,7 @@ export function mapMoverListItemToCard(item: MoverListItem) {
 export function mapFavoriteCardToCard(item: FavoriteMoverCard) {
   return {
     id: item.id,
-    category: toServiceCode(item.services[0]),
+    categories: item.services.map(toServiceCode),
     title: item.bio,
     nickName: item.nickName,
     profileImage: item.image,
