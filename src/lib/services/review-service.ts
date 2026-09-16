@@ -52,9 +52,16 @@ function toQueryString({ cursor, take }: ReviewListQuery) {
   return query ? `?${query}` : "";
 }
 
+export interface ConfirmReviewInput {
+  rating: number;
+  comment: string;
+}
+
 export const reviewService = {
   listWritable: (query: ReviewListQuery = {}) =>
     cookieFetch<ReviewListResult<WritableReviewItem>>(`/reviews/writable${toQueryString(query)}`),
   listWritten: (query: ReviewListQuery = {}) =>
     cookieFetch<ReviewListResult<WrittenReviewItem>>(`/reviews/my${toQueryString(query)}`),
+  confirm: (id: number, body: ConfirmReviewInput, signal?: AbortSignal) =>
+    cookieFetch(`/reviews/${id}`, { method: "PATCH", body: JSON.stringify(body), signal }),
 };

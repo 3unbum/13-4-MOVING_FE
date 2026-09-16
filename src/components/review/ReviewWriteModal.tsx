@@ -17,6 +17,7 @@ import MovingInfo from "@/components/quote/MovingInfo";
 import ProfileAvatar from "@/components/common/ProfileAvatar";
 
 type ReviewWriteModalSize = "sm" | "md";
+type ReviewWriteModalPosition = "center" | "bottom";
 
 const MIN_REVIEW_LENGTH = 10;
 
@@ -24,6 +25,8 @@ interface ReviewWriteModalProps {
   open: boolean;
   onClose: () => void;
   size?: ReviewWriteModalSize;
+  // 미지정 시 md는 가운데, sm은 하단. 태블릿 sm은 가운데 + 네 모서리 라운드가 필요해서 따로 받는다.
+  position?: ReviewWriteModalPosition;
   category: ServiceCode;
   isTargeted?: boolean;
   moverNickName: string;
@@ -36,6 +39,7 @@ interface ReviewWriteModalProps {
   review: string;
   onReviewChange: (review: string) => void;
   onSubmit: () => void;
+  isSubmitting?: boolean;
 }
 
 // 리뷰 작성 모달
@@ -43,6 +47,7 @@ export default function ReviewWriteModal({
   open,
   onClose,
   size = "md",
+  position,
   category,
   isTargeted = true,
   moverNickName,
@@ -55,21 +60,26 @@ export default function ReviewWriteModal({
   review,
   onReviewChange,
   onSubmit,
+  isSubmitting = false,
 }: ReviewWriteModalProps) {
   const titleId = useId();
   const isMd = size === "md";
+  const resolvedPosition = position ?? (isMd ? "center" : "bottom");
   const isValid = rating > 0 && review.trim().length >= MIN_REVIEW_LENGTH;
 
   return (
     <Modal
       open={open}
       onClose={onClose}
-      position={isMd ? "center" : "bottom"}
+      position={resolvedPosition}
       labelledBy={titleId}
       className={
         isMd
           ? "w-150 min-w-150 gap-8 rounded-[32px] p-8"
-          : "w-93.75 min-w-93.75 gap-6.5 rounded-t-[32px] px-6 py-8"
+          : cn(
+              "w-93.75 min-w-93.75 gap-6.5 px-6 py-8",
+              resolvedPosition === "center" ? "rounded-[32px]" : "rounded-t-[32px]"
+            )
       }
     >
       <ModalHeader id={titleId} title="리뷰 쓰기" size={size} onClose={onClose} />
@@ -113,6 +123,7 @@ export default function ReviewWriteModal({
             size={isMd ? "md" : "sm"}
             label="상세 후기"
             placeholder="최소 10자 이상 입력해주세요"
+            maxLength={200}
             value={review}
             onChange={(event) => onReviewChange(event.target.value)}
           />
@@ -123,7 +134,7 @@ export default function ReviewWriteModal({
         variant="solid"
         size={isMd ? "lg" : "sm"}
         className="shrink-0"
-        disabled={!isValid}
+        disabled={!isValid || isSubmitting}
         onClick={onSubmit}
       >
         리뷰 등록
