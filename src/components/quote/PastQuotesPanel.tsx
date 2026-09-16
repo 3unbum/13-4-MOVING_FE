@@ -20,6 +20,16 @@ interface PastQuotesPanelProps {
   onDetailClick?: (estimateId: number) => void;
 }
 
+/**
+ * 확정된 견적으로 볼 상태.
+ *
+ * 이사일이 지나면 배치(`expireRequests.job.ts`)가 확정 견적을 CONFIRMED → COMPLETED로
+ * 바꿉니다. CONFIRMED만 보면 이미 이사를 마친 건의 확정 견적을 놓칩니다.
+ */
+function isConfirmedEstimate(estimate: Estimate) {
+  return estimate.estimateStatus === "CONFIRMED" || estimate.estimateStatus === "COMPLETED";
+}
+
 const FILTER_OPTIONS = [
   { value: "all", label: "전체" },
   { value: "confirmed", label: "확정견적" },
@@ -50,11 +60,19 @@ function formatFullDate(iso: string) {
 }
 
 /** 좌측 "견적 정보" 블록의 라벨+값 한 줄 */
+/**
+ * 좌측 "견적 정보" 블록의 라벨+값 한 줄.
+ *
+ * 라벨이 주황(`#f9502e`)인 게 견적 상세와 다릅니다 — 피그마 `1:11670` 계열.
+ * 값은 오른쪽 끝 정렬이고, 모바일만 14px입니다(`1:11519` h24 / `1:11668` h26).
+ */
 function InfoRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-start justify-between gap-4">
-      <span className="text-14 text-gray-gray-500 shrink-0 font-normal">{label}</span>
-      <span className="text-14 text-black-500 text-right font-medium">{value}</span>
+      <span className="text-14 tablet:text-16 shrink-0 font-semibold text-orange-400">{label}</span>
+      <span className="text-14 text-black-500 tablet:text-16 text-right font-semibold">
+        {value}
+      </span>
     </div>
   );
 }
@@ -74,7 +92,7 @@ function EstimateRow({ estimate, onClick }: { estimate: Estimate; onClick: () =>
     title: estimate.mover.bio,
     // REJECTED(반려)면 null — 카드가 "견적가 없음"으로 표기합니다
     price: estimate.price,
-    isConfirmed: estimate.estimateStatus === "CONFIRMED",
+    isConfirmed: isConfirmedEstimate(estimate),
     nickName: estimate.mover.nickName,
     profileImage: estimate.mover.image,
     rating: estimate.mover.avgRating,
@@ -118,66 +136,101 @@ export default function PastQuotesPanel({ blocks, onDetailClick }: PastQuotesPan
   }
 
   return (
-    <div className="bg-background-background-100 tablet:gap-8 tablet:px-18 tablet:py-10 pc:gap-10 pc:px-10 pc:py-12 flex flex-1 flex-col items-center gap-6 px-6 py-8">
+    // 모바일은 블록이 화면 전체 폭을 쓰고 8px 회색 바로 나뉩니다(피그마 `1:11550`).
+    // 태블릿·PC는 흰 카드입니다.
+    <div className="tablet:gap-8 tablet:px-9 tablet:py-8 pc:gap-10 pc:px-10 pc:py-10 flex flex-1 flex-col items-center gap-2 bg-gray-50 py-0">
       {blocks.map(({ request, estimates: allEstimates }) => {
         const filter = filters[request.id] ?? "all";
         const estimates =
-          filter === "confirmed"
-            ? allEstimates.filter((e) => e.estimateStatus === "CONFIRMED")
-            : allEstimates;
+          filter === "confirmed" ? allEstimates.filter(isConfirmedEstimate) : allEstimates;
 
         return (
           <section
             key={request.id}
             className={cn(
-              "flex w-full max-w-81.75 flex-col gap-6 rounded-[20px] bg-white",
-              "shadow-[inset_0_0_0_0.5px_var(--color-line-100),2px_2px_10px_0_rgba(220,220,220,0.2)]",
-              "tablet:max-w-150 tablet:px-8 tablet:py-8 pc:max-w-285 pc:flex-row pc:gap-12 pc:px-10 pc:py-10 px-5 py-6"
+              "flex w-full flex-col bg-white",
+              // 모바일: 전체 폭, 좌우 24 (`1:11516`)
+              "gap-8 px-6 py-8",
+              // 태블릿: 600 카드, 패딩 28 (`1:11365`)
+              "tablet:max-w-150 tablet:gap-8 tablet:rounded-[20px] tablet:px-7 tablet:py-8",
+              "tablet:shadow-[inset_0_0_0_0.5px_var(--color-line-100),2px_2px_10px_0_rgba(220,220,220,0.2)]",
+              // PC: 1120 카드, 패딩 40, 좌우 2단 (`1:11662`)
+              "pc:max-w-280 pc:flex-row pc:gap-15 pc:px-10 pc:py-11"
             )}
           >
-            {/* 좌측(모바일은 상단) — 견적 정보 */}
-            <div className="pc:w-58 flex shrink-0 flex-col gap-4">
-              <div className="flex items-baseline justify-between">
-                <h3 className="text-16 text-black-500 tablet:text-18 font-semibold">견적 정보</h3>
-                <span className="text-12 text-gray-gray-400 tablet:text-14 font-normal">
-                  {formatShortDate(request.createdAt)}
-                </span>
+            {/* 좌측(모바일·태블릿은 상단) — 견적 정보 */}
+            <div className="pc:w-65 flex shrink-0 flex-col gap-10.5">
+              <div className="flex flex-col gap-5">
+                {/* 모바일은 제목이 가운데, 날짜는 목록 아래에 있습니다 (`1:11517`·`1:11537`) */}
+                <div className="tablet:flex-row tablet:items-baseline tablet:justify-between flex flex-col">
+                  <h3 className="text-16 text-black-black-450 tablet:text-20 tablet:text-left text-center font-semibold">
+                    견적 정보
+                  </h3>
+                  <span className="text-14 text-gray-gray-300 tablet:block hidden font-normal">
+                    {formatShortDate(request.createdAt)}
+                  </span>
+                </div>
+
+                {/* 모바일·태블릿만 행 사이에 구분선이 있습니다 (`1:11523`·`1:11532`) */}
+                <div className="tablet:gap-3 flex flex-col gap-2">
+                  <InfoRow label="이사 유형" value={SERVICE_LABELS[request.category]} />
+                  <hr className="border-line-200 pc:hidden" />
+                  <InfoRow label="출발지" value={request.fromAddress} />
+                  <InfoRow label="도착지" value={request.toAddress} />
+                  <hr className="border-line-200 pc:hidden" />
+                  <InfoRow label="이용일" value={formatFullDate(request.movingDate)} />
+                </div>
               </div>
 
-              <div className="flex flex-col gap-3">
-                <InfoRow label="이사 유형" value={SERVICE_LABELS[request.category]} />
-                <InfoRow label="출발지" value={request.fromAddress} />
-                <InfoRow label="도착지" value={request.toAddress} />
-                <InfoRow label="이용일" value={formatFullDate(request.movingDate)} />
-              </div>
+              <span className="text-14 text-gray-gray-300 tablet:hidden font-normal">
+                {formatShortDate(request.createdAt)}
+              </span>
             </div>
 
-            {/* 우측(모바일은 하단) — 견적서 목록 */}
-            <div className="flex min-w-0 flex-1 flex-col gap-4">
+            {/* PC만 좌우를 가르는 세로 구분선 (피그마 `1:11684`).
+                피그마 Line은 폭 0이라 자리를 차지하지 않습니다 — border로 넣으면
+                1px이 우측 폭에서 빠지므로(660 → 659) 음수 마진으로 상쇄합니다. */}
+            <div className="border-line-200 pc:block -mr-px hidden shrink-0 border-l" />
+
+            {/* 우측(모바일·태블릿은 하단) — 견적서 목록 */}
+            <div className="flex min-w-0 flex-1 flex-col gap-5">
               <div className="flex items-center gap-2">
-                <h3 className="text-16 text-black-500 tablet:text-18 font-semibold">견적서 목록</h3>
-                <span className="text-16 tablet:text-18 font-semibold text-orange-400">
+                <h3 className="text-16 text-black-black-450 tablet:text-20 font-semibold">
+                  견적서 목록
+                </h3>
+                <span className="text-16 tablet:text-20 font-semibold text-orange-400">
                   {allEstimates.length}
                 </span>
               </div>
 
-              <div className="w-27">
-                <Sort
-                  size="sm"
-                  options={FILTER_OPTIONS}
-                  value={filter}
-                  onChange={(value) => setFilters((prev) => ({ ...prev, [request.id]: value }))}
-                />
-              </div>
-
-              <div className="divide-line-100 flex flex-col divide-y">
-                {estimates.map((estimate) => (
-                  <EstimateRow
-                    key={estimate.id}
-                    estimate={estimate}
-                    onClick={() => onDetailClick?.(estimate.id)}
+              <div className="flex flex-col gap-5">
+                {/* 피그마 Dropdown — 모바일·태블릿 75×36(lg) / PC 160×50(xl) */}
+                <div className="pc:hidden">
+                  <Sort
+                    size="lg"
+                    options={FILTER_OPTIONS}
+                    value={filter}
+                    onChange={(value) => setFilters((prev) => ({ ...prev, [request.id]: value }))}
                   />
-                ))}
+                </div>
+                <div className="pc:block hidden">
+                  <Sort
+                    size="xl"
+                    options={FILTER_OPTIONS}
+                    value={filter}
+                    onChange={(value) => setFilters((prev) => ({ ...prev, [request.id]: value }))}
+                  />
+                </div>
+
+                <div className="divide-line-100 flex flex-col divide-y">
+                  {estimates.map((estimate) => (
+                    <EstimateRow
+                      key={estimate.id}
+                      estimate={estimate}
+                      onClick={() => onDetailClick?.(estimate.id)}
+                    />
+                  ))}
+                </div>
               </div>
             </div>
           </section>

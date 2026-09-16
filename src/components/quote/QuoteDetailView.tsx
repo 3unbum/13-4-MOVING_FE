@@ -71,12 +71,12 @@ function formatPrice(price: number | null) {
 function InfoRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="tablet:justify-start tablet:gap-0 flex items-start justify-between gap-6">
-      <span className="text-14 text-gray-gray-400 pc:text-18 tablet:w-28.25 shrink-0 font-normal">
+      <span className="text-14 text-gray-gray-300 tablet:text-16 tablet:w-28.25 shrink-0 font-normal">
         {label}
       </span>
       {/* 모바일(`1:9254`)은 값이 오른쪽 끝, 태블릿(`1:9184`)·PC(`1:9155`)는
           라벨 폭 113px 뒤에서 시작해 왼쪽 정렬입니다. */}
-      <span className="text-14 text-black-300 pc:text-18 tablet:text-left min-w-0 text-right font-medium">
+      <span className="text-14 text-black-black-450 tablet:text-16 tablet:text-left min-w-0 text-right font-semibold">
         {value}
       </span>
     </div>
@@ -100,10 +100,20 @@ export default function QuoteDetailView({
 }: QuoteDetailViewProps) {
   const { mover, estimateStatus, isTargeted } = estimate;
 
-  const isPending = estimateStatus === "PENDING";
-  const isConfirmed = estimateStatus === "CONFIRMED";
+  // 견적 상태만으로는 부족합니다 — 요청이 이미 확정(ASSIGNED)되면 나머지 견적은
+  // PENDING으로 남지만 더 이상 확정할 수 없습니다(BE가 `NO_ACTIVE_REQUEST`로 거부).
+  // 이때가 피그마 `1:11870` "확정하지 않은 견적" 화면입니다.
+  const isRequestOpen = request.quotationStatus === "PENDING";
+
+  const isPending = estimateStatus === "PENDING" && isRequestOpen;
+  // 이사일이 지나면 배치가 확정 견적을 CONFIRMED → COMPLETED로 바꿉니다.
+  // CONFIRMED만 보면 이사를 마친 견적에 "확정하지 않은 견적" 안내가 붙습니다.
+  const isConfirmed = estimateStatus === "CONFIRMED" || estimateStatus === "COMPLETED";
   // 지난 요청에서 확정되지 않은 채 끝난 견적 — 하단에 안내가 붙습니다
   const isUnconfirmed = !isPending && !isConfirmed;
+
+  // 위치만 다르고 내용은 같아 한 번만 만들어 두 자리에서 씁니다
+  const statusBadge = isPending ? <PendingBadge /> : isConfirmed ? <ConfirmedBadge /> : null;
 
   return (
     <div className="flex min-h-dvh flex-col">
@@ -163,26 +173,40 @@ export default function QuoteDetailView({
               </div>
             </div>
 
+            {/* 상태 배지 위치가 사이즈마다 다릅니다 —
+                모바일(`I1:9248;1:4277`)은 칩과 같은 줄, 태블릿(`I1:9177;1:4194`)·
+                PC(`I1:9147;1:4194`)는 아래 제목 줄 오른쪽입니다. */}
             <div className="flex w-full items-start justify-between gap-3">
               <div className="flex flex-wrap items-center gap-2">
                 <MoveTypeChip variant={request.category} size="sm" />
                 {isTargeted && <MoveTypeChip variant="TARGETED" size="sm" />}
               </div>
-              {isPending && <PendingBadge />}
-              {isConfirmed && <ConfirmedBadge />}
+              <div className="tablet:hidden shrink-0">{statusBadge}</div>
             </div>
 
-            <p className="text-18 text-black-300 pc:text-24 font-semibold">{mover.bio}</p>
+            <div className="flex w-full items-start justify-between gap-3">
+              {/* 모바일 16 (`1:9248`에 24px 변수 자체가 없음) / 태블릿·PC 24 (`2xl/semibold`) */}
+              <p className="text-16 text-black-black-300 tablet:text-24 min-w-0 font-semibold">
+                {mover.bio}
+              </p>
+              <div className="tablet:block hidden shrink-0">{statusBadge}</div>
+            </div>
 
             <div className="border-line-100 tablet:pb-8 pc:pb-9 flex flex-col gap-2 border-b pb-5">
               <div className="flex w-full items-center justify-between">
                 {/* 이름 텍스트 높이가 세 사이즈 모두 26px(text-18)입니다 —
                       모바일 `I1:9248;1:4297` / PC `I1:9147;1:4211`. 반응형 분기가 아닙니다. */}
-                <MoverName nickName={mover.nickName} size="xl" />
+                <MoverName
+                  nickName={mover.nickName}
+                  size="xl"
+                  textClassName="text-black-black-300 font-semibold"
+                />
                 {/* 피그마는 숫자가 먼저, 하트가 뒤 + 검은 하트라 CardParts의
                       FavoriteCount(하트→숫자, 빨간 하트)를 그대로 쓸 수 없습니다 */}
                 <div className="flex shrink-0 items-center gap-1">
-                  <span className="text-14 text-black-300 font-medium">{mover.favoriteCount}</span>
+                  <span className="text-18 text-gray-gray-500 font-medium">
+                    {mover.favoriteCount}
+                  </span>
                   <Image src={likeBlack} alt="" className="size-6" />
                 </div>
               </div>
@@ -198,16 +222,16 @@ export default function QuoteDetailView({
                   정렬이 사이즈마다 다릅니다: 모바일(`1:9249`)은 라벨·값이 양 끝,
                   태블릿(`1:9178`)·PC(`1:9149`)는 값이 113px에서 시작합니다. */}
             <div className="border-line-100 tablet:justify-start tablet:pb-8 pc:pb-9 flex items-center justify-between border-b pb-5">
-              <span className="text-16 text-black-300 pc:text-20 tablet:w-28.25 font-semibold">
+              <span className="text-16 text-black-black-450 pc:text-20 tablet:w-28.25 font-semibold">
                 견적가
               </span>
-              <span className="text-18 text-black-400 pc:text-24 font-bold">
+              <span className="text-18 text-black-black-450 pc:text-24 font-bold">
                 {formatPrice(estimate.price)}
               </span>
             </div>
 
             <div className="tablet:gap-8 pc:gap-7 flex flex-col gap-5">
-              <h2 className="text-16 text-black-300 pc:text-20 font-semibold">견적 정보</h2>
+              <h2 className="text-16 text-black-black-450 pc:text-20 font-semibold">견적 정보</h2>
               <div className="tablet:gap-4 flex flex-col gap-3">
                 <InfoRow label="견적 요청일" value={formatShortDate(request.createdAt)} />
                 <InfoRow label="서비스" value={SERVICE_LABELS[request.category]} />
