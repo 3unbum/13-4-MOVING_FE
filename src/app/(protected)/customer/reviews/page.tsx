@@ -1,15 +1,22 @@
 "use client";
 
-import { useState } from "react";
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { useRef, useState } from "react";
+import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-query";
 import Pagination from "@/components/common/Pagination";
 import Tab from "@/components/common/Tab";
 import TabList from "@/components/common/TabList";
+import Toast from "@/components/common/Toast";
 import { SERVICE_LABELS, type ServiceCode } from "@/components/filter/ChipRegion";
 import CardMyReview from "@/components/review/CardMyReview";
 import CardWritableReview from "@/components/review/CardWritableReview";
+import ReviewWriteModal from "@/components/review/ReviewWriteModal";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
-import { reviewQueryKeys, reviewService } from "@/lib/services/review-service";
+import {
+  reviewQueryKeys,
+  reviewService,
+  type WritableReviewItem,
+} from "@/lib/services/review-service";
+import { ApiError } from "@/lib/utils/api-error";
 import { cn } from "@/lib/utils/cn";
 import ReviewsEmptyFallback from "./_components/ReviewsEmptyFallback";
 
@@ -47,6 +54,7 @@ function toServiceCode(category: string): ServiceCode {
 }
 
 export default function CustomerReviewsPage() {
+  const queryClient = useQueryClient();
   const isTabletUp = useMediaQuery(TABLET_QUERY);
   const isPc = useMediaQuery(PC_QUERY);
   const [tab, setTab] = useState<ReviewTab>("writable");
@@ -60,6 +68,13 @@ export default function CustomerReviewsPage() {
     writable: { 1: undefined },
     written: { 1: undefined },
   });
+  const [selected, setSelected] = useState<WritableReviewItem | null>(null);
+  const [rating, setRating] = useState(0);
+  const [comment, setComment] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const submitAbortRef = useRef<AbortController | null>(null);
+  const toastTimeoutRef = useRef<number | null>(null);
 
   const writablePage = pageByTab.writable;
   const writtenPage = pageByTab.written;
@@ -101,6 +116,80 @@ export default function CustomerReviewsPage() {
       }));
     }
     setPageByTab((current) => ({ ...current, [tab]: nextPage }));
+  };
+
+  const closeWriteModal = () => {
+    // 닫기는 제출 취소를 뜻한다. 진행 중인 PATCH는 버리고 성공/실패 토스트도 띄우지 않는다.
+    submitAbortRef.current?.abort();
+    submitAbortRef.current = null;
+    setSelected(null);
+    setRating(0);
+    setComment("");
+    setIsSubmitting(false);
+  };
+
+  const showToast = (message: string) => {
+    if (toastTimeoutRef.current != null) {
+      window.clearTimeout(toastTimeoutRef.current);
+    }
+    setToastMessage(message);
+    toastTimeoutRef.current = window.setTimeout(() => {
+      toastTimeoutRef.current = null;
+      setToastMessage(null);
+    }, 3000);
+  };
+
+  // abort 시점엔 토스트를 안 띄우되, 서버에 PATCH가 이미 들어갔을 수 있어 지금 보고 있는 목록만 다시 받는다.
+  const refreshActiveReviewQueries = () =>
+    queryClient.invalidateQueries({ queryKey: reviewQueryKeys.all });
+
+  // 성공 후 작성 가능 목록은 1페이지로 돌아간다. 지금 페이지를 그대로 invalidate하면
+  // 곧 버려질 페이지 refetch가 한 번 더 나간다. 전부 stale만 찍고 1페이지만 다시 받는다.
+  const refreshAfterWriteSuccess = async () => {
+    await queryClient.invalidateQueries({
+      queryKey: reviewQueryKeys.all,
+      refetchType: "none",
+    });
+    await queryClient.refetchQueries({
+      queryKey: reviewQueryKeys.writable(1, undefined),
+      type: "all",
+    });
+  };
+
+  const handleSubmitReview = async () => {
+    if (!selected || isSubmitting) return;
+    const controller = new AbortController();
+    submitAbortRef.current = controller;
+    setIsSubmitting(true);
+    try {
+      await reviewService.confirm(
+        selected.id,
+        { rating, comment: comment.trim() },
+        controller.signal
+      );
+      if (controller.signal.aborted) {
+        await refreshActiveReviewQueries();
+        return;
+      }
+      closeWriteModal();
+      setPageByTab((current) => ({ ...current, writable: 1 }));
+      setCursorByTab((current) => ({ ...current, writable: { 1: undefined } }));
+      await refreshAfterWriteSuccess();
+      showToast("리뷰가 등록되었어요");
+    } catch (error) {
+      if (controller.signal.aborted || (error instanceof Error && error.name === "AbortError")) {
+        await refreshActiveReviewQueries();
+        return;
+      }
+      showToast(
+        error instanceof ApiError ? error.message : "리뷰 등록에 실패했어요. 다시 시도해 주세요."
+      );
+    } finally {
+      if (submitAbortRef.current === controller) {
+        submitAbortRef.current = null;
+        setIsSubmitting(false);
+      }
+    }
   };
 
   return (
@@ -165,6 +254,11 @@ export default function CustomerReviewsPage() {
                         from={item.moving.fromAddress}
                         to={item.moving.toAddress}
                         movingDate={formatMovingDate(item.moving.movingDate, true)}
+                        onWriteClick={() => {
+                          setSelected(item);
+                          setRating(0);
+                          setComment("");
+                        }}
                       />
                     </li>
                   ))
@@ -200,6 +294,30 @@ export default function CustomerReviewsPage() {
           </div>
         )}
       </section>
+      {selected ? (
+        <ReviewWriteModal
+          open
+          onClose={closeWriteModal}
+          size={isPc ? "md" : "sm"}
+          position={isTabletUp ? "center" : "bottom"}
+          category={toServiceCode(selected.moving.category)}
+          isTargeted={false}
+          moverNickName={selected.mover.nickName}
+          moverProfileImage={selected.mover.image}
+          fromAddress={selected.moving.fromAddress}
+          toAddress={selected.moving.toAddress}
+          movingDate={formatMovingDate(selected.moving.movingDate, true)}
+          rating={rating}
+          onRatingChange={setRating}
+          review={comment}
+          onReviewChange={setComment}
+          onSubmit={() => {
+            void handleSubmitReview();
+          }}
+          isSubmitting={isSubmitting}
+        />
+      ) : null}
+      {toastMessage ? <Toast message={toastMessage} /> : null}
     </div>
   );
 }
