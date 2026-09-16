@@ -1,7 +1,7 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { favoriteQueryKeys } from "@/constants/query-keys/favorites";
 import { favoriteService, type FavoriteListResult } from "@/lib/services/favorite-service";
 import { useAuth } from "@/providers/AuthProvider";
@@ -27,6 +27,20 @@ export function useToggleMoverFavorite(options?: { onRequireLogin?: () => void }
 
   // 목록 refetch 전 favoriteCount 즉시 반영용
   const [favoriteCountById, setFavoriteCountById] = useState<Record<number, number>>({});
+  // 같은 기사님만 중복 클릭 막고, 다른 기사님은 병렬 토글 가능
+  const [pendingMoverIds, setPendingMoverIds] = useState<Set<number>>(() => new Set());
+  // setState는 비동기라 연타 가드는 ref로 동기 체크
+  const pendingMoverIdsRef = useRef<Set<number>>(new Set());
+
+  const markPending = (moverId: number) => {
+    pendingMoverIdsRef.current.add(moverId);
+    setPendingMoverIds(new Set(pendingMoverIdsRef.current));
+  };
+
+  const clearPending = (moverId: number) => {
+    pendingMoverIdsRef.current.delete(moverId);
+    setPendingMoverIds(new Set(pendingMoverIdsRef.current));
+  };
 
   // ── 내가 찜한 기사님 전체 (하트 filled 여부) ──
   const favoritesQuery = useQuery({
@@ -103,8 +117,9 @@ export function useToggleMoverFavorite(options?: { onRequireLogin?: () => void }
       }));
     },
 
-    // 전체·사이드바(limit=3) 캐시 모두 갱신
-    onSettled: () => {
+    // 전체·사이드바(limit=3) 캐시 모두 갱신 + 해당 ID pending 해제
+    onSettled: (_data, _error, variables) => {
+      clearPending(variables.moverId);
       void queryClient.invalidateQueries({ queryKey: favoriteQueryKeys.all });
     },
   });
@@ -114,9 +129,10 @@ export function useToggleMoverFavorite(options?: { onRequireLogin?: () => void }
       options?.onRequireLogin?.();
       return;
     }
-    if (!isCustomer || mutation.isPending) {
+    if (!isCustomer || pendingMoverIdsRef.current.has(moverId)) {
       return;
     }
+    markPending(moverId);
     mutation.mutate({
       moverId,
       isFavorited: favoritedIds.has(moverId),
@@ -132,6 +148,6 @@ export function useToggleMoverFavorite(options?: { onRequireLogin?: () => void }
     favoritedIds,
     toggleFavorite,
     getFavoriteCount,
-    isToggling: mutation.isPending,
+    isToggling: (moverId: number) => pendingMoverIds.has(moverId),
   };
 }

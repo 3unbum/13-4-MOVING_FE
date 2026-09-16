@@ -1,7 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import Link from "next/link";
+import { useMemo, useState, type KeyboardEvent } from "react";
 import { useRouter } from "next/navigation";
 import Filter from "@/components/common/Filter";
 import Header from "@/components/common/Header";
@@ -29,14 +28,30 @@ import { useAuth } from "@/providers/AuthProvider";
 
 type MoverCardViewModel = ReturnType<typeof mapMoverListItemToCard>;
 
+function getMoverCardNavProps(onNavigate: () => void) {
+  return {
+    role: "link" as const,
+    tabIndex: 0,
+    onClick: onNavigate,
+    onKeyDown: (event: KeyboardEvent<HTMLElement>) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        onNavigate();
+      }
+    },
+  };
+}
+
 function ResponsiveMoverCard({
   mover,
   isFavorited,
   onFavoriteClick,
+  onNavigate,
 }: {
   mover: MoverCardViewModel;
   isFavorited: boolean;
   onFavoriteClick: () => void;
+  onNavigate: () => void;
 }) {
   const shared = {
     category: mover.category,
@@ -51,13 +66,14 @@ function ResponsiveMoverCard({
     favoriteCount: mover.favoriteCount,
     isFavorited,
     onFavoriteClick,
+    ...getMoverCardNavProps(onNavigate),
   };
 
   return (
     <>
       {/* Mobile 목록: Figma md(327×226) — bio+description / Tablet·PC: lg */}
-      <CardMover size="md" className="tablet:hidden" {...shared} />
-      <CardMover size="lg" className="tablet:block hidden" {...shared} />
+      <CardMover {...shared} size="md" className="tablet:hidden cursor-pointer" />
+      <CardMover {...shared} size="lg" className="tablet:block hidden cursor-pointer" />
     </>
   );
 }
@@ -264,14 +280,12 @@ export default function MoversPage() {
                   const favoriteCount = getFavoriteCount(mover.id, mover.favoriteCount);
                   return (
                     <li key={mover.id}>
-                      {/* 카드 전체는 상세 이동. 찜은 onFavoriteClick으로 Link 전파 차단 */}
-                      <Link href={`/movers/${mover.id}`} className="block">
-                        <ResponsiveMoverCard
-                          mover={{ ...mover, favoriteCount }}
-                          isFavorited={favoritedIds.has(mover.id)}
-                          onFavoriteClick={() => toggleFavorite(mover.id, favoriteCount)}
-                        />
-                      </Link>
+                      <ResponsiveMoverCard
+                        mover={{ ...mover, favoriteCount }}
+                        isFavorited={favoritedIds.has(mover.id)}
+                        onFavoriteClick={() => toggleFavorite(mover.id, favoriteCount)}
+                        onNavigate={() => router.push(`/movers/${mover.id}`)}
+                      />
                     </li>
                   );
                 })}
@@ -301,24 +315,25 @@ export default function MoversPage() {
                 <ul className="flex flex-col gap-4">
                   {sidebarMovers.map((mover) => {
                     const favoriteCount = getFavoriteCount(mover.id, mover.favoriteCount);
+                    const navProps = getMoverCardNavProps(() => router.push(`/movers/${mover.id}`));
                     return (
                       <li key={mover.id}>
-                        <Link href={`/movers/${mover.id}`} className="block">
-                          <CardMover
-                            size="sm"
-                            category={mover.category}
-                            title={mover.title}
-                            nickName={mover.nickName}
-                            profileImage={mover.profileImage}
-                            rating={mover.rating}
-                            reviewCount={mover.reviewCount}
-                            career={mover.career}
-                            confirmedCount={mover.confirmedCount}
-                            favoriteCount={favoriteCount}
-                            isFavorited={favoritedIds.has(mover.id)}
-                            onFavoriteClick={() => toggleFavorite(mover.id, favoriteCount)}
-                          />
-                        </Link>
+                        <CardMover
+                          {...navProps}
+                          size="sm"
+                          className="cursor-pointer"
+                          category={mover.category}
+                          title={mover.title}
+                          nickName={mover.nickName}
+                          profileImage={mover.profileImage}
+                          rating={mover.rating}
+                          reviewCount={mover.reviewCount}
+                          career={mover.career}
+                          confirmedCount={mover.confirmedCount}
+                          favoriteCount={favoriteCount}
+                          isFavorited={favoritedIds.has(mover.id)}
+                          onFavoriteClick={() => toggleFavorite(mover.id, favoriteCount)}
+                        />
                       </li>
                     );
                   })}
