@@ -6,6 +6,7 @@ import CardMover from "@/components/mover/CardMover";
 import CardMyReview from "@/components/review/CardMyReview";
 import CardReview from "@/components/review/CardReview";
 import CardWritableReview from "@/components/review/CardWritableReview";
+import type { ServiceCode } from "@/components/filter/ChipRegion";
 import {
   CardCompleted,
   CardCustomerQuotation,
@@ -14,7 +15,7 @@ import {
 } from "@/components/quote/CardQuotation";
 
 const MOCK = {
-  category: "SMALL",
+  categories: ["SMALL"] as ServiceCode[],
   title: "고객님의 물품을 안전하게 운송해 드립니다.",
   description: "이사업계 경력 7년으로 안전한 이사를 도와드리는 김코드입니다.",
   nickName: "김코드",
@@ -23,7 +24,7 @@ const MOCK = {
   career: 7,
   confirmedCount: 334,
   favoriteCount: 136,
-} as const;
+};
 
 /** 고객 정보형(A계열) 카드가 공통으로 쓰는 견적 요청 정보 */
 const REQUEST = {
@@ -139,10 +140,13 @@ export default function CardListPage() {
 
       <Section title="이사 유형 variant">
         <W px={327}>
-          <CardMover size="md" {...MOCK} category="HOME" />
+          <CardMover size="md" {...MOCK} categories={["HOME"]} />
         </W>
         <W px={327}>
-          <CardMover size="md" {...MOCK} category="OFFICE" />
+          <CardMover size="md" {...MOCK} categories={["OFFICE"]} />
+        </W>
+        <W px={327}>
+          <CardMover size="md" {...MOCK} categories={["SMALL", "HOME", "OFFICE"]} />
         </W>
         <W px={327}>
           <CardMover size="md" {...MOCK} isTargeted />
