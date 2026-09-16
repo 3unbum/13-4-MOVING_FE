@@ -103,7 +103,7 @@ export default function CustomerLoginPage() {
             />
           </div>
 
-          <SocialLoginSection actionLabel="로그인" />
+          <SocialLoginSection actionLabel="로그인" role="CUSTOMER" />
         </div>
       </AuthCard>
 

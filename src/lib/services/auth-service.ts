@@ -1,4 +1,5 @@
 import { cookieFetch } from "@/lib/utils/api-client";
+import type { OAuthProviderKey } from "@/constants/auth/oauth";
 
 export interface CustomerAccountResponse {
   userId: number;
@@ -55,6 +56,32 @@ export interface AuthResult {
   hasProfile: boolean;
 }
 
+export interface OAuthLoginPayload {
+  code: string;
+  redirectUri: string;
+  role: UserRole;
+}
+
+/**
+ * 기존 회원이면 AuthResult와 동일한 모양(+isNewUser: false)으로 바로 로그인 처리된다.
+ * 신규 회원이면 oauthSignupToken은 응답 바디가 아니라 httpOnly 쿠키로 내려온다 — FE는 값을 들고 있지 않는다.
+ */
+export type OAuthLoginResult =
+  | ({ isNewUser: false } & AuthResult)
+  | {
+      isNewUser: true;
+      providerProfile: {
+        provider: string;
+        email: string;
+        name: string;
+        profileImage: string | null;
+      };
+    };
+
+export interface OAuthSignupPayload {
+  phoneNumber: string;
+}
+
 export const authService = {
   /** 호출 전에 role을 몰라도 되는 유일한 계정 조회 — BE가 accessToken의 role로 분기해준다. */
   getMyAccount: () => cookieFetch<AccountResponse>("/auth/me"),
@@ -69,6 +96,19 @@ export const authService = {
 
   login: (payload: LoginPayload) =>
     cookieFetch<AuthResult>("/auth/login", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    }),
+
+  /** provider 콜백에서 받은 code를 넘긴다. 기존 회원이면 바로 로그인, 신규면 oauthSignupToken만 온다. */
+  oauthLogin: (provider: OAuthProviderKey, payload: OAuthLoginPayload) =>
+    cookieFetch<OAuthLoginResult>(`/auth/oauth/${provider}`, {
+      method: "POST",
+      body: JSON.stringify(payload),
+    }),
+
+  oauthSignup: (payload: OAuthSignupPayload) =>
+    cookieFetch<AuthResult>("/auth/oauth/signup", {
       method: "POST",
       body: JSON.stringify(payload),
     }),

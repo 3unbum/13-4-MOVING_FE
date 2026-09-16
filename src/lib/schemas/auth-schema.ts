@@ -12,6 +12,17 @@ export const loginSchema = z.object({
 
 export type LoginFormValues = z.infer<typeof loginSchema>;
 
+export const phoneNumberField = z
+  .string()
+  .min(1, "전화번호를 입력해 주세요")
+  .regex(PHONE_PATTERN, "올바른 전화번호 형식이 아닙니다.");
+
+export const phoneSchema = z.object({
+  phoneNumber: phoneNumberField,
+});
+
+export type PhoneFormValues = z.infer<typeof phoneSchema>;
+
 export const signupSchema = z
   .object({
     name: z.string().min(1, "이름을 입력해 주세요"),
@@ -19,10 +30,7 @@ export const signupSchema = z
       .string()
       .min(1, "이메일을 입력해 주세요")
       .regex(EMAIL_PATTERN, "올바른 이메일 형식이 아닙니다."),
-    phoneNumber: z
-      .string()
-      .min(1, "전화번호를 입력해 주세요")
-      .regex(PHONE_PATTERN, "올바른 전화번호 형식이 아닙니다."),
+    phoneNumber: phoneNumberField,
     password: z
       .string()
       .min(1, "비밀번호를 입력해 주세요")

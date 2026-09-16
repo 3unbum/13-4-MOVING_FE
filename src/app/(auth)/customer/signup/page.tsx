@@ -134,7 +134,7 @@ export default function CustomerSignupPage() {
             />
           </div>
 
-          <SocialLoginSection actionLabel="회원가입" />
+          <SocialLoginSection actionLabel="회원가입" role="CUSTOMER" />
         </div>
       </AuthCard>
 
