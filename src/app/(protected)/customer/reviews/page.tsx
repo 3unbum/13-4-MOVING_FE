@@ -74,6 +74,7 @@ export default function CustomerReviewsPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const submitAbortRef = useRef<AbortController | null>(null);
+  const toastTimeoutRef = useRef<number | null>(null);
 
   const writablePage = pageByTab.writable;
   const writtenPage = pageByTab.written;
@@ -128,9 +129,19 @@ export default function CustomerReviewsPage() {
   };
 
   const showToast = (message: string) => {
+    if (toastTimeoutRef.current != null) {
+      window.clearTimeout(toastTimeoutRef.current);
+    }
     setToastMessage(message);
-    window.setTimeout(() => setToastMessage(null), 3000);
+    toastTimeoutRef.current = window.setTimeout(() => {
+      toastTimeoutRef.current = null;
+      setToastMessage(null);
+    }, 3000);
   };
+
+  // abort 시점엔 토스트를 안 띄우되, 서버에 PATCH가 이미 들어갔을 수 있어 목록은 다시 받는다.
+  const refreshReviewQueries = () =>
+    queryClient.invalidateQueries({ queryKey: reviewQueryKeys.all });
 
   const handleSubmitReview = async () => {
     if (!selected || isSubmitting) return;
@@ -143,14 +154,18 @@ export default function CustomerReviewsPage() {
         { rating, comment: comment.trim() },
         controller.signal
       );
-      if (controller.signal.aborted) return;
+      if (controller.signal.aborted) {
+        await refreshReviewQueries();
+        return;
+      }
       closeWriteModal();
       setPageByTab((current) => ({ ...current, writable: 1 }));
       setCursorByTab((current) => ({ ...current, writable: { 1: undefined } }));
-      await queryClient.invalidateQueries({ queryKey: reviewQueryKeys.all });
+      await refreshReviewQueries();
       showToast("리뷰가 등록되었어요");
     } catch (error) {
       if (controller.signal.aborted || (error instanceof Error && error.name === "AbortError")) {
+        await refreshReviewQueries();
         return;
       }
       showToast(
