@@ -43,6 +43,7 @@ function MoverBox({
   bordered = true,
   showLogo = true,
   favoriteFilled = true,
+  compact = false,
 }: MoverInfo & {
   size: CardSize;
   bordered?: boolean;
@@ -50,6 +51,12 @@ function MoverBox({
   showLogo?: boolean;
   /** 견적내역 lg만 빈 하트입니다 */
   favoriteFilled?: boolean;
+  /**
+   * 이름·간격이 카드마다 다릅니다.
+   *   견적내역 lg (`I1:11693;1:12842`)  이름 26(text-18) / 간격 8
+   *   대기중인내역 lg (`I510:43373;510:43176`) 이름 24(text-16) / 간격 4
+   */
+  compact?: boolean;
 }) {
   const isLg = size === "lg";
 
@@ -57,14 +64,29 @@ function MoverBox({
     <div
       className={cn(
         "flex w-full items-end gap-3",
-        bordered && "rounded-xl border border-gray-300 py-3 pr-5 pl-3"
+        // 테두리를 border로 그리면 위아래 1px씩 높이를 밀어 피그마(80)보다 82가 됩니다.
+        // inset 그림자는 레이아웃을 차지하지 않습니다 (#51에서 카드 폭 어긋남을 같은 방식으로 해결).
+        bordered
+          ? "rounded-xl py-3 pr-5 pl-3 shadow-[inset_0_0_0_1px_var(--color-gray-300)]"
+          : // 테두리가 없어도 피그마 박스(`510:44550;510:43224` h=82)는 상하 여백을 갖습니다 —
+            // 내용 50 + 위 12 + 아래 20.
+            "pt-3 pb-5"
       )}
     >
       <ProfileAvatar src={profileImage} alt={nickName} size="50" />
 
-      <div className={cn("flex min-w-px flex-1 flex-col items-start", isLg ? "gap-2" : "gap-1")}>
+      <div
+        className={cn(
+          "flex min-w-px flex-1 flex-col items-start",
+          isLg && !compact ? "gap-2" : "gap-1"
+        )}
+      >
         <div className="flex w-full items-center justify-between">
-          <MoverName nickName={nickName} size={isLg ? "lg" : "sm"} showLogo={showLogo} />
+          <MoverName
+            nickName={nickName}
+            size={isLg && !compact ? "lg" : "sm"}
+            showLogo={showLogo}
+          />
           <FavoriteCount
             count={favoriteCount}
             isFavorited={favoriteFilled}
@@ -238,7 +260,9 @@ export function CardPendingHistory({
       )}
       {...props}
     >
-      <div className="flex w-full flex-col items-start gap-3">
+      {/* 상단 블록과 금액줄 사이 — 모바일 8 / 태블릿·PC 12
+          (`510:44550` 154→162 / `510:43373` 170→182). 카드가 태블릿부터 lg라 tablet: 기준입니다. */}
+      <div className="tablet:gap-3 flex w-full flex-col items-start gap-2">
         <div className={cn("flex w-full flex-col items-start", isLg ? "gap-6" : "gap-4")}>
           <div
             className={cn(
@@ -253,7 +277,8 @@ export function CardPendingHistory({
             <PendingBadge />
           </div>
 
-          <div className="flex w-full flex-col gap-7.5">
+          {/* 제목과 기사님 정보 사이는 4px입니다 (피그마 `510:44550` 제목 h26 → 박스 y30) */}
+          <div className="flex w-full flex-col gap-1">
             <p
               className={cn(
                 "text-black-black-300 w-full min-w-0 truncate font-semibold",
@@ -262,7 +287,7 @@ export function CardPendingHistory({
             >
               {title}
             </p>
-            <MoverBox size={size} bordered={false} {...mover} />
+            <MoverBox size={size} bordered={false} compact {...mover} />
           </div>
         </div>
 

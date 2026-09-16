@@ -124,7 +124,8 @@ export default function PendingQuotesPanel({
               PC만 2열(558×2 + gap 24 = 1140). 카드는 폭을 갖지 않으므로 그리드가 폭을 정합니다.
               좌우 여백은 패딩이 아니라 max-w + 중앙정렬로 잡습니다 — 피그마 여백(1920 기준 390)을
               패딩으로 그대로 옮기면 1280에서 카드가 짓눌립니다(1140 중앙정렬이면 1280에서 70). */}
-          <div className="tablet:max-w-150 tablet:gap-8 pc:max-w-285 pc:grid-cols-2 pc:gap-6 grid w-full max-w-81.75 grid-cols-1 gap-8">
+          {/* 카드 세로 간격 — 모바일 20(`510:40216` 404→424) / 태블릿 32 / PC 24 */}
+          <div className="tablet:max-w-150 tablet:gap-8 pc:max-w-285 pc:grid-cols-2 pc:gap-6 grid w-full max-w-81.75 grid-cols-1 gap-5">
             {estimates.map((estimate) => {
               const handlers = {
                 onDetailClick: () => onDetailClick?.(estimate.id),
