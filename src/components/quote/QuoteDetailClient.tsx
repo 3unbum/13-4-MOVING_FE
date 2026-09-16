@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useConfirmEstimate, useQuoteDetail } from "@/hooks/useQuoteDetail";
+import { useFavoriteMover } from "@/hooks/useFavoriteMover";
 import QuoteDetailView from "@/components/quote/QuoteDetailView";
 import Toast from "@/components/common/Toast";
 import Loading from "@/app/loading";
@@ -62,7 +63,7 @@ export default function QuoteDetailClient({ estimateId }: QuoteDetailClientProps
 
   return (
     <>
-      <QuoteDetailView
+      <QuoteDetailBody
         estimate={estimate}
         request={request}
         onConfirm={() => confirm.mutate()}
@@ -70,5 +71,35 @@ export default function QuoteDetailClient({ estimateId }: QuoteDetailClientProps
       />
       {toast && <Toast message={toast} />}
     </>
+  );
+}
+
+/**
+ * 찜 훅이 `moverId`를 요구해서 견적을 받은 뒤에야 부를 수 있습니다.
+ * 훅은 조건부로 호출할 수 없으므로 로딩·에러 분기 아래쪽을 별도 컴포넌트로 뺐습니다.
+ */
+function QuoteDetailBody({
+  estimate,
+  request,
+  onConfirm,
+  isConfirming,
+}: {
+  estimate: NonNullable<ReturnType<typeof useQuoteDetail>["estimate"]>;
+  request: NonNullable<ReturnType<typeof useQuoteDetail>["request"]>;
+  onConfirm: () => void;
+  isConfirming: boolean;
+}) {
+  const favorite = useFavoriteMover(estimate.mover.id);
+
+  return (
+    <QuoteDetailView
+      estimate={estimate}
+      request={request}
+      onConfirm={onConfirm}
+      isConfirming={isConfirming}
+      isFavorited={favorite.isFavorited}
+      onToggleFavorite={favorite.toggle}
+      isTogglingFavorite={favorite.isToggling}
+    />
   );
 }

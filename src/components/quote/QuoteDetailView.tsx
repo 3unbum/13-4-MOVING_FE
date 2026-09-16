@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Button from "@/components/common/Button";
+import EtcButton from "@/components/common/EtcButton";
 import { ConfirmedBadge, PendingBadge } from "@/components/common/CardParts";
 import Header from "@/components/common/Header";
 import ProfileAvatar from "@/components/common/ProfileAvatar";
@@ -22,6 +23,10 @@ interface QuoteDetailViewProps {
   request: QuotationRequest;
   onConfirm: () => void;
   isConfirming: boolean;
+  /** 찜 여부 — 모바일·태블릿 하단 CTA 왼쪽 하트 */
+  isFavorited: boolean;
+  onToggleFavorite: () => void;
+  isTogglingFavorite: boolean;
 }
 
 const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
@@ -85,6 +90,9 @@ export default function QuoteDetailView({
   request,
   onConfirm,
   isConfirming,
+  isFavorited,
+  onToggleFavorite,
+  isTogglingFavorite,
 }: QuoteDetailViewProps) {
   const { mover, estimateStatus, isTargeted } = estimate;
 
@@ -107,7 +115,10 @@ export default function QuoteDetailView({
 
       {/* 히어로 — 주황 배경에 무빙 로고 마크가 흐리게 흩어집니다 (피그마 모바일 122 / PC 180).
           프로필이 아래로 겹쳐 나오므로 overflow-hidden은 여기서만 겁니다. */}
-      <div className="pc:h-45 relative h-30.5 w-full overflow-hidden bg-orange-400" aria-hidden>
+      <div
+        className="tablet:h-39.25 pc:h-45 relative h-30.5 w-full overflow-hidden bg-orange-400"
+        aria-hidden
+      >
         <Image
           src={logoMark}
           alt=""
@@ -121,12 +132,22 @@ export default function QuoteDetailView({
       </div>
 
       <div className="bg-background-background-100 tablet:px-18 pc:px-10 flex flex-1 justify-center px-6">
-        <div className="pc:max-w-285 pc:flex-row pc:gap-15 tablet:max-w-150 flex w-full max-w-81.75 flex-col">
+        <div className="pc:max-w-285 pc:flex-row pc:gap-35 tablet:max-w-150 flex w-full max-w-81.75 flex-col">
           {/* 좌: 본문 */}
           <div className="flex min-w-0 flex-1 flex-col">
             {/* 히어로에 겹치는 프로필 */}
-            <div className="pc:-mt-12 -mt-8">
-              <ProfileAvatar src={mover.image} alt={mover.nickName} size="64" />
+            {/* 피그마: 모바일 64(`1:9246`) / 태블릿 100(`1:9222`) / PC 134(`1:9148`).
+                ProfileAvatar가 size를 한 값만 받아 세 벌을 CSS로 전환합니다. */}
+            <div className="tablet:-mt-19.25 pc:-mt-20.75 -mt-10.5">
+              <div className="tablet:hidden">
+                <ProfileAvatar src={mover.image} alt={mover.nickName} size="64" />
+              </div>
+              <div className="tablet:block pc:hidden hidden">
+                <ProfileAvatar src={mover.image} alt={mover.nickName} size="100" />
+              </div>
+              <div className="pc:block hidden">
+                <ProfileAvatar src={mover.image} alt={mover.nickName} size="134" />
+              </div>
             </div>
 
             <div className="pc:gap-6 pc:pt-6 flex flex-col gap-5 pt-5">
@@ -143,7 +164,9 @@ export default function QuoteDetailView({
 
               <div className="border-line-100 flex flex-col gap-2 border-b pb-5">
                 <div className="flex w-full items-center justify-between">
-                  <MoverName nickName={mover.nickName} size="sm" />
+                  {/* 이름 텍스트 높이가 세 사이즈 모두 26px(text-18)입니다 —
+                      모바일 `I1:9248;1:4297` / PC `I1:9147;1:4211`. 반응형 분기가 아닙니다. */}
+                  <MoverName nickName={mover.nickName} size="xl" />
                   {/* 피그마는 숫자가 먼저, 하트가 뒤 + 검은 하트라 CardParts의
                       FavoriteCount(하트→숫자, 빨간 하트)를 그대로 쓸 수 없습니다 */}
                   <div className="flex shrink-0 items-center gap-1">
@@ -161,9 +184,13 @@ export default function QuoteDetailView({
                 />
               </div>
 
-              {/* 견적가 — PC는 우측 사이드에도 있지만 본문에도 그대로 있습니다 */}
-              <div className="border-line-100 flex items-center justify-between border-b pb-5">
-                <span className="text-16 text-black-300 pc:text-20 font-semibold">견적가</span>
+              {/* 견적가 — PC는 우측 사이드에도 있지만 본문에도 그대로 있습니다.
+                  정렬이 사이즈마다 다릅니다: 모바일(`1:9249`)은 라벨·값이 양 끝,
+                  태블릿(`1:9178`)·PC(`1:9149`)는 값이 113px에서 시작합니다. */}
+              <div className="border-line-100 tablet:justify-start flex items-center justify-between border-b pb-5">
+                <span className="text-16 text-black-300 pc:text-20 tablet:w-28.25 font-semibold">
+                  견적가
+                </span>
                 <span className="text-18 text-black-400 pc:text-24 font-bold">
                   {formatPrice(estimate.price)}
                 </span>
@@ -201,7 +228,13 @@ export default function QuoteDetailView({
           </div>
 
           {/* 우: PC 전용 사이드 — 견적가 + 확정 버튼 + 공유 */}
-          <aside className="pc:flex hidden w-80 shrink-0 flex-col gap-6 pt-10">
+          {/* 우: PC 전용 사이드 — 견적가 + 확정 버튼 + 공유.
+              피그마 여백: 히어로 끝 364 → 첫 요소 547 = pt-45.75,
+              견적가 블록 끝 605 → 버튼 634 = mt-7.25, 버튼~구분선~공유 각 40 = my-10.
+
+              ⚠️ QuoteShare는 isPending 밖에 둬야 합니다. 확정(`1:11818` → `1:11821`)과
+              미확정(`1:11870`) 화면에도 공유 영역이 있습니다. */}
+          <aside className="pc:flex hidden w-80 shrink-0 flex-col pt-45.75">
             {isPending && (
               <>
                 <div className="flex flex-col gap-1">
@@ -215,28 +248,36 @@ export default function QuoteDetailView({
                   size="lg"
                   onClick={onConfirm}
                   disabled={isConfirming}
-                  className="h-16"
+                  className="mt-7.25 h-16"
                 >
                   견적 확정하기
                 </Button>
+                <hr className="border-line-100 my-10" />
               </>
             )}
-            <QuoteShare
-              title="견적서 공유하기"
-              moverId={mover.id}
-              className={cn(isPending && "border-line-100 border-t pt-6")}
-            />
+            <QuoteShare title="견적서 공유하기" moverId={mover.id} />
           </aside>
         </div>
       </div>
 
-      {/* 모바일·태블릿 하단 고정 CTA (피그마 높이 110) */}
+      {/* 모바일·태블릿 하단 고정 CTA (피그마 `1:9227` 375 / `1:9172` 744 — 높이 110).
+          피그마에는 위쪽 구분선이 없습니다. */}
       {isPending && (
-        <div className="pc:hidden tablet:px-18 fixed inset-x-0 bottom-0 z-10 flex w-full justify-center bg-gray-50 px-6 py-7 shadow-[0_-2px_10px_0_rgba(220,220,220,0.4)]">
-          <div className="tablet:max-w-150 w-full max-w-81.75">
-            <Button variant="solid" size="sm" onClick={onConfirm} disabled={isConfirming}>
-              견적 확정하기
-            </Button>
+        <div className="pc:hidden tablet:px-18 fixed inset-x-0 bottom-0 z-10 flex w-full justify-center bg-gray-50 px-6 py-7">
+          {/* 하트 54 + 간격 8 + CTA (피그마 하트 x=0 w=54 / CTA x=62) */}
+          <div className="tablet:max-w-150 flex w-full max-w-81.75 items-center gap-2">
+            <EtcButton
+              kind="like"
+              size="sm"
+              active={isFavorited}
+              onClick={onToggleFavorite}
+              disabled={isTogglingFavorite}
+            />
+            <div className="min-w-0 flex-1">
+              <Button variant="solid" size="sm" onClick={onConfirm} disabled={isConfirming}>
+                견적 확정하기
+              </Button>
+            </div>
           </div>
         </div>
       )}
