@@ -44,17 +44,26 @@ export function useQuoteDetail(estimateId: number) {
  *
  * BE는 선택한 견적만 CONFIRMED로 바꾸고 나머지는 PENDING으로 둡니다(9/16 실측).
  * 확정 후 요청 상태가 ASSIGNED로 바뀌므로 목록 캐시도 함께 무효화합니다.
+ *
+ * 실패는 호출부가 `onError`로 받아 화면에 띄웁니다 — 전역 mutation 오류 처리가
+ * 없어서 여기서 안 넘기면 사용자에게 아무 안내도 가지 않습니다.
  */
-export function useConfirmEstimate(estimateId: number) {
+export function useConfirmEstimate(estimateId: number, onError?: (error: Error) => void) {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: () => estimateService.confirm(estimateId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: quoteDetailKeys.estimate(estimateId) });
-      queryClient.invalidateQueries({ queryKey: myQuotesKeys.pendingEstimates });
-      queryClient.invalidateQueries({ queryKey: myQuotesKeys.activeRequest });
-      queryClient.invalidateQueries({ queryKey: myQuotesKeys.requestHistory });
-    },
+    onError,
+    // 무효화가 끝날 때까지 mutation을 pending으로 붙잡아 둡니다.
+    // Promise를 반환하지 않으면 refetch 전에 isPending이 false로 떨어져,
+    // 아직 PENDING인 캐시로 렌더된 확정 버튼이 잠깐 다시 눌립니다.
+    // (BE가 조건부 갱신으로 이중 확정을 막지만 두 번째 요청은 에러가 됩니다)
+    onSuccess: () =>
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: quoteDetailKeys.estimate(estimateId) }),
+        queryClient.invalidateQueries({ queryKey: myQuotesKeys.pendingEstimates }),
+        queryClient.invalidateQueries({ queryKey: myQuotesKeys.activeRequest }),
+        queryClient.invalidateQueries({ queryKey: myQuotesKeys.requestHistory }),
+      ]),
   });
 }
