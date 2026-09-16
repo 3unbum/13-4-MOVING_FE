@@ -44,7 +44,10 @@ export function FavoriteCount({
       type="button"
       aria-label="찜하기"
       aria-pressed={isFavorited}
-      onClick={onClick}
+      onClick={(event) => {
+        event.stopPropagation();
+        onClick();
+      }}
       className="flex shrink-0 cursor-pointer items-center justify-center gap-0.5"
     >
       {content}

@@ -24,11 +24,12 @@ interface CardMoverProps extends HTMLAttributes<HTMLElement> {
   profileImage?: string | null;
   rating: number;
   reviewCount: number;
-  career: number;
+  /** 찜 목록처럼 career가 없는 응답이면 생략한다 */
+  career?: number;
   confirmedCount: number;
   favoriteCount: number;
   isFavorited?: boolean;
-  /** lg에서만 노출되는 선택 체크박스 */
+  /** sm을 제외한 크기에서 노출되는 선택 체크박스 */
   selectable?: boolean;
   selected?: boolean;
   onSelectChange?: (selected: boolean) => void;
@@ -70,6 +71,17 @@ export default function CardMover({
     className
   );
 
+  const selectCheckbox = selectable ? (
+    <div onClick={(event) => event.stopPropagation()}>
+      <CheckboxButton
+        shape="square"
+        aria-label={`${nickName} 기사님 선택`}
+        checked={selected}
+        onChange={(e) => onSelectChange?.(e.target.checked)}
+      />
+    </div>
+  ) : null;
+
   if (isLg) {
     return (
       <article className={cardClass} {...props}>
@@ -79,14 +91,7 @@ export default function CardMover({
               <MoveTypeChip variant={category} size="md" />
               {isTargeted && <MoveTypeChip variant="TARGETED" size="md" />}
             </div>
-            {selectable && (
-              <CheckboxButton
-                shape="square"
-                aria-label={`${nickName} 기사님 선택`}
-                checked={selected}
-                onChange={(e) => onSelectChange?.(e.target.checked)}
-              />
-            )}
+            {selectCheckbox}
           </div>
 
           <div className="flex w-full items-start gap-5">
@@ -126,9 +131,12 @@ export default function CardMover({
   if (isMd) {
     return (
       <article className={cardClass} {...props}>
-        <div className="flex items-center gap-2">
-          <MoveTypeChip variant={category} size="sm" />
-          {isTargeted && <MoveTypeChip variant="TARGETED" size="sm" />}
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <MoveTypeChip variant={category} size="sm" />
+            {isTargeted && <MoveTypeChip variant="TARGETED" size="sm" />}
+          </div>
+          {selectCheckbox}
         </div>
 
         <div className="flex w-full flex-col gap-4">
