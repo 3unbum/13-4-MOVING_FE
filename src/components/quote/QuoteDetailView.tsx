@@ -136,11 +136,15 @@ export default function QuoteDetailView({
       </div>
 
       <div className="tablet:px-18 pc:px-10 flex flex-1 justify-center bg-gray-50 px-6">
-        <div className="pc:max-w-285 pc:flex-row pc:gap-35 tablet:max-w-150 flex w-full max-w-81.75 flex-col">
+        {/* 피그마 내용 영역은 1200입니다 (Header `I1:9121;1:4469`가 w-1200,
+              1920에서 좌우 360씩 → 좌측 요소 left=360과 일치).
+              그 안이 좌 740 + 빈 공간 140 + 우 320으로 나뉩니다 — 140은 gap이 아니라
+              폭을 고정했을 때 남는 공간이라, 좌측을 가변으로 두면 안 됩니다. */}
+        <div className="pc:max-w-300 pc:flex-row pc:justify-between tablet:max-w-150 flex w-full max-w-81.75 flex-col">
           {/* 좌: 본문 — 피그마는 프로필과 각 블록이 같은 층에 나란히 놓입니다
               (`1:9148` profile / `1:9147` Title / `1:9149` 견적가 / `1:9155` 견적 정보).
               감싸는 컨테이너가 없어 중간 래퍼를 두지 않습니다. */}
-          <div className="pc:gap-6 flex min-w-0 flex-1 flex-col gap-5">
+          <div className="pc:w-185 pc:flex-none pc:gap-6 flex min-w-0 flex-1 flex-col gap-5">
             {/* 히어로에 겹치는 프로필 */}
             {/* 피그마: 모바일 64(`1:9246`) / 태블릿 100(`1:9222`) / PC 134(`1:9148`).
                 ProfileAvatar가 size를 한 값만 받아 세 벌을 CSS로 전환합니다. */}
