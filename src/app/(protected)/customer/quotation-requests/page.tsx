@@ -1,7 +1,3 @@
-// TODO: 견적 요청은 프로필 등록이 필요한 서비스 — 프로필 없는 customer 진입 시 모달로 유도.
-// 하드 게이트 아님(리다이렉트 X), 페이지는 그대로 렌더하고 모달만 얹는다.
-// - useAuth()로 hasProfile === false 감지 시 모달 오픈
-// - 예 → router.push("/customer/profile-register")
 "use client";
 
 import AddressSelectModal from "@/components/address/AddressSelectModal";
@@ -11,10 +7,12 @@ import { useAddressSearch } from "@/hooks/useAddressSearch";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { ApiError } from "@/lib/utils/api-error";
 import { quotationRequestService } from "@/lib/services/quotation-request-service";
+import { useAuth } from "@/providers/AuthProvider";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import QuotationRequestMobile from "./_components/QuotationRequestMobile";
 import QuotationRequestDesktop from "./_components/QuotationRequestDesktop";
+import RequireProfileModal from "./_components/RequireProfileModal";
 
 // 모바일/데스크톱이 CSS(hidden/tablet:block)로만 화면 전환되고 항상 같이 마운트돼있어서,
 // 이사유형/예정일/출발지/도착지 상태는 여기서 하나로 들고 양쪽에 내려준다 — 안 그러면 화면 크기 바뀔 때 값이 따로 놈.
@@ -26,9 +24,12 @@ function formatDate(date: Date) {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 }
 
-// - 아니오/닫기 → router.back() (진입 전 페이지로)
 export default function CustomerQuotationRequestsPage() {
   const router = useRouter();
+  const { account, isLoading: isAuthLoading } = useAuth();
+  // 하드 게이트 아님(리다이렉트 X) — 페이지는 그대로 렌더하고 모달만 얹는다.
+  // 예(등록하러 가기) → 프로필 등록 페이지, 아니오/닫기 → 진입 전 페이지로.
+  const showProfileModal = !isAuthLoading && account?.hasProfile === false;
   const isTabletUp = useMediaQuery(TABLET_QUERY);
   const [selected, setSelected] = useState<(typeof MOVE_TYPES)[number]>("SMALL");
   const [date, setDate] = useState<Date>();
@@ -108,6 +109,15 @@ export default function CustomerQuotationRequestsPage() {
         />
       </div>
       {errorMessage && <Toast message={errorMessage} />}
+      <RequireProfileModal
+        open={showProfileModal}
+        onConfirm={() => router.push("/customer/profile-register")}
+        onCancel={() => {
+          // 직접 진입(북마크·새 탭)이면 돌아갈 곳이 없어 빈 화면이 된다 — 랜딩으로 보낸다
+          if (window.history.length > 1) router.back();
+          else router.replace("/");
+        }}
+      />
       <AddressSelectModal
         size={isTabletUp ? "md" : "sm"}
         open={departure.isOpen}
