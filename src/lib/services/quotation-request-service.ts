@@ -3,6 +3,22 @@ import type { RegionCode, ServiceCode } from "@/components/filter/ChipRegion";
 
 export type QuotationStatus = "PENDING" | "ASSIGNED" | "COMPLETED" | "EXPIRED";
 
+/**
+ * 요청 상태 — 스키마 주석 기준입니다.
+ *
+ *   PENDING   견적 대기 (활성)
+ *   ASSIGNED  기사님 확정, 이사 전 (활성)
+ *   COMPLETED 이사일 경과
+ *   EXPIRED   견적 없이 이사일 경과
+ *
+ * 활성 요청(PENDING·ASSIGNED)은 동시에 1건만 존재하고(`ACTIVE_REQUEST_EXISTS`),
+ * 이사일이 지나면 배치가 COMPLETED/EXPIRED로 바꿉니다. `getActive()`가 쓰는
+ * `?status=pending`도 이 두 값을 함께 조회합니다.
+ *
+ * 단 "내 견적 관리"의 탭 분기 기준은 활성 여부가 아니라 PENDING 하나입니다 —
+ * 확정(ASSIGNED) 이후는 "받았던 견적" 탭이 맡습니다. `useMyQuotes` 주석 참조.
+ */
+
 export interface QuotationRequestAddress {
   postalCode: string;
   region: RegionCode;
@@ -66,6 +82,15 @@ export const quotationRequestService = {
    * 꺼내므로 배열만 받습니다. 이력이 50건을 넘길 일이 생기면 그때 raw 응답으로
    * `totalPages`를 읽어 페이지네이션 UI를 붙이세요.
    */
+  /**
+   * 요청 상세 (#18).
+   *
+   * 견적 상세 화면의 "견적 정보" 블록에 출발지·도착지가 필요한데
+   * `GET /estimates/:id`의 `quotationRequest`에는 주소가 없어 여기서 따로 받습니다.
+   */
+  getById: (quotationRequestId: number) =>
+    cookieFetch<QuotationRequest>(`/quotation-requests/${quotationRequestId}`),
+
   getHistory: (page = 1) =>
     cookieFetch<QuotationRequest[]>(`/quotation-requests?page=${page}&limit=${HISTORY_PAGE_LIMIT}`),
 };

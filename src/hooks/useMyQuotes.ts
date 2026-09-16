@@ -11,24 +11,40 @@ export const myQuotesKeys = {
   requestEstimates: (requestId: number) => ["estimates", "by-request", requestId] as const,
 };
 
-/** 대기 중인 견적 탭 — 활성 요청(SubHeader용)과 거기 달린 견적을 함께 가져옵니다 */
+/**
+ * 대기 중인 견적 탭 — 활성 요청(SubHeader용)과 거기 달린 견적을 함께 가져옵니다.
+ *
+ * 견적을 확정하면 요청이 ASSIGNED가 되는데, 그때는 이 탭이 아니라 "받았던 견적" 탭이
+ * 맡습니다. `CardPendingHistory`가 "견적대기" 배지와 "견적 확정하기" 버튼을 고정으로
+ * 갖고 있어(피그마 `510:43164`에 확정 변형이 없음) 확정된 견적을 표현할 수단이 없기
+ * 때문입니다. 확정 배지는 `CardEstimateHistory`의 `isConfirmed`에만 있습니다.
+ */
 export function usePendingQuotes() {
   const activeRequest = useQuery({
     queryKey: myQuotesKeys.activeRequest,
     queryFn: () => quotationRequestService.getActive(),
   });
 
+  // BE의 `?status=pending`은 PENDING·ASSIGNED를 모두 활성으로 보고 내려줍니다.
+  // 여기서는 아직 확정 전(PENDING)인 요청만 이 탭의 대상입니다.
+  const request = activeRequest.data ?? null;
+  const isAwaitingConfirm = request?.quotationStatus === "PENDING";
+
   const estimates = useQuery({
     queryKey: myQuotesKeys.pendingEstimates,
     queryFn: () => estimateService.getPending({ take: ESTIMATE_LIMIT_PER_REQUEST }),
-    // 활성 요청이 없으면 견적도 있을 수 없어 호출을 아낍니다
-    enabled: Boolean(activeRequest.data),
+    // 확정 전 요청이 없으면 이 탭에 띄울 견적도 없어 호출을 아낍니다
+    enabled: isAwaitingConfirm,
   });
 
   return {
-    request: activeRequest.data ?? null,
+    request: isAwaitingConfirm ? request : null,
     estimates: estimates.data ?? [],
-    isLoading: activeRequest.isPending || (Boolean(activeRequest.data) && estimates.isPending),
+    // 확정을 마친 활성 요청이 있는 상태. 요청이 아예 없는 것과 구분해야 합니다 —
+    // 활성 요청이 있으면 새 요청을 못 하므로(`ACTIVE_REQUEST_EXISTS`)
+    // "견적 요청하러 가기" CTA를 띄우면 막다른 길이 됩니다.
+    hasConfirmedRequest: request !== null && !isAwaitingConfirm,
+    isLoading: activeRequest.isPending || (isAwaitingConfirm && estimates.isPending),
     error: activeRequest.error ?? estimates.error,
   };
 }
@@ -46,7 +62,13 @@ export function usePastQuotes() {
     queryFn: () => quotationRequestService.getHistory(),
   });
 
-  // 활성 요청은 "대기 중인 견적" 탭이 담당하므로 지난 요청만 남깁니다
+  // "대기 중인 견적" 탭이 맡는 건 아직 확정 전(PENDING)인 요청 하나뿐입니다.
+  // 확정된(ASSIGNED) 요청은 여기서 다룹니다 — 확정 배지를 가진 카드가
+  // `CardEstimateHistory`뿐이고, 확정 후에도 사용자가 어떤 견적을 골랐는지
+  // 볼 수 있어야 하기 때문입니다.
+  //
+  // ASSIGNED를 양쪽 모두에서 빼면 확정한 견적이 어느 탭에도 안 나옵니다
+  // (BE `/estimates/pending`이 PENDING만 주므로 대기 탭에서도 사라집니다).
   const pastRequests = (history.data ?? []).filter(
     (request) => request.quotationStatus !== "PENDING"
   );

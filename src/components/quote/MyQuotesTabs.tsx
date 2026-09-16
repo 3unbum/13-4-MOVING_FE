@@ -24,19 +24,37 @@ function QuoteLoading() {
   return <div className="bg-background-background-100 flex flex-1" aria-busy="true" />;
 }
 
+interface MyQuotesTabsProps {
+  /** 서버가 ?tab= 쿼리를 읽어 내려줍니다 */
+  initialTab: QuoteTab;
+}
+
 /**
  * 내 견적 관리 (페이지 8) — 탭 2개.
  *
  * 데이터는 BE #80(견적 응답에 기사님 정보 포함) 위에서 동작합니다.
  * 그 전 응답으로는 카드에 넣을 이름·평점·경력이 없습니다.
  */
-export default function MyQuotesTabs() {
+export default function MyQuotesTabs({ initialTab }: MyQuotesTabsProps) {
   const router = useRouter();
-  const [tab, setTab] = useState<QuoteTab>("pending");
+  const [tab, setTab] = useState<QuoteTab>(initialTab);
 
   const pending = usePendingQuotes();
   const past = usePastQuotes();
 
+  /**
+   * 탭을 URL에도 남깁니다 — 상세에서 뒤로 왔을 때 보던 탭으로 돌아오기 위함입니다.
+   * `replace`라 뒤로가기 기록이 탭 전환마다 쌓이지 않고, `scroll: false`로 전환 시
+   * 스크롤이 맨 위로 튀지 않게 합니다.
+   */
+  const changeTab = (next: QuoteTab) => {
+    setTab(next);
+    router.replace(next === "past" ? "/customer/my-quotes?tab=past" : "/customer/my-quotes", {
+      scroll: false,
+    });
+  };
+
+  // 상세로 갈 때 현재 URL(탭 쿼리 포함)이 히스토리에 남으므로, 뒤로가기하면 그 탭으로 돌아옵니다
   const openDetail = (estimateId: number) => router.push(`/customer/my-quotes/${estimateId}`);
 
   return (
@@ -52,7 +70,7 @@ export default function MyQuotesTabs() {
           id="tab-pending"
           controls="panel-pending"
           active={tab === "pending"}
-          onClick={() => setTab("pending")}
+          onClick={() => changeTab("pending")}
         >
           대기 중인 견적
         </Tab>
@@ -60,7 +78,7 @@ export default function MyQuotesTabs() {
           id="tab-past"
           controls="panel-past"
           active={tab === "past"}
-          onClick={() => setTab("past")}
+          onClick={() => changeTab("past")}
         >
           받았던 견적
         </Tab>
@@ -81,6 +99,7 @@ export default function MyQuotesTabs() {
           ) : (
             <PendingQuotesPanel
               request={pending.request}
+              hasConfirmedRequest={pending.hasConfirmedRequest}
               estimates={pending.estimates}
               onDetailClick={openDetail}
               // TODO: 견적 확정 API(#29) 연동 — 확정 모달 흐름이 정해지면 붙입니다
@@ -103,7 +122,7 @@ export default function MyQuotesTabs() {
           ) : past.isLoading ? (
             <QuoteLoading />
           ) : (
-            <PastQuotesPanel blocks={past.blocks} />
+            <PastQuotesPanel blocks={past.blocks} onDetailClick={openDetail} />
           )}
         </div>
       )}

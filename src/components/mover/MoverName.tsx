@@ -13,6 +13,8 @@ interface MoverNameProps extends HTMLAttributes<HTMLDivElement> {
   showLogo?: boolean;
   /** 로고를 이름 위에 세로로 배치 — 리뷰 카드 sm (피그마 1:12520) */
   stacked?: boolean;
+  /** 텍스트 스타일 보정 — 같은 size라도 화면마다 weight·색이 다른 곳이 있습니다 */
+  textClassName?: string;
 }
 
 // xl은 "내가 작성한 리뷰" lg에서만 씁니다 (피그마 1:12482 — 유일하게 bold)
@@ -30,6 +32,7 @@ export default function MoverName({
   showLogo = true,
   stacked = false,
   className,
+  textClassName,
   ...props
 }: MoverNameProps) {
   return (
@@ -45,7 +48,11 @@ export default function MoverName({
         />
       )}
       <span
-        className={cn("text-black-300 flex items-center gap-1 whitespace-nowrap", SIZE_CLASS[size])}
+        className={cn(
+          "text-black-300 flex items-center gap-1 whitespace-nowrap",
+          SIZE_CLASS[size],
+          textClassName
+        )}
       >
         <span>{nickName}</span>
         <span>기사님</span>
