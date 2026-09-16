@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Button from "@/components/common/Button";
 import InputTextArea from "@/components/common/InputTextarea";
@@ -42,7 +42,6 @@ export default function MoverProfileForm() {
     control,
     register,
     handleSubmit,
-    watch,
     setValue,
     formState: { errors, isSubmitting },
   } = useForm<MoverProfileFormValues>({
@@ -57,8 +56,10 @@ export default function MoverProfileForm() {
     },
   });
 
-  const selectedServices = watch("services");
-  const selectedRegions = watch("regions");
+  // watch()는 리렌더마다 새 함수 참조를 반환해 React Compiler가 메모이제이션을 못 함(lint 경고) —
+  // useWatch는 구독 기반이라 이 문제가 없음 (은범님 리뷰 코멘트)
+  const selectedServices = useWatch({ control, name: "services" });
+  const selectedRegions = useWatch({ control, name: "regions" });
 
   function toggle(field: "services" | "regions", value: string) {
     const current = field === "services" ? selectedServices : selectedRegions;

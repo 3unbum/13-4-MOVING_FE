@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Button from "@/components/common/Button";
 import ProfileImageUpload from "@/components/common/ProfileImageUpload";
@@ -32,7 +32,6 @@ export default function CustomerProfileForm() {
   const {
     control,
     handleSubmit,
-    watch,
     setValue,
     formState: { errors, isSubmitting },
   } = useForm<CustomerProfileFormValues>({
@@ -40,8 +39,10 @@ export default function CustomerProfileForm() {
     defaultValues: { image: undefined, region: undefined, services: [] },
   });
 
-  const selectedServices = watch("services");
-  const selectedRegion = watch("region");
+  // watch()는 리렌더마다 새 함수 참조를 반환해 React Compiler가 메모이제이션을 못 함(lint 경고) —
+  // useWatch는 구독 기반이라 이 문제가 없음 (은범님 리뷰 코멘트)
+  const selectedServices = useWatch({ control, name: "services" });
+  const selectedRegion = useWatch({ control, name: "region" });
 
   function toggleService(value: string) {
     const next = selectedServices.includes(value)
