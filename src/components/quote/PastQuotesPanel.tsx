@@ -17,6 +17,7 @@ export interface PastQuoteBlock {
 
 interface PastQuotesPanelProps {
   blocks: PastQuoteBlock[];
+  onDetailClick?: (estimateId: number) => void;
 }
 
 const FILTER_OPTIONS = [
@@ -58,8 +59,14 @@ function InfoRow({ label, value }: { label: string; value: string }) {
   );
 }
 
-/** 견적서 한 장 — size만 다른 두 벌을 CSS로 전환합니다 (JS 미디어쿼리는 첫 렌더에 깜빡임) */
-function EstimateRow({ estimate }: { estimate: Estimate }) {
+/**
+ * 견적서 한 장 — size만 다른 두 벌을 CSS로 전환합니다 (JS 미디어쿼리는 첫 렌더에 깜빡임).
+ *
+ * 카드 자체가 상세 진입점입니다. `CardEstimateHistory`에는 버튼이 없어서(피그마 `1:11657`)
+ * 카드 전체를 클릭 영역으로 씁니다 — 피그마에 "견적 상세_확정 견적"과
+ * "견적 상세_확정하지 않은 견적" 화면이 따로 있는데, 둘 다 여기서만 도달할 수 있습니다.
+ */
+function EstimateRow({ estimate, onClick }: { estimate: Estimate; onClick: () => void }) {
   const common = {
     category: estimate.quotationRequest.category,
     isTargeted: estimate.isTargeted,
@@ -78,14 +85,21 @@ function EstimateRow({ estimate }: { estimate: Estimate }) {
   };
 
   return (
-    <>
+    // 카드 안에 버튼이 없어 <button>으로 감싸도 중첩 문제가 없습니다.
+    // 기본 버튼 스타일(가운데 정렬 등)을 지우려고 text-left·w-full을 둡니다.
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={`${estimate.mover.nickName} 기사님의 견적 상세 보기`}
+      className="w-full cursor-pointer text-left"
+    >
       <div className="tablet:hidden">
         <CardEstimateHistory size="sm" {...common} />
       </div>
       <div className="tablet:block hidden">
         <CardEstimateHistory size="lg" {...common} />
       </div>
-    </>
+    </button>
   );
 }
 
@@ -95,7 +109,7 @@ function EstimateRow({ estimate }: { estimate: Estimate }) {
  * 대기 중인 견적과 달리 요청 1건이 블록 하나가 되고, 그 안에 견적 목록이 들어갑니다.
  * PC·태블릿은 좌(견적 정보)/우(견적서 목록) 2단, 모바일은 세로 1단입니다.
  */
-export default function PastQuotesPanel({ blocks }: PastQuotesPanelProps) {
+export default function PastQuotesPanel({ blocks, onDetailClick }: PastQuotesPanelProps) {
   // 필터는 요청 블록마다 독립이라 id별로 들고 있습니다
   const [filters, setFilters] = useState<Record<number, string>>({});
 
@@ -158,7 +172,11 @@ export default function PastQuotesPanel({ blocks }: PastQuotesPanelProps) {
 
               <div className="divide-line-100 flex flex-col divide-y">
                 {estimates.map((estimate) => (
-                  <EstimateRow key={estimate.id} estimate={estimate} />
+                  <EstimateRow
+                    key={estimate.id}
+                    estimate={estimate}
+                    onClick={() => onDetailClick?.(estimate.id)}
+                  />
                 ))}
               </div>
             </div>
