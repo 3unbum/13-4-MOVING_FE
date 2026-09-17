@@ -18,6 +18,7 @@ import { profileService } from "@/lib/services/profile-service";
 import type { CustomerAccountResponse } from "@/lib/services/auth-service";
 import { ApiError } from "@/lib/utils/api-error";
 import { cn } from "@/lib/utils/cn";
+import { useAuth } from "@/providers/AuthProvider";
 
 interface CustomerProfileEditFormProps {
   // 서버 컴포넌트(page.tsx)의 requireRole 결과를 그대로 재사용 — /profiles/customer GET과
@@ -44,6 +45,7 @@ function accountToFormValues(account: CustomerAccountResponse): CustomerProfileU
 
 export default function CustomerProfileEditForm({ initialAccount }: CustomerProfileEditFormProps) {
   const router = useRouter();
+  const { refetch } = useAuth();
   const [account, setAccount] = useState<CustomerAccountResponse | null>(initialAccount);
   const [isLoadingAccount, setIsLoadingAccount] = useState(!initialAccount);
   const [loadError, setLoadError] = useState<string>();
@@ -56,7 +58,14 @@ export default function CustomerProfileEditForm({ initialAccount }: CustomerProf
     profileService
       .getCustomer()
       .then((data) => {
-        if (active) setAccount(data);
+        if (!active) return;
+        // 서버 가드(requireProfile)는 requireRole이 fail-open으로 null을 반환하면 건너뛴다 —
+        // 그 구간을 여기서 다시 한 번 막는다. 코드래빗 리뷰(PR #124) 지적사항.
+        if (!data.hasProfile) {
+          router.replace("/customer/profile-register");
+          return;
+        }
+        setAccount(data);
       })
       .catch(() => {
         if (active) setLoadError("계정 정보를 불러오지 못했어요. 새로고침해 주세요");
@@ -67,7 +76,7 @@ export default function CustomerProfileEditForm({ initialAccount }: CustomerProf
     return () => {
       active = false;
     };
-  }, [account]);
+  }, [account, router]);
 
   const formValues = useMemo(() => (account ? accountToFormValues(account) : undefined), [account]);
 
@@ -111,6 +120,9 @@ export default function CustomerProfileEditForm({ initialAccount }: CustomerProf
           newPassword: values.newPassword,
         }),
       });
+      // 수정 자체는 끝났으니 refetch 실패를 수정 실패로 취급하지 않는다 —
+      // 계정 캐시가 못 갱신되면 이후 새로고침 때 맞춰진다. (#123과 동일 패턴, HoneyLatlll 리뷰)
+      await refetch().catch(() => {});
       router.push("/");
     } catch (error) {
       setSubmitError(
