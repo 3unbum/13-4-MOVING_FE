@@ -75,9 +75,10 @@ export default function MoverProfileForm() {
     setSubmitError(undefined);
     try {
       await profileService.registerMover(values);
-      // 등록 자체는 끝났으니 refetch 실패를 등록 실패로 취급하지 않는다 —
-      // 계정 캐시가 못 갱신되면 이후 새로고침 때 맞춰진다. (#123 CustomerProfileForm과 동일 패턴)
-      await refetch().catch(() => {});
+      // refetch 실패는 제출 실패로 취급하지 않되, 로그는 남긴다
+      await refetch().catch((error) => {
+        console.error("프로필 등록 후 계정 정보 갱신에 실패했어요", error);
+      });
       router.push("/mover/requests");
     } catch {
       setSubmitError("프로필 등록에 실패했어요. 잠시 후 다시 시도해주세요");
