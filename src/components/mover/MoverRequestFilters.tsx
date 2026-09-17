@@ -13,8 +13,16 @@ const SORT_OPTIONS = [
   { value: "movingDate", label: "이사 빠른순" },
 ];
 
+/** 이미 있으면 빼고 없으면 넣습니다 — 칩·바텀시트가 같은 규칙을 씁니다 */
+export function toggleCategory(categories: ServiceCode[], service: ServiceCode) {
+  return categories.includes(service)
+    ? categories.filter((item) => item !== service)
+    : [...categories, service];
+}
+
 export interface MoverRequestFilterState {
-  category?: ServiceCode;
+  /** 이사 유형 — 중복 선택 (빈 배열은 "전체") */
+  categories: ServiceCode[];
   isTargeted: boolean;
   isServiceRegion: boolean;
   sort: MoverRequestSort;
@@ -71,9 +79,10 @@ export default function MoverRequestFilters({
           <Chip
             key={service}
             size="md"
-            selected={filters.category === service}
-            // 같은 칩을 다시 누르면 해제 — 피그마에 "전체" 칩이 따로 없습니다
-            onClick={() => patch({ category: filters.category === service ? undefined : service })}
+            selected={filters.categories.includes(service)}
+            // 여러 개를 동시에 켤 수 있고, 켜진 칩을 다시 누르면 꺼집니다
+            // (피그마 `1:10577`에 소형이사·가정이사가 함께 선택된 상태가 있습니다)
+            onClick={() => patch({ categories: toggleCategory(filters.categories, service) })}
           >
             {SERVICE_LABELS[service]}
           </Chip>
@@ -121,7 +130,7 @@ export default function MoverRequestFilters({
             <div className="pc:hidden">
               <FilterButton
                 active={
-                  filters.category !== undefined || filters.isTargeted || filters.isServiceRegion
+                  filters.categories.length > 0 || filters.isTargeted || filters.isServiceRegion
                 }
                 onClick={onOpenFilterModal}
                 aria-label="필터 열기"

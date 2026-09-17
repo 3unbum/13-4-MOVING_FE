@@ -23,6 +23,13 @@ export interface MoverRequest {
   toAddress: string;
   toDetailAddress: string;
   quotationStatus: QuotationStatus;
+  /**
+   * 이 기사님이 지정받은 요청인지 (BE #88).
+   *
+   * 반려는 지정 견적 요청에만 허용돼서(BE가 아니면 403) 버튼 노출 조건으로 쓰고,
+   * 카드·모달의 "지정 견적 요청" 칩도 이 값으로 그립니다.
+   */
+  isTargeted: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -31,8 +38,8 @@ export interface MoverRequest {
 export type MoverRequestSort = "latest" | "movingDate";
 
 export interface MoverRequestListQuery {
-  /** 이사 유형 칩 */
-  category?: ServiceCode;
+  /** 이사 유형 칩 — 중복 선택이라 배열입니다 (빈 배열은 "전체") */
+  categories?: ServiceCode[];
   /** "서비스 가능 지역" 체크박스 */
   isServiceRegion?: boolean;
   /** "지정 견적 요청" 체크박스 */
@@ -67,7 +74,8 @@ export interface RejectRequestPayload {
 function toSearchParams(query: MoverRequestListQuery = {}) {
   const params = new URLSearchParams();
 
-  if (query.category) params.set("category", query.category);
+  // 같은 키를 반복해서 붙입니다 — BE가 `?category=SMALL&category=HOME`을 배열로 받습니다
+  query.categories?.forEach((category) => params.append("category", category));
   // BE가 "true"/"false" 문자열만 받습니다(zod enum). false는 기본값이라 아예 안 보냅니다.
   if (query.isServiceRegion) params.set("isServiceRegion", "true");
   if (query.isTargeted) params.set("isTargeted", "true");

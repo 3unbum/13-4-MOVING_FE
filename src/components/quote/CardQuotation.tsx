@@ -84,12 +84,16 @@ export function CardReceivedRequest({
 }: CardReceivedRequestProps) {
   const isLg = size === "lg";
 
+  // 반려는 지정 견적 요청에만 허용됩니다 — 일반 요청에서 누르면 BE가 403을 던집니다
+  // (`estimate.service.ts` "지정된 견적 요청이 아닙니다"). 눌러도 안 되는 버튼은 안 보입니다.
+  const canReject = rest.isTargeted === true;
+
   // lg는 [반려하기][견적 보내기] 가로, sm은 [견적 보내기][반려하기] 세로 — 순서가 반대입니다
-  const rejectButton = (
+  const rejectButton = canReject ? (
     <Button variant="outlined" size="sm" onClick={onReject}>
       반려하기
     </Button>
-  );
+  ) : null;
   const sendButton = <SendEstimateButton onClick={onSendEstimate} />;
 
   return (

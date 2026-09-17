@@ -23,7 +23,7 @@ function RequestCard({
 }) {
   const common = {
     category: request.category,
-    // 지정 여부는 BE가 목록에 안 실어줍니다 — 필터로만 쓰이고 카드 칩은 아직 미지원
+    isTargeted: request.isTargeted,
     customerName: request.userName,
     from: shortenAddress(request.fromAddress),
     to: shortenAddress(request.toAddress),

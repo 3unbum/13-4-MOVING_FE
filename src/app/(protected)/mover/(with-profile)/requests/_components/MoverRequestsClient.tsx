@@ -8,6 +8,7 @@ import Header from "@/components/common/Header";
 import Toast from "@/components/common/Toast";
 import FilterModal from "@/components/filter/FilterModal";
 import MoverRequestFilters, {
+  toggleCategory,
   type MoverRequestFilterState,
 } from "@/components/mover/MoverRequestFilters";
 import MoverRequestList from "@/components/mover/MoverRequestList";
@@ -23,7 +24,7 @@ const TABLET_QUERY = "(min-width: 744px)";
 const PC_QUERY = "(min-width: 1280px)";
 
 const INITIAL_FILTERS: MoverRequestFilterState = {
-  category: undefined,
+  categories: [],
   isTargeted: false,
   isServiceRegion: false,
   sort: "latest",
@@ -110,7 +111,7 @@ export default function MoverRequestsClient() {
   const headerSize = isPc ? "lg" : isTabletUp ? "md" : "sm";
   const hasActiveFilter =
     debouncedKeyword.trim().length > 0 ||
-    filters.category !== undefined ||
+    filters.categories.length > 0 ||
     filters.isTargeted ||
     filters.isServiceRegion;
 
@@ -201,12 +202,12 @@ export default function MoverRequestsClient() {
         onClose={() => setIsFilterOpen(false)}
         // 태블릿은 견적·반려 모달과 마찬가지로 가운데 뜹니다 (피그마 `1:10385`)
         position={isTabletUp ? "center" : "bottom"}
-        moveType={draftFilters.category}
+        moveTypes={draftFilters.categories}
         onMoveTypeChange={(value) =>
-          // 선택된 칩을 다시 누르면 해제 — 피그마에 "전체" 칩이 없습니다
+          // 여러 개를 켤 수 있고, 켜진 칩을 다시 누르면 꺼집니다
           setDraftFilters((prev) => ({
             ...prev,
-            category: prev.category === value ? undefined : value,
+            categories: toggleCategory(prev.categories, value),
           }))
         }
         isTargetedOnly={draftFilters.isTargeted}
@@ -232,8 +233,7 @@ export default function MoverRequestsClient() {
           // 태블릿은 폭이 모바일과 같은 375지만 가운데 뜹니다 (피그마 x=185, 744 프레임)
           position={isTabletUp ? "center" : "bottom"}
           category={action.request.category}
-          // 지정 견적 여부는 목록 응답에 없습니다 — 칩을 띄울 근거가 없어 끕니다
-          isTargeted={false}
+          isTargeted={action.request.isTargeted}
           customerName={action.request.userName}
           fromAddress={shortenAddress(action.request.fromAddress)}
           toAddress={shortenAddress(action.request.toAddress)}

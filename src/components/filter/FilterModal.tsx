@@ -15,8 +15,14 @@ interface FilterModalProps {
    * (`1:10385` x=185 y=330, 위아래 여백 동일) 호출부가 바꿀 수 있게 열어둡니다.
    */
   position?: "center" | "bottom";
+  /** 단일 선택용 — `moveTypes`를 넘기면 무시됩니다 */
   moveType?: ServiceCode;
   onMoveTypeChange: (value: ServiceCode) => void;
+  /**
+   * 중복 선택용. 넘기면 칩이 여러 개 켜집니다 (피그마 `1:10577`).
+   * 기존 호출부를 깨지 않으려고 단일 선택을 기본으로 두고 선택적으로 받습니다.
+   */
+  moveTypes?: ServiceCode[];
   isTargetedOnly: boolean;
   onTargetedOnlyChange: (value: boolean) => void;
   isServiceAreaOnly: boolean;
@@ -31,6 +37,7 @@ export default function FilterModal({
   position = "bottom",
   moveType,
   onMoveTypeChange,
+  moveTypes,
   isTargetedOnly,
   onTargetedOnlyChange,
   isServiceAreaOnly,
@@ -65,7 +72,7 @@ export default function FilterModal({
               <Chip
                 key={service}
                 size="sm"
-                selected={moveType === service}
+                selected={moveTypes ? moveTypes.includes(service) : moveType === service}
                 onClick={() => onMoveTypeChange(service)}
               >
                 {SERVICE_LABELS[service]}
