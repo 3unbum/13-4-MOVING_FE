@@ -1,4 +1,5 @@
 import { cookieFetch } from "@/lib/utils/api-client";
+import type { MoverAccountResponse } from "@/lib/services/auth-service";
 import type {
   CustomerProfileFormValues,
   MoverProfileFormValues,
@@ -28,6 +29,24 @@ export interface MoverProfileResponse {
   regions: string[];
 }
 
+// PATCH /profiles/mover 요청 바디 — BE moverProfileUpdateSchema와 동일(전부 optional). "프로필 수정"
+// 탭(별명/경력/한줄소개/상세설명/서비스/지역)과 "기본정보 수정" 탭(이름/전화번호/비밀번호)이 같은
+// 엔드포인트를 각자 다른 필드 조합으로 호출한다(#73). newPasswordConfirm은 FE 검증 전용이라 여기
+// 타입엔 없음.
+export interface MoverProfileUpdatePayload {
+  image?: string;
+  nickName?: string;
+  career?: number;
+  bio?: string;
+  description?: string;
+  services?: string[];
+  regions?: string[];
+  name?: string;
+  phoneNumber?: string;
+  currentPassword?: string;
+  newPassword?: string;
+}
+
 export const profileService = {
   // multipart/form-data라 FormData로 보낸다 — api-client가 FormData면 Content-Type을 안 건드려준다
   uploadImage: (file: File) => {
@@ -48,6 +67,17 @@ export const profileService = {
   registerMover: (payload: MoverProfileFormValues) =>
     cookieFetch<MoverProfileResponse>("/profiles/mover", {
       method: "POST",
+      body: JSON.stringify(payload),
+    }),
+
+  // GET /profiles/mover — /auth/me와 응답 타입이 동일(MoverAccountResponse)한 계정+프로필 통합 조회.
+  // 마이페이지에서 서버 컴포넌트의 requireRole 결과(account)가 null인 예외 상황(accessToken 만료
+  // 직후 fail-open 구간, guards.ts 주석 참고)에 클라이언트에서 다시 조회하는 용도.
+  getMover: () => cookieFetch<MoverAccountResponse>("/profiles/mover"),
+
+  updateMover: (payload: MoverProfileUpdatePayload) =>
+    cookieFetch<MoverAccountResponse>("/profiles/mover", {
+      method: "PATCH",
       body: JSON.stringify(payload),
     }),
 };
