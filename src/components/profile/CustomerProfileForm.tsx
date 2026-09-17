@@ -15,6 +15,7 @@ import {
 } from "@/lib/schemas/profile-schema";
 import { profileService } from "@/lib/services/profile-service";
 import { cn } from "@/lib/utils/cn";
+import { useAuth } from "@/providers/AuthProvider";
 
 // 피그마 "프로필 등록_일반유저" 대응 — image(선택) / services(다중) / region(단일).
 // region이 단일 선택인 건 BE customerProfileCreateSchema 계약 때문 — 칩 UI는 services와
@@ -24,6 +25,7 @@ import { cn } from "@/lib/utils/cn";
 // 그 묶음 전체와 버튼 사이는 별도로 32px(pc 56px) — 그래서 필드 묶음과 버튼을 감싸는 div를 분리함.
 export default function CustomerProfileForm() {
   const router = useRouter();
+  const { refetch } = useAuth();
   const [submitError, setSubmitError] = useState<string | undefined>();
   // ProfileImageUpload가 서버 업로드 중일 때는 제출을 막아야 함 — onChange가 업로드 완료 후에만
   // 호출되므로, 업로드 중 제출하면 새 이미지 URL이 반영되기 전에 폼이 전송될 수 있다
@@ -55,6 +57,9 @@ export default function CustomerProfileForm() {
     setSubmitError(undefined);
     try {
       await profileService.registerCustomer(values);
+      // 등록 자체는 끝났으니 refetch 실패를 등록 실패로 취급하지 않는다 —
+      // 계정 캐시가 못 갱신되면 이후 새로고침 때 맞춰진다.
+      await refetch().catch(() => {});
       router.push("/");
     } catch {
       setSubmitError("프로필 등록에 실패했어요. 잠시 후 다시 시도해주세요");
