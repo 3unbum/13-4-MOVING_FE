@@ -29,7 +29,10 @@ export default function ProfileHeader({ mover }: ProfileHeaderProps) {
           </div>
           <div className="flex items-center gap-1">
             <Image src={likeMdActive} alt="" className="size-6" />
-            <span className="text-14 tablet:text-16 text-gray-gray-500">{mover.favoriteCount}</span>
+            <span className="text-14 tablet:text-16 text-gray-gray-500">
+              <span className="sr-only">찜 </span>
+              {mover.favoriteCount}
+            </span>
           </div>
         </div>
       </div>
