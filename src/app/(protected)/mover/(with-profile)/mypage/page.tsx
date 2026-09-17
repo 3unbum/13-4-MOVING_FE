@@ -44,8 +44,8 @@ export default function MoverMyPage() {
         </p>
       )}
 
-      {!isLoading && profileQuery.data && moverId != null && (
-        <MoverMyPageContent mover={profileQuery.data} moverId={moverId} />
+      {!isLoading && profileQuery.data && (
+        <MoverMyPageContent mover={profileQuery.data} moverId={profileQuery.data.id} />
       )}
     </div>
   );
