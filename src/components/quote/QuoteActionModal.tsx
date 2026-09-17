@@ -107,8 +107,15 @@ export default function QuoteActionModal({
     >
       <ModalHeader id={titleId} title={TITLE[variant]} size={size} onClose={onClose} />
 
-      <div className="flex min-h-0 w-full flex-1 flex-col gap-6.5 overflow-y-auto">
-        <div className="flex w-full flex-col items-start gap-5">
+      {/* 본문·상단블록 gap은 variant와 무관하게 size로만 갈립니다
+          (피그마 PC 32/20 · 모바일 20/16 — 견적·반려 4개 노드 모두 동일) */}
+      <div
+        className={cn(
+          "flex min-h-0 w-full flex-1 flex-col overflow-y-auto",
+          isMd ? "gap-8" : "gap-5"
+        )}
+      >
+        <div className={cn("flex w-full flex-col items-start", isMd ? "gap-5" : "gap-4")}>
           <div className="flex items-center gap-2">
             <MoveTypeChip variant={category} size={isMd ? "md" : "sm"} />
             {isTargeted && <MoveTypeChip variant="TARGETED" size={isMd ? "md" : "sm"} />}
