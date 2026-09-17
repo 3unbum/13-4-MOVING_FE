@@ -89,7 +89,9 @@ export default function MoverProfileForm() {
             />
           </div>
 
-          <div className="bg-line-100 h-px w-full" />
+          {/* 프로필이미지-별명 사이 구분선은 데스크톱에만 있음(피그마 Desktop) — 태블릿/모바일은
+              바로 이어짐(피그마 Tablet/Mobile, 이 구분선 없이 20px 간격만 있음) */}
+          <div className="bg-line-100 pc:block hidden h-px w-full" />
 
           <div className="flex flex-col gap-4">
             <FieldLabel>별명</FieldLabel>
