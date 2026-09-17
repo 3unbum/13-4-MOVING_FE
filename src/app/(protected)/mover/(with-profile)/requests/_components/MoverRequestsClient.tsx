@@ -3,14 +3,19 @@
 import { useState } from "react";
 import Loading from "@/app/loading";
 import Header from "@/components/common/Header";
+import Toast from "@/components/common/Toast";
 import FilterModal from "@/components/filter/FilterModal";
 import MoverRequestFilters, {
   type MoverRequestFilterState,
 } from "@/components/mover/MoverRequestFilters";
 import MoverRequestList from "@/components/mover/MoverRequestList";
+import QuoteActionModal from "@/components/quote/QuoteActionModal";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
-import { useMoverRequests } from "@/hooks/useMoverRequests";
+import { useMoverRequestAction, useMoverRequests } from "@/hooks/useMoverRequests";
+import type { MoverRequest } from "@/lib/services/mover-request-service";
+import { shortenAddress } from "@/lib/utils/address";
+import { formatMovingDate } from "@/lib/utils/date";
 
 const TABLET_QUERY = "(min-width: 744px)";
 const PC_QUERY = "(min-width: 1280px)";
@@ -48,10 +53,28 @@ export default function MoverRequestsClient() {
   // 바텀시트는 "조회하기"를 눌러야 반영돼서, 닫기 전까지는 임시 상태로 들고 있습니다
   const [draftFilters, setDraftFilters] = useState<MoverRequestFilterState>(INITIAL_FILTERS);
 
+  // 열려 있는 모달 — 어떤 요청에 대한 것인지 함께 들고 있어야 제출 때 id를 씁니다
+  const [action, setAction] = useState<{
+    variant: "send" | "reject";
+    request: MoverRequest;
+  } | null>(null);
+  const [price, setPrice] = useState("");
+  const [comment, setComment] = useState("");
+  const [toast, setToast] = useState<string | null>(null);
+
   const { requests, isPending, error } = useMoverRequests({
     ...filters,
     search: debouncedKeyword.trim() || undefined,
   });
+
+  const showToast = (message: string) => {
+    setToast(message);
+    setTimeout(() => setToast(null), 3000);
+  };
+
+  const { sendEstimate, reject } = useMoverRequestAction(() =>
+    showToast("처리에 실패했어요. 잠시 후 다시 시도해 주세요.")
+  );
 
   const headerSize = isPc ? "lg" : isTabletUp ? "md" : "sm";
 
@@ -63,6 +86,29 @@ export default function MoverRequestsClient() {
   const applyDraft = () => {
     setFilters(draftFilters);
     setIsFilterOpen(false);
+  };
+
+  const openAction = (variant: "send" | "reject", request: MoverRequest) => {
+    // 이전 입력이 남아 있으면 다른 요청에 그대로 보내질 수 있어 매번 비웁니다
+    setPrice("");
+    setComment("");
+    setAction({ variant, request });
+  };
+
+  const submitAction = () => {
+    if (!action) return;
+    const { variant, request } = action;
+
+    const onSuccess = () => {
+      setAction(null);
+      showToast(variant === "send" ? "견적을 보냈어요." : "요청을 반려했어요.");
+    };
+
+    if (variant === "send") {
+      sendEstimate.mutate({ requestId: request.id, price: Number(price), comment }, { onSuccess });
+    } else {
+      reject.mutate({ requestId: request.id, comment }, { onSuccess });
+    }
   };
 
   return (
@@ -90,7 +136,11 @@ export default function MoverRequestsClient() {
             ) : requests.length === 0 ? (
               <Message>조건에 맞는 요청이 없어요.</Message>
             ) : (
-              <MoverRequestList requests={requests} />
+              <MoverRequestList
+                requests={requests}
+                onSendEstimate={(request) => openAction("send", request)}
+                onReject={(request) => openAction("reject", request)}
+              />
             )}
           </div>
         </div>
@@ -118,6 +168,36 @@ export default function MoverRequestsClient() {
         }
         onApply={applyDraft}
       />
+
+      {/* 견적 보내기 · 반려 모달.
+          피그마상 모달 폭은 PC 608 / 태블릿·모바일 375라 태블릿이 `sm`을 씁니다
+          (`1:10654` / `1:10608` / `1:10716`). 필터 바텀시트와 같은 기준입니다. */}
+      {action && (
+        <QuoteActionModal
+          open
+          onClose={() => setAction(null)}
+          variant={action.variant}
+          size={isPc ? "md" : "sm"}
+          // 태블릿은 폭이 모바일과 같은 375지만 가운데 뜹니다 (피그마 x=185, 744 프레임)
+          position={isTabletUp ? "center" : "bottom"}
+          category={action.request.category}
+          // 지정 견적 여부는 목록 응답에 없습니다 — 칩을 띄울 근거가 없어 끕니다
+          isTargeted={false}
+          customerName={action.request.userName}
+          fromAddress={shortenAddress(action.request.fromAddress)}
+          toAddress={shortenAddress(action.request.toAddress)}
+          movingDate={formatMovingDate(action.request.movingDate)}
+          price={price}
+          onPriceChange={setPrice}
+          comment={comment}
+          onCommentChange={setComment}
+          reason={comment}
+          onReasonChange={setComment}
+          onSubmit={submitAction}
+        />
+      )}
+
+      {toast && <Toast message={toast} size={isPc ? "md" : "sm"} />}
     </div>
   );
 }
