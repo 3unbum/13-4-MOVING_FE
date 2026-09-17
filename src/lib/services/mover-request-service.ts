@@ -39,6 +39,8 @@ export interface MoverRequestListQuery {
   isTargeted?: boolean;
   /** `latest` 최근 요청순(기본) / `movingDate` 이사 빠른순 */
   sort?: MoverRequestSort;
+  /** 고객 이름 부분 검색 — BE가 빈 문자열을 "검색 안 함"으로 처리합니다 */
+  search?: string;
   cursor?: number;
   take?: number;
 }
@@ -70,6 +72,7 @@ function toSearchParams(query: MoverRequestListQuery = {}) {
   if (query.isServiceRegion) params.set("isServiceRegion", "true");
   if (query.isTargeted) params.set("isTargeted", "true");
   if (query.sort) params.set("sort", query.sort);
+  if (query.search) params.set("search", query.search);
   if (query.cursor !== undefined) params.set("cursor", String(query.cursor));
   if (query.take !== undefined) params.set("take", String(query.take));
 
