@@ -34,6 +34,8 @@ interface GnbProps {
   /** 로그인 시 역할에 따라 메뉴 분기 (customer: 3메뉴, mover: 2메뉴) */
   role?: GnbRole;
   userName?: string;
+  /** /auth/me의 image — 없으면 기본 아이콘 */
+  profileImage?: string | null;
   /** 알림 패널에 표시할 목록 — 비어 있으면 헤더만 노출 */
   notifications?: GnbNotification[];
   /** 프로필 메뉴 항목 — 미지정 시 role별 기본값 */
@@ -55,6 +57,7 @@ export default function Gnb({
   isLoggedIn = false,
   role = "customer",
   userName = "",
+  profileImage = null,
   notifications = [],
   profileOptions,
   className,
@@ -154,7 +157,7 @@ export default function Gnb({
                 onClick={() => togglePanel("profile")}
                 className="pc:hidden size-6"
               >
-                <Image src={profileMdDefault} alt="" width={24} height={24} className="size-6" />
+                <GnbProfileAvatar src={profileImage} size="sm" />
               </button>
 
               <button
@@ -164,7 +167,7 @@ export default function Gnb({
                 onClick={() => togglePanel("profile")}
                 className="pc:flex hidden items-center gap-4"
               >
-                <Image src={profileLgDefault} alt="" width={36} height={36} className="size-9" />
+                <GnbProfileAvatar src={profileImage} size="lg" />
                 {userName ? (
                   <span className="text-18 text-black-500 font-medium whitespace-nowrap">
                     {userName}
@@ -282,6 +285,33 @@ export default function Gnb({
         }
       />
     </>
+  );
+}
+
+function GnbProfileAvatar({ src, size }: { src?: string | null; size: "sm" | "lg" }) {
+  const isLg = size === "lg";
+
+  if (src) {
+    return (
+      <span
+        className={cn(
+          "relative block shrink-0 overflow-hidden rounded-full",
+          isLg ? "size-9" : "size-6"
+        )}
+      >
+        <Image src={src} alt="" fill sizes={isLg ? "36px" : "24px"} className="object-cover" />
+      </span>
+    );
+  }
+
+  return (
+    <Image
+      src={isLg ? profileLgDefault : profileMdDefault}
+      alt=""
+      width={isLg ? 36 : 24}
+      height={isLg ? 36 : 24}
+      className={isLg ? "size-9" : "size-6"}
+    />
   );
 }
 
