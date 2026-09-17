@@ -126,9 +126,10 @@ export default function CustomerProfileEditForm({ initialAccount }: CustomerProf
           newPassword: values.newPassword,
         }),
       });
-      // 수정 자체는 끝났으니 refetch 실패를 수정 실패로 취급하지 않는다 —
-      // 계정 캐시가 못 갱신되면 이후 새로고침 때 맞춰진다. (#123과 동일 패턴, HoneyLatlll 리뷰)
-      await refetch().catch(() => {});
+      // refetch 실패는 제출 실패로 취급하지 않되, 로그는 남긴다
+      await refetch().catch((error) => {
+        console.error("프로필 수정 후 계정 정보 갱신에 실패했어요", error);
+      });
       router.push("/");
     } catch (error) {
       setSubmitError(
