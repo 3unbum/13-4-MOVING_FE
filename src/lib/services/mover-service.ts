@@ -1,4 +1,5 @@
 import { ApiError } from "@/lib/utils/api-error";
+import { defaultFetch } from "@/lib/utils/api-client";
 
 /** BE `mover.type.ts` MoverListSort와 동일 */
 export type MoverListSort = "review" | "rating" | "career" | "confirmed";
@@ -41,6 +42,31 @@ export interface GetMoverListParams {
   limit?: number;
 }
 
+export interface MoverReviewItem {
+  id: number;
+  rating: number;
+  comment: string;
+  createdAt: string;
+  customerName: string;
+}
+
+/** GET /movers/:id/reviews — BE는 page(1-base). page/totalPages가 루트에 있어 json.data만 쓰면 잘린다. */
+export interface MoverReviewsResult {
+  data: MoverReviewItem[];
+  page: number;
+  totalPages: number;
+  totalCount: number;
+}
+
+export interface MoverRatingDistribution {
+  1: number;
+  2: number;
+  3: number;
+  4: number;
+  5: number;
+  totalCount: number;
+}
+
 /** 쿼리 스트링 조립 — undefined/빈 값은 보내지 않음 */
 function buildMoverListPath(params: GetMoverListParams): string {
   const searchParams = new URLSearchParams();
@@ -68,8 +94,8 @@ function buildMoverListPath(params: GetMoverListParams): string {
   return query ? `/movers?${query}` : "/movers";
 }
 
-/** 공개 API — 쿠키 없이 호출 (비회원도 목록 조회 가능) */
-async function fetchMoverListRaw(path: string): Promise<MoverListResponse> {
+/** 공개 API — `{ data }` 래퍼가 없는 응답용 */
+async function fetchPublicJson<T>(path: string): Promise<T> {
   const res = await fetch(`/api${path}`, {
     credentials: "omit",
     headers: { "Content-Type": "application/json" },
@@ -87,9 +113,14 @@ async function fetchMoverListRaw(path: string): Promise<MoverListResponse> {
       message: raw?.message ?? "요청에 실패했습니다",
     });
   }
-  return json as MoverListResponse;
+  return json as T;
 }
 
 export const moverService = {
-  getList: (params: GetMoverListParams) => fetchMoverListRaw(buildMoverListPath(params)),
+  getList: (params: GetMoverListParams) =>
+    fetchPublicJson<MoverListResponse>(buildMoverListPath(params)),
+  getReviews: (moverId: number, page = 1, limit = 5) =>
+    fetchPublicJson<MoverReviewsResult>(`/movers/${moverId}/reviews?page=${page}&limit=${limit}`),
+  getReviewDistribution: (moverId: number) =>
+    defaultFetch<MoverRatingDistribution>(`/movers/${moverId}/reviews/distribution`),
 };

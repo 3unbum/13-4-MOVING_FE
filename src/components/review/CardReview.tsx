@@ -46,7 +46,7 @@ export default function CardReview({
   return (
     <article
       className={cn(
-        "flex w-full flex-col items-start bg-white",
+        "flex w-full flex-col items-start",
         isLg ? "gap-6 py-6" : "gap-4 py-5",
         className
       )}
@@ -64,7 +64,9 @@ export default function CardReview({
         <RatingStars rating={rating} />
       </div>
 
-      <p className={cn("text-black-500 w-full", isLg ? "text-18" : "text-14")}>{content}</p>
+      <p className={cn("text-black-500 w-full whitespace-pre-wrap", isLg ? "text-18" : "text-14")}>
+        {content}
+      </p>
     </article>
   );
 }
