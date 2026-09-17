@@ -21,6 +21,8 @@ export const moverQueryKeys = {
   all: ["movers"] as const,
   lists: () => [...moverQueryKeys.all, "list"] as const,
   list: (filters: MoverListFilters) => [...moverQueryKeys.lists(), filters] as const,
+  details: () => [...moverQueryKeys.all, "detail"] as const,
+  detail: (moverId: number) => [...moverQueryKeys.details(), moverId] as const,
   reviews: (moverId: number) => [...moverQueryKeys.all, "reviews", moverId] as const,
   reviewList: (moverId: number, page: number) =>
     [...moverQueryKeys.reviews(moverId), "list", page] as const,

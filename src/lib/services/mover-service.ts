@@ -1,5 +1,5 @@
+import { cookieFetch, defaultFetch } from "@/lib/utils/api-client";
 import { ApiError } from "@/lib/utils/api-error";
-import { defaultFetch } from "@/lib/utils/api-client";
 
 /** BE `mover.type.ts` MoverListSort와 동일 */
 export type MoverListSort = "review" | "rating" | "career" | "confirmed";
@@ -116,11 +116,36 @@ async function fetchPublicJson<T>(path: string): Promise<T> {
   return json as T;
 }
 
+/** GET /movers/:id — BE `MoverDetailResponse`. 로그인 CUSTOMER면 isFavorited·isTargeted 포함 */
+export interface MoverDetail {
+  id: number;
+  nickName: string;
+  image: string | null;
+  career: number;
+  bio: string;
+  description: string;
+  avgRating: number;
+  reviewCount: number;
+  confirmedCount: number;
+  favoriteCount: number;
+  /** 한글 라벨 (예: 소형이사) */
+  services: string[];
+  /** 한글 라벨 (예: 서울) */
+  regions: string[];
+  isFavorited?: boolean;
+  isTargeted?: boolean;
+}
+
 export const moverService = {
   getList: (params: GetMoverListParams) =>
     fetchPublicJson<MoverListResponse>(buildMoverListPath(params)),
+
+  /** optionalAuth — 쿠키 있으면 CUSTOMER 전용 필드 포함 */
+  getById: (moverId: number) => cookieFetch<MoverDetail>(`/movers/${moverId}`),
+
   getReviews: (moverId: number, page = 1, limit = 5) =>
     fetchPublicJson<MoverReviewsResult>(`/movers/${moverId}/reviews?page=${page}&limit=${limit}`),
+
   getReviewDistribution: (moverId: number) =>
     defaultFetch<MoverRatingDistribution>(`/movers/${moverId}/reviews/distribution`),
 };
