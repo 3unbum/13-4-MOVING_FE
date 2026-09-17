@@ -179,14 +179,7 @@ function ChipGroup({ title, children }: { title: string; children: ReactNode }) 
 /** 프로필 아바타 — 로그인 프레임 기준. Mobile 64 / Tablet 100 / PC 134, radius 12 */
 export function MoverDetailAvatar({ image, nickName }: { image: string | null; nickName: string }) {
   return (
-    <div
-      className={cn(
-        "relative z-10",
-        "-mt-10.5 ml-5",
-        "tablet:-mt-[77px] tablet:ml-18",
-        "pc:-mt-[103px] pc:ml-[359px]"
-      )}
-    >
+    <div className={cn("relative z-10", "-mt-10.5", "tablet:-mt-[77px]", "pc:-mt-[103px]")}>
       <ProfileAvatar src={image} alt={nickName} size="64" className="tablet:hidden" />
       <ProfileAvatar
         src={image}

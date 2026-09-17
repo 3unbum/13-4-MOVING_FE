@@ -210,53 +210,52 @@ export default function MoverDetailClient() {
         />
       </div>
 
-      <div className="relative mx-auto w-full max-w-[1920px]">
-        <MoverDetailAvatar image={mover.image} nickName={mover.nickName} />
+      <div className="tablet:px-18 pc:px-0 flex w-full flex-col items-center px-5">
+        {/* 내부는 피그마 고정폭. 창 크기 변화는 좌우 여백만. 리뷰 페이지와 동일 패턴 */}
+        <div className="tablet:max-w-[600px] pc:max-w-[1202px] pc:w-[1202px] w-full">
+          <MoverDetailAvatar image={mover.image} nickName={mover.nickName} />
 
-        <div
-          className={cn(
-            "px-5 pt-4",
-            "tablet:px-18 tablet:pt-6",
-            "pc:flex pc:items-start pc:gap-29 pc:px-[359px] pc:pt-8"
-          )}
-        >
-          <div className="pc:w-191.5 flex min-w-0 flex-1 flex-col gap-10">
-            <MoverDetailProfile
-              mover={mover}
-              favoriteCount={favoriteCount}
-              isFavorited={isFavorited}
-            />
+          <div
+            className={cn("pt-4", "tablet:pt-6", "pc:flex pc:items-start pc:gap-[116px] pc:pt-8")}
+          >
+            <div className="pc:w-[766px] pc:shrink-0 flex w-full min-w-0 flex-col gap-10">
+              <MoverDetailProfile
+                mover={mover}
+                favoriteCount={favoriteCount}
+                isFavorited={isFavorited}
+              />
 
-            <div className="pc:hidden border-line-100 border-t pt-8">
+              <div className="pc:hidden border-line-100 border-t pt-8">
+                <MoverDetailShare
+                  size="xs"
+                  onCopyLink={copyLink}
+                  onShareKakao={shareToKakao}
+                  onShareFacebook={shareToFacebook}
+                />
+              </div>
+
+              <div className="border-line-100 border-t pt-10">
+                {/* TODO(리뷰 담당): 여기에 리뷰 영역(요약·목록·페이지네이션)을 삽입하세요 */}
+              </div>
+            </div>
+
+            <aside className="pc:flex hidden w-80 shrink-0 flex-col gap-17.5">
+              <MoverDetailDesktopCta
+                nickName={mover.nickName}
+                isFavorited={isFavorited}
+                isTargeted={isTargeted}
+                isRequestPending={isRequestPending}
+                onRequestQuote={handleRequestQuote}
+                onToggleFavorite={handleToggleFavorite}
+              />
               <MoverDetailShare
-                size="xs"
+                size="md"
                 onCopyLink={copyLink}
                 onShareKakao={shareToKakao}
                 onShareFacebook={shareToFacebook}
               />
-            </div>
-
-            <div className="border-line-100 border-t pt-10">
-              {/* TODO(리뷰 담당): 여기에 리뷰 영역(요약·목록·페이지네이션)을 삽입하세요 */}
-            </div>
+            </aside>
           </div>
-
-          <aside className="pc:flex hidden w-80 shrink-0 flex-col gap-17.5">
-            <MoverDetailDesktopCta
-              nickName={mover.nickName}
-              isFavorited={isFavorited}
-              isTargeted={isTargeted}
-              isRequestPending={isRequestPending}
-              onRequestQuote={handleRequestQuote}
-              onToggleFavorite={handleToggleFavorite}
-            />
-            <MoverDetailShare
-              size="md"
-              onCopyLink={copyLink}
-              onShareKakao={shareToKakao}
-              onShareFacebook={shareToFacebook}
-            />
-          </aside>
         </div>
       </div>
 
