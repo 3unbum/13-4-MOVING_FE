@@ -218,7 +218,7 @@ export default function MoverDetailClient() {
           <div
             className={cn("pt-4", "tablet:pt-6", "pc:flex pc:items-start pc:gap-[116px] pc:pt-8")}
           >
-            <div className="pc:w-[766px] pc:shrink-0 flex w-full min-w-0 flex-col gap-10">
+            <div className="pc:w-[766px] pc:shrink-0 flex w-full min-w-0 flex-col gap-8">
               <MoverDetailProfile
                 mover={mover}
                 favoriteCount={favoriteCount}

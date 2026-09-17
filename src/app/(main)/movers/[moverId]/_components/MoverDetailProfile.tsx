@@ -39,7 +39,7 @@ export default function MoverDetailProfile({
   const categories = mover.services.map(toServiceCode);
 
   return (
-    <section className="flex w-full flex-col gap-10">
+    <section className="flex w-full flex-col gap-8">
       {/* 소개 블록 ↔ 통계 31px ≈ gap-[31px] */}
       <div className="flex w-full flex-col gap-[31px]">
         <div className="flex flex-col gap-5">
@@ -47,7 +47,7 @@ export default function MoverDetailProfile({
             <div className="flex flex-wrap items-center gap-2">
               {categories.map((category) => (
                 <span key={category}>
-                  <MoveTypeChip variant={category} size="sm" className="tablet:hidden" />
+                  <MoveTypeChip variant={category} size="sm" className="tablet:hidden leading-6" />
                   <MoveTypeChip
                     variant={category}
                     size="md"
