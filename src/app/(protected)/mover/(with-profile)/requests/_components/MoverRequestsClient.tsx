@@ -128,7 +128,9 @@ export default function MoverRequestsClient() {
             onOpenFilterModal={openFilterModal}
           />
 
-          <div className="tablet:mt-8 pc:mt-7 mt-4 flex flex-1 flex-col">
+          {/* 카드 위 간격 — 피그마 PC 24 / 태블릿 30 / 모바일 26.
+              공용 Sort가 피그마(32)보다 8px 높아 그만큼 뺀 값입니다. */}
+          <div className="tablet:mt-3 pc:mt-8 mt-2 flex flex-1 flex-col">
             {error ? (
               <Message>요청을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.</Message>
             ) : isPending ? (

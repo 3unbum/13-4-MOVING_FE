@@ -80,46 +80,53 @@ export default function MoverRequestFilters({
         ))}
       </div>
 
-      <p className="text-14 text-black-black-400 pc:text-16 pc:mt-10 mt-4 font-medium">
-        전체 <span className="text-orange-400">{totalCount}건</span>
-      </p>
+      {/* 태블릿·모바일은 "전체 N건"과 정렬이 한 줄입니다 (피그마 `Frame 2610421`, h=32).
+          PC만 "전체 N건" 아래에 체크박스·정렬 줄이 따로 옵니다.
+          위 간격은 피그마 기준 모바일 16 / 태블릿 28 / PC는 칩 아래 40. */}
+      {/* 공용 Sort가 피그마(32)보다 8px 높은데 items-center로 두면 "전체 N건"이
+          그 절반만큼 내려갑니다 — 피그마는 둘 다 같은 y에서 시작합니다 */}
+      <div className="tablet:mt-7 pc:mt-10 pc:block mt-4 flex w-full items-start justify-between">
+        <p className="text-14 text-black-black-400 pc:text-16 font-medium">
+          전체 <span className="text-orange-400">{totalCount}건</span>
+        </p>
 
-      <div className="pc:mt-3 mt-1 flex w-full items-center justify-between">
-        {/* 체크박스 2종 — PC만 */}
-        <div className="pc:flex hidden items-center gap-9">
-          <label className="group text-16 text-black-black-400 flex cursor-pointer items-center gap-2 font-medium">
-            <CheckboxButton
-              checked={filters.isTargeted}
-              onChange={(e) => patch({ isTargeted: e.target.checked })}
-            />
-            지정 견적 요청
-          </label>
-          <label className="group text-16 text-black-black-400 flex cursor-pointer items-center gap-2 font-medium">
-            <CheckboxButton
-              checked={filters.isServiceRegion}
-              onChange={(e) => patch({ isServiceRegion: e.target.checked })}
-            />
-            서비스 가능 지역
-          </label>
-        </div>
+        <div className="pc:mt-3 pc:w-full flex items-center justify-between">
+          {/* 체크박스 2종 — PC만 */}
+          <div className="pc:flex hidden items-center gap-9">
+            <label className="group text-16 text-black-black-400 flex cursor-pointer items-center gap-2 font-medium">
+              <CheckboxButton
+                checked={filters.isTargeted}
+                onChange={(e) => patch({ isTargeted: e.target.checked })}
+              />
+              지정 견적 요청
+            </label>
+            <label className="group text-16 text-black-black-400 flex cursor-pointer items-center gap-2 font-medium">
+              <CheckboxButton
+                checked={filters.isServiceRegion}
+                onChange={(e) => patch({ isServiceRegion: e.target.checked })}
+              />
+              서비스 가능 지역
+            </label>
+          </div>
 
-        {/* 태블릿·모바일은 정렬 옆에 필터 버튼이 붙습니다 */}
-        <div className="pc:ml-auto flex items-center gap-1">
-          <Sort
-            size="md"
-            label="정렬"
-            options={SORT_OPTIONS}
-            value={filters.sort}
-            onChange={(value) => patch({ sort: value as MoverRequestSort })}
-          />
-          <div className="pc:hidden">
-            <FilterButton
-              active={
-                filters.category !== undefined || filters.isTargeted || filters.isServiceRegion
-              }
-              onClick={onOpenFilterModal}
-              aria-label="필터 열기"
+          {/* 태블릿·모바일은 정렬 옆에 필터 버튼이 붙습니다 */}
+          <div className="pc:ml-auto flex items-center gap-1">
+            <Sort
+              size="md"
+              label="정렬"
+              options={SORT_OPTIONS}
+              value={filters.sort}
+              onChange={(value) => patch({ sort: value as MoverRequestSort })}
             />
+            <div className="pc:hidden">
+              <FilterButton
+                active={
+                  filters.category !== undefined || filters.isTargeted || filters.isServiceRegion
+                }
+                onClick={onOpenFilterModal}
+                aria-label="필터 열기"
+              />
+            </div>
           </div>
         </div>
       </div>
