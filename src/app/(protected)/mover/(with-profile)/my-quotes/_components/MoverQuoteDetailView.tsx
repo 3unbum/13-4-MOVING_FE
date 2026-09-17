@@ -4,7 +4,10 @@ import MoveTypeChip from "@/components/filter/ChipMoveType";
 import QuoteShare from "@/components/quote/QuoteShare";
 import type { MoverEstimate } from "@/lib/services/mover-estimate-service";
 import { SERVICE_LABELS } from "@/components/filter/ChipRegion";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { formatRequestDate, formatUsageDate } from "@/lib/utils/date";
+
+const PC_QUERY = "(min-width: 1280px)";
 
 interface MoverQuoteDetailViewProps {
   estimate: MoverEstimate;
@@ -21,11 +24,15 @@ interface MoverQuoteDetailViewProps {
 function InfoRow({ label, value }: { label: string; value: string }) {
   return (
     // 라벨 90 + 사이 23 = 값이 113에서 시작합니다 (피그마 라벨 x=0, 값 x=113)
-    <div className="flex items-start gap-5.75">
-      <span className="text-14 pc:text-18 text-gray-gray-400 w-22.5 shrink-0 font-normal">
+    <div className="flex items-center gap-5.75">
+      <span className="text-16 pc:text-18 text-gray-gray-300 w-22.5 shrink-0 font-normal">
         {label}
       </span>
-      <span className="text-14 pc:text-18 text-black-black-400 min-w-0 font-medium">{value}</span>
+      {/* 모바일만 값이 오른쪽 끝으로 붙습니다 (피그마 `1:9493` w=222 + text-right).
+          태블릿·PC는 라벨 바로 뒤에서 시작합니다(`1:9354` 값 폭이 내용만큼). */}
+      <span className="text-16 pc:text-18 text-black-black-400 tablet:flex-none tablet:text-left min-w-0 flex-1 text-right font-medium">
+        {value}
+      </span>
     </div>
   );
 }
@@ -63,6 +70,7 @@ export default function MoverQuoteDetailView({
   moverId,
   moverNickName,
 }: MoverQuoteDetailViewProps) {
+  const isPc = useMediaQuery(PC_QUERY);
   const { quotationRequest: request } = estimate;
   const isConfirmed =
     estimate.estimateStatus === "CONFIRMED" || estimate.estimateStatus === "COMPLETED";
@@ -80,35 +88,37 @@ export default function MoverQuoteDetailView({
           </div>
 
           <div className="mt-5 flex w-full items-center justify-between gap-4">
-            <p className="text-18 pc:text-24 text-black-black-400 flex min-w-0 items-center gap-2 font-semibold">
+            <p className="text-18 pc:text-24 text-black-300 flex min-w-0 items-center gap-1.5 font-semibold">
               <span className="min-w-0 truncate">{request.userName}</span>
               <span className="shrink-0">고객님</span>
             </p>
             {isConfirmed && <ConfirmedBadge />}
           </div>
 
-          <hr className="border-line-100 mt-6.75 w-full border-0 border-t" />
+          <hr className="border-line-100 tablet:mt-6.75 mt-5 w-full border-0 border-t" />
 
           {/* 견적가 — PC·태블릿은 라벨 뒤에 값이 붙고(피그마 라벨 52, 값 x=113),
               모바일만 값이 오른쪽 끝으로 갑니다(`1:9487` x=238) */}
-          <div className="tablet:justify-start mt-6.75 flex items-center justify-between">
+          <div className="tablet:justify-start tablet:mt-6.75 mt-5 flex items-center justify-between">
             <span className="text-16 pc:text-24 text-black-black-400 tablet:w-22.5 shrink-0 font-semibold">
               견적가
             </span>
-            <span className="text-18 pc:text-24 text-black-black-400 tablet:ml-5.75 font-bold">
+            <span className="text-20 pc:text-24 text-black-black-400 tablet:ml-5.75 font-bold">
               {estimate.price === null
                 ? "견적가 없음"
                 : `${estimate.price.toLocaleString("ko-KR")}원`}
             </span>
           </div>
 
-          <hr className="border-line-100 mt-6.75 w-full border-0 border-t" />
+          <hr className="border-line-100 tablet:mt-6.75 mt-5 w-full border-0 border-t" />
 
-          <p className="text-16 pc:text-24 text-black-black-400 mt-7.5 font-semibold">견적 정보</p>
+          <p className="text-16 pc:text-24 text-black-black-400 tablet:mt-7.5 mt-5 font-semibold">
+            견적 정보
+          </p>
 
           {/* 행 간격 — 피그마는 행 시작점이 PC·태블릿 42 / 모바일 38입니다.
               행 높이가 PC 26 / 태블릿·모바일 24라 gap은 16 / 18 / 14가 됩니다. */}
-          <div className="tablet:gap-4.5 pc:gap-4 mt-6 flex flex-col gap-3.5">
+          <div className="tablet:gap-4.5 tablet:mt-6 pc:gap-4 mt-5 flex flex-col gap-3">
             <InfoRow label="견적 요청일" value={formatRequestDate(request.createdAt)} />
             <InfoRow label="서비스" value={SERVICE_LABELS[request.category]} />
             <InfoRow label="이용일" value={formatUsageDate(request.movingDate)} />
@@ -121,8 +131,10 @@ export default function MoverQuoteDetailView({
         {/* 태블릿·모바일은 구분선 아래 32px에 공유가 옵니다 (피그마 구분선 521 → 공유 553) */}
         <div className="pc:mt-0 pc:w-56 pc:shrink-0 mt-8 w-full">
           <hr className="border-line-100 pc:hidden mb-8 w-full border-0 border-t" />
+          {/* 문구가 사이즈마다 다릅니다 — PC "견적서 공유하기"(`1:9384`),
+              태블릿·모바일 "나만 알기엔 아쉬운 기사님인가요?"(`1:9508`). */}
           <QuoteShare
-            title="견적서 공유하기"
+            title={isPc ? "견적서 공유하기" : "나만 알기엔 아쉬운 기사님인가요?"}
             moverId={moverId}
             moverNickName={moverNickName}
             className="pc:items-start"
