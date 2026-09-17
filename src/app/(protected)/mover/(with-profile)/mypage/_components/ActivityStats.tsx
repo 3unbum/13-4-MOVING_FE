@@ -4,9 +4,7 @@ interface ActivityStatsProps {
   career: number;
 }
 
-// 활동현황: 진행/리뷰/총경력 3칸. 좌우 패딩은 모바일 40px, 태블릿·PC 160px(피그마 기준),
-// 박스 높이는 모바일 105px, 태블릿·PC 120px. 항목 내부 라벨-값 간격은 모바일 0, 태블릿부터
-// 4px(gap-1). 폭(56/104/46px)은 모든 브레이크포인트 동일.
+// 좌우 패딩(40→160px)·높이(105→120px)가 태블릿부터 커지는 건 오타가 아니라 피그마 스펙 그대로다.
 export default function ActivityStats({ confirmedCount, avgRating, career }: ActivityStatsProps) {
   return (
     <div className="tablet:gap-4 flex flex-col gap-2">

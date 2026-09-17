@@ -22,19 +22,15 @@ interface MoverMyPageContentProps {
   moverId: number;
 }
 
-// 기사님 마이페이지 본문 — (main)/movers/[moverId](공개 상세)와 같은 데이터 모양(MoverListItem)을
-// 자기 자신의 id로 조회해서 쓴다. 리뷰 목록은 (with-profile)/reviews와 동일하게
-// MoverReviewSection에 위임(분포+카드+페이지네이션 전부 포함).
+// (main)/movers/[moverId](공개 상세)와 같은 데이터 모양(MoverListItem)을 자기 자신의 id로 조회해서 쓴다.
 export default function MoverMyPageContent({ mover, moverId }: MoverMyPageContentProps) {
   const categories = [...new Set(mover.services.map(toServiceCode))];
 
   return (
     <section className="tablet:px-18 tablet:py-10 pc:mx-auto pc:w-300 pc:px-0 pc:py-12 flex w-full flex-1 flex-col px-5 py-8">
       <div className="pc:flex-row pc:items-start pc:justify-between flex flex-col gap-10">
-        {/* 좌측: 프로필 정보 + 활동현황 + 서비스·지역 + 리뷰 */}
         <div className="tablet:gap-10 flex min-w-0 flex-1 flex-col gap-6">
-          {/* 피그마상 프로필정보+구분선+활동현황은 한 묶음이라 태블릿/PC에서 32px, 그 아래
-              (제공서비스~리뷰)와의 간격은 40px로 더 넓다. 모바일은 둘 다 24px로 동일 */}
+          {/* 이 묶음(프로필+구분선+활동현황)만 태블릿부터 32px, 그 아래 섹션들과는 40px 간격 */}
           <div className="tablet:gap-8 flex flex-col gap-6">
             <ProfileHeader mover={mover} />
 
@@ -88,8 +84,7 @@ export default function MoverMyPageContent({ mover, moverId }: MoverMyPageConten
           <MoverReviewSection moverId={moverId} />
         </div>
 
-        {/* PC 전용 우측 버튼 컬럼 — 솔리드(내 프로필 수정)가 위, 아웃라인(기본 정보 수정)이 아래.
-            폭 283px 고정(피그마 데스크탑 기준) */}
+        {/* PC 전용 우측 버튼 컬럼. 폭 283px 고정(피그마 데스크탑 기준) */}
         <div className="pc:flex hidden w-70.75 shrink-0 flex-col gap-4">
           <EditMoverProfileButton />
           <EditBasicInfoButton />

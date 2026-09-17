@@ -7,9 +7,8 @@ import writingMdGray from "@/assets/icons/writing-md-gray.svg";
 import Button from "@/components/common/Button";
 import { cn } from "@/lib/utils/cn";
 
-// 버튼 사이즈: 모바일은 Button의 sm(54px/16px/gap-1/rounded-xl)과 동일한 값을, 태블릿부터는
-// lg(64px/18px/gap-2/rounded-2xl) 그대로 쓴다. size prop 자체가 반응형이 아니라서 lg를
-// 기본으로 두고 모바일 값만 className으로 덮어쓴다(tailwind-merge가 뒤에 오는 클래스를 우선함).
+// Button의 size prop은 반응형이 아니라서, lg(태블릿·PC 값)를 기본으로 두고
+// 모바일 값(sm과 동일)만 className으로 덮어쓴다(tailwind-merge가 뒤 클래스를 우선함).
 const RESPONSIVE_CTA_SIZE =
   "h-13.5 tablet:h-16 gap-1 tablet:gap-2 rounded-xl tablet:rounded-2xl text-16 tablet:text-18";
 
@@ -20,7 +19,6 @@ const TEMP_DESTINATION = "/mover/requests";
 
 // ProfileHeader(모바일/태블릿 버튼 행)와 MoverMyPageContent(PC 우측 컬럼)가 함께 쓴다.
 
-/** 기본 정보 수정 CTA — 공통 Button(outlined/lg) 그대로 사용 */
 export function EditBasicInfoButton() {
   const router = useRouter();
 
@@ -37,8 +35,7 @@ export function EditBasicInfoButton() {
   );
 }
 
-/** 내 프로필 수정 CTA — 공통 Button(solid/lg) 그대로 사용. Button은 <button>만 지원해
- * router.push로 이동시킨다 */
+// Button은 <button>만 지원해 Link 대신 router.push로 이동시킨다
 export function EditMoverProfileButton() {
   const router = useRouter();
 
