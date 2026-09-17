@@ -1,7 +1,9 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 import Loading from "@/app/loading";
+import emptyCharacter from "@/assets/images/common/empty-review.png";
 import Header from "@/components/common/Header";
 import Toast from "@/components/common/Toast";
 import FilterModal from "@/components/filter/FilterModal";
@@ -31,6 +33,35 @@ function Message({ children }: { children: React.ReactNode }) {
   return (
     <div className="text-14 text-gray-gray-400 tablet:text-16 flex flex-1 items-center justify-center px-6 py-20">
       {children}
+    </div>
+  );
+}
+
+/**
+ * 빈 목록 화면 — 피그마 `1:10485`(PC 955×620) / `1:10554`(모바일 327×484).
+ *
+ * `img/Component/empty`는 리뷰·찜 화면과 같은 컴포넌트입니다. 다만 그쪽은
+ * `_components/` 안에 있어 가져올 수 없고, PC 문구 크기도 다릅니다
+ * (리뷰 24 / 여기 20). 캐릭터 클립 수치는 피그마 그대로입니다.
+ */
+function EmptyState({ message }: { message: string }) {
+  return (
+    <div className="flex w-full flex-1 flex-col items-center justify-center">
+      <div className="pc:w-[955px] pc:gap-8 flex w-81.75 flex-col items-center gap-6">
+        {/* 240×196 클립 안에 260.633 원본을 음수 위치로 밀어 넣습니다 */}
+        <div className="relative h-49 w-60 overflow-hidden">
+          <Image
+            src={emptyCharacter}
+            alt=""
+            width={1000}
+            height={1000}
+            className="absolute top-[-16.29px] left-[-11.04px] size-[260.633px] max-w-none opacity-50 grayscale"
+          />
+        </div>
+        <p className="text-16 pc:text-20 text-gray-gray-400 text-center whitespace-nowrap">
+          {message}
+        </p>
+      </div>
     </div>
   );
 }
@@ -77,6 +108,11 @@ export default function MoverRequestsClient() {
   );
 
   const headerSize = isPc ? "lg" : isTabletUp ? "md" : "sm";
+  const hasActiveFilter =
+    debouncedKeyword.trim().length > 0 ||
+    filters.category !== undefined ||
+    filters.isTargeted ||
+    filters.isServiceRegion;
 
   const openFilterModal = () => {
     setDraftFilters(filters);
@@ -136,7 +172,13 @@ export default function MoverRequestsClient() {
             ) : isPending ? (
               <Loading />
             ) : requests.length === 0 ? (
-              <Message>조건에 맞는 요청이 없어요.</Message>
+              // 피그마 empty 문구는 "아직 받은 요청이 없어요!" 하나뿐이라, 검색·필터로
+              // 걸러져 0건인 경우는 원인을 알 수 있게 문구만 바꿔 같은 화면을 씁니다
+              <EmptyState
+                message={
+                  hasActiveFilter ? "조건에 맞는 요청이 없어요!" : "아직 받은 요청이 없어요!"
+                }
+              />
             ) : (
               <MoverRequestList
                 requests={requests}
