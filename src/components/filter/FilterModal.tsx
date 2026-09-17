@@ -1,6 +1,7 @@
 "use client";
 
 import { useId } from "react";
+import { cn } from "@/lib/utils/cn";
 import Button from "@/components/common/Button";
 import CheckboxButton from "@/components/common/CheckboxButton";
 import Chip, { SERVICES, SERVICE_LABELS, type ServiceCode } from "@/components/filter/ChipRegion";
@@ -9,6 +10,11 @@ import Modal, { ModalHeader } from "@/components/common/Modal";
 interface FilterModalProps {
   open: boolean;
   onClose: () => void;
+  /**
+   * 기본은 바닥 시트입니다. 태블릿은 피그마에서 가운데 뜨기 때문에
+   * (`1:10385` x=185 y=330, 위아래 여백 동일) 호출부가 바꿀 수 있게 열어둡니다.
+   */
+  position?: "center" | "bottom";
   moveType?: ServiceCode;
   onMoveTypeChange: (value: ServiceCode) => void;
   isTargetedOnly: boolean;
@@ -22,6 +28,7 @@ interface FilterModalProps {
 export default function FilterModal({
   open,
   onClose,
+  position = "bottom",
   moveType,
   onMoveTypeChange,
   isTargetedOnly,
@@ -36,9 +43,13 @@ export default function FilterModal({
     <Modal
       open={open}
       onClose={onClose}
-      position="bottom"
+      position={position}
       labelledBy={titleId}
-      className="w-93.75 min-w-93.75 gap-8 rounded-t-[32px] px-6 pt-6 pb-8"
+      className={cn(
+        "w-93.75 min-w-93.75 gap-8 px-6 pt-6 pb-8",
+        // 바닥에 붙을 때만 위쪽만 둥글게 — 가운데 뜨면 네 모서리를 다 돌립니다
+        position === "bottom" ? "rounded-t-[32px]" : "rounded-[32px]"
+      )}
     >
       <ModalHeader id={titleId} title="필터" size="sm" onClose={onClose} />
 

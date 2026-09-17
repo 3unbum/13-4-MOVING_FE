@@ -114,7 +114,8 @@ export default function QuoteActionModal({
             {isTargeted && <MoveTypeChip variant="TARGETED" size={isMd ? "md" : "sm"} />}
           </div>
 
-          <p className="text-20 text-black-300 flex w-full min-w-0 items-center gap-1 font-semibold">
+          {/* 이름과 "고객님" 사이 8 — 카드(`CardRequest`)와 같은 값입니다 */}
+          <p className="text-20 text-black-300 flex w-full min-w-0 items-center gap-2 font-semibold">
             <span className="min-w-0 truncate">{customerName}</span>
             <span className="shrink-0">고객님</span>
           </p>
@@ -126,9 +127,8 @@ export default function QuoteActionModal({
             size={isMd ? "lg" : "sm"}
           />
 
-          {isMd && (
-            <hr className="h-0 w-full border-0 shadow-[0_0_0_0.5px_var(--color-line-100)]" />
-          )}
+          {/* 구분선은 PC·모바일 모두 있습니다 (피그마 `1:10684` / `1:10738`) */}
+          <hr className="h-0 w-full border-0 shadow-[0_0_0_0.5px_var(--color-line-100)]" />
         </div>
 
         <div className="flex w-full flex-col items-start gap-4">
@@ -141,6 +141,8 @@ export default function QuoteActionModal({
                 type="text"
                 inputMode="numeric"
                 size={isMd ? "md" : "sm"}
+                // 피그마는 높이 54 + 폰트 18인데 컴포넌트 md는 높이 64라, 높이만 덮습니다
+                className={isMd ? "[&>div]:h-[54px]" : undefined}
                 placeholder="견적가 입력"
                 value={price}
                 onChange={(event) => onPriceChange?.(event.target.value.replace(/\D/g, ""))}

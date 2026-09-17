@@ -194,6 +194,8 @@ export default function MoverRequestsClient() {
       <FilterModal
         open={isFilterOpen}
         onClose={() => setIsFilterOpen(false)}
+        // 태블릿은 견적·반려 모달과 마찬가지로 가운데 뜹니다 (피그마 `1:10385`)
+        position={isTabletUp ? "center" : "bottom"}
         moveType={draftFilters.category}
         onMoveTypeChange={(value) =>
           // 선택된 칩을 다시 누르면 해제 — 피그마에 "전체" 칩이 없습니다
