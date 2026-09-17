@@ -148,6 +148,8 @@ export default function MoverProfileForm() {
           </div>
         </div>
 
+        <div className="bg-line-100 pc:hidden h-px w-full" />
+
         <div className="pc:gap-8 flex flex-col gap-5">
           <div className="flex flex-col gap-4">
             <FieldLabel>상세 설명</FieldLabel>
