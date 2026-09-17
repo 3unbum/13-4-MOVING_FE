@@ -52,12 +52,12 @@ function toProgressBarData(distribution: MoverRatingDistribution) {
  * 기사님 상세: <MoverReviewSection moverId={moverId} />
  */
 export default function MoverReviewSection({ moverId, className }: MoverReviewSectionProps) {
-  const [page, setPage] = useState(1);
+  const [offset, setOffset] = useState(0);
   const enabled = moverId != null;
 
   const listQuery = useQuery({
-    queryKey: moverQueryKeys.reviewList(moverId ?? 0, page),
-    queryFn: () => moverService.getReviews(moverId!, page, TAKE),
+    queryKey: moverQueryKeys.reviewList(moverId ?? 0, offset),
+    queryFn: () => moverService.getReviews(moverId!, offset, TAKE),
     enabled,
     placeholderData: keepPreviousData,
   });
@@ -68,7 +68,18 @@ export default function MoverReviewSection({ moverId, className }: MoverReviewSe
     enabled,
   });
 
-  if (!enabled || (listQuery.isPending && !listQuery.data)) return null;
+  if (!enabled) return null;
+
+  if (listQuery.isPending && !listQuery.data) {
+    return (
+      <div
+        className={cn("text-16 text-gray-gray-400 min-h-[200px] py-20 text-center", className)}
+        role="status"
+      >
+        리뷰를 불러오는 중이에요.
+      </div>
+    );
+  }
 
   if (listQuery.isError || distributionQuery.isError) {
     return (
@@ -118,9 +129,9 @@ export default function MoverReviewSection({ moverId, className }: MoverReviewSe
       </div>
 
       <Pagination
-        currentPage={page}
+        currentPage={offset / TAKE + 1}
         totalPages={totalPages}
-        onPageChange={setPage}
+        onPageChange={(nextPage) => setOffset((nextPage - 1) * TAKE)}
         className="mt-8 justify-center"
       />
     </div>
