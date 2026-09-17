@@ -1,5 +1,7 @@
 "use client";
 
+import Image from "next/image";
+import logoMark from "@/assets/icons/logo-mark-sm.svg";
 import Header from "@/components/common/Header";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { useMoverEstimate } from "@/hooks/useMoverEstimates";
@@ -39,6 +41,25 @@ export default function MoverQuoteDetailClient({ estimateId }: MoverQuoteDetailC
       <Header size={headerSize} className="pc:px-0">
         <span className="pc:mx-auto pc:block pc:w-full pc:max-w-300 pc:px-2">견적 상세</span>
       </Header>
+
+      {/* 히어로 — 주황 배경에 무빙 로고 마크가 흐리게 흩어집니다
+          (피그마 `1:9454` 모바일 122 / `1:9436` 태블릿 157 / `1:9367` PC 180).
+          고객 견적 상세(`QuoteDetailView`)와 같은 띠입니다. */}
+      <div
+        className="tablet:h-39.25 pc:h-45 relative h-30.5 w-full overflow-hidden bg-orange-400"
+        aria-hidden
+      >
+        <Image
+          src={logoMark}
+          alt=""
+          className="pc:w-40 pointer-events-none absolute -top-4 left-[8%] w-24 opacity-15"
+        />
+        <Image
+          src={logoMark}
+          alt=""
+          className="pc:w-56 pointer-events-none absolute top-6 left-[58%] w-32 opacity-15"
+        />
+      </div>
 
       {error ? (
         <Message>견적을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.</Message>
