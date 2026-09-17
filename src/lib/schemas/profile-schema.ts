@@ -58,6 +58,12 @@ export const customerProfileUpdateSchema = z
   .refine((data) => !data.newPassword || data.newPassword === data.newPasswordConfirm, {
     message: "비밀번호가 일치하지 않습니다",
     path: ["newPasswordConfirm"],
+  })
+  // 현재 비밀번호와 같은 값으로 "변경"하는 건 의미가 없어 여기서 막는다 — 그동안 BE만 검증하고
+  // 있어서 제출 후 서버 왕복 뒤에야 에러가 보였음(#124 리뷰, 다른 두 비밀번호 refine과 동일하게 맞춤)
+  .refine((data) => !data.newPassword || data.newPassword !== data.currentPassword, {
+    message: "현재 비밀번호와 다른 새 비밀번호를 입력해주세요",
+    path: ["newPassword"],
   });
 
 export type CustomerProfileFormValues = z.infer<typeof customerProfileSchema>;
