@@ -50,7 +50,7 @@ export interface MoverReviewItem {
   customerName: string;
 }
 
-/** GET /movers/:id/reviews — offset/limit. page/totalPages가 루트에 있어 json.data만 쓰면 잘린다. */
+/** GET /movers/:id/reviews — BE는 page(1-base). page/totalPages가 루트에 있어 json.data만 쓰면 잘린다. */
 export interface MoverReviewsResult {
   data: MoverReviewItem[];
   page: number;
@@ -119,10 +119,8 @@ async function fetchPublicJson<T>(path: string): Promise<T> {
 export const moverService = {
   getList: (params: GetMoverListParams) =>
     fetchPublicJson<MoverListResponse>(buildMoverListPath(params)),
-  getReviews: (moverId: number, offset = 0, limit = 5) =>
-    fetchPublicJson<MoverReviewsResult>(
-      `/movers/${moverId}/reviews?offset=${offset}&limit=${limit}`
-    ),
+  getReviews: (moverId: number, page = 1, limit = 5) =>
+    fetchPublicJson<MoverReviewsResult>(`/movers/${moverId}/reviews?page=${page}&limit=${limit}`),
   getReviewDistribution: (moverId: number) =>
     defaultFetch<MoverRatingDistribution>(`/movers/${moverId}/reviews/distribution`),
 };

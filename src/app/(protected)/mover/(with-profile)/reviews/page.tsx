@@ -16,7 +16,7 @@ export default function MoverReviewsPage() {
   const headerSize = isPc ? "lg" : isTabletUp ? "md" : "sm";
 
   return (
-    <div className="bg-background-background-100 pc:min-h-[calc(100dvh-88px)] flex min-h-[calc(100dvh-54px)] flex-1 flex-col">
+    <div className="pc:min-h-[calc(100dvh-88px)] flex min-h-[calc(100dvh-54px)] flex-1 flex-col bg-gray-50">
       <Header size={headerSize}>받은 리뷰</Header>
       <section className="tablet:px-18 pc:px-0 flex w-full flex-1 flex-col items-center px-5 pt-10 pb-10">
         <div className="tablet:max-w-[600px] pc:max-w-[821px] pc:w-[821px] flex w-full flex-col">

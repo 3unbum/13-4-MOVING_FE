@@ -40,7 +40,9 @@ export default function ProgressBar({ data }: { data: ReviewDistribution }) {
                 readOnly
               />
             </div>
-            <p className="text-14 text-gray-gray-500 font-normal">{data.totalCount}개의 리뷰</p>
+            <p className="text-14 text-gray-gray-500 leading-4.5 font-normal">
+              {data.totalCount}개의 리뷰
+            </p>
           </div>
         </div>
         <div className="flex flex-col gap-1">

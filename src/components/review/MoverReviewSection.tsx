@@ -52,12 +52,12 @@ function toProgressBarData(distribution: MoverRatingDistribution) {
  * 기사님 상세: <MoverReviewSection moverId={moverId} />
  */
 export default function MoverReviewSection({ moverId, className }: MoverReviewSectionProps) {
-  const [offset, setOffset] = useState(0);
+  const [page, setPage] = useState(1);
   const enabled = moverId != null;
 
   const listQuery = useQuery({
-    queryKey: moverQueryKeys.reviewList(moverId ?? 0, offset),
-    queryFn: () => moverService.getReviews(moverId!, offset, TAKE),
+    queryKey: moverQueryKeys.reviewList(moverId ?? 0, page),
+    queryFn: () => moverService.getReviews(moverId!, page, TAKE),
     enabled,
     placeholderData: keepPreviousData,
   });
@@ -129,9 +129,9 @@ export default function MoverReviewSection({ moverId, className }: MoverReviewSe
       </div>
 
       <Pagination
-        currentPage={offset / TAKE + 1}
+        currentPage={page}
         totalPages={totalPages}
-        onPageChange={(nextPage) => setOffset((nextPage - 1) * TAKE)}
+        onPageChange={setPage}
         className="mt-8 justify-center"
       />
     </div>
