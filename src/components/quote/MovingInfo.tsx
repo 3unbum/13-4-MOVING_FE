@@ -34,6 +34,9 @@ function InfoItem({
   variant: MovingInfoVariant;
   isLg: boolean;
 }) {
+  // 라벨과 값이 한 줄에 붙는 건 모바일 모달뿐입니다 (피그마 `1:10738` gap 8).
+  // PC 모달(`1:10684` / `1:11274`)은 카드와 똑같이 라벨 위 / 값 아래입니다.
+  const isInline = variant === "modal" && !isLg;
   const isModal = variant === "modal";
 
   return (
@@ -42,8 +45,7 @@ function InfoItem({
     <div
       className={cn(
         "flex min-w-0",
-        // 모달은 라벨과 값이 한 줄에 붙습니다 (피그마 gap 8)
-        isModal ? "items-center gap-2" : "flex-col items-start justify-center"
+        isInline ? "items-center gap-2" : "flex-col items-start justify-center"
       )}
     >
       <span className="text-14 text-gray-gray-500 shrink-0">{label}</span>
@@ -94,7 +96,8 @@ export default function MovingInfo({
       <div
         className={cn(
           "flex gap-3",
-          isModal ? "items-center" : "items-end",
+          // 모바일 모달만 라벨·값이 한 줄이라 가운데 정렬, 나머지는 값 기준 아래 맞춤
+          isModal && !isLg ? "items-center" : "items-end",
           // 모달 PC는 내용만큼만 차지하고 이사일이 48px 옆에 붙습니다 (피그마 201은 기본
           // 문구 기준 값이라, 실제 주소가 길면 잘리지 않고 늘어나는 쪽이 맞습니다)
           isModal && isLg ? "shrink-0" : isLg ? "min-w-50.25" : "w-full min-w-0"
