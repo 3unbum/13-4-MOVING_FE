@@ -119,6 +119,8 @@ async function fetchPublicJson<T>(path: string): Promise<T> {
 export const moverService = {
   getList: (params: GetMoverListParams) =>
     fetchPublicJson<MoverListResponse>(buildMoverListPath(params)),
+  // 공개 상세 조회 — 기사님 찾기 상세 페이지와 마이페이지(자기 자신을 이 id로 조회)가 함께 쓴다.
+  getById: (moverId: number) => defaultFetch<MoverListItem>(`/movers/${moverId}`),
   getReviews: (moverId: number, page = 1, limit = 5) =>
     fetchPublicJson<MoverReviewsResult>(`/movers/${moverId}/reviews?page=${page}&limit=${limit}`),
   getReviewDistribution: (moverId: number) =>
