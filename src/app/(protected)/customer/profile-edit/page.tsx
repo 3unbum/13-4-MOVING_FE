@@ -17,7 +17,7 @@ export default async function CustomerProfileEditPage() {
   return (
     <div className="pc:items-center pc:px-0 pc:py-15 flex w-full justify-center px-4 pt-4 pb-10">
       <div className="pc:w-300 pc:gap-10 pc:rounded-4xl pc:bg-gray-50 pc:px-10 pc:pt-8 pc:pb-10 flex w-81.75 flex-col gap-8">
-        <h1 className="text-18 text-black-black-400 pc:text-32 pc:font-semibold font-bold">
+        <h1 className="text-18 text-black-black-400 pc:text-32 pc:font-semibold pc:leading-11.5 font-bold">
           프로필 수정
         </h1>
         <CustomerProfileEditForm initialAccount={account?.role === "CUSTOMER" ? account : null} />

@@ -9,6 +9,7 @@ import FormField from "@/components/auth/FormField";
 import ProfileImageUpload from "@/components/common/ProfileImageUpload";
 import Toast from "@/components/common/Toast";
 import Chip from "@/components/filter/ChipRegion";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { REGION_OPTIONS, SERVICE_OPTIONS } from "@/constants/profile/options";
 import {
   customerProfileUpdateSchema,
@@ -27,6 +28,8 @@ interface CustomerProfileEditFormProps {
   // 클라이언트가 직접 한 번 더 조회한다.
   initialAccount: CustomerAccountResponse | null;
 }
+
+const PC_QUERY = "(min-width: 1280px)";
 
 function accountToFormValues(account: CustomerAccountResponse): CustomerProfileUpdateFormValues {
   return {
@@ -51,6 +54,9 @@ export default function CustomerProfileEditForm({ initialAccount }: CustomerProf
   const [loadError, setLoadError] = useState<string>();
   const [submitError, setSubmitError] = useState<string>();
   const [isImageUploading, setIsImageUploading] = useState(false);
+  // PC에서만 필드를 md 크기로 키움 (태블릿은 FormField 내부 CSS로 이미 처리됨)
+  const isPc = useMediaQuery(PC_QUERY);
+  const fieldSize = isPc ? "md" : "sm";
 
   useEffect(() => {
     if (account) return;
@@ -157,6 +163,7 @@ export default function CustomerProfileEditForm({ initialAccount }: CustomerProf
               id="name"
               label="이름"
               type="text"
+              size={fieldSize}
               placeholder="이름을 입력해 주세요"
               autoComplete="name"
               errorMessage={errors.name?.message}
@@ -169,6 +176,7 @@ export default function CustomerProfileEditForm({ initialAccount }: CustomerProf
               id="email"
               label="이메일"
               type="email"
+              size={fieldSize}
               value={account.email}
               disabled
               readOnly
@@ -178,26 +186,33 @@ export default function CustomerProfileEditForm({ initialAccount }: CustomerProf
               id="phoneNumber"
               label="전화번호"
               type="tel"
+              size={fieldSize}
               placeholder="하이픈(-) 없이 숫자만 입력해 주세요"
               autoComplete="tel"
               errorMessage={errors.phoneNumber?.message}
               {...register("phoneNumber")}
             />
 
+            <hr className="border-line-100" />
+
             <FormField
               id="currentPassword"
               label="현재 비밀번호"
               type="password"
+              size={fieldSize}
               placeholder="현재 비밀번호를 입력해주세요"
               autoComplete="current-password"
               errorMessage={errors.currentPassword?.message}
               {...register("currentPassword")}
             />
 
+            <hr className="border-line-100" />
+
             <FormField
               id="newPassword"
               label="새 비밀번호"
               type="password"
+              size={fieldSize}
               placeholder="새 비밀번호를 입력해주세요"
               autoComplete="new-password"
               errorMessage={errors.newPassword?.message}
@@ -208,6 +223,7 @@ export default function CustomerProfileEditForm({ initialAccount }: CustomerProf
               id="newPasswordConfirm"
               label="새 비밀번호 확인"
               type="password"
+              size={fieldSize}
               placeholder="새 비밀번호를 다시 한번 입력해주세요"
               autoComplete="new-password"
               errorMessage={errors.newPasswordConfirm?.message}
@@ -240,7 +256,7 @@ export default function CustomerProfileEditForm({ initialAccount }: CustomerProf
 
             <div className="bg-line-100 h-px w-full" />
 
-            <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-8">
               <div className="pc:gap-1 flex flex-col gap-2">
                 <span className="text-16 text-black-black-400 pc:text-20 font-semibold">
                   이용 서비스
@@ -272,8 +288,8 @@ export default function CustomerProfileEditForm({ initialAccount }: CustomerProf
 
             <div className="bg-line-100 h-px w-full" />
 
-            <div className="flex flex-col gap-6">
-              <div className="pc:gap-1 flex flex-col gap-2">
+            <div className="flex flex-col gap-8">
+              <div className="flex flex-col gap-2">
                 <span className="text-16 text-black-black-400 pc:text-20 font-semibold">
                   내가 사는 지역
                 </span>
@@ -281,7 +297,7 @@ export default function CustomerProfileEditForm({ initialAccount }: CustomerProf
                   내가 사는 지역은 언제든 수정 가능해요!
                 </p>
               </div>
-              <div className="pc:gap-3.5 flex flex-wrap gap-2">
+              <div className="pc:gap-4 flex flex-wrap gap-2">
                 {REGION_OPTIONS.map((option) => {
                   const selected = selectedRegion === option.value;
                   return (
@@ -317,7 +333,11 @@ export default function CustomerProfileEditForm({ initialAccount }: CustomerProf
               variant="outlined"
               size="sm"
               className="pc:h-15 pc:rounded-2xl pc:text-18"
-              onClick={() => router.back()}
+              onClick={() => {
+                // 직접 진입(북마크·새 탭)이면 돌아갈 곳이 없어 빈 화면이 된다 — 랜딩으로 보낸다
+                if (window.history.length > 1) router.back();
+                else router.replace("/");
+              }}
             >
               취소
             </Button>
