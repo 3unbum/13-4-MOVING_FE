@@ -2,12 +2,12 @@
 
 import { useQuery } from "@tanstack/react-query";
 import Header from "@/components/common/Header";
-import MoverProfileBanner from "@/components/mover/MoverProfileBanner";
 import { moverQueryKeys } from "@/constants/query-keys/movers";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { moverService } from "@/lib/services/mover-service";
 import { useAuth } from "@/providers/AuthProvider";
 import MoverMyPageContent from "./_components/MoverMyPageContent";
+import MoverProfileBanner from "./_components/MoverProfileBanner";
 
 const TABLET_QUERY = "(min-width: 744px)";
 const PC_QUERY = "(min-width: 1280px)";
