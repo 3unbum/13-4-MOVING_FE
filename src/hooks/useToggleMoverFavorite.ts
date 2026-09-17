@@ -3,6 +3,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRef, useState } from "react";
 import { favoriteQueryKeys } from "@/constants/query-keys/favorites";
+import { moverQueryKeys } from "@/constants/query-keys/movers";
 import { favoriteService, type FavoriteListResult } from "@/lib/services/favorite-service";
 import { useAuth } from "@/providers/AuthProvider";
 
@@ -117,10 +118,13 @@ export function useToggleMoverFavorite(options?: { onRequireLogin?: () => void }
       }));
     },
 
-    // 전체·사이드바(limit=3) 캐시 모두 갱신 + 해당 ID pending 해제
+    // 전체·사이드바(limit=3)·상세 캐시 갱신 + 해당 ID pending 해제
     onSettled: (_data, _error, variables) => {
       clearPending(variables.moverId);
       void queryClient.invalidateQueries({ queryKey: favoriteQueryKeys.all });
+      void queryClient.invalidateQueries({
+        queryKey: moverQueryKeys.detail(variables.moverId),
+      });
     },
   });
 

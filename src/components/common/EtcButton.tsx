@@ -10,9 +10,12 @@ import likeIconMdActive from "@/assets/icons/like-lg-active.svg";
 import likeIconMdDefault from "@/assets/icons/like-lg-default.svg";
 import likeIconSmActive from "@/assets/icons/like-md-active.svg";
 import likeIconSmDefault from "@/assets/icons/like-md-default.svg";
+import likeIconRedActive from "@/assets/icons/like-md-red-active.svg";
 
 type EtcButtonKind = "like" | "clip" | "share-kakao" | "share-facebook";
 type EtcButtonSize = "xs" | "sm" | "md";
+/** like active 색 — 기본 black(기존), red는 기사 상세 등에서 선택 */
+type LikeActiveColor = "black" | "red";
 
 // aria-pressed도 Omit으로 막아서 호출부가 직접 못 넘기게 함 — FilterButton과 동일한 이유로,
 // 안 막으면 ...props 스프레드가 아래 aria-pressed={active}를 조용히 덮어쓸 수 있음
@@ -28,11 +31,13 @@ type EtcButtonProps =
       kind: "like";
       size?: Extract<EtcButtonSize, "sm" | "md">;
       active?: boolean;
+      activeColor?: LikeActiveColor;
     } & EtcButtonBaseProps)
   | ({
       kind: "clip" | "share-kakao" | "share-facebook";
       size?: EtcButtonSize;
       active?: never;
+      activeColor?: never;
     } & EtcButtonBaseProps);
 
 // like는 active로 눌림 여부가 바뀌어도 이름(label)은 고정 — 상태는 aria-pressed로만 전달
@@ -52,6 +57,7 @@ const CONTAINER_SIZE: Record<EtcButtonSize, string> = {
 };
 
 // 사용 예: <EtcButton kind="like" size="md" active={isLiked} onClick={toggleLike} />
+//         <EtcButton kind="like" active activeColor="red" onClick={toggleLike} />
 //         <EtcButton kind="share-kakao" onClick={shareToKakao} />
 export default function EtcButton({
   kind,
@@ -60,11 +66,16 @@ export default function EtcButton({
   type = "button",
   "aria-label": ariaLabel,
   active,
+  activeColor = "black",
   ...props
 }: EtcButtonProps) {
   // 아이콘 실제 픽셀: xs/sm은 모두 24px, md는 like·clip 36px / kakao·facebook 28px로 Figma 배리언트별 크기가 다름
   const iconSizeClass =
     size !== "md" ? "size-6" : kind === "like" || kind === "clip" ? "size-9" : "size-7";
+
+  const likeActiveIcon =
+    activeColor === "red" ? likeIconRedActive : size === "md" ? likeIconMdActive : likeIconSmActive;
+  const likeDefaultIcon = size === "md" ? likeIconMdDefault : likeIconSmDefault;
 
   return (
     <button
@@ -84,19 +95,7 @@ export default function EtcButton({
       {...props}
     >
       {kind === "like" && (
-        <Image
-          src={
-            size === "md"
-              ? active
-                ? likeIconMdActive
-                : likeIconMdDefault
-              : active
-                ? likeIconSmActive
-                : likeIconSmDefault
-          }
-          alt=""
-          className={iconSizeClass}
-        />
+        <Image src={active ? likeActiveIcon : likeDefaultIcon} alt="" className={iconSizeClass} />
       )}
       {kind === "clip" && (
         <Image src={size === "md" ? clipIconMd : clipIconSm} alt="" className={iconSizeClass} />

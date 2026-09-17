@@ -6,11 +6,10 @@ function isServiceCode(value: string): value is ServiceCode {
   return value in SERVICE_LABELS;
 }
 
-/**
- * MoveTypeChip은 ServiceCode만 받음.
+/** MoveTypeChip은 ServiceCode만 받음.
  * 목록 API는 한글("소형이사"), 찜 API는 enum("SMALL") — 둘 다 코드로 통일.
  */
-function toServiceCode(value: string | undefined): ServiceCode {
+export function toServiceCode(value: string | undefined): ServiceCode {
   if (!value) {
     return "SMALL";
   }

@@ -3,9 +3,13 @@
 import { useQueries, useQuery } from "@tanstack/react-query";
 import { ESTIMATE_LIMIT_PER_REQUEST, estimateService } from "@/lib/services/estimate-service";
 import { quotationRequestService } from "@/lib/services/quotation-request-service";
+import { useAuth } from "@/providers/AuthProvider";
 
 export const myQuotesKeys = {
   activeRequest: ["quotation-requests", "active"] as const,
+  // getActive는 쿠키 기준이라 계정별로 키를 가른다. prefix 무효화는 activeRequest 유지
+  activeRequestByAuth: (userId: number | null) =>
+    [...myQuotesKeys.activeRequest, userId ?? "guest"] as const,
   pendingEstimates: ["estimates", "pending"] as const,
   requestHistory: ["quotation-requests", "history"] as const,
   requestEstimates: (requestId: number) => ["estimates", "by-request", requestId] as const,
@@ -20,8 +24,9 @@ export const myQuotesKeys = {
  * 때문입니다. 확정 배지는 `CardEstimateHistory`의 `isConfirmed`에만 있습니다.
  */
 export function usePendingQuotes() {
+  const { account } = useAuth();
   const activeRequest = useQuery({
-    queryKey: myQuotesKeys.activeRequest,
+    queryKey: myQuotesKeys.activeRequestByAuth(account?.userId ?? null),
     queryFn: () => quotationRequestService.getActive(),
   });
 
