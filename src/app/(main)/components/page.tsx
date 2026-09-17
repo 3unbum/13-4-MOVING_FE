@@ -16,6 +16,7 @@ const COMPONENT_ROUTES = [
   { label: "Pagination", slug: "pagination" },
   { label: "Progress Bar", slug: "progress-bar" },
   { label: "Select Card", slug: "select-card" },
+  { label: "Quote Share", slug: "quote-share" },
   { label: "Sub Header", slug: "sub-header" },
   { label: "Tab", slug: "tab" },
 ];
