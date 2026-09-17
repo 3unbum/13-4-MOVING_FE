@@ -26,15 +26,16 @@ const SIZE_CLASS: Record<ProfileAvatarSize, string> = {
   "134": "size-33.5",
 };
 
+/** 레티나(2~3x)까지 고려해 sizes에 요청 폭을 넉넉히 잡음 */
 const SIZE_PX: Record<ProfileAvatarSize, string> = {
-  "50": "50px",
-  "64": "64px",
-  "80": "80px",
-  "100": "100px",
-  "134": "134px",
+  "50": "100px",
+  "64": "128px",
+  "80": "160px",
+  "100": "200px",
+  "134": "402px",
 };
 
-// 50 외에는 기본 이미지가 따로 없어 140을 줄여 씁니다 (50을 키우면 깨집니다)
+// 50만 1x 전용 에셋, 나머지는 고해상도(1000px) 폴백을 Next가 리사이즈
 const FALLBACK_IMAGE: Record<ProfileAvatarSize, StaticImageData> = {
   "50": profile50,
   "64": profile140,
@@ -63,6 +64,7 @@ export default function ProfileAvatar({
         alt={alt}
         fill
         sizes={SIZE_PX[size]}
+        quality={90}
         className="object-cover"
       />
     </div>
