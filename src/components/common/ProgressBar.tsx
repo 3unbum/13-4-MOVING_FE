@@ -17,7 +17,14 @@ interface ReviewDistribution {
 
 const RATINGS = ["5", "4", "3", "2", "1"] as const;
 
-export default function ProgressBar({ data }: { data: ReviewDistribution }) {
+export default function ProgressBar({
+  data,
+  hideTitle = false,
+}: {
+  data: ReviewDistribution;
+  /** 상세처럼 제목을 밖에 둘 때 true. 기본은 안에 「리뷰」를 그린다. */
+  hideTitle?: boolean;
+}) {
   const average = data.totalCount
     ? RATINGS.reduce<number>((sum, rating) => sum + Number(rating) * data[rating], 0) /
       data.totalCount
@@ -26,7 +33,9 @@ export default function ProgressBar({ data }: { data: ReviewDistribution }) {
 
   return (
     <div className="tablet:gap-4 flex w-full flex-col gap-2">
-      <h2 className="text-16 tablet:text-20 text-black-black-400 font-semibold">리뷰</h2>
+      {hideTitle ? null : (
+        <h2 className="text-16 tablet:text-20 text-black-black-400 font-semibold">리뷰</h2>
+      )}
       <div className="tablet:flex-row tablet:items-start tablet:justify-between flex flex-col gap-4">
         <div className="flex items-center gap-4.5">
           <p className="text-40 text-black-black-400 font-medium">{average.toFixed(1)}</p>
