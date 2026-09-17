@@ -74,7 +74,8 @@ function EstimateCard({
  */
 export default function MoverEstimateList({ estimates, onDetailClick }: MoverEstimateListProps) {
   return (
-    <div className="tablet:gap-8 pc:grid-cols-2 pc:gap-6 grid w-full grid-cols-1 gap-6">
+    // 카드 간격 — 피그마 모바일 20 / 태블릿 32 / PC 24 (가로·세로 모두 24)
+    <div className="tablet:gap-8 pc:grid-cols-2 pc:gap-6 grid w-full grid-cols-1 gap-5">
       {estimates.map((estimate) => (
         <EstimateCard
           key={estimate.id}

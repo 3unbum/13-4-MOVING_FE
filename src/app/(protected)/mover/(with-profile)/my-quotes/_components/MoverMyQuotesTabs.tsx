@@ -121,7 +121,8 @@ export default function MoverMyQuotesTabs({ initialTab }: MoverMyQuotesTabsProps
           role="tabpanel"
           aria-labelledby={`tab-${tab}`}
           tabIndex={0}
-          className="tablet:max-w-147 pc:max-w-300 flex w-full max-w-82 flex-1 flex-col pt-8 pb-10"
+          // 탭 아래 여백 — 피그마 모바일 24 / 태블릿 32 / PC 55
+          className="tablet:max-w-147 tablet:pt-8 pc:max-w-300 pc:pt-13.75 flex w-full max-w-82 flex-1 flex-col pt-6 pb-10"
         >
           {panel.error ? (
             <QuoteError />
