@@ -26,13 +26,13 @@ const SIZE_CLASS: Record<ProfileAvatarSize, string> = {
   "134": "size-33.5",
 };
 
-/** 레티나(2~3x)까지 고려해 sizes에 요청 폭을 넉넉히 잡음 */
+/** Next Image sizes는 CSS 표시 폭. DPR 후보는 srcset이 고른다 */
 const SIZE_PX: Record<ProfileAvatarSize, string> = {
-  "50": "100px",
-  "64": "128px",
-  "80": "160px",
-  "100": "200px",
-  "134": "402px",
+  "50": "50px",
+  "64": "64px",
+  "80": "80px",
+  "100": "100px",
+  "134": "134px",
 };
 
 // 50만 1x 전용 에셋, 나머지는 고해상도(1000px) 폴백을 Next가 리사이즈

@@ -139,6 +139,8 @@ export default function MoverDetailClient() {
     : false;
   const favoriteCount = getFavoriteCount(mover.id, mover.favoriteCount);
   const isTargeted = Boolean(mover.isTargeted);
+  // disabled 쿼리의 isPending은 손님이 true라 CUSTOMER일 때만 묶음
+  const isRequestPending = (isCustomer && activeRequestQuery.isPending) || targetMutation.isPending;
 
   const handleToggleFavorite = () => {
     if (isFavoritesLoading) {
@@ -156,11 +158,11 @@ export default function MoverDetailClient() {
       setToastMessage("일반 유저만 지정 견적을 요청할 수 있어요");
       return;
     }
-    if (isTargeted || targetMutation.isPending) {
+    if (isTargeted || isRequestPending) {
       return;
     }
-    // 활성 요청 조회 중이면 잠깐 대기
-    if (activeRequestQuery.isPending) {
+    if (activeRequestQuery.isError) {
+      setToastMessage("활성 견적 정보를 확인하지 못했습니다. 다시 시도해 주세요.");
       return;
     }
     if (!activeRequestQuery.data) {
@@ -244,7 +246,7 @@ export default function MoverDetailClient() {
               nickName={mover.nickName}
               isFavorited={isFavorited}
               isTargeted={isTargeted}
-              isRequestPending={targetMutation.isPending}
+              isRequestPending={isRequestPending}
               onRequestQuote={handleRequestQuote}
               onToggleFavorite={handleToggleFavorite}
             />
@@ -261,7 +263,7 @@ export default function MoverDetailClient() {
       <MoverDetailMobileStickyCta
         isFavorited={isFavorited}
         isTargeted={isTargeted}
-        isRequestPending={targetMutation.isPending}
+        isRequestPending={isRequestPending}
         onRequestQuote={handleRequestQuote}
         onToggleFavorite={handleToggleFavorite}
       />
