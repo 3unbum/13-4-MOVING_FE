@@ -72,7 +72,7 @@ export default function MoverDetailClient() {
 
   // 활성 일반 견적 — 지정 요청 가드용 (CUSTOMER만)
   const activeRequestQuery = useQuery({
-    queryKey: myQuotesKeys.activeRequest,
+    queryKey: myQuotesKeys.activeRequestByAuth(account?.userId ?? null),
     queryFn: () => quotationRequestService.getActive(),
     enabled: isCustomer,
   });
