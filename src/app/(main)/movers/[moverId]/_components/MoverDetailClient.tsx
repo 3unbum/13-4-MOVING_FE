@@ -239,7 +239,7 @@ export default function MoverDetailClient() {
               </div>
 
               {/* 피그마: 공유 아래 디바이더 → 리뷰 제목·분포·목록·페이지네이션 */}
-              <div className="border-line-100 border-t pt-10">
+              <div className="border-line-100 pc:pt-10 border-t pt-8">
                 <MoverDetailReviews moverId={mover.id} />
               </div>
             </div>
