@@ -93,4 +93,11 @@ export const quotationRequestService = {
 
   getHistory: (page = 1) =>
     cookieFetch<QuotationRequest[]>(`/quotation-requests?page=${page}&limit=${HISTORY_PAGE_LIMIT}`),
+
+  /** 지정 견적 요청 (#19) — 활성 요청에 기사님 최대 3명 */
+  createTargeted: (quotationRequestId: number, moverId: number) =>
+    cookieFetch<{ id: number }>(`/quotation-requests/${quotationRequestId}/targeted-requests`, {
+      method: "POST",
+      body: JSON.stringify({ moverId }),
+    }),
 };

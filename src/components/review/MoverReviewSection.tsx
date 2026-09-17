@@ -49,7 +49,6 @@ function toProgressBarData(distribution: MoverRatingDistribution) {
  * 폭은 부모가 정함 (`w-full`).
  *
  * 마이페이지: <MoverReviewSection moverId={account.userId} />
- * 기사님 상세: <MoverReviewSection moverId={moverId} />
  */
 export default function MoverReviewSection({ moverId, className }: MoverReviewSectionProps) {
   const [page, setPage] = useState(1);

@@ -79,6 +79,7 @@
   /* Z-index */
   --z-gnb: 1000;
   --z-gnb-dropdown: 1010;
+  --z-sticky: 1050;
   --z-modal: 1100;
   --z-toast: 1200;
   --z-filter-dropdown: 100;
