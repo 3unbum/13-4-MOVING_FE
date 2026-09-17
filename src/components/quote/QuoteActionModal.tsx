@@ -132,6 +132,7 @@ export default function QuoteActionModal({
             to={toAddress}
             movingDate={movingDate}
             size={isMd ? "lg" : "sm"}
+            variant="modal"
           />
 
           {/* 구분선은 PC·모바일 모두 있습니다 (피그마 `1:10684` / `1:10738`) */}

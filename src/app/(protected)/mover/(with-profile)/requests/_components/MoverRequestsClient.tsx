@@ -149,7 +149,12 @@ export default function MoverRequestsClient() {
 
   return (
     <div className="flex min-h-dvh flex-col bg-gray-50">
-      <Header size={headerSize}>받은 요청</Header>
+      {/* 피그마(`1:10434`)는 PC에서 제목이 1200 콘텐츠 + 좌우 8 패딩 안에 들어갑니다
+          (텍스트 x=368 = 360+8). 공용 Header의 `px-92`는 1920에서만 맞는 고정값이라
+          같은 결과를 max-w로 냅니다 — 다른 페이지에 영향을 주지 않도록 여기서만 덮습니다 */}
+      <Header size={headerSize} className="pc:px-0">
+        <span className="pc:mx-auto pc:block pc:w-full pc:max-w-300 pc:px-2">받은 요청</span>
+      </Header>
 
       <div className="tablet:px-18 pc:px-10 flex flex-1 flex-col items-center px-6">
         {/* 피그마 여백을 패딩으로 옮기면 1280에서 그리드가 짓눌립니다 —
