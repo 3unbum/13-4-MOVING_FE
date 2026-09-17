@@ -1,6 +1,6 @@
 "use client";
 
-import { useQueries, useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import {
   MOVER_ESTIMATE_PAGE_SIZE,
   moverEstimateService,
@@ -13,14 +13,27 @@ export const moverEstimateKeys = {
   detail: (id: number) => ["mover-estimates", "detail", id] as const,
 };
 
-/** 확정 탭에 함께 들어가는 두 상태 — 확정됐고 이사 전 / 이사 끝남 */
-const CONFIRMED_STATUSES = ["CONFIRMED", "COMPLETED"] as const;
-
-function listQuery(status: MoverEstimateStatus) {
-  return {
+/**
+ * 상태별 커서 무한 조회.
+ *
+ * BE가 배열만 내려주고 `nextCursor`·총 개수를 주지 않아서, 마지막 항목의 `id`를
+ * 커서로 쓰고 "받은 개수가 페이지 크기보다 적으면 끝"으로 판단합니다
+ * (받은 요청 `useMoverRequests`와 같은 방식).
+ *
+ * 총 개수를 모르니 공용 `Pagination`(`totalPages`가 필요)은 쓸 수 없어 "더 보기"로 갑니다.
+ */
+function useEstimatePages(status: MoverEstimateStatus) {
+  return useInfiniteQuery({
     queryKey: moverEstimateKeys.list(status),
-    queryFn: () => moverEstimateService.getList({ status, take: MOVER_ESTIMATE_PAGE_SIZE }),
-  };
+    queryFn: ({ pageParam }) =>
+      moverEstimateService.getList({ status, cursor: pageParam, take: MOVER_ESTIMATE_PAGE_SIZE }),
+    initialPageParam: undefined as number | undefined,
+    getNextPageParam: (lastPage) => {
+      // 요청한 만큼 다 안 왔으면 마지막 페이지입니다
+      if (lastPage.length < MOVER_ESTIMATE_PAGE_SIZE) return undefined;
+      return lastPage.at(-1)?.id;
+    },
+  });
 }
 
 /**
@@ -29,29 +42,45 @@ function listQuery(status: MoverEstimateStatus) {
  * BE가 `status` 하나만 받아서 두 번 부르고 합칩니다. 카드 종류가 달라서
  * (고객 견적 / 이사완료) 어차피 화면에서 상태를 봐야 하므로 합쳐도 무리가 없습니다.
  *
- * 정렬은 최신순입니다 — BE가 `id desc`로 주는데, 두 배열을 합치면 그 순서가 깨져서
- * `id` 기준으로 다시 세웁니다.
+ * "더 보기"는 **아직 남은 쪽만** 부릅니다 — 끝난 쪽을 또 부르면 같은 커서로 빈 응답만
+ * 받습니다. 두 배열을 합치면 BE의 `id desc` 순서가 깨져서 다시 세웁니다.
  */
 export function useConfirmedEstimates() {
-  const results = useQueries({
-    queries: CONFIRMED_STATUSES.map((status) => listQuery(status)),
-  });
+  const confirmed = useEstimatePages("CONFIRMED");
+  const completed = useEstimatePages("COMPLETED");
+  const queries = [confirmed, completed];
 
-  const isPending = results.some((result) => result.isPending);
-  const error = results.find((result) => result.error)?.error ?? null;
-  const estimates = results.flatMap((result) => result.data ?? []).sort((a, b) => b.id - a.id);
+  const estimates = queries
+    .flatMap((query) => query.data?.pages.flat() ?? [])
+    .sort((a, b) => b.id - a.id);
 
-  return { estimates, isPending, error };
+  return {
+    estimates,
+    isPending: queries.some((query) => query.isPending),
+    error: queries.find((query) => query.error)?.error ?? null,
+    hasNextPage: queries.some((query) => query.hasNextPage),
+    isFetchingNextPage: queries.some((query) => query.isFetchingNextPage),
+    fetchNextPage: () => {
+      queries.forEach((query) => {
+        if (query.hasNextPage && !query.isFetchingNextPage) query.fetchNextPage();
+      });
+    },
+  };
 }
 
 /** 반려 견적 탭 */
 export function useRejectedEstimates() {
-  const query = useQuery(listQuery("REJECTED"));
+  const query = useEstimatePages("REJECTED");
 
   return {
-    estimates: query.data ?? ([] as MoverEstimate[]),
+    estimates: query.data?.pages.flat() ?? ([] as MoverEstimate[]),
     isPending: query.isPending,
     error: query.error,
+    hasNextPage: query.hasNextPage,
+    isFetchingNextPage: query.isFetchingNextPage,
+    fetchNextPage: () => {
+      if (query.hasNextPage && !query.isFetchingNextPage) query.fetchNextPage();
+    },
   };
 }
 

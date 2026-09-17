@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import emptyCharacter from "@/assets/images/common/empty-review.png";
+import Button from "@/components/common/Button";
 import Tab from "@/components/common/Tab";
 import TabList from "@/components/common/TabList";
 import MoverEstimateList from "@/components/mover/MoverEstimateList";
@@ -131,7 +132,27 @@ export default function MoverMyQuotesTabs({ initialTab }: MoverMyQuotesTabsProps
           ) : panel.estimates.length === 0 ? (
             <EmptyState message={emptyMessage} />
           ) : (
-            <MoverEstimateList estimates={panel.estimates} onDetailClick={openDetail} />
+            <>
+              <MoverEstimateList estimates={panel.estimates} onDetailClick={openDetail} />
+
+              {/* 피그마 목록에는 페이지네이션도 "더 보기"도 없습니다(시안이 4~6건 기준).
+                  실제로는 55건인 계정이 있어 12건 뒤가 보이지 않아 넣었습니다.
+                  공용 `Pagination`은 `totalPages`가 필요한데 BE가 커서만 주고
+                  총 개수를 안 줘서 쓸 수 없습니다. */}
+              {panel.hasNextPage && (
+                <div className="mt-8 flex justify-center">
+                  <Button
+                    variant="outlined"
+                    size="sm"
+                    className="w-full max-w-81.75"
+                    disabled={panel.isFetchingNextPage}
+                    onClick={panel.fetchNextPage}
+                  >
+                    {panel.isFetchingNextPage ? "불러오는 중..." : "더 보기"}
+                  </Button>
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>
