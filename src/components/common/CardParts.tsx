@@ -18,25 +18,48 @@ export function FavoriteCount({
   count,
   isFavorited = false,
   showCount = true,
+  /** 상세 페이지처럼 숫자→하트 순서로 둘 때 */
+  countFirst = false,
   countClassName = "text-gray-gray-500",
+  className,
   onClick,
 }: {
   count: number;
   isFavorited?: boolean;
   /** sm 카드처럼 하트만 노출할 때 false */
   showCount?: boolean;
+  countFirst?: boolean;
   countClassName?: string;
+  className?: string;
   onClick?: () => void;
 }) {
+  const heart = (
+    <Image src={isFavorited ? likeRedActive : likeDefault} alt="" className="size-6 shrink-0" />
+  );
+  const countEl = showCount ? <span className={cn("text-14", countClassName)}>{count}</span> : null;
+
   const content = (
     <>
-      <Image src={isFavorited ? likeRedActive : likeDefault} alt="" className="size-6 shrink-0" />
-      {showCount && <span className={cn("text-14", countClassName)}>{count}</span>}
+      {countFirst ? (
+        <>
+          {countEl}
+          {heart}
+        </>
+      ) : (
+        <>
+          {heart}
+          {countEl}
+        </>
+      )}
     </>
   );
 
   if (!onClick) {
-    return <div className="flex shrink-0 items-center justify-center gap-0.5">{content}</div>;
+    return (
+      <div className={cn("flex shrink-0 items-center justify-center gap-0.5", className)}>
+        {content}
+      </div>
+    );
   }
 
   return (
@@ -51,7 +74,7 @@ export function FavoriteCount({
         onClick();
       }}
       onKeyDown={(event) => event.stopPropagation()}
-      className="flex shrink-0 cursor-pointer items-center justify-center gap-0.5"
+      className={cn("flex shrink-0 cursor-pointer items-center justify-center gap-0.5", className)}
     >
       {content}
     </button>
