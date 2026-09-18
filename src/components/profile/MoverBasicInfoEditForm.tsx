@@ -1,6 +1,7 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Button from "@/components/common/Button";
@@ -41,10 +42,9 @@ export default function MoverBasicInfoEditForm({
   account,
   onAccountUpdated,
 }: MoverBasicInfoEditFormProps) {
+  const router = useRouter();
   const { refetch } = useAuth();
   const [submitError, setSubmitError] = useState<string>();
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
-  const toastTimeoutRef = useRef<number | null>(null);
   // PC에서만 필드를 md 크기로 키움 (CustomerProfileEditForm과 동일 패턴)
   const isPc = useMediaQuery(PC_QUERY);
   const fieldSize = isPc ? "md" : "sm";
@@ -60,17 +60,6 @@ export default function MoverBasicInfoEditForm({
     // 필드는 accountToFormValues가 항상 빈 문자열을 돌려주므로 제출 성공 후 자동으로 비워진다.
     values: accountToFormValues(account),
   });
-
-  function showToast(message: string) {
-    if (toastTimeoutRef.current != null) {
-      window.clearTimeout(toastTimeoutRef.current);
-    }
-    setToastMessage(message);
-    toastTimeoutRef.current = window.setTimeout(() => {
-      toastTimeoutRef.current = null;
-      setToastMessage(null);
-    }, 3000);
-  }
 
   async function onSubmit(values: MoverBasicInfoUpdateFormValues) {
     setSubmitError(undefined);
@@ -88,7 +77,9 @@ export default function MoverBasicInfoEditForm({
       // 수정 자체는 끝났으니 refetch 실패를 수정 실패로 취급하지 않는다 — GNB가 못 갱신되더라도
       // 계정 캐시는 다음 새로고침 때 맞춰진다. (#123, CustomerProfileEditForm과 동일 패턴)
       await refetch().catch(() => {});
-      showToast("기본정보를 수정했어요");
+      // 성공하면 토스트 대신 마이페이지로 돌아간다 — MoverProfileEditForm과 동일 패턴
+      // (HoneyLatlll 리뷰, PR #135)
+      router.push("/mover/mypage");
     } catch (error) {
       setSubmitError(
         error instanceof ApiError
@@ -99,13 +90,8 @@ export default function MoverBasicInfoEditForm({
   }
 
   return (
-    // handleSubmit(onSubmit)을 JSX 속성 위치에서 직접 호출하면 react-compiler eslint가
-    // "렌더 중 ref 접근 가능성"으로 오탐한다(onSubmit이 toastTimeoutRef를 참조하는 showToast를
-    // 부르기 때문) — 이벤트 핸들러 경계 안에서 호출하도록 한 겹 감싸서 우회한다.
     <form
-      onSubmit={(event) => {
-        void handleSubmit(onSubmit)(event);
-      }}
+      onSubmit={handleSubmit(onSubmit)}
       // 컨텐츠(그리드)-버튼 간격: 피그마 실측 모바일/태블릿 32px(gap-8), 데스크톱 64px(pc:gap-16) —
       // 프로필 수정 화면(데스크톱 48px)과 다른 값이라 그대로 하드코딩. #73 재확인(2026-09-17).
       className="pc:gap-16 flex w-full flex-col gap-8"
@@ -236,7 +222,6 @@ export default function MoverBasicInfoEditForm({
       </div>
 
       {submitError && <Toast message={submitError} />}
-      {toastMessage && <Toast message={toastMessage} />}
     </form>
   );
 }
