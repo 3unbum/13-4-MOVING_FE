@@ -28,7 +28,7 @@ export default function MoverMyPageContent({ mover, moverId }: MoverMyPageConten
 
   return (
     <section className="tablet:px-18 tablet:py-10 pc:mx-auto pc:w-300 pc:px-0 pc:py-12 flex w-full flex-1 flex-col px-5 py-8">
-      <div className="pc:flex-row pc:items-start pc:justify-between flex flex-col gap-10">
+      <div className="pc:flex-row pc:items-start pc:justify-between flex flex-col gap-24">
         <div className="tablet:gap-10 flex min-w-0 flex-1 flex-col gap-6">
           {/* 이 묶음(프로필+구분선+활동현황)만 태블릿부터 32px, 그 아래 섹션들과는 40px 간격 */}
           <div className="tablet:gap-8 flex flex-col gap-6">
