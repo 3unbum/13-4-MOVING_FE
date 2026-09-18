@@ -83,7 +83,9 @@ export default function MoverProfileEditForm({
     const next = current.includes(value)
       ? current.filter((item) => item !== value)
       : [...current, value];
-    setValue(field, next, { shouldValidate: true });
+    // setValue는 기본적으로 dirty 처리를 안 해줘서(shouldDirty 옵션 없으면) 칩만 바꾸고
+    // 텍스트 필드는 안 건드리면 isDirty가 그대로 false로 남아 수정하기 버튼이 안 풀리는 문제가 있었음
+    setValue(field, next, { shouldValidate: true, shouldDirty: true });
   }
 
   function showToast(message: string) {
