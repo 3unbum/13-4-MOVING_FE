@@ -1,5 +1,6 @@
 "use client";
 
+import { ConfirmedBadge } from "@/components/common/CardParts";
 import MoveTypeChip from "@/components/filter/ChipMoveType";
 import QuoteShare from "@/components/quote/QuoteShare";
 import type { MoverEstimate } from "@/lib/services/mover-estimate-service";
@@ -37,26 +38,6 @@ function InfoRow({ label, value }: { label: string; value: string }) {
   );
 }
 
-/** 확정견적 배지 — 피그마 `1:9338` (아이콘 + "확정견적") */
-function ConfirmedBadge() {
-  return (
-    <span className="text-16 flex shrink-0 items-center gap-1 font-bold text-orange-400">
-      <svg viewBox="0 0 20 20" className="size-5" aria-hidden>
-        <circle cx="10" cy="10" r="10" fill="currentColor" />
-        <path
-          d="M5.5 10.5l3 3 6-6"
-          stroke="white"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          fill="none"
-        />
-      </svg>
-      확정견적
-    </span>
-  );
-}
-
 /**
  * 견적 상세 (페이지 16 하위, 기사님).
  *
@@ -82,9 +63,18 @@ export default function MoverQuoteDetailView({
       <div className="tablet:pt-11.5 pc:max-w-300 pc:flex-row pc:items-start pc:gap-34.75 pc:pt-10.75 flex w-full max-w-150 flex-col pt-8.75 pb-10">
         {/* 본문 — 피그마 PC 741 */}
         <div className="pc:max-w-185.25 flex w-full min-w-0 flex-col">
-          <div className="flex items-center gap-3">
-            <MoveTypeChip variant={request.category} size="md" />
-            {estimate.isTargeted && <MoveTypeChip variant="TARGETED" size="md" />}
+          {/* 배지 위치가 사이즈마다 다릅니다 — 모바일은 칩과 같은 줄(피그마 `1:9476` x=239),
+              태블릿·PC는 이름 줄 오른쪽(`1:9338` x=645). */}
+          <div className="flex w-full items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <MoveTypeChip variant={request.category} size="md" />
+              {estimate.isTargeted && <MoveTypeChip variant="TARGETED" size="md" />}
+            </div>
+            {isConfirmed && (
+              <span className="tablet:hidden">
+                <ConfirmedBadge />
+              </span>
+            )}
           </div>
 
           <div className="mt-5 flex w-full items-center justify-between gap-4">
@@ -92,7 +82,11 @@ export default function MoverQuoteDetailView({
               <span className="min-w-0 truncate">{request.userName}</span>
               <span className="shrink-0">고객님</span>
             </p>
-            {isConfirmed && <ConfirmedBadge />}
+            {isConfirmed && (
+              <span className="tablet:inline-flex hidden">
+                <ConfirmedBadge />
+              </span>
+            )}
           </div>
 
           <hr className="border-line-100 tablet:mt-6.75 mt-5 w-full border-0 border-t" />
