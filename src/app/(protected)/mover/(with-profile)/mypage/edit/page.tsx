@@ -1,15 +1,10 @@
 import { requireRole } from "@/lib/auth/guards";
 import MoverProfileEditPanel from "@/components/profile/MoverProfileEditPanel";
 
-// 피그마 "마이페이지_프로필 수정_기사님"(#73) 대응. 처음엔 /mover/mypage 하나에 탭으로
-// 프로필 수정/기본정보 수정을 같이 넣으려 했으나(2026-09-17 1차 구현), 피그마 원본을 다시
-// 확인한 결과 둘은 탭이 아니라 완전히 분리된 화면이고, PR #132(이슈 #122, 민수님)의 메인
-// 마이페이지 화면에 "내 프로필 수정"/"기본 정보 수정" 버튼 두 개가 각각 이 화면들로 이동시키는
-// 구조였음이 확인돼(2026-09-17 2차 확인) 탭을 걷어내고 라우트를 분리했다 — 기본정보 수정은
-// /mover/mypage/edit/basic-info로 분리. PR #132의 두 버튼(MoverProfileEditButtons.tsx)은
-// 지금 둘 다 임시로 /mover/requests를 가리키는 TEMP_DESTINATION 상태 — 두 PR이 머지되면
-// "내 프로필 수정" 버튼은 이 경로로, "기본 정보 수정" 버튼은 /mover/mypage/edit/basic-info로
-// 바꿔주는 후속 작업이 필요하다.
+// 피그마 "마이페이지_프로필 수정_기사님"(#73) 대응. 프로필 수정/기본정보 수정은 탭이 아니라
+// 완전히 분리된 화면이고, PR #132(이슈 #122, 민수님)의 메인 마이페이지 화면에 있는 "내 프로필
+// 수정"/"기본 정보 수정" 버튼이 각각 이 화면과 /mover/mypage/edit/basic-info로 이동시킨다
+// (MoverProfileEditButtons.tsx).
 //
 // (with-profile) 레이아웃이 이미 requireRole+hasProfile 하드게이트를 걸어주지만, 폼 초기값으로
 // 쓸 계정 데이터 자체가 필요해서 여기서 한 번 더 호출한다 — guards.ts는 쿠키 기반 조회라 가볍고,
