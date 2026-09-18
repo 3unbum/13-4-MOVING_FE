@@ -65,7 +65,7 @@ export default function MoverProfileEditForm({
     handleSubmit,
     setValue,
     reset,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting, isDirty },
   } = useForm<MoverProfileFormValues>({
     resolver: zodResolver(moverProfileSchema),
     // account가 나중에(부모의 재조회로) 바뀌면 RHF가 그 시점에 폼을 다시 리셋해준다 —
@@ -294,7 +294,9 @@ export default function MoverProfileEditForm({
               type="submit"
               size="sm"
               className="pc:h-15 pc:rounded-2xl pc:text-18"
-              disabled={isSubmitting || isImageUploading}
+              // 변경된 필드가 없으면 제출을 막는다 — isDirty는 values 옵션이 갱신될 때마다(=계정
+              // 재조회/저장 성공 시) 새 기준값과 비교해 자동으로 재계산된다 (PR #135 리뷰, singsangsong28)
+              disabled={isSubmitting || isImageUploading || !isDirty}
             >
               {isSubmitting ? "수정 중..." : "수정하기"}
             </Button>

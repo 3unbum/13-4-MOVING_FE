@@ -53,7 +53,7 @@ export default function MoverBasicInfoEditForm({
     register,
     handleSubmit,
     reset,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting, isDirty },
   } = useForm<MoverBasicInfoUpdateFormValues>({
     resolver: zodResolver(moverBasicInfoUpdateSchema),
     // account가 나중에(부모의 재조회로) 바뀌면 RHF가 그 시점에 폼을 다시 리셋해준다 — 비밀번호
@@ -225,7 +225,9 @@ export default function MoverBasicInfoEditForm({
               type="submit"
               size="sm"
               className="pc:h-15 pc:rounded-2xl pc:text-18"
-              disabled={isSubmitting}
+              // 변경된 필드가 없으면 제출을 막는다 — isDirty는 values 옵션이 갱신될 때마다(=계정
+              // 재조회/저장 성공 시) 새 기준값과 비교해 자동으로 재계산된다 (PR #135 리뷰, singsangsong28)
+              disabled={isSubmitting || !isDirty}
             >
               {isSubmitting ? "수정 중..." : "수정하기"}
             </Button>
