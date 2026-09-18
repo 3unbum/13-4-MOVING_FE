@@ -2,7 +2,7 @@
 
 import { cn } from "@/lib/utils/cn";
 import Image from "next/image";
-import { useId } from "react";
+import { useId, useState } from "react";
 import starLgActive from "@/assets/icons/star-lg-active.svg";
 import starLgDefault from "@/assets/icons/star-lg-default.svg";
 import starMdActive from "@/assets/icons/star-md-active.svg";
@@ -15,6 +15,8 @@ import Modal, { ModalHeader } from "@/components/common/Modal";
 import MoverName from "@/components/mover/MoverName";
 import MovingInfo from "@/components/quote/MovingInfo";
 import ProfileAvatar from "@/components/common/ProfileAvatar";
+import ReviewKeywordChips from "@/components/review/ReviewKeywordChips";
+import { MAX_REVIEW_CHIPS, buildReviewFromChips } from "@/components/review/ReviewChips";
 
 type ReviewWriteModalSize = "sm" | "md";
 type ReviewWriteModalPosition = "center" | "bottom";
@@ -66,6 +68,34 @@ export default function ReviewWriteModal({
   const isMd = size === "md";
   const resolvedPosition = position ?? (isMd ? "center" : "bottom");
   const isValid = rating > 0 && review.trim().length >= MIN_REVIEW_LENGTH;
+  const [selectedChipIds, setSelectedChipIds] = useState<string[]>([]);
+  // 칩으로 만든 마지막 문장. 후기가 이와 같을 때만 칩이 본문을 갱신한다.
+  const [autoReview, setAutoReview] = useState("");
+
+  const applyChips = (nextIds: string[]) => {
+    const nextReview = buildReviewFromChips(nextIds);
+    setSelectedChipIds(nextIds);
+    setAutoReview(nextReview);
+    onReviewChange(nextReview);
+  };
+
+  const handleToggleChip = (id: string) => {
+    const isSelected = selectedChipIds.includes(id);
+    if (!isSelected && selectedChipIds.length >= MAX_REVIEW_CHIPS) return;
+
+    const nextIds = isSelected
+      ? selectedChipIds.filter((chipId) => chipId !== id)
+      : [...selectedChipIds, id];
+    applyChips(nextIds);
+  };
+
+  const handleReviewInput = (value: string) => {
+    onReviewChange(value);
+    if (value !== autoReview) {
+      setSelectedChipIds([]);
+      setAutoReview("");
+    }
+  };
 
   return (
     <Modal
@@ -115,6 +145,13 @@ export default function ReviewWriteModal({
           <StarRatingInput size={size} value={rating} onChange={onRatingChange} />
         </div>
 
+        <ReviewKeywordChips
+          size={size}
+          selectedIds={selectedChipIds}
+          onToggle={handleToggleChip}
+          disabled={isSubmitting}
+        />
+
         <div className="flex w-full flex-col items-start gap-3">
           <p className={cn("text-black-300 font-semibold", isMd ? "text-18" : "text-16")}>
             상세 후기를 작성해 주세요
@@ -122,10 +159,11 @@ export default function ReviewWriteModal({
           <InputTextArea
             size={isMd ? "md" : "sm"}
             label="상세 후기"
-            placeholder="최소 10자 이상 입력해주세요"
+            placeholder="키워드를 고르거나 직접 입력해 주세요 (최소 10자)"
             maxLength={200}
             value={review}
-            onChange={(event) => onReviewChange(event.target.value)}
+            onChange={(event) => handleReviewInput(event.target.value)}
+            disabled={isSubmitting}
           />
         </div>
       </div>
