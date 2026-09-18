@@ -105,6 +105,8 @@ export default function CustomerSignupPage() {
                   placeholder="비밀번호를 입력해 주세요"
                   autoComplete="new-password"
                   errorMessage={errors.password?.message}
+                  onCopy={(e) => e.preventDefault()}
+                  onCut={(e) => e.preventDefault()}
                   // RHF는 바뀐 필드만 재검증하므로, password 변경 시 passwordConfirm의 일치 검사도 다시 돌리려면 필요
                   {...register("password", { deps: ["passwordConfirm"] })}
                 />
@@ -115,6 +117,8 @@ export default function CustomerSignupPage() {
                   placeholder="비밀번호 다시 한번 입력해 주세요"
                   autoComplete="new-password"
                   errorMessage={errors.passwordConfirm?.message}
+                  onCopy={(e) => e.preventDefault()}
+                  onCut={(e) => e.preventDefault()}
                   {...register("passwordConfirm")}
                 />
               </div>
