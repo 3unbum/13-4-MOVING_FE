@@ -55,6 +55,13 @@ export const customerProfileUpdateSchema = z
     message: "현재 비밀번호를 입력해주세요",
     path: ["currentPassword"],
   })
+  // 반대 방향도 막아야 함 — currentPassword만 입력하고 newPassword는 비워두면 onSubmit에서
+  // newPassword가 falsy라 currentPassword까지 통째로 페이로드에서 빠져서 조용히 무시된다.
+  // "입력했는데 아무 일도 안 일어남"으로 보이는 문제라 제출 전에 막아준다.
+  .refine((data) => !data.currentPassword || !!data.newPassword, {
+    message: "새 비밀번호를 입력해주세요",
+    path: ["newPassword"],
+  })
   .refine((data) => !data.newPassword || data.newPassword === data.newPasswordConfirm, {
     message: "비밀번호가 일치하지 않습니다",
     path: ["newPasswordConfirm"],
@@ -93,6 +100,13 @@ export const moverBasicInfoUpdateSchema = z
   .refine((data) => !data.newPassword || !!data.currentPassword, {
     message: "현재 비밀번호를 입력해주세요",
     path: ["currentPassword"],
+  })
+  // 반대 방향도 막아야 함 — currentPassword만 입력하고 newPassword는 비워두면 onSubmit에서
+  // newPassword가 falsy라 currentPassword까지 통째로 페이로드에서 빠져서 조용히 무시된다.
+  // "입력했는데 아무 일도 안 일어남"으로 보이는 문제라 제출 전에 막아준다.
+  .refine((data) => !data.currentPassword || !!data.newPassword, {
+    message: "새 비밀번호를 입력해주세요",
+    path: ["newPassword"],
   })
   .refine((data) => !data.newPassword || data.newPassword === data.newPasswordConfirm, {
     message: "비밀번호가 일치하지 않습니다",
