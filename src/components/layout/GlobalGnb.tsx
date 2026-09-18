@@ -39,6 +39,7 @@ export default function GlobalGnb() {
       isLoggedIn={isAuthenticated}
       role={account?.role === "MOVER" ? "mover" : "customer"}
       userName={account?.name}
+      profileImage={account?.image}
       onLoginClick={() => router.push(GNB_LOGIN_PATH)}
       onProfileSelect={handleProfileSelect}
     />

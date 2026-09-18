@@ -15,6 +15,7 @@ import { REGION_OPTIONS, SERVICE_OPTIONS } from "@/constants/profile/options";
 import { moverProfileSchema, type MoverProfileFormValues } from "@/lib/schemas/profile-schema";
 import { profileService } from "@/lib/services/profile-service";
 import { cn } from "@/lib/utils/cn";
+import { useAuth } from "@/providers/AuthProvider";
 
 // 피그마 "프로필 등록_기사님" 대응 — 일반 유저 폼보다 필드가 많고, region도
 // services와 마찬가지로 다중 선택(regions 배열)이라는 게 일반 유저 폼과의 핵심 차이.
@@ -22,6 +23,7 @@ import { cn } from "@/lib/utils/cn";
 // 이라 pc:grid로 나눔 — 모바일·태블릿은 세로 한 줄.
 export default function MoverProfileForm() {
   const router = useRouter();
+  const { refetch } = useAuth();
   const [submitError, setSubmitError] = useState<string | undefined>();
   // ProfileImageUpload가 서버 업로드 중일 때는 제출을 막아야 함 — onChange가 업로드 완료 후에만
   // 호출되므로, 업로드 중 제출하면 새 이미지 URL이 반영되기 전에 폼이 전송될 수 있다
@@ -62,6 +64,10 @@ export default function MoverProfileForm() {
     setSubmitError(undefined);
     try {
       await profileService.registerMover(values);
+      // refetch 실패는 제출 실패로 취급하지 않되, 로그는 남긴다
+      await refetch().catch((error) => {
+        console.error("프로필 등록 후 계정 정보 갱신에 실패했어요", error);
+      });
       router.push("/mover/requests");
     } catch {
       setSubmitError("프로필 등록에 실패했어요. 잠시 후 다시 시도해주세요");

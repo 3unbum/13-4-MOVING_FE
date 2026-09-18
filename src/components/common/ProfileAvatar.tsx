@@ -44,6 +44,13 @@ const FALLBACK_IMAGE: Record<ProfileAvatarSize, StaticImageData> = {
   "134": profile140,
 };
 
+const FALLBACK_FRAME_CLASS: Record<Exclude<ProfileAvatarSize, "50">, string> = {
+  "64": "absolute left-[-16px] top-[-8.96px] size-24",
+  "80": "absolute left-[-20px] top-[-11.2px] size-[120px]",
+  "100": "absolute left-[-21.64px] top-[-11.94px] size-[143.284px]",
+  "134": "absolute left-[-29px] top-[-16px] size-48",
+};
+
 // 사용법: <ProfileAvatar src={mover.image} alt={mover.nickName} size="134" />
 export default function ProfileAvatar({
   src,
@@ -51,6 +58,8 @@ export default function ProfileAvatar({
   size = "50",
   className,
 }: ProfileAvatarProps) {
+  const hasSrc = Boolean(src);
+
   return (
     <div
       className={cn(
@@ -59,14 +68,37 @@ export default function ProfileAvatar({
         className
       )}
     >
-      <Image
-        src={src || FALLBACK_IMAGE[size]}
-        alt={alt}
-        fill
-        sizes={SIZE_PX[size]}
-        quality={90}
-        className="object-cover"
-      />
+      {hasSrc ? (
+        <Image
+          src={src!}
+          alt={alt}
+          fill
+          sizes={SIZE_PX[size]}
+          quality={90}
+          className="object-cover"
+        />
+      ) : size === "50" ? (
+        // 프로필_50은 이미 상체 크롭된 1x 에셋 — offset 프레임 불필요
+        <Image
+          src={FALLBACK_IMAGE[size]}
+          alt={alt}
+          fill
+          sizes={SIZE_PX[size]}
+          quality={90}
+          className="object-cover"
+        />
+      ) : (
+        <div className={FALLBACK_FRAME_CLASS[size]}>
+          <Image
+            src={FALLBACK_IMAGE[size]}
+            alt={alt}
+            fill
+            sizes={SIZE_PX[size]}
+            quality={90}
+            className="object-cover"
+          />
+        </div>
+      )}
     </div>
   );
 }

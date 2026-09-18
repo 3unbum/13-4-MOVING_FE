@@ -99,7 +99,7 @@ export default function CustomerProfileForm() {
               이용 서비스는 중복 선택 가능하며, 언제든 수정 가능해요!
             </p>
           </div>
-          <div className="pc:gap-3 flex flex-wrap gap-2">
+          <div className="pc:gap-3 flex flex-wrap gap-3">
             {SERVICE_OPTIONS.map((option) => {
               const selected = selectedServices.includes(option.value);
               return (
@@ -131,7 +131,7 @@ export default function CustomerProfileForm() {
               내가 사는 지역은 언제든 수정 가능해요!
             </p>
           </div>
-          <div className="pc:gap-3.5 flex flex-wrap gap-2">
+          <div className="pc:gap-3.5 flex flex-wrap gap-3">
             {REGION_OPTIONS.map((option) => {
               const selected = selectedRegion === option.value;
               return (

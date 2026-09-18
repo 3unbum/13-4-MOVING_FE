@@ -1,6 +1,7 @@
 import { cn } from "@/lib/utils/cn";
 import type { HTMLAttributes } from "react";
 import { SERVICE_LABELS, type ServiceCode } from "@/components/filter/ChipRegion";
+import { shortenAddress } from "@/lib/utils/address";
 
 type SubHeaderSize = "sm" | "md" | "lg";
 
@@ -21,13 +22,6 @@ function formatDate(iso: string) {
   const mm = String(kst.getUTCMonth() + 1).padStart(2, "0");
   const dd = String(kst.getUTCDate()).padStart(2, "0");
   return `${kst.getUTCFullYear()}년 ${mm}월 ${dd}일 (${WEEKDAYS[kst.getUTCDay()]})`;
-}
-
-function shortenAddress(address: string) {
-  const tokens = address.trim().split(/\s+/);
-  const isProvince = tokens[0]?.endsWith("도");
-  const city = isProvince ? tokens[0] : tokens[0]?.replace(/(특별시|광역시)/, "시");
-  return tokens[1] ? `${city} ${tokens[1]}` : (city ?? "");
 }
 
 function Field({

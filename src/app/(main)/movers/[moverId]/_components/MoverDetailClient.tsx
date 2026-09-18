@@ -1,20 +1,24 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import moverDetailBannerLg from "@/assets/images/common/mover-detail-banner-lg.svg";
 import moverDetailBannerMd from "@/assets/images/common/mover-detail-banner-md.svg";
 import moverDetailBannerSm from "@/assets/images/common/mover-detail-banner-sm.svg";
+import Pagination from "@/components/common/Pagination";
+import ProgressBar from "@/components/common/ProgressBar";
 import Toast from "@/components/common/Toast";
 import InfoRequiredModal from "@/components/quote/InfoRequiredModal";
+import CardReview from "@/components/review/CardReview";
 import { moverQueryKeys } from "@/constants/query-keys/movers";
 import { useMoverDetail } from "@/hooks/useMoverDetail";
 import { myQuotesKeys } from "@/hooks/useMyQuotes";
 import { useShare } from "@/hooks/useShare";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { useToggleMoverFavorite } from "@/hooks/useToggleMoverFavorite";
+import { moverService, type MoverRatingDistribution } from "@/lib/services/mover-service";
 import { quotationRequestService } from "@/lib/services/quotation-request-service";
 import { ApiError } from "@/lib/utils/api-error";
 import { cn } from "@/lib/utils/cn";
@@ -234,8 +238,9 @@ export default function MoverDetailClient() {
                 />
               </div>
 
-              <div className="border-line-100 border-t pt-10">
-                {/* TODO(리뷰 담당): 여기에 리뷰 영역(요약·목록·페이지네이션)을 삽입하세요 */}
+              {/* 피그마: 공유 아래 디바이더 → 리뷰 제목·분포·목록·페이지네이션 */}
+              <div className="border-line-100 pc:pt-10 border-t pt-8">
+                <MoverDetailReviews moverId={mover.id} />
               </div>
             </div>
 
@@ -294,6 +299,131 @@ export default function MoverDetailClient() {
       />
 
       {displayToast && <Toast message={displayToast} />}
+    </div>
+  );
+}
+
+const REVIEW_TAKE = 5;
+const KST_OFFSET_MS = 9 * 60 * 60 * 1000;
+
+function formatReviewCreatedAt(iso: string) {
+  const kst = new Date(new Date(iso).getTime() + KST_OFFSET_MS);
+  const year = kst.getUTCFullYear();
+  const month = String(kst.getUTCMonth() + 1).padStart(2, "0");
+  const day = String(kst.getUTCDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+/** CardReview는 마스킹된 작성자를 받는다. */
+function maskReviewWriter(name: string) {
+  const trimmed = name.trim();
+  if (!trimmed) return "****";
+  return `${trimmed.slice(0, 1)}****`;
+}
+
+function toProgressBarData(distribution: MoverRatingDistribution) {
+  return {
+    "1": distribution[1],
+    "2": distribution[2],
+    "3": distribution[3],
+    "4": distribution[4],
+    "5": distribution[5],
+    totalCount: distribution.totalCount,
+  };
+}
+
+function ReviewHeading() {
+  return <h2 className="text-16 tablet:text-20 text-black-black-400 font-semibold">리뷰</h2>;
+}
+
+/** 상세 페이지 리뷰 영역. 마이페이지 공용 섹션과 분리해서 여기서만 다룬다. */
+function MoverDetailReviews({ moverId }: { moverId: number }) {
+  const [page, setPage] = useState(1);
+  // 피그마: 모바일 Card-list-review sm, 태블릿·PC lg
+  const isTabletUp = useMediaQuery(TABLET_QUERY);
+  const reviewCardSize = isTabletUp ? "lg" : "sm";
+
+  const listQuery = useQuery({
+    queryKey: moverQueryKeys.reviewList(moverId, page),
+    queryFn: () => moverService.getReviews(moverId, page, REVIEW_TAKE),
+    placeholderData: keepPreviousData,
+  });
+
+  const distributionQuery = useQuery({
+    queryKey: moverQueryKeys.reviewDistribution(moverId),
+    queryFn: () => moverService.getReviewDistribution(moverId),
+  });
+
+  if (listQuery.isPending && !listQuery.data) {
+    return (
+      <div className="flex w-full flex-col gap-4">
+        <ReviewHeading />
+        <div className="text-16 text-gray-gray-400 min-h-[200px] py-20 text-center" role="status">
+          리뷰를 불러오는 중이에요.
+        </div>
+      </div>
+    );
+  }
+
+  // 분포 실패는 목록을 가리지 않는다. 목록 API만 에러일 때 전체 실패.
+  if (listQuery.isError) {
+    return (
+      <div className="flex w-full flex-col gap-4">
+        <ReviewHeading />
+        <p className="text-16 text-gray-gray-400 py-20 text-center">
+          리뷰를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.
+        </p>
+      </div>
+    );
+  }
+
+  const items = listQuery.data?.data ?? [];
+  const totalPages = listQuery.data?.totalPages ?? 0;
+  const isEmpty = (listQuery.data?.totalCount ?? 0) === 0;
+  const distribution = distributionQuery.isError ? undefined : distributionQuery.data;
+
+  if (isEmpty) {
+    // 피그마 상세 empty는 이미지 없이 제목 + 안내 문구만 (1:8169 / 1:8766)
+    return (
+      <div className="flex w-full flex-col gap-4">
+        <ReviewHeading />
+        <div className="flex w-full flex-col py-6 text-center">
+          <p className="text-16 text-black-500 leading-7 font-semibold">
+            아직 등록된 리뷰가 없어요!
+          </p>
+          <p className="text-14 text-gray-gray-400 leading-7">가장 먼저 리뷰를 등록해보세요</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex w-full flex-col">
+      <div className="flex flex-col gap-4">
+        <ReviewHeading />
+        {distribution ? <ProgressBar data={toProgressBarData(distribution)} hideTitle /> : null}
+
+        <ul className="divide-line-100 flex w-full flex-col divide-y">
+          {items.map((item) => (
+            <li key={item.id}>
+              <CardReview
+                size={reviewCardSize}
+                writer={maskReviewWriter(item.customerName)}
+                createdAt={formatReviewCreatedAt(item.createdAt)}
+                rating={item.rating}
+                content={item.comment}
+              />
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <Pagination
+        currentPage={page}
+        totalPages={totalPages}
+        onPageChange={setPage}
+        className="mt-8 justify-center"
+      />
     </div>
   );
 }
