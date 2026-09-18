@@ -38,6 +38,8 @@ interface MoverRequestFiltersProps {
   totalCount: number;
   /** 모바일·태블릿 필터 버튼 클릭 (바텀시트 열기) */
   onOpenFilterModal: () => void;
+  /** 정렬 드롭다운 크기가 PC만 다릅니다 (피그마 114x40 / 91x32) */
+  isPc: boolean;
 }
 
 /**
@@ -56,6 +58,7 @@ export default function MoverRequestFilters({
   onKeywordChange,
   totalCount,
   onOpenFilterModal,
+  isPc,
 }: MoverRequestFiltersProps) {
   const patch = (next: Partial<MoverRequestFilterState>) => onChange({ ...filters, ...next });
 
@@ -123,7 +126,8 @@ export default function MoverRequestFilters({
           {/* 태블릿·모바일은 정렬 옆에 필터 버튼이 붙습니다 */}
           <div className="pc:ml-auto flex items-center gap-1">
             <Sort
-              size="md"
+              // 피그마는 PC만 114x40(md)이고 태블릿·모바일은 91x32(sm)입니다
+              size={isPc ? "md" : "sm"}
               label="정렬"
               options={SORT_OPTIONS}
               value={filters.sort}

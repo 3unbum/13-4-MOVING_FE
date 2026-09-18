@@ -18,6 +18,7 @@ import { useInfiniteScrollTrigger } from "@/hooks/useInfiniteScrollTrigger";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { useMoverRequestAction, useMoverRequests } from "@/hooks/useMoverRequests";
 import type { MoverRequest } from "@/lib/services/mover-request-service";
+import { ApiError } from "@/lib/utils/api-error";
 import { shortenAddress } from "@/lib/utils/address";
 import { formatMovingDate } from "@/lib/utils/date";
 
@@ -112,8 +113,14 @@ export default function MoverRequestsClient() {
     setTimeout(() => setToast(null), 3000);
   };
 
-  const { sendEstimate, reject } = useMoverRequestAction(() =>
-    showToast("처리에 실패했어요. 잠시 후 다시 시도해 주세요.")
+  // BE가 이유를 담아 보냅니다("이 견적 요청에 이미 일반 견적이 5건 도착했습니다" 등).
+  // 뭉뚱그리면 상한 초과인지 일시 장애인지 구분이 안 돼 다시 눌러보게 됩니다.
+  const { sendEstimate, reject } = useMoverRequestAction((error) =>
+    showToast(
+      error instanceof ApiError && error.message
+        ? error.message
+        : "처리에 실패했어요. 잠시 후 다시 시도해 주세요."
+    )
   );
 
   const headerSize = isPc ? "lg" : isTabletUp ? "md" : "sm";
@@ -147,15 +154,23 @@ export default function MoverRequestsClient() {
     if (!action || isSubmitting) return;
     const { variant, request } = action;
 
+    // 제출 중에도 모달을 닫고 다른 요청을 열 수 있습니다. 그때 먼저 보낸 쪽 응답이
+    // 오면 방금 연 모달이 닫히므로, 제출 당시 액션이 그대로일 때만 정리합니다.
     const onSuccess = () => {
-      setAction(null);
+      setAction((current) => (current === action ? null : current));
       showToast(variant === "send" ? "견적을 보냈어요." : "요청을 반려했어요.");
     };
 
+    // 검증은 trim 기준인데 원본을 보내면 앞뒤 공백까지 200자를 넘겨 BE가 400을 던집니다
+    const trimmed = comment.trim();
+
     if (variant === "send") {
-      sendEstimate.mutate({ requestId: request.id, price: Number(price), comment }, { onSuccess });
+      sendEstimate.mutate(
+        { requestId: request.id, price: Number(price), comment: trimmed },
+        { onSuccess }
+      );
     } else {
-      reject.mutate({ requestId: request.id, comment }, { onSuccess });
+      reject.mutate({ requestId: request.id, comment: trimmed }, { onSuccess });
     }
   };
 
@@ -179,11 +194,12 @@ export default function MoverRequestsClient() {
             onKeywordChange={setKeyword}
             totalCount={requests.length}
             onOpenFilterModal={openFilterModal}
+            isPc={isPc}
           />
 
           {/* 카드 위 간격 — 피그마 PC 24 / 태블릿 30 / 모바일 26.
               공용 Sort가 피그마(32)보다 8px 높아 그만큼 뺀 값입니다. */}
-          <div className="tablet:mt-3 pc:mt-8 mt-2 flex flex-1 flex-col">
+          <div className="tablet:mt-5 pc:mt-8 mt-4 flex flex-1 flex-col">
             {error ? (
               <Message>요청을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.</Message>
             ) : isPending ? (
