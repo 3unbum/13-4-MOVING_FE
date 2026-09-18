@@ -1,6 +1,7 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Button from "@/components/common/Button";
@@ -48,13 +49,12 @@ export default function MoverProfileEditForm({
   account,
   onAccountUpdated,
 }: MoverProfileEditFormProps) {
+  const router = useRouter();
   const { refetch } = useAuth();
   const [submitError, setSubmitError] = useState<string>();
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
   // ProfileImageUpload가 서버 업로드 중일 때는 제출을 막아야 함 — onChange가 업로드 완료 후에만
   // 호출되므로, 업로드 중 제출하면 새 이미지 URL이 반영되기 전에 폼이 전송될 수 있다
   const [isImageUploading, setIsImageUploading] = useState(false);
-  const toastTimeoutRef = useRef<number | null>(null);
   // PC에서만 필드를 md 크기로 키움 (CustomerProfileEditForm과 동일 패턴)
   const isPc = useMediaQuery(PC_QUERY);
   const fieldSize = isPc ? "md" : "sm";
@@ -88,17 +88,6 @@ export default function MoverProfileEditForm({
     setValue(field, next, { shouldValidate: true, shouldDirty: true });
   }
 
-  function showToast(message: string) {
-    if (toastTimeoutRef.current != null) {
-      window.clearTimeout(toastTimeoutRef.current);
-    }
-    setToastMessage(message);
-    toastTimeoutRef.current = window.setTimeout(() => {
-      toastTimeoutRef.current = null;
-      setToastMessage(null);
-    }, 3000);
-  }
-
   async function onSubmit(values: MoverProfileFormValues) {
     setSubmitError(undefined);
     try {
@@ -107,7 +96,9 @@ export default function MoverProfileEditForm({
       // 수정 자체는 끝났으니 refetch 실패를 수정 실패로 취급하지 않는다 — GNB가 못 갱신되더라도
       // 계정 캐시는 다음 새로고침 때 맞춰진다. (#123, CustomerProfileEditForm과 동일 패턴)
       await refetch().catch(() => {});
-      showToast("프로필을 수정했어요");
+      // 성공하면 토스트 대신 마이페이지로 돌아간다 — 수정 결과(별명/이미지 등)를 바로 그 화면에서
+      // 확인할 수 있어야 하니 (CustomerProfileEditForm도 성공 시 라우팅으로 마무리하는 동일 패턴)
+      router.push("/mover/mypage");
     } catch (error) {
       setSubmitError(
         error instanceof ApiError
@@ -118,13 +109,8 @@ export default function MoverProfileEditForm({
   }
 
   return (
-    // handleSubmit(onSubmit)을 JSX 속성 위치에서 직접 호출하면 react-compiler eslint가
-    // "렌더 중 ref 접근 가능성"으로 오탐한다(onSubmit이 toastTimeoutRef를 참조하는 showToast를
-    // 부르기 때문) — 이벤트 핸들러 경계 안에서 호출하도록 한 겹 감싸서 우회한다.
     <form
-      onSubmit={(event) => {
-        void handleSubmit(onSubmit)(event);
-      }}
+      onSubmit={handleSubmit(onSubmit)}
       // 컨텐츠(그리드)-버튼 간격: 피그마 실측 모바일/태블릿 32px(gap-8), 데스크톱 48px(pc:gap-12,
       // 기존값 유지) — #73 재확인(2026-09-17)
       className="pc:gap-12 flex w-full flex-col gap-8"
@@ -307,7 +293,6 @@ export default function MoverProfileEditForm({
       </div>
 
       {submitError && <Toast message={submitError} />}
-      {toastMessage && <Toast message={toastMessage} />}
     </form>
   );
 }
