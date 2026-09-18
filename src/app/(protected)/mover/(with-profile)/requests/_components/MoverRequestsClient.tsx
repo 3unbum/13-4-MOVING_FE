@@ -14,6 +14,7 @@ import MoverRequestFilters, {
 import MoverRequestList from "@/components/mover/MoverRequestList";
 import QuoteActionModal from "@/components/quote/QuoteActionModal";
 import { useDebounce } from "@/hooks/useDebounce";
+import { useInfiniteScrollTrigger } from "@/hooks/useInfiniteScrollTrigger";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { useMoverRequestAction, useMoverRequests } from "@/hooks/useMoverRequests";
 import type { MoverRequest } from "@/lib/services/mover-request-service";
@@ -94,9 +95,16 @@ export default function MoverRequestsClient() {
   const [comment, setComment] = useState("");
   const [toast, setToast] = useState<string | null>(null);
 
-  const { requests, isPending, error } = useMoverRequests({
-    ...filters,
-    search: debouncedKeyword.trim() || undefined,
+  const { requests, isPending, error, hasNextPage, isFetchingNextPage, fetchNextPage } =
+    useMoverRequests({
+      ...filters,
+      search: debouncedKeyword.trim() || undefined,
+    });
+
+  // 목록 하단 sentinel이 보이면 다음 페이지 — 12건이 넘으면 첫 페이지만 보였습니다
+  const sentinelRef = useInfiniteScrollTrigger(() => fetchNextPage(), {
+    enabled: hasNextPage,
+    isLoading: isFetchingNextPage,
   });
 
   const showToast = (message: string) => {
@@ -132,8 +140,11 @@ export default function MoverRequestsClient() {
     setAction({ variant, request });
   };
 
+  // 전송 중 재진입 차단 — 버튼 disabled와 별개로 한 겹 더 둡니다(엔터 연타 등)
+  const isSubmitting = sendEstimate.isPending || reject.isPending;
+
   const submitAction = () => {
-    if (!action) return;
+    if (!action || isSubmitting) return;
     const { variant, request } = action;
 
     const onSuccess = () => {
@@ -186,11 +197,17 @@ export default function MoverRequestsClient() {
                 }
               />
             ) : (
-              <MoverRequestList
-                requests={requests}
-                onSendEstimate={(request) => openAction("send", request)}
-                onReject={(request) => openAction("reject", request)}
-              />
+              <>
+                <MoverRequestList
+                  requests={requests}
+                  onSendEstimate={(request) => openAction("send", request)}
+                  onReject={(request) => openAction("reject", request)}
+                />
+                <div ref={sentinelRef} aria-hidden className="h-px" />
+                {isFetchingNextPage && (
+                  <p className="text-14 text-gray-gray-400 py-6 text-center">불러오는 중...</p>
+                )}
+              </>
             )}
           </div>
         </div>
@@ -244,6 +261,7 @@ export default function MoverRequestsClient() {
           onCommentChange={setComment}
           reason={comment}
           onReasonChange={setComment}
+          isSubmitting={isSubmitting}
           onSubmit={submitAction}
         />
       )}

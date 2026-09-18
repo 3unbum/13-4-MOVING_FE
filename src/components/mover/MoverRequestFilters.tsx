@@ -104,6 +104,7 @@ export default function MoverRequestFilters({
           <div className="pc:flex hidden items-center gap-9">
             <label className="group text-16 text-black-black-400 flex cursor-pointer items-center gap-2 font-medium">
               <CheckboxButton
+                shape="square"
                 checked={filters.isTargeted}
                 onChange={(e) => patch({ isTargeted: e.target.checked })}
               />
@@ -111,6 +112,7 @@ export default function MoverRequestFilters({
             </label>
             <label className="group text-16 text-black-black-400 flex cursor-pointer items-center gap-2 font-medium">
               <CheckboxButton
+                shape="square"
                 checked={filters.isServiceRegion}
                 onChange={(e) => patch({ isServiceRegion: e.target.checked })}
               />

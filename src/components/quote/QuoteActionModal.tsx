@@ -24,6 +24,8 @@ interface QuoteActionModalProps {
    * 화면이 있어 따로 지정할 수 있게 열어둡니다 — 받은 요청 모달이 그렇습니다.
    */
   position?: "center" | "bottom";
+  /** 전송 중이면 버튼을 잠급니다 — 연타하면 POST가 그만큼 나갑니다 */
+  isSubmitting?: boolean;
   category: ServiceCode;
   // 지정 견적 여부. 이 모달은 지정 견적 전용이라 기본값 true
   isTargeted?: boolean;
@@ -65,6 +67,7 @@ export default function QuoteActionModal({
   variant,
   size = "md",
   position,
+  isSubmitting = false,
   category,
   isTargeted = true,
   customerName,
@@ -192,7 +195,7 @@ export default function QuoteActionModal({
         variant="solid"
         size={isMd ? "lg" : "sm"}
         className="shrink-0"
-        disabled={!isValid}
+        disabled={!isValid || isSubmitting}
         onClick={onSubmit}
       >
         {isSend ? "견적 보내기" : "반려하기"}

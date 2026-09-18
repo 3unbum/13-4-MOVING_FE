@@ -98,9 +98,10 @@ export default function MovingInfo({
           "flex gap-3",
           // 모바일 모달만 라벨·값이 한 줄이라 가운데 정렬, 나머지는 값 기준 아래 맞춤
           isModal && !isLg ? "items-center" : "items-end",
-          // 모달 PC는 내용만큼만 차지하고 이사일이 48px 옆에 붙습니다 (피그마 201은 기본
-          // 문구 기준 값이라, 실제 주소가 길면 잘리지 않고 늘어나는 쪽이 맞습니다)
-          isModal && isLg ? "shrink-0" : isLg ? "min-w-50.25" : "w-full min-w-0"
+          // 모달 PC는 이사일이 48px 옆에 붙고, 주소가 길면 남는 폭 안에서 줄어듭니다.
+          // `shrink-0`로 두면 행 폭을 넘겨 이사일을 밀어냅니다 — 안쪽 truncate만으로는
+          // 부모가 안 줄어서 소용이 없습니다.
+          isModal && isLg ? "min-w-0 flex-1" : isLg ? "min-w-50.25" : "w-full min-w-0"
         )}
       >
         <InfoItem label="출발지" value={from} {...item} />
