@@ -40,7 +40,9 @@ export default function ReviewKeywordChips({
             <p className={cn("text-black-400 font-semibold", isMd ? "text-14" : "text-13")}>
               {group.category}
             </p>
-            <div className={cn("w-full gap-2", isMd ? "flex flex-col" : "grid grid-cols-2")}>
+            <div
+              className={cn("w-full min-w-0 gap-2", isMd ? "flex flex-col" : "grid grid-cols-2")}
+            >
               {group.chips.map((chip) => {
                 const selected = selectedIds.includes(chip.id);
                 const chipDisabled = disabled || (!selected && atMax);
@@ -56,12 +58,13 @@ export default function ReviewKeywordChips({
                       if (chipDisabled) return;
                       onToggle(chip.id);
                     }}
-                    className={cn(
-                      "flex w-full items-center justify-center text-center whitespace-normal disabled:cursor-not-allowed disabled:opacity-40",
-                      !isMd && "text-13"
-                    )}
+                    className="text-12 flex w-full min-w-0 items-center justify-center gap-1 overflow-hidden px-2 whitespace-nowrap disabled:cursor-not-allowed disabled:opacity-40"
                   >
-                    <span aria-hidden>{chip.emoji}</span> {chip.label}
+                    {/* 환경마다 이모지 폭이 달라 줄바꿈이 갈리지 않게 한 줄로 고정한다 */}
+                    <span aria-hidden className="shrink-0">
+                      {chip.emoji}
+                    </span>
+                    <span className="whitespace-nowrap">{chip.label}</span>
                   </Chip>
                 );
               })}
