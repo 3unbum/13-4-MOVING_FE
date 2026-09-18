@@ -15,13 +15,15 @@ export const customerProfileSchema = z.object({
 // BE moverProfileCreateSchema와 동일한 계약: services/regions 둘 다 배열(다중 선택)
 export const moverProfileSchema = z.object({
   image: z.string().optional(),
-  nickName: z.string().min(1, "별명을 입력해주세요"),
+  // trim()을 min(1)보다 먼저 걸어야 공백만 입력한 값(" ")이 통과하지 않는다(PR #135 리뷰,
+  // 3unbum/coderabbitai) — 필수 문자열 필드 전부 동일하게 적용
+  nickName: z.string().trim().min(1, "별명을 입력해주세요"),
   // register(..., { valueAsNumber: true })로 이미 숫자로 변환된 값이 들어온다는 전제 —
   // z.coerce를 쓰면 useForm 입출력 타입이 갈라져 resolver 타입 에러가 남
   // setValueAs가 빈 입력을 undefined로 보존하므로(0으로 치환 금지) 필수 검증은 여기서 잡힌다
   career: z.number({ message: "경력을 입력해주세요" }).int().min(0, "경력은 0 이상이어야 합니다"),
-  bio: z.string().min(1, "한 줄 소개를 입력해주세요"),
-  description: z.string().min(1, "상세 설명을 입력해주세요"),
+  bio: z.string().trim().min(1, "한 줄 소개를 입력해주세요"),
+  description: z.string().trim().min(1, "상세 설명을 입력해주세요"),
   services: z.array(z.enum(serviceValues)).min(1, "제공 서비스를 1개 이상 선택해주세요"),
   regions: z.array(z.enum(regionValues)).min(1, "서비스 가능 지역을 1개 이상 선택해주세요"),
 });
@@ -33,7 +35,7 @@ export const moverProfileSchema = z.object({
 // 안 보냄(profileService.updateCustomer 호출부에서 제외).
 export const customerProfileUpdateSchema = z
   .object({
-    name: z.string().min(1, "이름을 입력해주세요"),
+    name: z.string().trim().min(1, "이름을 입력해주세요"),
     phoneNumber: z
       .string()
       .min(1, "전화번호를 입력해주세요")
@@ -49,19 +51,22 @@ export const customerProfileUpdateSchema = z
     region: z.enum(regionValues, { message: "내가 사는 지역을 선택해주세요" }),
     services: z.array(z.enum(serviceValues)).min(1, "이용 서비스를 1개 이상 선택해주세요"),
   })
+  // 비밀번호 세 필드(현재/새/새 확인)는 전부 비었거나 전부 채워졌거나 둘 중 하나여야 한다 —
+  // 두 개만 따로 막으면(newPassword만 있으면 currentPassword 필수 / currentPassword만 있으면
+  // newPassword 필수) newPasswordConfirm 하나만 입력한 케이스가 빠져나간다: newPassword가
+  // 비어있으니 다른 refine은 전부 통과하고, onSubmit에서도 newPassword가 falsy라 비밀번호
+  // 필드 전부가 페이로드에서 조용히 빠진 채 이름/전화번호만 수정돼버림(coderabbitai 리뷰, PR #135)
+  .refine(
+    (data) =>
+      (!data.currentPassword && !data.newPassword && !data.newPasswordConfirm) ||
+      (!!data.currentPassword && !!data.newPassword && !!data.newPasswordConfirm),
+    {
+      message: "비밀번호를 변경하려면 세 필드를 모두 입력해주세요",
+      path: ["newPassword"],
+    }
+  )
   // 소셜 로그인 계정(비밀번호 없음)이 새 비밀번호를 시도하는 경우는 여기서 막지 않음 — BE가
   // "소셜 로그인 계정은 비밀번호를 변경할 수 없습니다"로 응답하고, 그 메시지를 submitError로 그대로 노출한다
-  .refine((data) => !data.newPassword || !!data.currentPassword, {
-    message: "현재 비밀번호를 입력해주세요",
-    path: ["currentPassword"],
-  })
-  // 반대 방향도 막아야 함 — currentPassword만 입력하고 newPassword는 비워두면 onSubmit에서
-  // newPassword가 falsy라 currentPassword까지 통째로 페이로드에서 빠져서 조용히 무시된다.
-  // "입력했는데 아무 일도 안 일어남"으로 보이는 문제라 제출 전에 막아준다.
-  .refine((data) => !data.currentPassword || !!data.newPassword, {
-    message: "새 비밀번호를 입력해주세요",
-    path: ["newPassword"],
-  })
   .refine((data) => !data.newPassword || data.newPassword === data.newPasswordConfirm, {
     message: "비밀번호가 일치하지 않습니다",
     path: ["newPasswordConfirm"],
@@ -82,7 +87,7 @@ export const customerProfileUpdateSchema = z
 // 이메일은 BE moverProfileUpdateSchema에 필드 자체가 없어 이 화면에서 수정 불가 — 읽기 전용으로만 노출.
 export const moverBasicInfoUpdateSchema = z
   .object({
-    name: z.string().min(1, "이름을 입력해주세요"),
+    name: z.string().trim().min(1, "이름을 입력해주세요"),
     phoneNumber: z
       .string()
       .min(1, "전화번호를 입력해주세요")
@@ -95,19 +100,22 @@ export const moverBasicInfoUpdateSchema = z
       .or(z.literal("")),
     newPasswordConfirm: z.string().optional(),
   })
+  // 비밀번호 세 필드(현재/새/새 확인)는 전부 비었거나 전부 채워졌거나 둘 중 하나여야 한다 —
+  // 두 개만 따로 막으면(newPassword만 있으면 currentPassword 필수 / currentPassword만 있으면
+  // newPassword 필수) newPasswordConfirm 하나만 입력한 케이스가 빠져나간다: newPassword가
+  // 비어있으니 다른 refine은 전부 통과하고, onSubmit에서도 newPassword가 falsy라 비밀번호
+  // 필드 전부가 페이로드에서 조용히 빠진 채 이름/전화번호만 수정돼버림(coderabbitai 리뷰, PR #135)
+  .refine(
+    (data) =>
+      (!data.currentPassword && !data.newPassword && !data.newPasswordConfirm) ||
+      (!!data.currentPassword && !!data.newPassword && !!data.newPasswordConfirm),
+    {
+      message: "비밀번호를 변경하려면 세 필드를 모두 입력해주세요",
+      path: ["newPassword"],
+    }
+  )
   // 소셜 로그인 계정(비밀번호 없음)이 새 비밀번호를 시도하는 경우는 여기서 막지 않음 — BE가
   // "소셜 로그인 계정은 비밀번호를 변경할 수 없습니다"로 응답하고, 그 메시지를 submitError로 그대로 노출한다
-  .refine((data) => !data.newPassword || !!data.currentPassword, {
-    message: "현재 비밀번호를 입력해주세요",
-    path: ["currentPassword"],
-  })
-  // 반대 방향도 막아야 함 — currentPassword만 입력하고 newPassword는 비워두면 onSubmit에서
-  // newPassword가 falsy라 currentPassword까지 통째로 페이로드에서 빠져서 조용히 무시된다.
-  // "입력했는데 아무 일도 안 일어남"으로 보이는 문제라 제출 전에 막아준다.
-  .refine((data) => !data.currentPassword || !!data.newPassword, {
-    message: "새 비밀번호를 입력해주세요",
-    path: ["newPassword"],
-  })
   .refine((data) => !data.newPassword || data.newPassword === data.newPasswordConfirm, {
     message: "비밀번호가 일치하지 않습니다",
     path: ["newPasswordConfirm"],
