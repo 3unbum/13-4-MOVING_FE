@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { PHONE_PATTERN, PASSWORD_PATTERN } from "@/constants/auth/validation";
 import { REGION_OPTIONS, SERVICE_OPTIONS } from "@/constants/profile/options";
 
 const serviceValues = SERVICE_OPTIONS.map((option) => option.value) as [string, ...string[]];
@@ -25,5 +26,46 @@ export const moverProfileSchema = z.object({
   regions: z.array(z.enum(regionValues)).min(1, "서비스 가능 지역을 1개 이상 선택해주세요"),
 });
 
+// BE customerProfileUpdateSchema 대응(#72). name/phoneNumber/region/services는 이미 등록된 값을
+// 폼에 프리필해서 보여주므로 여기선 상시 필수로 검증(= "비워서 지우기"는 지원하지 않음, PATCH의
+// optional은 BE가 부분 수정을 허용한다는 뜻이지 FE가 빈 값을 보낸다는 뜻이 아님).
+// 비밀번호만 진짜 선택 입력 — 비워두면 "변경 안 함". newPasswordConfirm은 FE 전용 필드라 BE로는
+// 안 보냄(profileService.updateCustomer 호출부에서 제외).
+export const customerProfileUpdateSchema = z
+  .object({
+    name: z.string().min(1, "이름을 입력해주세요"),
+    phoneNumber: z
+      .string()
+      .min(1, "전화번호를 입력해주세요")
+      .regex(PHONE_PATTERN, "올바른 전화번호 형식이 아닙니다"),
+    currentPassword: z.string().optional(),
+    newPassword: z
+      .string()
+      .regex(PASSWORD_PATTERN, "비밀번호는 영문, 숫자, 특수문자를 포함해 8자 이상이어야 합니다")
+      .optional()
+      .or(z.literal("")),
+    newPasswordConfirm: z.string().optional(),
+    image: z.string().optional(),
+    region: z.enum(regionValues, { message: "내가 사는 지역을 선택해주세요" }),
+    services: z.array(z.enum(serviceValues)).min(1, "이용 서비스를 1개 이상 선택해주세요"),
+  })
+  // 소셜 로그인 계정(비밀번호 없음)이 새 비밀번호를 시도하는 경우는 여기서 막지 않음 — BE가
+  // "소셜 로그인 계정은 비밀번호를 변경할 수 없습니다"로 응답하고, 그 메시지를 submitError로 그대로 노출한다
+  .refine((data) => !data.newPassword || !!data.currentPassword, {
+    message: "현재 비밀번호를 입력해주세요",
+    path: ["currentPassword"],
+  })
+  .refine((data) => !data.newPassword || data.newPassword === data.newPasswordConfirm, {
+    message: "비밀번호가 일치하지 않습니다",
+    path: ["newPasswordConfirm"],
+  })
+  // 현재 비밀번호와 같은 값으로 "변경"하는 건 의미가 없어 여기서 막는다 — 그동안 BE만 검증하고
+  // 있어서 제출 후 서버 왕복 뒤에야 에러가 보였음(#124 리뷰, 다른 두 비밀번호 refine과 동일하게 맞춤)
+  .refine((data) => !data.newPassword || data.newPassword !== data.currentPassword, {
+    message: "현재 비밀번호와 다른 새 비밀번호를 입력해주세요",
+    path: ["newPassword"],
+  });
+
 export type CustomerProfileFormValues = z.infer<typeof customerProfileSchema>;
 export type MoverProfileFormValues = z.infer<typeof moverProfileSchema>;
+export type CustomerProfileUpdateFormValues = z.infer<typeof customerProfileUpdateSchema>;
