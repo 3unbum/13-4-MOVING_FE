@@ -111,6 +111,21 @@ export function PendingBadge() {
   );
 }
 
+/**
+ * "반려됨" 배지 — 기사님이 반려한 견적.
+ *
+ * 피그마 견적내역 카드에는 확정·대기 두 상태뿐이라 시안이 없습니다. 다만 반려 견적이
+ * "견적대기"로 표시되면 아직 답을 기다리는 것처럼 읽혀서, 같은 자리에 문구만 바꿉니다
+ * (1차 QA-9). 색은 반려·경고 계열인 red-200을 씁니다.
+ */
+export function RejectedBadge() {
+  return (
+    <span className="text-16 shrink-0 px-2 font-semibold whitespace-nowrap text-red-200">
+      반려됨
+    </span>
+  );
+}
+
 /** 카드 우측 상단의 경과 시간 텍스트 — 받은 요청 카드 */
 export function ElapsedTime({ children }: { children: ReactNode }) {
   return <span className="text-14 text-gray-gray-500 shrink-0">{children}</span>;

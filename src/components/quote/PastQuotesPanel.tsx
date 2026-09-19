@@ -84,7 +84,16 @@ function InfoRow({ label, value }: { label: string; value: string }) {
  * 카드 전체를 클릭 영역으로 씁니다 — 피그마에 "견적 상세_확정 견적"과
  * "견적 상세_확정하지 않은 견적" 화면이 따로 있는데, 둘 다 여기서만 도달할 수 있습니다.
  */
-function EstimateRow({ estimate, onClick }: { estimate: Estimate; onClick: () => void }) {
+function EstimateRow({
+  estimate,
+  onClick,
+  isDimmed = false,
+}: {
+  estimate: Estimate;
+  onClick: () => void;
+  /** 마감된 요청에서 확정되지 않은 견적 — 클릭을 막고 회색으로 덮습니다 (QA-12) */
+  isDimmed?: boolean;
+}) {
   const common = {
     category: estimate.quotationRequest.category,
     isTargeted: estimate.isTargeted,
@@ -93,6 +102,8 @@ function EstimateRow({ estimate, onClick }: { estimate: Estimate; onClick: () =>
     // REJECTED(반려)면 null — 카드가 "견적가 없음"으로 표기합니다
     price: estimate.price,
     isConfirmed: isConfirmedEstimate(estimate),
+    // 반려 견적이 "견적대기"로 보이면 아직 답을 기다리는 것처럼 읽힙니다 (QA-9)
+    isRejected: estimate.estimateStatus === "REJECTED",
     nickName: estimate.mover.nickName,
     profileImage: estimate.mover.image,
     rating: estimate.mover.avgRating,
@@ -108,8 +119,13 @@ function EstimateRow({ estimate, onClick }: { estimate: Estimate; onClick: () =>
     <button
       type="button"
       onClick={onClick}
+      disabled={isDimmed}
       aria-label={`${estimate.mover.nickName} 기사님의 견적 상세 보기`}
-      className="w-full cursor-pointer text-left"
+      className={cn(
+        "w-full text-left",
+        // 이미 다른 기사님으로 확정된 요청이라 선택지가 아닙니다 — 눌러도 할 게 없습니다
+        isDimmed ? "cursor-default opacity-40 grayscale" : "cursor-pointer"
+      )}
     >
       <div className="tablet:hidden">
         <CardEstimateHistory size="sm" {...common} />
@@ -141,8 +157,17 @@ export default function PastQuotesPanel({ blocks, onDetailClick }: PastQuotesPan
     <div className="tablet:gap-8 tablet:px-9 tablet:py-8 pc:gap-10 pc:px-10 pc:py-10 flex flex-1 flex-col items-center gap-2 bg-gray-50 py-0">
       {blocks.map(({ request, estimates: allEstimates }) => {
         const filter = filters[request.id] ?? "all";
-        const estimates =
+        const filtered =
           filter === "confirmed" ? allEstimates.filter(isConfirmedEstimate) : allEstimates;
+
+        // 마감된 요청 = 기사님이 확정됐거나(ASSIGNED) 이사가 끝난(COMPLETED) 건.
+        // 확정 견적이 결과라서 맨 위로 올리고, 나머지는 선택지가 아니라 덮습니다 (QA-11·QA-12)
+        const isClosed = request.quotationStatus !== "PENDING";
+        const estimates = isClosed
+          ? [...filtered].sort(
+              (a, b) => Number(isConfirmedEstimate(b)) - Number(isConfirmedEstimate(a))
+            )
+          : filtered;
 
         return (
           <section
@@ -229,6 +254,7 @@ export default function PastQuotesPanel({ blocks, onDetailClick }: PastQuotesPan
                     <EstimateRow
                       key={estimate.id}
                       estimate={estimate}
+                      isDimmed={isClosed && !isConfirmedEstimate(estimate)}
                       onClick={() => onDetailClick?.(estimate.id)}
                     />
                   ))}
