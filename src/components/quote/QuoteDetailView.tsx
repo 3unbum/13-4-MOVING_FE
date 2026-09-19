@@ -54,6 +54,18 @@ function formatMovingDate(iso: string) {
 }
 
 /**
+ * "서울 중구 삼일대로 343 5층 501호" — 도로명 + 상세주소.
+ *
+ * 견적 상세는 기사님이 실제로 찾아갈 주소라 동·호수까지 필요합니다(1차 QA-5).
+ * 상세주소는 BE 스키마상 필수지만(`detailAddress.min(1)`) 옛 데이터가 비어 있을 수
+ * 있어 방어합니다.
+ */
+function fullAddress(address: string, detailAddress?: string) {
+  const detail = detailAddress?.trim();
+  return detail ? `${address} ${detail}` : address;
+}
+
+/**
  * 견적가 표기.
  *
  * 반려(REJECTED) 견적은 `price`가 null입니다. `?? 0`으로 두면 화면에 "0원"이
@@ -240,8 +252,14 @@ export default function QuoteDetailView({
                 <InfoRow label="견적 요청일" value={formatShortDate(request.createdAt)} />
                 <InfoRow label="서비스" value={SERVICE_LABELS[request.category]} />
                 <InfoRow label="이용일" value={formatMovingDate(request.movingDate)} />
-                <InfoRow label="출발지" value={request.fromAddress} />
-                <InfoRow label="도착지" value={request.toAddress} />
+                <InfoRow
+                  label="출발지"
+                  value={fullAddress(request.fromAddress, request.fromDetailAddress)}
+                />
+                <InfoRow
+                  label="도착지"
+                  value={fullAddress(request.toAddress, request.toDetailAddress)}
+                />
               </div>
             </div>
 
@@ -260,7 +278,8 @@ export default function QuoteDetailView({
               moverNickName={mover.nickName}
               className={cn(
                 "pc:hidden border-line-100 border-t pt-6",
-                isPending ? "pb-32" : "pb-8"
+                // 확정 CTA가 없으면 공유 버튼이 화면 맨 아래에 붙습니다 (1차 QA-10)
+                isPending ? "pb-32" : "pb-14"
               )}
             />
           </div>
