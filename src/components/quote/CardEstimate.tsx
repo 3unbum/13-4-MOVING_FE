@@ -223,6 +223,12 @@ interface CardPendingHistoryProps extends HTMLAttributes<HTMLElement>, MoverInfo
   price: number;
   onDetailClick?: () => void;
   onConfirmClick?: () => void;
+  /**
+   * 이 기사님을 찜했는지. 기본값을 `false`로 두면 찜한 기사님이 빈 하트로 보이지만,
+   * 반대로 두면 안 찜한 기사님이 전부 채워져 보입니다 (1차 QA-4).
+   * 견적 응답에 `isFavorited`가 없어 호출부가 찜 목록과 대조해 넘깁니다.
+   */
+  isFavorited?: boolean;
 }
 
 /**
@@ -239,6 +245,7 @@ export function CardPendingHistory({
   price,
   onDetailClick,
   onConfirmClick,
+  isFavorited = false,
   className,
   nickName,
   profileImage,
@@ -298,7 +305,13 @@ export function CardPendingHistory({
             >
               {title}
             </p>
-            <MoverBox size={size} bordered={false} compact {...mover} />
+            <MoverBox
+              size={size}
+              bordered={false}
+              compact
+              favoriteFilled={isFavorited}
+              {...mover}
+            />
           </div>
         </div>
 

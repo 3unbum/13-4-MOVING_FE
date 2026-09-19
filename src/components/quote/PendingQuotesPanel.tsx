@@ -1,4 +1,5 @@
 import { CardPendingHistory } from "@/components/quote/CardEstimate";
+import { useFavoritedMovers } from "@/hooks/useFavoriteMover";
 import QuoteEmptyState from "@/components/quote/QuoteEmptyState";
 import SubHeader from "@/components/common/SubHeader";
 import type { Estimate } from "@/lib/services/estimate-service";
@@ -18,11 +19,13 @@ interface PendingQuotesPanelProps {
 function EstimateCard({
   estimate,
   size,
+  isFavorited,
   onDetailClick,
   onConfirmClick,
 }: {
   estimate: Estimate;
   size: "sm" | "lg";
+  isFavorited: boolean;
   onDetailClick?: () => void;
   onConfirmClick?: () => void;
 }) {
@@ -43,6 +46,7 @@ function EstimateCard({
       career={estimate.mover.career}
       confirmedCount={estimate.mover.confirmedCount}
       favoriteCount={estimate.mover.favoriteCount}
+      isFavorited={isFavorited}
       onDetailClick={onDetailClick}
       onConfirmClick={onConfirmClick}
     />
@@ -65,6 +69,10 @@ export default function PendingQuotesPanel({
   onDetailClick,
   onConfirmClick,
 }: PendingQuotesPanelProps) {
+  // 견적 응답에 `isFavorited`가 없어 찜 목록과 대조합니다 (1차 QA-4).
+  // 훅은 조건부 렌더링보다 위에서 불러야 합니다 — 아래 early return이 여럿입니다.
+  const { isFavorited } = useFavoritedMovers();
+
   // 확정을 마친 요청이 있는 상태. 이사가 끝나기 전까지는 새 요청을 할 수 없으므로
   // ("한 번에 하나의 이사 정보만 활성" — BE가 ACTIVE_REQUEST_EXISTS로 막습니다)
   // 요청 CTA 대신 확정한 견적을 어디서 볼 수 있는지 알려줍니다.
@@ -128,6 +136,7 @@ export default function PendingQuotesPanel({
           <div className="tablet:max-w-150 tablet:gap-8 pc:max-w-285 pc:grid-cols-2 pc:gap-6 grid w-full max-w-81.75 grid-cols-1 gap-5">
             {estimates.map((estimate) => {
               const handlers = {
+                isFavorited: isFavorited(estimate.mover.id),
                 onDetailClick: () => onDetailClick?.(estimate.id),
                 onConfirmClick: () => onConfirmClick?.(estimate.id),
               };
