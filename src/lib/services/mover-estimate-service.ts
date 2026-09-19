@@ -4,11 +4,13 @@ import type { ServiceCode } from "@/components/filter/ChipRegion";
 /**
  * 기사님이 보낸 견적의 상태.
  *
- * 화면은 "확정 견적"과 "반려 견적" 두 탭인데, 확정 탭에는 `CONFIRMED`(확정됐고 이사 전)와
- * `COMPLETED`(이사 끝남)가 **함께** 들어갑니다 — 피그마 `1:9297`에 고객 견적 카드와
- * 이사완료 카드가 같은 화면에 섞여 있습니다.
+ * 화면은 "보낸 견적 조회"와 "반려 요청" 두 탭인데, 앞 탭에는 `PENDING`(보냈고 결과 대기) ·
+ * `CONFIRMED`(확정됐고 이사 전) · `COMPLETED`(이사 끝남)가 **함께** 들어갑니다 —
+ * 피그마 `1:9297`에 고객 견적 카드(`1:9301` 확정 배지 O / `1:9302` X)와 이사완료 카드가
+ * 같은 화면에 섞여 있습니다.
  *
- * `PENDING`(보냈는데 결과 없음)은 피그마 어느 화면에도 없어서 이 페이지에 안 나옵니다.
+ * 배지 없는 `1:9302`가 `PENDING`입니다. 처음엔 이걸 "확정인데 배지만 없는 것"으로 잘못 읽어
+ * PENDING을 아예 안 불렀고, 보낸 견적의 상당수가 화면에서 사라졌습니다 (1차 QA-6).
  */
 export type MoverEstimateStatus = "PENDING" | "CONFIRMED" | "REJECTED" | "COMPLETED";
 

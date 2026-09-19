@@ -37,18 +37,22 @@ function useEstimatePages(status: MoverEstimateStatus) {
 }
 
 /**
- * 확정 견적 탭 — `CONFIRMED`와 `COMPLETED`를 함께 보여줍니다.
+ * 보낸 견적 조회 탭 — `PENDING`·`CONFIRMED`·`COMPLETED`를 함께 보여줍니다.
  *
- * BE가 `status` 하나만 받아서 두 번 부르고 합칩니다. 카드 종류가 달라서
+ * `PENDING`은 확정 배지 없는 고객 견적 카드로 나옵니다(피그마 `1:9302`).
+ * 이게 빠져 있어서 기사님이 보낸 견적을 확정 전까지 볼 수 없었습니다 (1차 QA-6).
+ *
+ * BE가 `status` 하나만 받아서 상태마다 부르고 합칩니다. 카드 종류가 달라서
  * (고객 견적 / 이사완료) 어차피 화면에서 상태를 봐야 하므로 합쳐도 무리가 없습니다.
  *
  * "더 보기"는 **아직 남은 쪽만** 부릅니다 — 끝난 쪽을 또 부르면 같은 커서로 빈 응답만
- * 받습니다. 두 배열을 합치면 BE의 `id desc` 순서가 깨져서 다시 세웁니다.
+ * 받습니다. 배열을 합치면 BE의 `id desc` 순서가 깨져서 다시 세웁니다.
  */
 export function useConfirmedEstimates() {
+  const pending = useEstimatePages("PENDING");
   const confirmed = useEstimatePages("CONFIRMED");
   const completed = useEstimatePages("COMPLETED");
-  const queries = [confirmed, completed];
+  const queries = [pending, confirmed, completed];
 
   const estimates = queries
     .flatMap((query) => query.data?.pages.flat() ?? [])
