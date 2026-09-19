@@ -52,6 +52,13 @@ const TITLE: Record<QuoteActionVariant, string> = {
  * 사용자는 이유를 모른 채 실패합니다. 진짜 방어선은 BE이고 여기는 미리 알려주는 쪽입니다.
  */
 const MIN_PRICE = 10000;
+/**
+ * 상한이 없으면 Postgres `Int`(2^31-1)를 넘겨 DB가 "integer out of range"로 터집니다.
+ * BE `estimate.schema.ts`와 같은 값입니다 (1차 QA-16).
+ */
+const MAX_PRICE = 100_000_000;
+/** 1억 = 9자리. 그 이상은 입력 자체를 막습니다 */
+const MAX_PRICE_LENGTH = String(MAX_PRICE).length;
 const MIN_COMMENT = 10;
 const MAX_COMMENT = 200;
 
@@ -88,11 +95,16 @@ export default function QuoteActionModal({
   const isSend = variant === "send";
   // 입력은 숫자만 남기므로 빈 문자열이면 NaN이 아니라 0이 됩니다
   const priceValue = Number(price.trim() || 0);
-  const isPriceTooLow = price.trim().length > 0 && priceValue < MIN_PRICE;
+  const hasPrice = price.trim().length > 0;
+  const isPriceTooLow = hasPrice && priceValue < MIN_PRICE;
+  const isPriceTooHigh = hasPrice && priceValue > MAX_PRICE;
   const commentLength = (isSend ? comment : reason).trim().length;
 
   const isValid = isSend
-    ? priceValue >= MIN_PRICE && commentLength >= MIN_COMMENT && commentLength <= MAX_COMMENT
+    ? priceValue >= MIN_PRICE &&
+      priceValue <= MAX_PRICE &&
+      commentLength >= MIN_COMMENT &&
+      commentLength <= MAX_COMMENT
     : commentLength >= MIN_COMMENT && commentLength <= MAX_COMMENT;
 
   return (
@@ -156,11 +168,16 @@ export default function QuoteActionModal({
                 className={isMd ? "[&>div]:h-[54px]" : undefined}
                 placeholder="견적가 입력"
                 value={price}
-                onChange={(event) => onPriceChange?.(event.target.value.replace(/\D/g, ""))}
+                // 숫자만 남기고 자릿수도 자릅니다 — 붙여넣기로 한 번에 들어오는 것도 막습니다
+                onChange={(event) =>
+                  onPriceChange?.(event.target.value.replace(/\D/g, "").slice(0, MAX_PRICE_LENGTH))
+                }
                 errorMessage={
                   isPriceTooLow
                     ? `최소 ${MIN_PRICE.toLocaleString("ko-KR")}원 이상 입력해 주세요`
-                    : undefined
+                    : isPriceTooHigh
+                      ? `${MAX_PRICE.toLocaleString("ko-KR")}원 이하로 입력해 주세요`
+                      : undefined
                 }
               />
               <p className={cn("text-black-300 font-semibold", isMd ? "text-18" : "text-16")}>
