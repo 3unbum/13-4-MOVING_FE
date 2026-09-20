@@ -21,6 +21,10 @@ function useLerp(
   return useTransform(depthNorm, (t) => (isTabletUp ? side + (center - side) * t : mobile));
 }
 
+// Math.sin/cos 결과의 마지막 자리가 서버(Node)와 브라우저에서 달라 SSR style 문자열이 어긋난다.
+// 소수 6자리로 고정하면 두 환경이 같은 값을 내고, 이후 파생값(곱셈/덧셈)은 IEEE 연산이라 동일하다.
+const round6 = (v: number) => Math.round(v * 1e6) / 1e6;
+
 interface MoveTypeSlideCardProps {
   variant: SelectCardVariant;
   angle: MotionValue<number>;
@@ -53,8 +57,8 @@ export default function MoveTypeSlideCard({ variant, angle, offsetDeg }: MoveTyp
   const isPcUp = useMediaQuery(PC_QUERY);
 
   const rad = useTransform(angle, (a) => (((a + offsetDeg) % 360) * Math.PI) / 180);
-  const sinValue = useTransform(rad, (r) => Math.sin(r));
-  const depth = useTransform(rad, (r) => Math.cos(r)); // -1(뒤) ~ 1(앞)
+  const sinValue = useTransform(rad, (r) => round6(Math.sin(r)));
+  const depth = useTransform(rad, (r) => round6(Math.cos(r))); // -1(뒤) ~ 1(앞)
   const depthNorm = useTransform(depth, (d) => (d + 1) / 2); // 0(뒤) ~ 1(앞)
 
   const radiusX = isPcUp ? PC_RADIUS_X : isTabletUp ? TABLET_RADIUS_X : MOBILE_RADIUS_X;
