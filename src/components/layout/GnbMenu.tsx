@@ -4,8 +4,10 @@ import xMd from "@/assets/icons/x-md.svg";
 import { CUSTOMER_NAV, MOVER_NAV, type GnbNavItem, type GnbRole } from "@/constants/gnb/nav";
 import { useDialog } from "@/hooks/useDialog";
 import { cn } from "@/lib/utils/cn";
+import { getGnbNavColorClass, isGnbNavActive } from "@/lib/utils/gnb-nav";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { type ReactNode } from "react";
 
 interface GnbMenuProps {
@@ -28,6 +30,7 @@ export default function GnbMenu({
   className,
 }: GnbMenuProps) {
   const menuItems = items ?? (role === "mover" ? MOVER_NAV : CUSTOMER_NAV);
+  const pathname = usePathname();
 
   // Escape 닫기 + 배경 스크롤 락 + 포커스 트랩 — 모달과 같은 useDialog를 쓴다
   // (Notion "Hook 분리 후보 취합"에서 김은진님이 제안하신 항목)
@@ -59,17 +62,24 @@ export default function GnbMenu({
           </button>
         </div>
         <ul className="flex flex-col">
-          {menuItems.map((item) => (
-            <li key={item.id}>
-              <Link
-                href={item.href}
-                onClick={onClose}
-                className="text-16 text-black-500 flex w-full items-center overflow-hidden px-5 py-6 font-medium"
-              >
-                {item.label}
-              </Link>
-            </li>
-          ))}
+          {menuItems.map((item) => {
+            const isActive = isGnbNavActive(pathname, item.href);
+            return (
+              <li key={item.id}>
+                <Link
+                  href={item.href}
+                  onClick={onClose}
+                  aria-current={isActive ? "page" : undefined}
+                  className={cn(
+                    "text-16 flex w-full items-center overflow-hidden px-5 py-6 font-medium",
+                    getGnbNavColorClass(isActive)
+                  )}
+                >
+                  {item.label}
+                </Link>
+              </li>
+            );
+          })}
           {footer ? <li>{footer}</li> : null}
         </ul>
       </nav>

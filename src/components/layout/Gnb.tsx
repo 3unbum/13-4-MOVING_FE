@@ -16,8 +16,10 @@ import GnbMenu from "@/components/layout/GnbMenu";
 import { getGnbNavItems, LOGOUT_NAV, type GnbRole } from "@/constants/gnb/nav";
 import { getGnbProfileOptions } from "@/constants/gnb/profile";
 import { cn } from "@/lib/utils/cn";
+import { getGnbNavColorClass, isGnbNavActive } from "@/lib/utils/gnb-nav";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useRef, useState, type ReactNode } from "react";
 
 export interface GnbNotification {
@@ -67,6 +69,7 @@ export default function Gnb({
 }: GnbProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [openPanel, setOpenPanel] = useState<GnbPanel>("none");
+  const pathname = usePathname();
   // 트리거와 패널을 함께 감싸서, 아이콘 클릭이 "바깥 클릭"으로 잡혀 바로 닫히는 걸 막는다
   const actionsRef = useRef<HTMLDivElement>(null);
 
@@ -120,15 +123,22 @@ export default function Gnb({
             <div className="pc:h-full pc:gap-20 flex items-center">
               <LogoLink iconOnlyOnMobile />
               <nav className="pc:flex hidden h-full items-center gap-10" aria-label="주요 메뉴">
-                {navItems.map((item) => (
-                  <Link
-                    key={item.id}
-                    href={item.href}
-                    className="text-18 text-black-500 flex h-22 items-center justify-center py-4 font-bold"
-                  >
-                    {item.label}
-                  </Link>
-                ))}
+                {navItems.map((item) => {
+                  const isActive = isGnbNavActive(pathname, item.href);
+                  return (
+                    <Link
+                      key={item.id}
+                      href={item.href}
+                      aria-current={isActive ? "page" : undefined}
+                      className={cn(
+                        "text-18 flex h-22 items-center justify-center py-4 font-bold",
+                        getGnbNavColorClass(isActive)
+                      )}
+                    >
+                      {item.label}
+                    </Link>
+                  );
+                })}
               </nav>
             </div>
 
@@ -234,15 +244,22 @@ export default function Gnb({
             <LogoLink />
 
             <nav className="pc:block relative hidden h-6.5 flex-1" aria-label="주요 메뉴">
-              {LOGOUT_NAV.map((item) => (
-                <Link
-                  key={item.id}
-                  href={item.href}
-                  className="text-18 text-black-500 absolute top-1/2 left-0 w-20.5 -translate-y-1/2 text-center font-bold whitespace-nowrap"
-                >
-                  {item.label}
-                </Link>
-              ))}
+              {LOGOUT_NAV.map((item) => {
+                const isActive = isGnbNavActive(pathname, item.href);
+                return (
+                  <Link
+                    key={item.id}
+                    href={item.href}
+                    aria-current={isActive ? "page" : undefined}
+                    className={cn(
+                      "text-18 absolute top-1/2 left-0 w-20.5 -translate-y-1/2 text-center font-bold whitespace-nowrap",
+                      getGnbNavColorClass(isActive)
+                    )}
+                  >
+                    {item.label}
+                  </Link>
+                );
+              })}
             </nav>
 
             <div className="pc:block hidden w-29 shrink-0">
