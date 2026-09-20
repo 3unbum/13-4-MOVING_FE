@@ -100,6 +100,8 @@ export default function MoverSignupPage() {
                 placeholder="비밀번호를 입력해 주세요"
                 autoComplete="new-password"
                 errorMessage={errors.password?.message}
+                onCopy={(e) => e.preventDefault()}
+                onCut={(e) => e.preventDefault()}
                 {...register("password", { deps: ["passwordConfirm"] })}
               />
               <FormField
@@ -109,6 +111,8 @@ export default function MoverSignupPage() {
                 placeholder="비밀번호 다시 한번 입력해 주세요"
                 autoComplete="new-password"
                 errorMessage={errors.passwordConfirm?.message}
+                onCopy={(e) => e.preventDefault()}
+                onCut={(e) => e.preventDefault()}
                 {...register("passwordConfirm")}
               />
             </div>
