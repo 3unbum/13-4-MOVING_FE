@@ -166,7 +166,10 @@ export default function QuoteDetailView({
               1920에서 좌우 360씩 → 좌측 요소 left=360과 일치).
               그 안이 좌 740 + 빈 공간 140 + 우 320으로 나뉩니다 — 140은 gap이 아니라
               폭을 고정했을 때 남는 공간이라, 좌측을 가변으로 두면 안 됩니다. */}
-        <div className="pc:max-w-300 pc:flex-row pc:justify-between tablet:max-w-150 flex w-full max-w-81.75 flex-col">
+        {/* PC 하단 여백 — 모바일·태블릿은 QuoteShare가 pb-14/pb-32로 직접 갖지만
+            그 블록이 `pc:hidden`이라 PC에는 적용되지 않습니다. 컨테이너에 따로 둡니다.
+            피그마 `1:9115`: 본문 마지막 줄 끝 1018 → 프레임 1080 = 62 (1차 QA-10) */}
+        <div className="pc:max-w-300 pc:flex-row pc:justify-between pc:pb-15.5 tablet:max-w-150 flex w-full max-w-81.75 flex-col">
           {/* 좌: 본문 — 피그마는 프로필과 각 블록이 같은 층에 나란히 놓입니다
               (`1:9148` profile / `1:9147` Title / `1:9149` 견적가 / `1:9155` 견적 정보).
               감싸는 컨테이너가 없어 중간 래퍼를 두지 않습니다. */}
