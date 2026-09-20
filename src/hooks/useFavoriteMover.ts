@@ -49,3 +49,27 @@ export function useFavoriteMover(moverId: number) {
     error: toggle.error,
   };
 }
+
+/**
+ * 목록에서 여러 기사님의 찜 여부를 한 번에 확인합니다.
+ *
+ * `useFavoriteMover`와 같은 캐시(`favoriteKeys.list`)를 쓰므로 요청이 늘지 않습니다.
+ * 카드마다 훅을 부르면 훅 개수가 렌더마다 달라져(조건부 호출) 규칙에 어긋나서,
+ * 판별 함수를 하나 받아 쓰는 형태로 둡니다.
+ *
+ * 견적 응답에 `isFavorited`가 없어서 필요한 우회입니다 — 1차 QA-4에서
+ * 대기중인 견적 카드의 하트가 찜 여부와 무관하게 채워져 있던 원인입니다.
+ */
+export function useFavoritedMovers() {
+  const favorites = useQuery({
+    queryKey: favoriteKeys.list,
+    queryFn: () => favoriteService.list(),
+  });
+
+  const favoritedIds = new Set((favorites.data?.items ?? []).map((mover) => mover.id));
+
+  return {
+    isFavorited: (moverId: number) => favoritedIds.has(moverId),
+    isLoading: favorites.isPending,
+  };
+}

@@ -4,6 +4,34 @@ import { useQueries, useQuery } from "@tanstack/react-query";
 import { ESTIMATE_LIMIT_PER_REQUEST, estimateService } from "@/lib/services/estimate-service";
 import { quotationRequestService } from "@/lib/services/quotation-request-service";
 import { useAuth } from "@/providers/AuthProvider";
+import { ApiError } from "@/lib/utils/api-error";
+
+/**
+ * 프로필 미등록은 오류가 아니라 "아직 시작 안 함"입니다.
+ *
+ * BE가 견적 요청 조회에 `requireProfile`을 걸어 프로필이 없으면 400을 던지는데
+ * (`PROFILE_REQUIRED`), 이걸 그대로 error로 두면 화면이 "불러오지 못했어요"가 됩니다.
+ * 정작 필요한 건 "견적 요청하러 가기" CTA입니다 (1차 QA-3).
+ */
+function isProfileRequired(error: unknown) {
+  return error instanceof ApiError && error.code === "PROFILE_REQUIRED";
+}
+
+/**
+ * 4xx는 재시도해도 결과가 같습니다.
+ *
+ * QueryClient 기본값이 3회 재시도라, 프로필 없는 사용자가 CTA를 보기까지 7초 넘게
+ * 빈 화면을 봅니다. 서버 오류(5xx)·네트워크 오류만 재시도합니다.
+ */
+function retryExceptClientError(failureCount: number, error: unknown) {
+  if (error instanceof ApiError && error.status >= 400 && error.status < 500) return false;
+  return failureCount < 3;
+}
+
+/** `PROFILE_REQUIRED`는 빈 상태로 흘려보내고, 진짜 오류만 남깁니다 */
+function toRealError(error: unknown) {
+  return error && !isProfileRequired(error) ? error : null;
+}
 
 export const myQuotesKeys = {
   activeRequest: ["quotation-requests", "active"] as const,
@@ -28,6 +56,7 @@ export function usePendingQuotes() {
   const activeRequest = useQuery({
     queryKey: myQuotesKeys.activeRequestByAuth(account?.userId ?? null),
     queryFn: () => quotationRequestService.getActive(),
+    retry: retryExceptClientError,
   });
 
   // BE의 `?status=pending`은 PENDING·ASSIGNED를 모두 활성으로 보고 내려줍니다.
@@ -49,8 +78,12 @@ export function usePendingQuotes() {
     // 활성 요청이 있으면 새 요청을 못 하므로(`ACTIVE_REQUEST_EXISTS`)
     // "견적 요청하러 가기" CTA를 띄우면 막다른 길이 됩니다.
     hasConfirmedRequest: request !== null && !isAwaitingConfirm,
-    isLoading: activeRequest.isPending || (isAwaitingConfirm && estimates.isPending),
-    error: activeRequest.error ?? estimates.error,
+    // `isPending`은 실패한 쿼리도 true라, PROFILE_REQUIRED로 끝난 건 로딩에서 뺍니다.
+    // 안 그러면 프로필 없는 사용자에게 빈 화면이 계속 돕니다 (QA-3)
+    isLoading:
+      (activeRequest.isPending && !isProfileRequired(activeRequest.error)) ||
+      (isAwaitingConfirm && estimates.isPending),
+    error: toRealError(activeRequest.error ?? estimates.error),
   };
 }
 
@@ -65,6 +98,7 @@ export function usePastQuotes() {
   const history = useQuery({
     queryKey: myQuotesKeys.requestHistory,
     queryFn: () => quotationRequestService.getHistory(),
+    retry: retryExceptClientError,
   });
 
   // "대기 중인 견적" 탭이 맡는 건 아직 확정 전(PENDING)인 요청 하나뿐입니다.
@@ -92,7 +126,9 @@ export function usePastQuotes() {
 
   return {
     blocks,
-    isLoading: history.isPending || estimateQueries.some((query) => query.isPending),
-    error: history.error ?? estimateQueries.find((query) => query.error)?.error ?? null,
+    isLoading:
+      (history.isPending && !isProfileRequired(history.error)) ||
+      estimateQueries.some((query) => query.isPending),
+    error: toRealError(history.error ?? estimateQueries.find((query) => query.error)?.error),
   };
 }

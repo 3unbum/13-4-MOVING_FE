@@ -3,6 +3,7 @@ import {
   ConfirmedBadge,
   FavoriteCount,
   PendingBadge,
+  RejectedBadge,
   PriceFooter,
   PriceInline,
 } from "@/components/common/CardParts";
@@ -104,6 +105,13 @@ function MoverBox({
   );
 }
 
+/** 확정 > 반려 > 대기 순으로 하나만 보여줍니다 */
+function StatusBadge({ isConfirmed, isRejected }: { isConfirmed: boolean; isRejected: boolean }) {
+  if (isConfirmed) return <ConfirmedBadge />;
+  if (isRejected) return <RejectedBadge />;
+  return <PendingBadge />;
+}
+
 /* ── 견적내역 (1:12824 / 1:12907) ─────────────────────────────── */
 
 interface CardEstimateHistoryProps extends HTMLAttributes<HTMLElement>, MoverInfo {
@@ -116,6 +124,8 @@ interface CardEstimateHistoryProps extends HTMLAttributes<HTMLElement>, MoverInf
   price: number | null;
   /** 확정된 견적이면 "확정견적" 배지가 붙습니다 */
   isConfirmed?: boolean;
+  /** 기사님이 반려한 견적 — "견적대기" 대신 "반려됨"으로 표시합니다 (QA-9) */
+  isRejected?: boolean;
 }
 
 /**
@@ -131,6 +141,7 @@ export function CardEstimateHistory({
   title,
   price,
   isConfirmed = false,
+  isRejected = false,
   className,
   nickName,
   profileImage,
@@ -183,7 +194,7 @@ export function CardEstimateHistory({
               >
                 {title}
               </p>
-              {isLg && (isConfirmed ? <ConfirmedBadge /> : <PendingBadge />)}
+              {isLg && <StatusBadge isConfirmed={isConfirmed} isRejected={isRejected} />}
             </div>
 
             {/* lg만 로고 없이 text-16 + 빈 하트입니다 (피그마 1:12824) */}
@@ -194,7 +205,7 @@ export function CardEstimateHistory({
         <div
           className={cn("flex h-8 w-full items-center", isLg ? "justify-end" : "justify-between")}
         >
-          {!isLg && (isConfirmed ? <ConfirmedBadge /> : <PendingBadge />)}
+          {!isLg && <StatusBadge isConfirmed={isConfirmed} isRejected={isRejected} />}
           <PriceInline price={price} size={size} />
         </div>
       </div>
@@ -212,6 +223,12 @@ interface CardPendingHistoryProps extends HTMLAttributes<HTMLElement>, MoverInfo
   price: number;
   onDetailClick?: () => void;
   onConfirmClick?: () => void;
+  /**
+   * 이 기사님을 찜했는지. 기본값을 `false`로 두면 찜한 기사님이 빈 하트로 보이지만,
+   * 반대로 두면 안 찜한 기사님이 전부 채워져 보입니다 (1차 QA-4).
+   * 견적 응답에 `isFavorited`가 없어 호출부가 찜 목록과 대조해 넘깁니다.
+   */
+  isFavorited?: boolean;
 }
 
 /**
@@ -228,6 +245,7 @@ export function CardPendingHistory({
   price,
   onDetailClick,
   onConfirmClick,
+  isFavorited = false,
   className,
   nickName,
   profileImage,
@@ -287,7 +305,13 @@ export function CardPendingHistory({
             >
               {title}
             </p>
-            <MoverBox size={size} bordered={false} compact {...mover} />
+            <MoverBox
+              size={size}
+              bordered={false}
+              compact
+              favoriteFilled={isFavorited}
+              {...mover}
+            />
           </div>
         </div>
 
