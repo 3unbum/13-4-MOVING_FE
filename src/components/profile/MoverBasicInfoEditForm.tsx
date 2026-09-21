@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -49,6 +49,10 @@ export default function MoverBasicInfoEditForm({
   const isPc = useMediaQuery(PC_QUERY);
   const fieldSize = isPc ? "md" : "sm";
 
+  // account가 바뀔 때만 새로 계산 — 매 렌더마다 accountToFormValues를 새로 호출하면 매번 다른
+  // 객체 참조가 useForm의 values 옵션에 들어가게 된다 (MunChiho 리뷰, PR #135)
+  const formValues = useMemo(() => accountToFormValues(account), [account]);
+
   const {
     register,
     handleSubmit,
@@ -58,8 +62,15 @@ export default function MoverBasicInfoEditForm({
     resolver: zodResolver(moverBasicInfoUpdateSchema),
     // account가 나중에(부모의 재조회로) 바뀌면 RHF가 그 시점에 폼을 다시 리셋해준다 — 비밀번호
     // 필드는 accountToFormValues가 항상 빈 문자열을 돌려주므로 제출 성공 후 자동으로 비워진다.
-    values: accountToFormValues(account),
+    values: formValues,
   });
+
+  // 실패 토스트가 다음 제출 전까지 계속 떠 있던 문제 — 일정 시간 뒤 자동으로 닫는다 (MunChiho 리뷰, PR #135)
+  useEffect(() => {
+    if (!submitError) return;
+    const timer = window.setTimeout(() => setSubmitError(undefined), 3000);
+    return () => window.clearTimeout(timer);
+  }, [submitError]);
 
   async function onSubmit(values: MoverBasicInfoUpdateFormValues) {
     setSubmitError(undefined);
@@ -92,6 +103,11 @@ export default function MoverBasicInfoEditForm({
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
+      // 실패 에러가 떠 있는 채로 아무 필드나 고치기 시작하면 바로 지운다 — 타이머가 아직 안 끝났어도
+      // 사용자가 이미 재시도를 시작했다는 신호라서 (coderabbitai 리뷰, PR #135)
+      onChange={() => {
+        if (submitError) setSubmitError(undefined);
+      }}
       // 컨텐츠(그리드)-버튼 간격: 피그마 실측 모바일/태블릿 32px(gap-8), 데스크톱 64px(pc:gap-16) —
       // 프로필 수정 화면(데스크톱 48px)과 다른 값이라 그대로 하드코딩. #73 재확인(2026-09-17).
       className="pc:gap-16 flex w-full flex-col gap-8"
