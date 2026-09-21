@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -59,19 +59,29 @@ export default function MoverProfileEditForm({
   const isPc = useMediaQuery(PC_QUERY);
   const fieldSize = isPc ? "md" : "sm";
 
+  // account가 바뀔 때만 새로 계산 — 매 렌더마다 accountToFormValues를 새로 호출하면 매번 다른
+  // 객체 참조가 useForm의 values 옵션에 들어가게 된다 (MunChiho 리뷰, PR #135)
+  const formValues = useMemo(() => accountToFormValues(account), [account]);
+
   const {
     control,
     register,
     handleSubmit,
     setValue,
-    reset,
     formState: { errors, isSubmitting, isDirty },
   } = useForm<MoverProfileFormValues>({
     resolver: zodResolver(moverProfileSchema),
     // account가 나중에(부모의 재조회로) 바뀌면 RHF가 그 시점에 폼을 다시 리셋해준다 —
     // defaultValues는 최초 렌더 시점 값으로 고정돼서 이 케이스엔 안 맞음 (CustomerProfileEditForm과 동일 패턴)
-    values: accountToFormValues(account),
+    values: formValues,
   });
+
+  // 실패 토스트가 다음 제출 전까지 계속 떠 있던 문제 — 일정 시간 뒤 자동으로 닫는다 (MunChiho 리뷰, PR #135)
+  useEffect(() => {
+    if (!submitError) return;
+    const timer = window.setTimeout(() => setSubmitError(undefined), 3000);
+    return () => window.clearTimeout(timer);
+  }, [submitError]);
 
   // watch()는 리렌더마다 새 함수 참조를 반환해 React Compiler가 메모이제이션을 못 함(lint 경고) —
   // useWatch는 구독 기반이라 이 문제가 없음
@@ -111,6 +121,11 @@ export default function MoverProfileEditForm({
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
+      // 실패 에러가 떠 있는 채로 아무 필드나 고치기 시작하면 바로 지운다 — 타이머가 아직 안 끝났어도
+      // 사용자가 이미 재시도를 시작했다는 신호라서 (coderabbitai 리뷰, PR #135)
+      onChange={() => {
+        if (submitError) setSubmitError(undefined);
+      }}
       // 컨텐츠(그리드)-버튼 간격: 피그마 실측 모바일/태블릿 32px(gap-8), 데스크톱 48px(pc:gap-12,
       // 기존값 유지) — #73 재확인(2026-09-17)
       className="pc:gap-12 flex w-full flex-col gap-8"
@@ -261,9 +276,10 @@ export default function MoverProfileEditForm({
       </div>
 
       {/* 버튼 줄: 취소(240px)+수정하기(240px)+20px 간격, 오른쪽 정렬 — CustomerProfileEditForm과
-          동일 패턴. "취소"는 여기선 페이지 이동이 아니라 폼을 마지막 저장 값으로 되돌리는 동작 —
-          마이페이지(/mover/mypage) 쪽 "취소 시 복귀" 동작이 아직 스펙으로 정해진 게 없어(PR #132
-          머지 전) 일단 폼 리셋으로만 둔다. 확정되면 router.push("/mover/mypage")로 바꿀 수 있음. */}
+          동일 패턴. "취소"는 폼 리셋 대신 마이페이지로 이동시킨다 — ProfileImageUpload가 미리보기를
+          내부 state로만 들고 있어 value와 동기화되지 않기 때문에, 이미지를 올린 뒤 리셋하면 제출값은
+          이전 사진인데 화면엔 새 사진이 남는 불일치가 생김. 성공 시와 동일하게 이동으로 정리하는 게
+          더 단순하다 (MunChiho 리뷰, PR #135) */}
       <div className="pc:w-125 pc:self-end w-full">
         <div className="pc:flex-row pc:gap-5 flex w-full flex-col-reverse gap-2">
           <div className="pc:w-60">
@@ -272,7 +288,7 @@ export default function MoverProfileEditForm({
               variant="outlined"
               size="sm"
               className="pc:h-15 pc:rounded-2xl pc:text-18"
-              onClick={() => reset(accountToFormValues(account))}
+              onClick={() => router.push("/mover/mypage")}
             >
               취소
             </Button>
