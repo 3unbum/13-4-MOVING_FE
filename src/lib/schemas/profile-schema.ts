@@ -51,15 +51,19 @@ export const customerProfileUpdateSchema = z
     region: z.enum(regionValues, { message: "내가 사는 지역을 선택해주세요" }),
     services: z.array(z.enum(serviceValues)).min(1, "이용 서비스를 1개 이상 선택해주세요"),
   })
-  // 비밀번호 세 필드(현재/새/새 확인)는 전부 비었거나 전부 채워졌거나 둘 중 하나여야 한다 —
-  // 두 개만 따로 막으면(newPassword만 있으면 currentPassword 필수 / currentPassword만 있으면
-  // newPassword 필수) newPasswordConfirm 하나만 입력한 케이스가 빠져나간다: newPassword가
-  // 비어있으니 다른 refine은 전부 통과하고, onSubmit에서도 newPassword가 falsy라 비밀번호
-  // 필드 전부가 페이로드에서 조용히 빠진 채 이름/전화번호만 수정돼버림(coderabbitai 리뷰, PR #135)
+  // newPassword/newPasswordConfirm 중 하나라도 채워졌으면 세 필드 모두 필요하다 — 단,
+  // currentPassword만 채워진 경우는 통과시킨다: 브라우저 자동완성이 currentPassword만
+  // 미리 채워 넣는 경우가 있어서, 그 상태로 이름/전화번호만 바꾸는 정상적인 제출까지
+  // "비밀번호를 변경하려면 세 필드를 모두 입력해주세요"로 막아버리는 문제가 있었다
+  // (coderabbitai 리뷰로 처음 추가한 all-or-nothing 버전의 회귀, MunChiho 리뷰, PR #135)
   .refine(
-    (data) =>
-      (!data.currentPassword && !data.newPassword && !data.newPasswordConfirm) ||
-      (!!data.currentPassword && !!data.newPassword && !!data.newPasswordConfirm),
+    (data) => {
+      const hasCurrent = Boolean(data.currentPassword?.trim());
+      const hasNew = Boolean(data.newPassword?.trim());
+      const hasConfirm = Boolean(data.newPasswordConfirm?.trim());
+      if (!hasNew && !hasConfirm) return true;
+      return hasCurrent && hasNew && hasConfirm;
+    },
     {
       message: "비밀번호를 변경하려면 세 필드를 모두 입력해주세요",
       path: ["newPassword"],
@@ -100,15 +104,19 @@ export const moverBasicInfoUpdateSchema = z
       .or(z.literal("")),
     newPasswordConfirm: z.string().optional(),
   })
-  // 비밀번호 세 필드(현재/새/새 확인)는 전부 비었거나 전부 채워졌거나 둘 중 하나여야 한다 —
-  // 두 개만 따로 막으면(newPassword만 있으면 currentPassword 필수 / currentPassword만 있으면
-  // newPassword 필수) newPasswordConfirm 하나만 입력한 케이스가 빠져나간다: newPassword가
-  // 비어있으니 다른 refine은 전부 통과하고, onSubmit에서도 newPassword가 falsy라 비밀번호
-  // 필드 전부가 페이로드에서 조용히 빠진 채 이름/전화번호만 수정돼버림(coderabbitai 리뷰, PR #135)
+  // newPassword/newPasswordConfirm 중 하나라도 채워졌으면 세 필드 모두 필요하다 — 단,
+  // currentPassword만 채워진 경우는 통과시킨다: 브라우저 자동완성이 currentPassword만
+  // 미리 채워 넣는 경우가 있어서, 그 상태로 이름/전화번호만 바꾸는 정상적인 제출까지
+  // "비밀번호를 변경하려면 세 필드를 모두 입력해주세요"로 막아버리는 문제가 있었다
+  // (coderabbitai 리뷰로 처음 추가한 all-or-nothing 버전의 회귀, MunChiho 리뷰, PR #135)
   .refine(
-    (data) =>
-      (!data.currentPassword && !data.newPassword && !data.newPasswordConfirm) ||
-      (!!data.currentPassword && !!data.newPassword && !!data.newPasswordConfirm),
+    (data) => {
+      const hasCurrent = Boolean(data.currentPassword?.trim());
+      const hasNew = Boolean(data.newPassword?.trim());
+      const hasConfirm = Boolean(data.newPasswordConfirm?.trim());
+      if (!hasNew && !hasConfirm) return true;
+      return hasCurrent && hasNew && hasConfirm;
+    },
     {
       message: "비밀번호를 변경하려면 세 필드를 모두 입력해주세요",
       path: ["newPassword"],
