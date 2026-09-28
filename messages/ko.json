@@ -1,0 +1,37 @@
+{
+  "common": {
+    "confirm": "확인",
+    "cancel": "취소",
+    "close": "닫기",
+    "next": "다음",
+    "more": "더 보기",
+    "loading": "불러오는 중...",
+    "customerName": "{name} 고객님",
+    "moverName": "{name} 기사님"
+  },
+  "locale": {
+    "label": "언어",
+    "ko": "한국어",
+    "en": "English",
+    "zh": "中文"
+  },
+  "gnb": {
+    "home": "무빙 홈",
+    "menu": "메뉴",
+    "openMenu": "메뉴 열기",
+    "closeMenu": "메뉴 닫기",
+    "mainMenu": "주요 메뉴",
+    "notification": "알림",
+    "profileMenu": "프로필 메뉴",
+    "profileMenuOptions": "프로필 메뉴 옵션",
+    "logoutFailed": "로그아웃에 실패했어요",
+    "nav": {
+      "customer-quotation-requests": "견적 요청",
+      "customer-movers": "기사님 찾기",
+      "customer-my-quotes": "내 견적 관리",
+      "mover-requests": "받은 요청",
+      "mover-my-quotes": "내 견적 관리",
+      "guest-movers": "기사님 찾기"
+    }
+  }
+}
