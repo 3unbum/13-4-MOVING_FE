@@ -11,14 +11,19 @@ import AuthSubmitButton from "@/components/auth/AuthSubmitButton";
 import AuthSwitchLink from "@/components/auth/AuthSwitchLink";
 import FormField from "@/components/auth/FormField";
 import SocialLoginSection from "@/components/auth/SocialLoginSection";
+import { useCountdown } from "@/hooks/useCountdown";
+import { findRetryAfterSeconds } from "@/lib/auth/rate-limit";
 import { authService } from "@/lib/services/auth-service";
 import { loginSchema, type LoginFormValues } from "@/lib/schemas/auth-schema";
 import { ApiError } from "@/lib/utils/api-error";
+import { formatCountdown } from "@/lib/utils/format-duration";
 import { useAuth } from "@/providers/AuthProvider";
 
 export default function MoverLoginPage() {
   const router = useRouter();
   const { refetch } = useAuth();
+  const { remainingSeconds, start: startLockout } = useCountdown();
+  const isLocked = remainingSeconds > 0;
   const {
     register,
     handleSubmit,
@@ -33,6 +38,13 @@ export default function MoverLoginPage() {
       // 기사님은 프로필 등록 하드 게이트라 customer처럼 스킵 가능한 모달 없이 바로 보낸다.
       router.replace(result.hasProfile ? "/mover/requests" : "/mover/profile-register");
     } catch (error) {
+      // rate limit 초과는 일반 로그인 실패와 별개로, 남은 시간을 보여주며 재시도 자체를 막는다.
+      // retryAfterSeconds가 없거나 이상하면 카운트다운 없이 일반 에러 메시지로만 처리한다.
+      const retryAfterSeconds = findRetryAfterSeconds(error);
+      if (retryAfterSeconds !== null) {
+        startLockout(retryAfterSeconds);
+        return;
+      }
       const message = error instanceof ApiError ? error.message : "로그인 중 문제가 발생했습니다.";
       setError("root", { message });
     }
@@ -76,8 +88,12 @@ export default function MoverLoginPage() {
             </div>
 
             <AuthSubmitButton
-              disabled={isSubmitting || !isValid}
-              errorMessage={errors.root?.message}
+              disabled={isSubmitting || !isValid || isLocked}
+              errorMessage={
+                isLocked
+                  ? `${formatCountdown(remainingSeconds)} 후 다시 시도해주세요.`
+                  : errors.root?.message
+              }
             >
               로그인
             </AuthSubmitButton>
