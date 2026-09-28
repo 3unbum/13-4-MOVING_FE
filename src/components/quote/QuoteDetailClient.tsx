@@ -5,7 +5,7 @@ import { useConfirmEstimate, useQuoteDetail } from "@/hooks/useQuoteDetail";
 import { useFavoriteMover } from "@/hooks/useFavoriteMover";
 import QuoteDetailView from "@/components/quote/QuoteDetailView";
 import Toast from "@/components/common/Toast";
-import Loading from "@/app/loading";
+import Loading from "@/app/[locale]/loading";
 import { ApiError } from "@/lib/utils/api-error";
 
 interface QuoteDetailClientProps {
