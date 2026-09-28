@@ -1,0 +1,37 @@
+{
+  "common": {
+    "confirm": "确认",
+    "cancel": "取消",
+    "close": "关闭",
+    "next": "下一步",
+    "more": "查看更多",
+    "loading": "加载中...",
+    "customerName": "{name} 客户",
+    "moverName": "{name} 师傅"
+  },
+  "locale": {
+    "label": "语言",
+    "ko": "한국어",
+    "en": "English",
+    "zh": "中文"
+  },
+  "gnb": {
+    "home": "Moving 首页",
+    "menu": "菜单",
+    "openMenu": "打开菜单",
+    "closeMenu": "关闭菜单",
+    "mainMenu": "主菜单",
+    "notification": "通知",
+    "profileMenu": "个人菜单",
+    "profileMenuOptions": "个人菜单选项",
+    "logoutFailed": "退出登录失败",
+    "nav": {
+      "customer-quotation-requests": "申请报价",
+      "customer-movers": "寻找师傅",
+      "customer-my-quotes": "我的报价管理",
+      "mover-requests": "收到的请求",
+      "mover-my-quotes": "我的报价管理",
+      "guest-movers": "寻找师傅"
+    }
+  }
+}
