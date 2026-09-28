@@ -17,15 +17,14 @@ export function useCountdown() {
   const start = (seconds: number) => {
     if (timerRef.current) clearInterval(timerRef.current);
 
+    // 매 tick마다 1씩 빼면 브라우저가 백그라운드 탭의 타이머를 늦출 때 실제 시간보다 느려지므로,
+    // 종료 시각을 고정해 두고 매번 남은 시간을 다시 계산한다.
+    const endAt = Date.now() + seconds * 1000;
     setRemainingSeconds(seconds);
     timerRef.current = setInterval(() => {
-      setRemainingSeconds((prev) => {
-        if (prev <= 1) {
-          if (timerRef.current) clearInterval(timerRef.current);
-          return 0;
-        }
-        return prev - 1;
-      });
+      const next = Math.max(0, Math.ceil((endAt - Date.now()) / 1000));
+      setRemainingSeconds(next);
+      if (next === 0 && timerRef.current) clearInterval(timerRef.current);
     }, 1000);
   };
 
