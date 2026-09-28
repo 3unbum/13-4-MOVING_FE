@@ -21,8 +21,11 @@ const nextConfig: NextConfig = {
   async rewrites() {
     return [
       {
+        // 백엔드 주소는 환경마다 다릅니다(로컬 3001 / 배포 EC2).
+        // `NEXT_PUBLIC_API_URL`은 서버 컴포넌트에서도 쓰고 있어(movers/[moverId],
+        // find-my-account) 같은 값을 공유합니다.
         source: "/api/:path*",
-        destination: "http://3.34.7.94/api/:path*",
+        destination: `${process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001"}/api/:path*`,
       },
     ];
   },
