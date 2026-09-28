@@ -1,0 +1,37 @@
+{
+  "common": {
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "close": "Close",
+    "next": "Next",
+    "more": "Load more",
+    "loading": "Loading...",
+    "customerName": "{name}",
+    "moverName": "{name}"
+  },
+  "locale": {
+    "label": "Language",
+    "ko": "한국어",
+    "en": "English",
+    "zh": "中文"
+  },
+  "gnb": {
+    "home": "Moving home",
+    "menu": "Menu",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "mainMenu": "Main menu",
+    "notification": "Notifications",
+    "profileMenu": "Profile menu",
+    "profileMenuOptions": "Profile menu options",
+    "logoutFailed": "Failed to sign out",
+    "nav": {
+      "customer-quotation-requests": "Request a quote",
+      "customer-movers": "Find movers",
+      "customer-my-quotes": "My quotes",
+      "mover-requests": "Requests",
+      "mover-my-quotes": "My quotes",
+      "guest-movers": "Find movers"
+    }
+  }
+}
