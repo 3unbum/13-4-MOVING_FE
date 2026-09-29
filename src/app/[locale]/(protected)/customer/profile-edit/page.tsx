@@ -12,7 +12,7 @@ import CustomerProfileEditForm from "@/components/profile/CustomerProfileEditFor
 // 응답 타입이 동일(CustomerAccountResponse)해서 이 페이지에서 별도로 다시 조회하지 않는다.
 export default async function CustomerProfileEditPage() {
   const account = await requireRole("CUSTOMER", "/customer/login");
-  requireProfile(account, "/customer/profile-register");
+  await requireProfile(account, "/customer/profile-register");
 
   return (
     <div className="pc:items-center pc:px-0 pc:py-15 flex w-full justify-center px-4 pt-4 pb-10">

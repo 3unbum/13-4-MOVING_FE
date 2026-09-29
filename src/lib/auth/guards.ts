@@ -1,6 +1,7 @@
 import "server-only";
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
+import { getLocale } from "next-intl/server";
+import { redirect } from "@/i18n/navigation";
 import { findMyAccount } from "@/lib/auth/find-my-account";
 import type { AccountResponse } from "@/lib/services/auth-service";
 
@@ -19,14 +20,19 @@ export async function requireRole(
   loginPath: string
 ): Promise<AccountResponse | null> {
   const account = await findMyAccount();
+  // next-intl의 서버 redirect는 locale이 필수입니다. 현재 언어를 유지해야
+  // `/en/...`에서 로그인으로 보낼 때 한국어로 떨어지지 않습니다.
+  const locale = await getLocale();
 
   if (!account) {
     const cookieStore = await cookies();
     if (cookieStore.has("refreshToken")) return null;
-    redirect(loginPath);
+    // next-intl의 redirect는 반환 타입이 never가 아니라, 뒤 코드가 unreachable임을
+    // TS가 알지 못합니다. return을 붙여 흐름을 명시합니다(실제로는 여기서 throw됨).
+    return redirect({ href: loginPath, locale });
   }
   if (account.role !== role) {
-    redirect("/");
+    return redirect({ href: "/", locale });
   }
 
   return account;
@@ -39,8 +45,12 @@ export async function requireRole(
  * 하위 레이아웃(mover 참고)을 쓰는 쪽이 낫다 — 페이지마다 반복 호출 안 해도 됨.
  * `account`가 null(위 fail-open 구간)이면 hasProfile을 알 수 없으니 통과시킨다.
  */
-export function requireProfile(account: AccountResponse | null, redirectPath: string): void {
+export async function requireProfile(
+  account: AccountResponse | null,
+  redirectPath: string
+): Promise<void> {
   if (account && !account.hasProfile) {
-    redirect(redirectPath);
+    // redirect에 locale이 필요해 async가 됐습니다 (호출부에서 await 필요)
+    redirect({ href: redirectPath, locale: await getLocale() });
   }
 }

@@ -1,4 +1,5 @@
-import { redirect } from "next/navigation";
+import { getLocale } from "next-intl/server";
+import { redirect } from "@/i18n/navigation";
 import { requireRole } from "@/lib/auth/guards";
 import CustomerProfileForm from "@/components/profile/CustomerProfileForm";
 
@@ -15,7 +16,7 @@ import CustomerProfileForm from "@/components/profile/CustomerProfileForm";
 // CustomerProfileForm 안으로 옮김(피그마에서 구분선이 필드 리듬(20/32px)에 속해있어서)
 export default async function CustomerProfileRegisterPage() {
   const account = await requireRole("CUSTOMER", "/customer/login");
-  if (account?.hasProfile) redirect("/");
+  if (account?.hasProfile) redirect({ href: "/", locale: await getLocale() });
 
   return (
     <div className="pc:items-center pc:px-0 pc:py-15 flex w-full justify-center px-4 pt-4 pb-10">

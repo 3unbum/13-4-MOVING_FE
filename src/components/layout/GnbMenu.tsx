@@ -1,13 +1,14 @@
 "use client";
 
 import xMd from "@/assets/icons/x-md.svg";
+import LocaleSwitcher from "@/components/layout/LocaleSwitcher";
 import { CUSTOMER_NAV, MOVER_NAV, type GnbNavItem, type GnbRole } from "@/constants/gnb/nav";
 import { useDialog } from "@/hooks/useDialog";
 import { cn } from "@/lib/utils/cn";
 import { getGnbNavColorClass, isGnbNavActive } from "@/lib/utils/gnb-nav";
 import Image from "next/image";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { Link } from "@/i18n/navigation";
+import { usePathname } from "@/i18n/navigation";
 import { type ReactNode } from "react";
 
 interface GnbMenuProps {
@@ -81,6 +82,11 @@ export default function GnbMenu({
             );
           })}
           {footer ? <li>{footer}</li> : null}
+          {/* 언어 선택 — PC는 GNB 우측에 있지만 좁은 화면에서는 자리가 없어
+              메뉴 안으로 내립니다. 메뉴 항목과 같은 좌우 여백을 씁니다. */}
+          <li className="border-line-100 border-t px-5 py-6">
+            <LocaleSwitcher size="sm" />
+          </li>
         </ul>
       </nav>
     </div>

@@ -1,7 +1,7 @@
 import logo from "@/assets/images/common/logo-icon-text-lg.svg";
 import notFoundIcon from "@/assets/images/common/profile-icon-md.png";
 import Image from "next/image";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 
 export default function NotFound() {
   return (

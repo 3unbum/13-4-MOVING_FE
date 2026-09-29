@@ -1,5 +1,5 @@
 import Image from "next/image";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import logoTextXl from "@/assets/images/common/logo-text-xl.svg";
 import AuthSwitchLink from "@/components/auth/AuthSwitchLink";
 

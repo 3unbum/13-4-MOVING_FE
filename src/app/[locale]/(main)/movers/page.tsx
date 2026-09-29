@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState, type KeyboardEvent } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import Filter from "@/components/common/Filter";
 import Header from "@/components/common/Header";
 import InputSearchbar from "@/components/common/InputSearchbar";

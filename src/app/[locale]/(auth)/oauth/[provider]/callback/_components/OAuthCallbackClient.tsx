@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { useEffect, useRef, useState } from "react";
 import ProfileRegisterModal from "@/components/auth/ProfileRegisterModal";
 import type { OAuthProviderKey } from "@/constants/auth/oauth";

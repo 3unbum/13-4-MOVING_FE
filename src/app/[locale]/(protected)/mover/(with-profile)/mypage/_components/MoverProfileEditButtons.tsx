@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import writingMd from "@/assets/icons/writing-md.svg";
 import writingMdGray from "@/assets/icons/writing-md-gray.svg";
 import Button from "@/components/common/Button";

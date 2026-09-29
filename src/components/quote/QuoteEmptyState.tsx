@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import movingCar from "@/assets/images/common/moving_car.png";
 import Button from "@/components/common/Button";
 import { cn } from "@/lib/utils/cn";
