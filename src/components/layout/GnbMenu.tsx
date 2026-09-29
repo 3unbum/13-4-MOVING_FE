@@ -7,8 +7,7 @@ import { useDialog } from "@/hooks/useDialog";
 import { cn } from "@/lib/utils/cn";
 import { getGnbNavColorClass, isGnbNavActive } from "@/lib/utils/gnb-nav";
 import Image from "next/image";
-import { Link } from "@/i18n/navigation";
-import { usePathname } from "@/i18n/navigation";
+import { Link, usePathname } from "@/i18n/navigation";
 import { type ReactNode } from "react";
 
 interface GnbMenuProps {

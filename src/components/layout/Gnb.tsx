@@ -19,8 +19,7 @@ import { getGnbProfileOptions } from "@/constants/gnb/profile";
 import { cn } from "@/lib/utils/cn";
 import { getGnbNavColorClass, isGnbNavActive } from "@/lib/utils/gnb-nav";
 import Image from "next/image";
-import { Link } from "@/i18n/navigation";
-import { usePathname } from "@/i18n/navigation";
+import { Link, usePathname } from "@/i18n/navigation";
 import { useRef, useState, type ReactNode } from "react";
 
 export interface GnbNotification {

@@ -46,6 +46,7 @@ export default function LocaleSwitcher({ size = "md", className }: LocaleSwitche
       <button
         type="button"
         aria-label="언어 선택"
+        aria-haspopup="menu"
         aria-expanded={isOpen}
         disabled={isPending}
         onClick={() => setIsOpen((value) => !value)}
@@ -64,6 +65,7 @@ export default function LocaleSwitcher({ size = "md", className }: LocaleSwitche
         <div className="absolute top-full right-0 z-[var(--z-gnb-dropdown)] mt-3">
           <DropdownProfile
             size="sm"
+            ariaLabel="언어 선택 옵션"
             value={locale}
             options={routing.locales.map((value) => ({
               value,

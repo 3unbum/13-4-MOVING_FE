@@ -31,6 +31,12 @@ export interface DropdownProfileProps {
   containerRef?: RefObject<HTMLElement | null>;
   /** @default true */
   closeOnOutsideClick?: boolean;
+  /**
+   * 패널의 스크린 리더 이름. 프로필 외 용도로 재사용할 때 넘깁니다
+   * (예: 언어 선택 — 그대로 두면 "프로필 메뉴 옵션"으로 읽힙니다).
+   * @default "프로필 메뉴 옵션"
+   */
+  ariaLabel?: string;
 }
 
 /**
@@ -64,6 +70,7 @@ export default function DropdownProfile({
   onClose,
   containerRef,
   closeOnOutsideClick = true,
+  ariaLabel = "프로필 메뉴 옵션",
 }: DropdownProfileProps) {
   const panelRef = useRef<HTMLDivElement>(null);
   const listId = useId();
@@ -82,7 +89,7 @@ export default function DropdownProfile({
       ref={panelRef}
       id={listId}
       role="menu"
-      aria-label="프로필 메뉴 옵션"
+      aria-label={ariaLabel}
       className={cn(
         "border-line-200 inline-flex flex-col overflow-hidden border bg-gray-50 shadow-[2px_2px_4px_rgba(224,224,224,0.2)]",
         isSm ? "w-38 rounded-2xl pt-2.5" : "w-62 rounded-2xl pt-4",
