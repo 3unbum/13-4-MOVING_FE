@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import { cn } from "@/lib/utils/cn";
 import Image from "next/image";
 import { useId, useState } from "react";
@@ -44,6 +46,7 @@ export default function InputSearchbar({
   onBlur,
   ...props
 }: InputSearchbarProps) {
+  const t = useTranslations("common");
   const [isFocused, setIsFocused] = useState(false);
   const generatedId = useId();
   const inputId = id ?? generatedId;
@@ -106,7 +109,7 @@ export default function InputSearchbar({
               onMouseDown={(e) => e.preventDefault()}
               onClick={() => onChange("")}
               disabled={disabled}
-              aria-label="검색어 지우기"
+              aria-label={t("clearSearch")}
               className="flex shrink-0 items-center justify-center"
             >
               <Image
@@ -120,7 +123,7 @@ export default function InputSearchbar({
             type="submit"
             onMouseDown={(e) => e.preventDefault()}
             disabled={disabled}
-            aria-label="검색"
+            aria-label={t("search")}
             className="flex shrink-0 items-center justify-center"
           >
             <Image

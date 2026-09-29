@@ -1,4 +1,8 @@
+"use client";
+
+import { useLocale, useTranslations } from "next-intl";
 import { cn } from "@/lib/utils/cn";
+import { formatMovingDate, type DateLocale } from "@/lib/utils/date";
 import type { HTMLAttributes } from "react";
 import { SERVICE_LABELS, type ServiceCode } from "@/components/filter/ChipRegion";
 import { shortenAddress } from "@/lib/utils/address";
@@ -12,16 +16,6 @@ interface SubHeaderProps extends HTMLAttributes<HTMLDivElement> {
   toAddress: string;
   movingDate: string;
   size?: SubHeaderSize;
-}
-
-const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
-const KST_OFFSET_MS = 9 * 60 * 60 * 1000;
-
-function formatDate(iso: string) {
-  const kst = new Date(new Date(iso).getTime() + KST_OFFSET_MS);
-  const mm = String(kst.getUTCMonth() + 1).padStart(2, "0");
-  const dd = String(kst.getUTCDate()).padStart(2, "0");
-  return `${kst.getUTCFullYear()}년 ${mm}월 ${dd}일 (${WEEKDAYS[kst.getUTCDay()]})`;
 }
 
 function Field({
@@ -53,6 +47,8 @@ export default function SubHeader({
   className,
   ...props
 }: SubHeaderProps) {
+  const t = useTranslations("common");
+  const locale = useLocale() as DateLocale;
   const isLg = size === "lg";
   const isMd = size === "md";
   const big = isMd || isLg;
@@ -76,18 +72,18 @@ export default function SubHeader({
             big ? "text-14 text-gray-gray-500 font-normal" : "text-gray-gray-500 text-12"
           )}
         >
-          견적 신청일: {formatDate(createdAt)}
+          {t("requestedAt")}: {formatMovingDate(createdAt, locale)}
         </p>
       </header>
       <div className={cn(big ? "flex flex-row items-end" : "flex flex-col")}>
-        <Field label="출발지" value={shortenAddress(fromAddress)} big={big} />
+        <Field label={t("from")} value={shortenAddress(fromAddress)} big={big} />
         <span className={cn(big ? "px-3 pb-0.5" : "hidden")} aria-hidden>
           {" → "}
         </span>
-        <Field label="도착지" value={shortenAddress(toAddress)} big={big} />
+        <Field label={t("to")} value={shortenAddress(toAddress)} big={big} />
         <Field
-          label="이사일"
-          value={formatDate(movingDate)}
+          label={t("movingDate")}
+          value={formatMovingDate(movingDate, locale)}
           big={big}
           className={big ? "pl-10" : undefined}
         />

@@ -7,7 +7,36 @@
     "more": "Load more",
     "loading": "Loading...",
     "customerName": "{name}",
-    "moverName": "{name}"
+    "moverName": "{name}",
+    "search": "Search",
+    "clearSearch": "Clear search",
+    "searchPlaceholder": "Enter text",
+    "select": "Select",
+    "sort": "Sort",
+    "filter": "Filter",
+    "filterOptions": "Filter options",
+    "regionFilterOptions": "Region filter options",
+    "prevMonth": "Previous month",
+    "nextMonth": "Next month",
+    "datePlaceholder": "Select a date",
+    "movingDatePlaceholder": "Select your moving date",
+    "pagination": "Pagination",
+    "prevPage": "Previous page",
+    "nextPage": "Next page",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "profileImage": "Profile image",
+    "favorite": "Add to favorites",
+    "copyLink": "Copy link",
+    "shareKakao": "Share on KakaoTalk",
+    "shareFacebook": "Share on Facebook",
+    "from": "From",
+    "to": "To",
+    "movingDate": "Moving date",
+    "noPrice": "No quote",
+    "price": "{amount} KRW",
+    "options": "options",
+    "requestedAt": "Requested on"
   },
   "locale": {
     "label": "Language",
@@ -33,5 +62,26 @@
       "mover-my-quotes": "My quotes",
       "guest-movers": "Find movers"
     }
+  },
+  "service": {
+    "SMALL": "Small move",
+    "HOME": "Home move",
+    "OFFICE": "Office move",
+    "descSMALL": "Studio or 2-room, under 20 pyeong",
+    "descHOME": "3-room or larger, over 20 pyeong",
+    "descOFFICE": "Offices and commercial spaces"
+  },
+  "profileImage": {
+    "upload": "Upload profile image",
+    "change": "Change profile image",
+    "invalidType": "Only jpeg, png and webp files can be uploaded",
+    "tooLarge": "Image size cannot exceed 5MB",
+    "uploadFailed": "Failed to upload the image. Please try again"
+  },
+  "card": {
+    "confirmed": "Confirmed",
+    "pending": "Pending",
+    "rejected": "Rejected",
+    "quoteAmount": "Quote"
   }
 }

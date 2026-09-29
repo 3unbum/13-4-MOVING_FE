@@ -1,5 +1,7 @@
 "use client";
 
+import { useLocale, useTranslations } from "next-intl";
+
 import { useRef, useState } from "react";
 import { addMonths, subMonths } from "date-fns";
 import { DayPicker } from "react-day-picker";
@@ -19,14 +21,26 @@ interface DatePickerProps {
   className?: string;
 }
 
-const WEEKDAY_LABELS = ["일", "월", "화", "수", "목", "금", "토"];
+/** 캘린더 안의 날짜는 사용자가 고른 **로컬 Date**라 KST 변환(lib/utils/date.ts)이 필요 없습니다 */
+function weekdayLabel(date: Date, locale: string) {
+  return new Intl.DateTimeFormat(locale, { weekday: "narrow" }).format(date);
+}
 
 function formatCaption(date: Date) {
   return `${date.getFullYear()}. ${String(date.getMonth() + 1).padStart(2, "0")}`;
 }
 
-function formatTriggerLabel(date: Date) {
-  return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일`;
+function formatTriggerLabel(date: Date, locale: string) {
+  const y = date.getFullYear();
+  const m = date.getMonth() + 1;
+  const d = date.getDate();
+
+  // 한국어는 피그마 표기를 그대로 지킵니다
+  if (locale === "ko") return `${y}년 ${m}월 ${d}일`;
+  if (locale === "zh") return `${y}年 ${m}月 ${d}日`;
+  return new Intl.DateTimeFormat("en", { year: "numeric", month: "long", day: "numeric" }).format(
+    date
+  );
 }
 
 // 오늘 포함 이전 날짜는 선택 불가 — BE가 이사 예정일을 내일 이후로만 허용함(quotation-request.schema.ts)
@@ -74,13 +88,15 @@ interface CalendarProps {
 }
 
 function Calendar({ size, month, onMonthChange, selected, onSelect }: CalendarProps) {
+  const t = useTranslations("common");
+  const locale = useLocale();
   const s = CALENDAR_STYLES[size];
   return (
     <div className={s.root}>
       <div className={s.caption}>
         <button
           type="button"
-          aria-label="이전 달"
+          aria-label={t("prevMonth")}
           onClick={() => onMonthChange(subMonths(month, 1))}
         >
           <Image src={chevronLeftIcon} alt="" className="size-6" />
@@ -88,7 +104,7 @@ function Calendar({ size, month, onMonthChange, selected, onSelect }: CalendarPr
         <p className={s.captionLabel}>{formatCaption(month)}</p>
         <button
           type="button"
-          aria-label="다음 달"
+          aria-label={t("nextMonth")}
           onClick={() => onMonthChange(addMonths(month, 1))}
         >
           <Image src={chevronRightIcon} alt="" className="size-6" />
@@ -103,7 +119,7 @@ function Calendar({ size, month, onMonthChange, selected, onSelect }: CalendarPr
         disabled={isPastDate}
         hideNavigation
         showOutsideDays
-        formatters={{ formatWeekdayName: (date) => WEEKDAY_LABELS[date.getDay()] }}
+        formatters={{ formatWeekdayName: (date) => weekdayLabel(date, locale) }}
         classNames={{
           month_caption: "sr-only",
           weekdays: "flex",
@@ -122,6 +138,8 @@ function Calendar({ size, month, onMonthChange, selected, onSelect }: CalendarPr
 
 // 데스크톱/태블릿: 트리거+팝오버(선택완료 버튼 내장) · 모바일: 인라인(확정은 페이지 쪽 버튼)
 export default function DatePicker({ value, onChange, className }: DatePickerProps) {
+  const t = useTranslations("common");
+  const locale = useLocale();
   const [open, setOpen] = useState(false);
   const [month, setMonth] = useState(value ?? new Date());
   const popoverRef = useRef<HTMLDivElement>(null);
@@ -151,7 +169,7 @@ export default function DatePicker({ value, onChange, className }: DatePickerPro
         >
           <Image src={calendarIcon} alt="" className="size-6" />
           <span className="text-16 text-black-black-400 flex-1 text-left font-medium">
-            {value ? formatTriggerLabel(value) : "이사 예정일을 선택해주세요"}
+            {value ? formatTriggerLabel(value, locale) : t("movingDatePlaceholder")}
           </span>
           <Image src={chevronDownIcon} alt="" className="size-9" />
         </button>

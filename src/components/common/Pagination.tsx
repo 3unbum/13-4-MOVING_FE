@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import { cn } from "@/lib/utils/cn";
 import Image from "next/image";
 import chevronLeftDefault from "@/assets/icons/chevron-left-md.svg";
@@ -87,6 +89,7 @@ export default function Pagination({
   size,
   className,
 }: PaginationProps) {
+  const t = useTranslations("common");
   if (totalPages <= 1) {
     return null;
   }
@@ -102,10 +105,13 @@ export default function Pagination({
   );
 
   return (
-    <nav aria-label="페이지네이션" className={cn("flex items-center", styles.gapOuter, className)}>
+    <nav
+      aria-label={t("pagination")}
+      className={cn("flex items-center", styles.gapOuter, className)}
+    >
       <button
         type="button"
-        aria-label="이전 페이지"
+        aria-label={t("prevPage")}
         disabled={isFirstPage}
         onClick={() => onPageChange(currentPage - 1)}
         className={buttonBase}
@@ -149,7 +155,7 @@ export default function Pagination({
 
       <button
         type="button"
-        aria-label="다음 페이지"
+        aria-label={t("nextPage")}
         disabled={isLastPage}
         onClick={() => onPageChange(currentPage + 1)}
         className={buttonBase}

@@ -1,3 +1,6 @@
+"use client";
+
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils/cn";
 import Image from "next/image";
 import type { ButtonHTMLAttributes } from "react";
@@ -42,11 +45,12 @@ type EtcButtonProps =
 
 // like는 active로 눌림 여부가 바뀌어도 이름(label)은 고정 — 상태는 aria-pressed로만 전달
 // (WAI-ARIA toggle button 패턴)
-const DEFAULT_ARIA_LABEL: Record<EtcButtonKind, string> = {
-  like: "찜하기",
-  clip: "링크 복사",
-  "share-kakao": "카카오톡 공유",
-  "share-facebook": "페이스북 공유",
+// 값은 `messages/*.json`의 `common` 키입니다 (문구 자체가 아님)
+const DEFAULT_ARIA_LABEL_KEY: Record<EtcButtonKind, string> = {
+  like: "favorite",
+  clip: "copyLink",
+  "share-kakao": "shareKakao",
+  "share-facebook": "shareFacebook",
 };
 
 // 컨테이너 크기: xs 40px(radius 8) / sm 54px(radius 16) / md 64px(radius 16) — like는 xs 없음
@@ -69,6 +73,7 @@ export default function EtcButton({
   activeColor = "black",
   ...props
 }: EtcButtonProps) {
+  const t = useTranslations("common");
   // 아이콘 실제 픽셀: xs/sm은 모두 24px, md는 like·clip 36px / kakao·facebook 28px로 Figma 배리언트별 크기가 다름
   const iconSizeClass =
     size !== "md" ? "size-6" : kind === "like" || kind === "clip" ? "size-9" : "size-7";
@@ -81,7 +86,7 @@ export default function EtcButton({
     <button
       type={type}
       aria-pressed={kind === "like" ? active : undefined}
-      aria-label={ariaLabel ?? DEFAULT_ARIA_LABEL[kind]}
+      aria-label={ariaLabel ?? t(DEFAULT_ARIA_LABEL_KEY[kind])}
       className={cn(
         "flex shrink-0 items-center justify-center transition-colors",
         CONTAINER_SIZE[size],

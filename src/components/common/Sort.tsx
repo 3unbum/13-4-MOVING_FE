@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import chevronDownLgDark from "@/assets/icons/chevron-down-lg-dark.svg";
 import chevronDownSm from "@/assets/icons/chevron-down-sm.svg";
 import chevronUpLg from "@/assets/icons/chevron-up-lg.svg";
@@ -54,10 +56,13 @@ export default function Sort({
   value,
   onChange,
   size = "md",
-  label = "정렬",
+  label,
   className,
   disabled = false,
 }: SortProps) {
+  const t = useTranslations("common");
+  // 기본 "정렬" — 호출부가 label을 주면 그대로 씁니다
+  const sortLabel = label ?? t("sort");
   const [isOpen, setIsOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const listId = useId();
@@ -87,7 +92,7 @@ export default function Sort({
       <button
         type="button"
         disabled={disabled}
-        aria-label={`${label}: ${selectedLabel}`}
+        aria-label={`${sortLabel}: ${selectedLabel}`}
         aria-expanded={isOpen}
         aria-controls={listId}
         onClick={() => setIsOpen((prev) => !prev)}
@@ -139,7 +144,7 @@ export default function Sort({
       {isOpen ? (
         <ul
           id={listId}
-          aria-label={`${label} 옵션`}
+          aria-label={`${sortLabel} ${t("options")}`}
           className={cn(
             "border-line-100 absolute top-full left-0 z-[var(--z-filter-dropdown)] flex flex-col overflow-hidden rounded-lg border bg-gray-50",
             isSm

@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import chevronDownLgDark from "@/assets/icons/chevron-down-lg-dark.svg";
 import chevronDownSmDark from "@/assets/icons/chevron-down-sm-dark.svg";
 import chevronUpLgOrange from "@/assets/icons/chevron-up-lg-orange.svg";
@@ -75,6 +77,7 @@ export type FilterProps = FilterSingleProps | FilterDoubleProps;
  * />
  */
 export default function Filter(props: FilterProps) {
+  const t = useTranslations("common");
   const {
     value,
     onChange,
@@ -97,7 +100,7 @@ export default function Filter(props: FilterProps) {
   const selectedLabel = flatOptions.find((option) => option.value === value)?.label;
   // ALL = 필터 미적용 → 카테고리명 유지, 그 외엔 선택 지역/서비스명 표시
   const triggerLabel =
-    value !== "ALL" && selectedLabel ? selectedLabel : (label ?? selectedLabel ?? "선택");
+    value !== "ALL" && selectedLabel ? selectedLabel : (label ?? selectedLabel ?? t("select"));
 
   useOutsideClose({
     isOpen,
@@ -191,12 +194,13 @@ interface SingleListProps {
 }
 
 function SingleList({ id, size, options, value, onSelect }: SingleListProps) {
+  const t = useTranslations("common");
   const isSm = size === "sm";
 
   return (
     <ul
       id={id}
-      aria-label="필터 옵션"
+      aria-label={t("filterOptions")}
       className={cn(
         "absolute z-[var(--z-filter-dropdown)] flex flex-col overflow-hidden bg-gray-50",
         isSm
@@ -241,6 +245,7 @@ interface DoubleListProps {
 }
 
 function DoubleList({ id, size, columns, value, onSelect }: DoubleListProps) {
+  const t = useTranslations("common");
   const isSm = size === "sm";
   const [leftColumn, rightColumn] = columns;
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -290,7 +295,7 @@ function DoubleList({ id, size, columns, value, onSelect }: DoubleListProps) {
     <div
       id={id}
       role="group"
-      aria-label="지역 필터 옵션"
+      aria-label={t("regionFilterOptions")}
       className={cn(
         "absolute -left-px z-[var(--z-filter-dropdown)] overflow-hidden bg-gray-50",
         isSm

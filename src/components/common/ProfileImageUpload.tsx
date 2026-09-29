@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import { useRef, useState } from "react";
 import Image from "next/image";
 import galleryIcon from "@/assets/icons/gallery-outline.svg";
@@ -30,6 +32,7 @@ export default function ProfileImageUpload({
   onUploadingChange,
   disabled = false,
 }: ProfileImageUploadProps) {
+  const t = useTranslations("profileImage");
   const inputRef = useRef<HTMLInputElement>(null);
   const [previewUrl, setPreviewUrl] = useState<string | undefined>(value);
   const [isUploading, setIsUploading] = useState(false);
@@ -41,11 +44,11 @@ export default function ProfileImageUpload({
     if (!file) return;
 
     if (!ALLOWED_TYPES.includes(file.type)) {
-      setError("jpeg, png, webp 파일만 업로드할 수 있어요");
+      setError(t("invalidType"));
       return;
     }
     if (file.size > MAX_SIZE_BYTES) {
-      setError("이미지 용량은 5MB를 초과할 수 없어요");
+      setError(t("tooLarge"));
       return;
     }
 
@@ -60,7 +63,7 @@ export default function ProfileImageUpload({
       const { imageUrl } = await profileService.uploadImage(file);
       onChange(imageUrl);
     } catch {
-      setError("이미지 업로드에 실패했어요. 다시 시도해주세요");
+      setError(t("uploadFailed"));
       setPreviewUrl(value);
       // 교체 업로드 실패 시 기존 값을 유지 — undefined로 지우면 미리보기(기존 이미지로 복원)와
       // 실제 제출값이 어긋나 버린다
@@ -77,7 +80,7 @@ export default function ProfileImageUpload({
         type="button"
         onClick={() => inputRef.current?.click()}
         disabled={disabled || isUploading}
-        aria-label={previewUrl ? "프로필 이미지 변경" : "프로필 이미지 업로드"}
+        aria-label={previewUrl ? t("change") : t("upload")}
         className={cn(
           "bg-background-200 pc:size-40 relative flex size-25 shrink-0 items-center justify-center overflow-hidden rounded-md",
           "disabled:cursor-not-allowed disabled:opacity-40"
