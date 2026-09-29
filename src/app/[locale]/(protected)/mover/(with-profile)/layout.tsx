@@ -1,5 +1,6 @@
 import { type ReactNode } from "react";
-import { redirect } from "next/navigation";
+import { getLocale } from "next-intl/server";
+import { redirect } from "@/i18n/navigation";
 import { requireRole } from "@/lib/auth/guards";
 
 // 괄호 폴더라 URL에는 안 드러남 — /mover/requests 등은 그대로 /mover/requests.
@@ -12,7 +13,7 @@ export default async function MoverWithProfileLayout({ children }: { children: R
   if (!account) return <>{children}</>;
 
   if (!account.hasProfile) {
-    redirect("/mover/profile-register");
+    redirect({ href: "/mover/profile-register", locale: await getLocale() });
   }
 
   return <>{children}</>;

@@ -8,7 +8,7 @@ import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { ApiError } from "@/lib/utils/api-error";
 import { quotationRequestService } from "@/lib/services/quotation-request-service";
 import { useAuth } from "@/providers/AuthProvider";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { useState } from "react";
 import QuotationRequestMobile from "./_components/QuotationRequestMobile";
 import QuotationRequestDesktop from "./_components/QuotationRequestDesktop";

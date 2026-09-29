@@ -13,13 +13,13 @@ import DropdownNotification, {
 } from "@/components/layout/DropdownNotification";
 import DropdownProfile, { type DropdownProfileOption } from "@/components/layout/DropdownProfile";
 import GnbMenu from "@/components/layout/GnbMenu";
+import LocaleSwitcher from "@/components/layout/LocaleSwitcher";
 import { getGnbNavItems, LOGOUT_NAV, type GnbRole } from "@/constants/gnb/nav";
 import { getGnbProfileOptions } from "@/constants/gnb/profile";
 import { cn } from "@/lib/utils/cn";
 import { getGnbNavColorClass, isGnbNavActive } from "@/lib/utils/gnb-nav";
 import Image from "next/image";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { Link, usePathname } from "@/i18n/navigation";
 import { useRef, useState, type ReactNode } from "react";
 
 export interface GnbNotification {
@@ -143,6 +143,10 @@ export default function Gnb({
             </div>
 
             <div ref={actionsRef} className="pc:gap-8 relative flex items-center justify-end gap-6">
+              {/* 언어 선택 — 피그마에 없는 UI(다국어는 심화 요구사항).
+                  좁은 화면에서는 알림·프로필에 자리를 내주고 메뉴 안으로 들어갑니다. */}
+              <LocaleSwitcher size="md" className="tablet:block hidden" />
+
               <button
                 type="button"
                 aria-label="알림"
@@ -262,10 +266,15 @@ export default function Gnb({
               })}
             </nav>
 
-            <div className="pc:block hidden w-29 shrink-0">
-              <Button size="xs" onClick={onLoginClick}>
-                로그인
-              </Button>
+            {/* 비로그인 상태에서도 언어를 바꿀 수 있어야 합니다 —
+                랜딩·기사님 찾기는 로그인 없이 볼 수 있는 화면입니다. */}
+            <div className="pc:flex hidden shrink-0 items-center gap-6">
+              <LocaleSwitcher size="md" />
+              <div className="w-29">
+                <Button size="xs" onClick={onLoginClick}>
+                  로그인
+                </Button>
+              </div>
             </div>
 
             <button

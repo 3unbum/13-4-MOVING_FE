@@ -3,7 +3,9 @@
 import { useEffect, useState } from "react";
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
-import { useParams, useRouter } from "next/navigation";
+// useParams는 locale과 무관한 동적 세그먼트(moverId)를 읽으므로 next/navigation 그대로 씁니다
+import { useParams } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import moverDetailBannerLg from "@/assets/images/common/mover-detail-banner-lg.svg";
 import moverDetailBannerMd from "@/assets/images/common/mover-detail-banner-md.svg";
 import moverDetailBannerSm from "@/assets/images/common/mover-detail-banner-sm.svg";

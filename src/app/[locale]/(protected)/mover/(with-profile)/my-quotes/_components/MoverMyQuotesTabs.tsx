@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { useState } from "react";
 import emptyCharacter from "@/assets/images/common/empty-review.png";
 import Button from "@/components/common/Button";

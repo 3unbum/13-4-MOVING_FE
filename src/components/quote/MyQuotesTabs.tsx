@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { useState } from "react";
 import Tab from "@/components/common/Tab";
 import TabList from "@/components/common/TabList";

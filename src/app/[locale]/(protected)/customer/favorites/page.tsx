@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import CheckboxButton from "@/components/common/CheckboxButton";
 import Header from "@/components/common/Header";
 import Toast from "@/components/common/Toast";

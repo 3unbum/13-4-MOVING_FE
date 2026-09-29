@@ -1,5 +1,6 @@
 import { type ReactNode } from "react";
-import { redirect } from "next/navigation";
+import { getLocale } from "next-intl/server";
+import { redirect } from "@/i18n/navigation";
 import { findMyAccount } from "@/lib/auth/find-my-account";
 import type { AccountResponse } from "@/lib/services/auth-service";
 
@@ -17,7 +18,7 @@ function homePathFor(account: AccountResponse) {
 export default async function AuthLayout({ children }: { children: ReactNode }) {
   const account = await findMyAccount();
   if (account) {
-    redirect(homePathFor(account));
+    redirect({ href: homePathFor(account), locale: await getLocale() });
   }
 
   return <>{children}</>;

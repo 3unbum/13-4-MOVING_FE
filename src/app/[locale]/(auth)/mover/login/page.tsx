@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { useForm } from "react-hook-form";
 import truckLg from "@/assets/images/common/truck_lg.png";
 import truckMd from "@/assets/images/common/truck_md.png";

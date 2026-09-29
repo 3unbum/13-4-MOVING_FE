@@ -1,4 +1,5 @@
-import { redirect } from "next/navigation";
+import { getLocale } from "next-intl/server";
+import { redirect } from "@/i18n/navigation";
 import { requireRole } from "@/lib/auth/guards";
 import MoverProfileForm from "@/components/profile/MoverProfileForm";
 
@@ -11,7 +12,7 @@ import MoverProfileForm from "@/components/profile/MoverProfileForm";
 // 바로 아래 자식으로 평탄하게 둠(따로 감싸면 그 안에서 별도 gap이 생겨 리듬이 깨짐)
 export default async function MoverProfileRegisterPage() {
   const account = await requireRole("MOVER", "/mover/login");
-  if (account?.hasProfile) redirect("/mover/requests");
+  if (account?.hasProfile) redirect({ href: "/mover/requests", locale: await getLocale() });
 
   return (
     <div className="pc:items-center pc:px-0 pc:py-15 flex w-full justify-center px-4 pt-4 pb-10">

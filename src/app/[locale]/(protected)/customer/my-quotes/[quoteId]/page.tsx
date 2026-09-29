@@ -6,7 +6,7 @@ export default async function CustomerMyQuoteDetailPage({
   params,
 }: PageProps<"/[locale]/customer/my-quotes/[quoteId]">) {
   const account = await requireRole("CUSTOMER", "/customer/login");
-  requireProfile(account, "/customer/profile-register");
+  await requireProfile(account, "/customer/profile-register");
 
   const { quoteId } = await params;
   const estimateId = Number(quoteId);
