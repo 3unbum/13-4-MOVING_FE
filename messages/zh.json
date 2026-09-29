@@ -36,7 +36,9 @@
     "noPrice": "暂无报价",
     "price": "{amount} 韩元",
     "options": "选项",
-    "requestedAt": "申请日期"
+    "requestedAt": "申请日期",
+    "selectDate": "选择日期",
+    "done": "选择完成"
   },
   "locale": {
     "label": "语言",
@@ -76,7 +78,8 @@
     "change": "更换头像",
     "invalidType": "仅支持上传 jpeg、png、webp 格式的文件",
     "tooLarge": "图片大小不能超过 5MB",
-    "uploadFailed": "图片上传失败，请重试"
+    "uploadFailed": "图片上传失败，请重试",
+    "uploading": "上传中..."
   },
   "card": {
     "confirmed": "已确认报价",

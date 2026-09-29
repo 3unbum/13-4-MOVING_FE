@@ -119,7 +119,7 @@ export default function DropdownDateTrigger({
         disabled={disabled}
         aria-haspopup="dialog"
         aria-expanded={isOpen}
-        aria-label={`날짜 선택: ${label}`}
+        aria-label={`${t("selectDate")}: ${label}`}
         onClick={() => setOpen(!isOpen)}
         className={cn(
           "flex h-[50px] w-full items-center rounded-xl bg-gray-50 py-4 pr-3 pl-5 disabled:cursor-not-allowed disabled:opacity-50",

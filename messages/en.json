@@ -36,7 +36,9 @@
     "noPrice": "No quote",
     "price": "{amount} KRW",
     "options": "options",
-    "requestedAt": "Requested on"
+    "requestedAt": "Requested on",
+    "selectDate": "Select date",
+    "done": "Done"
   },
   "locale": {
     "label": "Language",
@@ -76,7 +78,8 @@
     "change": "Change profile image",
     "invalidType": "Only jpeg, png and webp files can be uploaded",
     "tooLarge": "Image size cannot exceed 5MB",
-    "uploadFailed": "Failed to upload the image. Please try again"
+    "uploadFailed": "Failed to upload the image. Please try again",
+    "uploading": "Uploading..."
   },
   "card": {
     "confirmed": "Confirmed",

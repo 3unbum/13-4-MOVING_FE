@@ -121,7 +121,7 @@ export default function Filter(props: FilterProps) {
         aria-expanded={isOpen}
         aria-controls={listId}
         onClick={() => setIsOpen((prev) => !prev)}
-        aria-label={`필터: ${triggerLabel}`}
+        aria-label={`${t("filter")}: ${triggerLabel}`}
         className={cn(
           "flex items-center justify-start border border-solid text-left disabled:cursor-not-allowed disabled:opacity-50",
           isSm

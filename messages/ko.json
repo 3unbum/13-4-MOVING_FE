@@ -36,7 +36,9 @@
     "noPrice": "견적가 없음",
     "price": "{amount}원",
     "options": "옵션",
-    "requestedAt": "견적 신청일"
+    "requestedAt": "견적 신청일",
+    "selectDate": "날짜 선택",
+    "done": "선택완료"
   },
   "locale": {
     "label": "언어",
@@ -76,7 +78,8 @@
     "change": "프로필 이미지 변경",
     "invalidType": "jpeg, png, webp 파일만 업로드할 수 있어요",
     "tooLarge": "이미지 용량은 5MB를 초과할 수 없어요",
-    "uploadFailed": "이미지 업로드에 실패했어요. 다시 시도해주세요"
+    "uploadFailed": "이미지 업로드에 실패했어요. 다시 시도해주세요",
+    "uploading": "업로드 중..."
   },
   "card": {
     "confirmed": "확정견적",

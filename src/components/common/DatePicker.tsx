@@ -184,7 +184,7 @@ export default function DatePicker({ value, onChange, className }: DatePickerPro
             />
             <div className="w-69.75">
               <Button variant="solid" size="sm" disabled={!value} onClick={() => setOpen(false)}>
-                선택완료
+                {t("done")}
               </Button>
             </div>
           </div>

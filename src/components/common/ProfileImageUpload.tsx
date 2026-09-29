@@ -101,7 +101,7 @@ export default function ProfileImageUpload({
         aria-hidden="true"
         tabIndex={-1}
       />
-      {isUploading && <p className="text-13 font-medium text-gray-400">업로드 중...</p>}
+      {isUploading && <p className="text-13 font-medium text-gray-400">{t("uploading")}</p>}
       {error && <p className="text-13 font-medium text-red-200">{error}</p>}
     </div>
   );
