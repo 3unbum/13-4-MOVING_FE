@@ -10,7 +10,7 @@ import { requireRole } from "@/lib/auth/guards";
 // useSearchParams(+Suspense 경계)를 쓰지 않아도 된다.
 export default async function CustomerMyQuotesPage({
   searchParams,
-}: PageProps<"/customer/my-quotes">) {
+}: PageProps<"/[locale]/customer/my-quotes">) {
   await requireRole("CUSTOMER", "/customer/login");
 
   const { tab } = await searchParams;

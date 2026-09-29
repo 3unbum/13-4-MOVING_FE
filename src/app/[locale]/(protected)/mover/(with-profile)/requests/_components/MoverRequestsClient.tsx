@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import Loading from "@/app/loading";
+import Loading from "@/app/[locale]/loading";
 import emptyCharacter from "@/assets/images/common/empty-review.png";
 import Header from "@/components/common/Header";
 import Toast from "@/components/common/Toast";

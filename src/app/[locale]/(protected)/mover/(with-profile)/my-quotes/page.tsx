@@ -5,7 +5,9 @@ import MoverMyQuotesTabs from "./_components/MoverMyQuotesTabs";
 // useSearchParams(+Suspense 경계)를 쓰지 않아도 됩니다.
 //
 // 역할·프로필 가드는 상위 레이아웃((protected)/mover/(with-profile))이 합니다.
-export default async function MoverMyQuotesPage({ searchParams }: PageProps<"/mover/my-quotes">) {
+export default async function MoverMyQuotesPage({
+  searchParams,
+}: PageProps<"/[locale]/mover/my-quotes">) {
   const { tab } = await searchParams;
 
   return <MoverMyQuotesTabs initialTab={tab === "rejected" ? "rejected" : "confirmed"} />;

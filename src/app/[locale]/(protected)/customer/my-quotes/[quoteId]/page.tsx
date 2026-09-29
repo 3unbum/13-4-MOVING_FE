@@ -4,7 +4,7 @@ import { requireProfile, requireRole } from "@/lib/auth/guards";
 
 export default async function CustomerMyQuoteDetailPage({
   params,
-}: PageProps<"/customer/my-quotes/[quoteId]">) {
+}: PageProps<"/[locale]/customer/my-quotes/[quoteId]">) {
   const account = await requireRole("CUSTOMER", "/customer/login");
   requireProfile(account, "/customer/profile-register");
 
