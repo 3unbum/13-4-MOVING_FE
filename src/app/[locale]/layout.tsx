@@ -1,18 +1,10 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
 import { NextIntlClientProvider } from "next-intl";
 import { routing } from "@/i18n/routing";
 import "@/app/globals.css";
+import "pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css";
 import Providers from "./providers";
 import GlobalGnb from "@/components/layout/GlobalGnb";
-
-const pretendard = localFont({
-  // `[locale]` 하위로 한 단계 깊어져서 `../` 가 하나 더 필요합니다
-  src: "../../assets/fonts/PretendardVariable.ttf",
-  variable: "--font-pretendard",
-  weight: "45 920",
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   title: "Moving",
@@ -38,7 +30,7 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[lo
   const { locale } = await params;
 
   return (
-    <html lang={locale} className={`${pretendard.variable} h-full antialiased`}>
+    <html lang={locale} className="h-full antialiased">
       <body className="flex min-h-full flex-col">
         <NextIntlClientProvider>
           <Providers>
