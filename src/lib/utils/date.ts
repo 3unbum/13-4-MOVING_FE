@@ -11,7 +11,7 @@ const DAY = 24 * HOUR;
  * 호출부에서 `useLocale()` / `getLocale()` 로 받아 넘깁니다.
  * 기본값이 "ko"라, 아직 번역을 적용하지 않은 화면은 기존 동작 그대로입니다.
  */
-export type DateLocale = "ko" | "en" | "zh";
+export type DateLocale = "ko" | "en" | "zh" | "ja";
 
 /**
  * 서버가 UTC로 주는 시각을 KST로 옮깁니다.
@@ -49,7 +49,7 @@ export function formatMovingDate(iso: string, locale: DateLocale = "ko") {
   const weekday = weekdayLabel(kst, locale);
 
   if (locale === "ko") return `${yyyy}년 ${mm}월 ${dd}일 (${weekday})`;
-  if (locale === "zh") return `${yyyy}年 ${mm}月 ${dd}日 (${weekday})`;
+  if (locale === "zh" || locale === "ja") return `${yyyy}年 ${mm}月 ${dd}日 (${weekday})`;
   return `${mm}/${dd}/${yyyy} (${weekday})`;
 }
 
@@ -106,11 +106,19 @@ export function formatElapsedTime(
   }
 
   const rtf = new Intl.RelativeTimeFormat(locale, { numeric: "always" });
+  // 일본어는 Intl이 "3 分前"처럼 공백을 넣는데, 붙여 쓰는 게 자연스럽습니다
+  const fmt = (value: number, unit: Intl.RelativeTimeFormatUnit) =>
+    locale === "ja" ? rtf.format(value, unit).replace(/\s+/g, "") : rtf.format(value, unit);
+
   // rtf.format(0, "minute")은 "in 0 minutes"(0분 후)로 나와 어색합니다
-  if (diff < MINUTE) return locale === "zh" ? "刚刚" : "Just now";
-  if (diff < HOUR) return rtf.format(-Math.floor(diff / MINUTE), "minute");
-  if (diff < DAY) return rtf.format(-Math.floor(diff / HOUR), "hour");
-  if (diff < 7 * DAY) return rtf.format(-Math.floor(diff / DAY), "day");
+  if (diff < MINUTE) {
+    if (locale === "zh") return "刚刚";
+    if (locale === "ja") return "たった今";
+    return "Just now";
+  }
+  if (diff < HOUR) return fmt(-Math.floor(diff / MINUTE), "minute");
+  if (diff < DAY) return fmt(-Math.floor(diff / HOUR), "hour");
+  if (diff < 7 * DAY) return fmt(-Math.floor(diff / DAY), "day");
 
   return formatMovingDate(iso, locale);
 }
@@ -127,5 +135,6 @@ export function formatPrice(amount: number, locale: DateLocale = "ko") {
 
   if (locale === "ko") return `${number}원`;
   if (locale === "zh") return `${number} 韩元`;
+  if (locale === "ja") return `${number} ウォン`;
   return `${number} KRW`;
 }
