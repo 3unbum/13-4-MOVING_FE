@@ -18,15 +18,18 @@ interface MoverQuoteDetailViewProps {
 }
 
 /**
- * 견적 정보 블록의 한 줄 — 라벨 90px 고정 + 값.
+ * 견적 정보 블록의 한 줄 — 라벨 90px + 값.
  *
  * 피그마(`1:9352`)는 라벨이 x=0 w=90, 값이 x=113이라 사이가 23px입니다.
  */
 function InfoRow({ label, value }: { label: string; value: string }) {
   return (
     // 라벨 90 + 사이 23 = 값이 113에서 시작합니다 (피그마 라벨 x=0, 값 x=113)
+    //
+    // 폭은 `w-`(고정)가 아니라 `min-w-`입니다. 한국어 라벨은 90px에 들어가 피그마와
+    // 같지만, 일본어 "見積もり依頼日"처럼 더 긴 번역은 90px를 넘겨 두 줄로 접혔습니다.
     <div className="flex items-center gap-5.75">
-      <span className="text-16 pc:text-18 text-gray-gray-300 w-22.5 shrink-0 font-normal">
+      <span className="text-16 pc:text-18 text-gray-gray-300 min-w-22.5 shrink-0 font-normal whitespace-nowrap">
         {label}
       </span>
       {/* 모바일만 값이 오른쪽 끝으로 붙습니다 (피그마 `1:9493` w=222 + text-right).
@@ -98,7 +101,7 @@ export default function MoverQuoteDetailView({
           {/* 견적가 — PC·태블릿은 라벨 뒤에 값이 붙고(피그마 라벨 52, 값 x=113),
               모바일만 값이 오른쪽 끝으로 갑니다(`1:9487` x=238) */}
           <div className="tablet:justify-start tablet:mt-6.75 mt-5 flex items-center justify-between">
-            <span className="text-16 pc:text-24 text-black-black-400 tablet:w-22.5 shrink-0 font-semibold">
+            <span className="text-16 pc:text-24 text-black-black-400 tablet:min-w-22.5 shrink-0 font-semibold whitespace-nowrap">
               {tQuote("quotePrice")}
             </span>
             <span className="text-20 pc:text-24 text-black-black-400 tablet:ml-5.75 font-bold">
