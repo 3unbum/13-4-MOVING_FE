@@ -95,7 +95,7 @@ export default function MoveTypeSlideCard({ variant, angle, offsetDeg }: MoveTyp
 
   return (
     <motion.div
-      className="absolute top-0 left-1/2 flex w-32 flex-col items-center gap-2 rounded-2xl border-2 px-3 py-4 text-center"
+      className="absolute top-0 left-1/2 flex w-32 flex-col items-center justify-center gap-2 rounded-2xl border-2 px-3 py-4 text-center"
       style={{
         x,
         y,
@@ -106,7 +106,11 @@ export default function MoveTypeSlideCard({ variant, angle, offsetDeg }: MoveTyp
         borderColor,
         backgroundColor,
         width: isTabletUp ? width : MOBILE_WIDTH,
-        height: isTabletUp ? height : "auto",
+        // 높이는 고정이 아니라 최소값입니다. 한국어·일본어·중국어 설명은 한 줄이라
+        // 피그마 값(203·261px) 그대로지만, 영어 "Studio or 2-room, under 20 pyeong"은
+        // 두 줄이 되어 고정 높이에서는 카드 밖으로 14px까지 삐져나왔습니다.
+        minHeight: isTabletUp ? height : undefined,
+        height: isTabletUp ? undefined : "auto",
         scale: isTabletUp ? 1 : scale,
       }}
     >
