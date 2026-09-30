@@ -78,7 +78,7 @@ export default function GnbMenu({
                     getGnbNavColorClass(isActive)
                   )}
                 >
-                  {tNav(item.id)}
+                  {tNav.has(item.id) ? tNav(item.id) : item.label}
                 </Link>
               </li>
             );

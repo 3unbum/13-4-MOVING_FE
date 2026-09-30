@@ -117,7 +117,10 @@ export default function MoverQuoteDetailView({
           <div className="tablet:gap-4.5 tablet:mt-6 pc:gap-4 mt-5 flex flex-col gap-3">
             <InfoRow label={tQuote("requestDate")} value={formatRequestDate(request.createdAt)} />
             <InfoRow label={tQuote("service")} value={tService(request.category)} />
-            <InfoRow label={tQuote("usageDate")} value={formatUsageDate(request.movingDate)} />
+            <InfoRow
+              label={tQuote("usageDate")}
+              value={formatUsageDate(request.movingDate, locale)}
+            />
             <InfoRow label={tCommon("from")} value={request.fromAddress} />
             <InfoRow label={tCommon("to")} value={request.toAddress} />
           </div>

@@ -118,7 +118,8 @@ export default function MoveTypeSlideCard({ variant, angle, offsetDeg }: MoveTyp
       </motion.span>
       <motion.span
         style={{ fontSize: subtitleFontSize }}
-        className="text-gray-gray-500 whitespace-nowrap"
+        // 영어 설명("Studio or 2-room, under 20 pyeong")은 모바일 카드 폭 128px을 넘어 줄바꿈이 필요합니다
+        className="text-gray-gray-500 w-full text-center whitespace-normal"
       >
         {t(`desc${variant}`)}
       </motion.span>

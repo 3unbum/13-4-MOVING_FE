@@ -1,6 +1,11 @@
-import { getTranslations } from "next-intl/server";
-export default async function Loading() {
-  const t = await getTranslations("page");
+"use client";
+
+// 클라이언트 컴포넌트(MoverRequestsClient, QuoteDetailClient)가 직접 렌더하므로
+// async 서버 컴포넌트로 두면 안 됩니다 — 동기 + useTranslations를 씁니다.
+import { useTranslations } from "next-intl";
+
+export default function Loading() {
+  const t = useTranslations("page");
 
   return (
     <div

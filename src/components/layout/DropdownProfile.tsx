@@ -1,6 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils/cn";
+import { useTranslations } from "next-intl";
 import { useId, useRef, type ReactNode, type RefObject } from "react";
 import { useOutsideClose } from "@/hooks/useOutsideClose";
 
@@ -72,6 +73,7 @@ export default function DropdownProfile({
   closeOnOutsideClick = true,
   ariaLabel,
 }: DropdownProfileProps) {
+  const tGnb = useTranslations("gnb");
   const panelRef = useRef<HTMLDivElement>(null);
   const listId = useId();
   const isSm = size === "sm";
@@ -89,7 +91,7 @@ export default function DropdownProfile({
       ref={panelRef}
       id={listId}
       role="menu"
-      aria-label={ariaLabel}
+      aria-label={ariaLabel ?? tGnb("profileMenuOptions")}
       className={cn(
         "border-line-200 inline-flex flex-col overflow-hidden border bg-gray-50 shadow-[2px_2px_4px_rgba(224,224,224,0.2)]",
         isSm ? "w-38 rounded-2xl pt-2.5" : "w-62 rounded-2xl pt-4",

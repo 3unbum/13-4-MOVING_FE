@@ -84,7 +84,8 @@ export default function Gnb({
   // 라벨은 여기서 만들어 넘깁니다 (상수의 label은 폴백).
   const menuOptions = (profileOptions ?? getGnbProfileOptions(role)).map((option) => ({
     ...option,
-    label: tMenu(option.value),
+    // profileOptions로 기본 목록 밖의 항목을 주입할 수 있어, 메시지가 없으면 넘어온 label을 씁니다
+    label: tMenu.has(option.value) ? tMenu(option.value) : option.label,
   }));
   const profileHeader = userName
     ? tCommon(role === "mover" ? "moverName" : "customerName", { name: userName })
@@ -146,7 +147,7 @@ export default function Gnb({
                         getGnbNavColorClass(isActive)
                       )}
                     >
-                      {tNav(item.id)}
+                      {tNav.has(item.id) ? tNav(item.id) : item.label}
                     </Link>
                   );
                 })}
@@ -271,7 +272,7 @@ export default function Gnb({
                       getGnbNavColorClass(isActive)
                     )}
                   >
-                    {tNav(item.id)}
+                    {tNav.has(item.id) ? tNav(item.id) : item.label}
                   </Link>
                 );
               })}

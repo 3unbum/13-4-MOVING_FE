@@ -98,7 +98,7 @@ export default function DropdownNotification({
             isSm ? "text-16 text-black-300" : "text-18 text-black-black-400"
           )}
         >
-          {header}
+          {header ?? tGnb("notification")}
         </div>
         <button
           type="button"
