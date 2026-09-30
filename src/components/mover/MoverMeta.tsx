@@ -1,4 +1,5 @@
 import starActive from "@/assets/icons/star-sm-active.svg";
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils/cn";
 import Image from "next/image";
 
@@ -22,6 +23,7 @@ export default function MoverMeta({
   confirmedCount,
   className,
 }: MoverMetaProps) {
+  const t = useTranslations("common");
   return (
     <div className={cn("text-13 flex items-center gap-2 font-medium", className)}>
       <span className="flex items-center gap-0.5">
@@ -32,16 +34,24 @@ export default function MoverMeta({
 
       <Divider />
 
+      {/* 라벨·값 순서가 언어마다 다릅니다(한국어 "경력 5년" / 영어 "5 yrs experience").
+          색이 달라 한 문자열로 못 합치므로 t.rich로 태그를 넘깁니다. */}
       <span className="flex items-center gap-1">
-        <span className="text-gray-gray-300">경력</span>
-        <span className="text-black-300">{career}년</span>
+        {t.rich("careerRich", {
+          years: career,
+          label: (chunks) => <span className="text-gray-gray-300">{chunks}</span>,
+          value: (chunks) => <span className="text-black-300">{chunks}</span>,
+        })}
       </span>
 
       <Divider />
 
       <span className="flex items-center gap-1">
-        <span className="text-black-300">{confirmedCount}건</span>
-        <span className="text-gray-gray-300">확정</span>
+        {t.rich("confirmedRich", {
+          count: confirmedCount,
+          label: (chunks) => <span className="text-gray-gray-300">{chunks}</span>,
+          value: (chunks) => <span className="text-black-300">{chunks}</span>,
+        })}
       </span>
     </div>
   );

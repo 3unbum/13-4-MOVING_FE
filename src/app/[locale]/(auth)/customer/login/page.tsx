@@ -29,6 +29,8 @@ export default function CustomerLoginPage() {
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const { remainingSeconds, start: startLockout } = useCountdown();
   const isLocked = remainingSeconds > 0;
+  const t = useTranslations("auth");
+  const tp = useTranslations("profile");
   const tValidation = useTranslations("validation");
   // 매 렌더마다 새 스키마가 생기면 zodResolver도 교체돼 폼이 불필요하게 다시 만들어집니다
   const schema = useMemo(() => makeLoginSchema(tValidation), [tValidation]);
@@ -58,7 +60,7 @@ export default function CustomerLoginPage() {
         startLockout(retryAfterSeconds);
         return;
       }
-      const message = error instanceof ApiError ? error.message : "로그인 중 문제가 발생했습니다.";
+      const message = error instanceof ApiError ? error.message : t("loginFailed");
       setError("root", { message });
     }
   };
@@ -73,7 +75,7 @@ export default function CustomerLoginPage() {
         mascotTabletPositionClassName="-bottom-18.5 left-125.75"
         mascotPcPositionClassName="-bottom-13 left-170"
       >
-        <AuthHeader prompt="기사님이신가요?" href="/mover/login" linkText="기사님 전용 페이지" />
+        <AuthHeader prompt={t("ifMover")} href="/mover/login" linkText={t("moverPage")} />
 
         {/* Figma 모바일은 header↔content 40px, content↔social 48px로 다른데 AuthCard는 gap 하나뿐이라
           이 wrapper로 두 간격을 분리 (태블릿·PC는 둘 다 48px이라 문제없음) */}
@@ -87,18 +89,18 @@ export default function CustomerLoginPage() {
               <div className="tablet:gap-8 flex flex-col gap-4">
                 <FormField
                   id="email"
-                  label="이메일"
+                  label={tp("email")}
                   type="email"
-                  placeholder="이메일을 입력해 주세요"
+                  placeholder={tp("emailPlaceholder")}
                   autoComplete="email"
                   errorMessage={errors.email?.message}
                   {...register("email")}
                 />
                 <FormField
                   id="password"
-                  label="비밀번호"
+                  label={tp("password")}
                   type="password"
-                  placeholder="비밀번호를 입력해 주세요"
+                  placeholder={tp("passwordPlaceholder")}
                   autoComplete="current-password"
                   errorMessage={errors.password?.message}
                   {...register("password")}
@@ -109,18 +111,18 @@ export default function CustomerLoginPage() {
                 disabled={isSubmitting || !isValid || isLocked}
                 errorMessage={
                   isLocked
-                    ? `${formatCountdown(remainingSeconds)} 후 다시 시도해주세요.`
+                    ? t("retryAfter", { time: formatCountdown(remainingSeconds) })
                     : errors.root?.message
                 }
               >
-                로그인
+                {t("loginTitle")}
               </AuthSubmitButton>
             </form>
 
             <AuthSwitchLink
-              prompt="아직 무빙 회원이 아니신가요?"
+              prompt={t("notMemberYet")}
               href="/customer/signup"
-              linkText="이메일로 회원가입하기"
+              linkText={t("signupWithEmail")}
             />
           </div>
 

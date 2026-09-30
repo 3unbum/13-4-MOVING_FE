@@ -139,7 +139,7 @@ export default function Filter(props: FilterProps) {
         <span
           className={cn(
             "text-left font-medium whitespace-nowrap",
-            isSm ? "text-14" : "text-16 w-23",
+            isSm ? "text-14" : "text-16 min-w-23",
             isOpen ? "text-orange-400" : "text-black-black-400"
           )}
         >
@@ -204,8 +204,8 @@ function SingleList({ id, size, options, value, onSelect }: SingleListProps) {
       className={cn(
         "absolute z-[var(--z-filter-dropdown)] flex flex-col overflow-hidden bg-gray-50",
         isSm
-          ? "border-line-200 top-[47px] -left-px w-[106px] rounded-lg border shadow-[4px_4px_10px_rgba(191,191,191,0.2)]"
-          : "border-line-200 top-[61px] left-0 w-40 rounded-xl border shadow-[4px_4px_5px_rgba(224,224,224,0.25)]"
+          ? "border-line-200 top-[47px] -left-px min-w-[106px] rounded-lg border shadow-[4px_4px_10px_rgba(191,191,191,0.2)]"
+          : "border-line-200 top-[61px] left-0 min-w-40 rounded-xl border shadow-[4px_4px_5px_rgba(224,224,224,0.25)]"
       )}
     >
       {options.map((option, index) => {
@@ -225,7 +225,14 @@ function SingleList({ id, size, options, value, onSelect }: SingleListProps) {
                 isLast && (isSm ? "rounded-b-lg" : "rounded-b-xl")
               )}
             >
-              <span className={cn("shrink-0 text-left", isSm ? "w-[61px]" : "w-23")}>
+              {/* 피그마 폭은 최소값으로 둡니다 — 번역 라벨이 길면(일본어 "オフィス引っ越し" 110px)
+                  고정폭 61px 안에서 두 줄로 접힙니다. */}
+              <span
+                className={cn(
+                  "shrink-0 text-left whitespace-nowrap",
+                  isSm ? "min-w-[61px]" : "min-w-23"
+                )}
+              >
                 {option.label}
               </span>
             </button>
@@ -361,7 +368,10 @@ function Column({ options, value, onSelect, size, side }: ColumnProps) {
               onClick={() => onSelect(option.value)}
               className={cn(
                 "text-black-black-400 hover:bg-background-200 flex items-center justify-start bg-gray-50 text-left font-medium",
-                isSm ? "text-14 h-9 w-[75px] px-3.5 py-4" : "text-18 h-16 w-[164px] px-6 py-4",
+                // 피그마 폭은 최소값 — 영어 지역명("Gyeongnam" 85px)이 고정폭 안에서 잘립니다
+                isSm
+                  ? "text-14 h-9 min-w-[75px] px-3.5 py-4"
+                  : "text-18 h-16 min-w-[164px] px-6 py-4",
                 isLeft && !isSm && "border-line-200 border-l",
                 isLeft && "border-line-200 border-r",
                 !isLeft && !isSm && "border-line-200 border-r",
@@ -372,7 +382,7 @@ function Column({ options, value, onSelect, size, side }: ColumnProps) {
                 isLast && !isLeft && (isSm ? "rounded-br-lg" : "rounded-br-2xl")
               )}
             >
-              <span className="min-w-0 flex-1 text-left">{option.label}</span>
+              <span className="flex-1 text-left whitespace-nowrap">{option.label}</span>
             </button>
           </li>
         );

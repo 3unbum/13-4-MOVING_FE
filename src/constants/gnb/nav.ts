@@ -6,6 +6,9 @@ export interface GnbNavItem {
   href: string;
 }
 
+/**
+ * ⚠️ `label`은 **폴백**입니다. 화면 표기는 `messages/*.json`의 `gnb.nav.{id}`를 씁니다.
+ */
 export const CUSTOMER_NAV: GnbNavItem[] = [
   { id: "customer-quotation-requests", label: "견적 요청", href: "/customer/quotation-requests" },
   { id: "customer-movers", label: "기사님 찾기", href: "/movers" },

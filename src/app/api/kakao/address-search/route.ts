@@ -36,6 +36,11 @@ interface KakaoAddressDocument {
 }
 
 // 카카오는 "강원특별자치도"처럼 최신 행정구역 명칭을 줄 수 있어서 완전일치 대신 접두어로 매칭한다.
+//
+// ⚠️ 여기서 쓰는 REGION_LABELS는 **번역하면 안 된다.** 카카오가 한국어로만 주는
+// region_1depth_name과 문자열을 맞대보는 파싱용이라, 영어로 바뀌면 매칭이 전부 실패해
+// 지역 코드가 null이 된다(주소 검색 결과의 지역 칩이 사라진다).
+// 표시용 지역명은 messages/*.json의 `region` 네임스페이스를 쓴다.
 function toRegionCode(region1depthName: string): RegionCode | null {
   const entry = Object.entries(REGION_LABELS).find(([, label]) =>
     region1depthName.startsWith(label)

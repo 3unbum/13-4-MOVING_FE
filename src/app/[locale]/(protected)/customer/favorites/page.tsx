@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "@/i18n/navigation";
 import CheckboxButton from "@/components/common/CheckboxButton";
@@ -19,6 +20,9 @@ const TABLET_QUERY = "(min-width: 744px)";
 const PC_QUERY = "(min-width: 1280px)";
 
 export default function CustomerFavoritesPage() {
+  const t = useTranslations("page");
+  const tMover = useTranslations("mover");
+  const tCommon = useTranslations("common");
   const router = useRouter();
   const queryClient = useQueryClient();
   const isTabletUp = useMediaQuery(TABLET_QUERY);
@@ -55,19 +59,17 @@ export default function CustomerFavoritesPage() {
       });
       void queryClient.invalidateQueries({ queryKey: favoriteQueryKeys.all });
       if (result.incomplete) {
-        showToast("일부만 해제됐어요. 다시 시도해 주세요.");
+        showToast(t("partialRemoveFailed"));
         return;
       }
       showToast(
         result.deletedCount > 1
-          ? `찜한 기사님 ${result.deletedCount}명을 해제했어요`
-          : "찜이 해제되었어요"
+          ? t("favoritesRemoved", { count: result.deletedCount })
+          : t("favoriteRemoved")
       );
     },
     onError: (error) => {
-      showToast(
-        error instanceof ApiError ? error.message : "찜 해제에 실패했어요. 다시 시도해 주세요."
-      );
+      showToast(error instanceof ApiError ? error.message : tCommon("favoriteRemoveFailed"));
     },
   });
 
@@ -91,11 +93,11 @@ export default function CustomerFavoritesPage() {
 
   return (
     <div className="bg-background-background-100 pc:min-h-[calc(100dvh-88px)] flex min-h-[calc(100dvh-54px)] flex-1 flex-col">
-      <Header size={headerSize}>찜한 기사님</Header>
+      <Header size={headerSize}>{tMover("favoriteMovers")}</Header>
 
       {isError ? (
         <p className="text-16 text-gray-gray-400 py-20 text-center">
-          찜 목록을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.
+          {t("favoriteListLoadFailed")}
         </p>
       ) : isPending && !data ? null : isEmpty ? (
         <FavoritesEmptyFallback onFindMovers={() => router.push("/movers")} />
@@ -106,12 +108,12 @@ export default function CustomerFavoritesPage() {
               <div className="flex items-center">
                 <CheckboxButton
                   shape="square"
-                  aria-label="전체 선택"
+                  aria-label={t("selectAll")}
                   checked={allSelected}
                   onChange={(event) => toggleAll(event.target.checked)}
                 />
                 <span className="text-14 tablet:text-16 text-black-300">
-                  전체선택({selectedCount}/{items.length})
+                  {t("selectAllCount")}({selectedCount}/{items.length})
                 </span>
               </div>
               <button
@@ -125,7 +127,7 @@ export default function CustomerFavoritesPage() {
                     : "text-black-500 cursor-pointer hover:text-orange-400"
                 )}
               >
-                선택 항목 삭제
+                {t("deleteSelected")}
               </button>
             </div>
 
@@ -149,7 +151,7 @@ export default function CustomerFavoritesPage() {
                     onSelectChange={(selected) => toggleOne(item.id, selected)}
                     onFavoriteClick={() => handleDelete([item.id])}
                     className="cursor-pointer"
-                    aria-label={`${item.nickName} 기사님 상세 보기`}
+                    aria-label={tMover("moverDetailLabel", { name: item.nickName })}
                     tabIndex={0}
                     onClick={() => router.push(`/movers/${item.id}`)}
                     onKeyDown={(event) => {

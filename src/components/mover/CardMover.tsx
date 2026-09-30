@@ -1,4 +1,5 @@
 import type { HTMLAttributes } from "react";
+import { useTranslations } from "next-intl";
 import { FavoriteCount } from "@/components/common/CardParts";
 import CheckboxButton from "@/components/common/CheckboxButton";
 import MoveTypeChip from "@/components/filter/ChipMoveType";
@@ -58,6 +59,7 @@ export default function CardMover({
   className,
   ...props
 }: CardMoverProps) {
+  const t = useTranslations("common");
   const isLg = size === "lg";
   const isMd = size === "md";
 
@@ -77,7 +79,7 @@ export default function CardMover({
     >
       <CheckboxButton
         shape="square"
-        aria-label={`${nickName} 기사님 선택`}
+        aria-label={t("selectMover", { name: nickName })}
         checked={selected}
         onChange={(e) => onSelectChange?.(e.target.checked)}
       />

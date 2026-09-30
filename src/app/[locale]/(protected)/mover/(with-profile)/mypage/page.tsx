@@ -1,6 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import Header from "@/components/common/Header";
 import { moverQueryKeys } from "@/constants/query-keys/movers";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
@@ -13,6 +14,8 @@ const TABLET_QUERY = "(min-width: 744px)";
 const PC_QUERY = "(min-width: 1280px)";
 
 export default function MoverMyPage() {
+  const t = useTranslations("moverPage");
+  const tCommon = useTranslations("common");
   const { account, isLoading: isAccountLoading } = useAuth();
   const isTabletUp = useMediaQuery(TABLET_QUERY);
   const isPc = useMediaQuery(PC_QUERY);
@@ -29,18 +32,18 @@ export default function MoverMyPage() {
 
   return (
     <div className="pc:min-h-[calc(100dvh-88px)] flex min-h-[calc(100dvh-54px)] flex-1 flex-col bg-white">
-      <Header size={headerSize}>마이페이지</Header>
+      <Header size={headerSize}>{t("myPage")}</Header>
       <MoverProfileBanner />
 
       {isLoading && (
         <p className="text-16 text-gray-gray-400 flex-1 py-20 text-center" role="status">
-          불러오는 중이에요.
+          {tCommon("loading")}
         </p>
       )}
 
       {!isLoading && (profileQuery.isError || !profileQuery.data) && (
         <p className="text-16 text-gray-gray-400 flex-1 py-20 text-center">
-          프로필 정보를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.
+          {t("profileLoadFailed")}
         </p>
       )}
 

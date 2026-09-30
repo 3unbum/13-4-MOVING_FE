@@ -1,4 +1,8 @@
+// 부모(favorites/page.tsx)가 "use client"라 이미 클라이언트 번들에 있습니다
+"use client";
+
 import emptyReview from "@/assets/images/common/empty-review.png";
+import { useTranslations } from "next-intl";
 import Button from "@/components/common/Button";
 import Image from "next/image";
 
@@ -8,6 +12,8 @@ interface FavoritesEmptyFallbackProps {
 
 /** 피그마 찜 화면에는 empty 프레임이 없어, 리뷰와 같은 empty 컴포넌트를 재사용한다. */
 export default function FavoritesEmptyFallback({ onFindMovers }: FavoritesEmptyFallbackProps) {
+  const t = useTranslations("page");
+  const tMover = useTranslations("mover");
   return (
     <div className="flex w-full flex-1 flex-col items-center justify-center">
       <div className="pc:w-[955px] pc:max-w-none pc:px-45 pc:py-45 flex w-full max-w-[327px] flex-col items-center justify-center">
@@ -22,16 +28,16 @@ export default function FavoritesEmptyFallback({ onFindMovers }: FavoritesEmptyF
             />
           </div>
           <p className="text-16 pc:text-24 text-gray-gray-400 text-center whitespace-nowrap">
-            찜한 기사님이 없어요!
+            {t("noFavoritesYet")}
           </p>
           <div className="pc:hidden w-full">
             <Button size="sm" onClick={onFindMovers}>
-              기사님 찾기
+              {tMover("findMovers")}
             </Button>
           </div>
           <div className="pc:block hidden w-55">
             <Button size="lg" onClick={onFindMovers}>
-              기사님 찾기
+              {tMover("findMovers")}
             </Button>
           </div>
         </div>

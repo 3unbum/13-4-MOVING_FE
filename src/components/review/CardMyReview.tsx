@@ -1,4 +1,5 @@
 import MoveTypeChip from "@/components/filter/ChipMoveType";
+import { useTranslations } from "next-intl";
 import type { ServiceCode } from "@/components/filter/ChipRegion";
 import InfoItem from "@/components/common/InfoItem";
 import MoverName from "@/components/mover/MoverName";
@@ -57,6 +58,8 @@ export default function CardMyReview({
   className,
   ...props
 }: CardMyReviewProps) {
+  const t = useTranslations("review");
+  const tCommon = useTranslations("common");
   const isLg = size === "lg";
 
   const cardClass = cn(
@@ -95,21 +98,21 @@ export default function CardMyReview({
 
         <div className="flex w-full items-center gap-5">
           <InfoItem
-            label="출발지"
+            label={tCommon("from")}
             value={from}
             labelClassName={isLg ? "text-14" : "text-12 leading-[18px]"}
             valueClassName={cn("text-black-100 font-medium", isLg ? "text-14" : "text-13")}
           />
           <VerticalLine />
           <InfoItem
-            label="도착지"
+            label={tCommon("to")}
             value={to}
             labelClassName={isLg ? "text-14" : "text-12 leading-[18px]"}
             valueClassName={cn("text-black-100 font-medium", isLg ? "text-14" : "text-13")}
           />
           <VerticalLine />
           <InfoItem
-            label="이사일"
+            label={tCommon("movingDate")}
             value={movingDate}
             labelClassName={isLg ? "text-14" : "text-12"}
             valueClassName={cn("text-black-100 font-medium", isLg ? "text-14" : "text-13")}
@@ -140,19 +143,19 @@ export default function CardMyReview({
 
       <div className="flex w-full items-center gap-4">
         <InfoItem
-          label="출발지"
+          label={tCommon("from")}
           value={from}
           labelClassName={isLg ? "text-14" : "text-12 leading-[18px]"}
           valueClassName={cn("text-black-100 font-medium", isLg ? "text-14" : "text-13")}
         />
         <InfoItem
-          label="도착지"
+          label={tCommon("to")}
           value={to}
           labelClassName={isLg ? "text-14" : "text-12 leading-[18px]"}
           valueClassName={cn("text-black-100 font-medium", isLg ? "text-14" : "text-13")}
         />
         <InfoItem
-          label="이사일"
+          label={tCommon("movingDate")}
           value={movingDate}
           labelClassName={isLg ? "text-14" : "text-12 leading-[18px]"}
           valueClassName={cn("text-black-100 font-medium", isLg ? "text-14" : "text-13")}
@@ -165,7 +168,7 @@ export default function CardMyReview({
 
       {createdAt && (
         <p className="text-12 text-gray-gray-300 flex w-full justify-end gap-1.5 leading-4.5">
-          <span>작성일</span>
+          <span>{t("writtenAt")}</span>
           <span>{createdAt}</span>
         </p>
       )}

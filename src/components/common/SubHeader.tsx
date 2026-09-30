@@ -48,6 +48,7 @@ export default function SubHeader({
   ...props
 }: SubHeaderProps) {
   const t = useTranslations("common");
+  const tService = useTranslations("service");
   const locale = useLocale() as DateLocale;
   const isLg = size === "lg";
   const isMd = size === "md";
@@ -65,7 +66,9 @@ export default function SubHeader({
     >
       <header className={cn("flex flex-col", big && "gap-1")}>
         <p className={cn("text-black-500 font-bold", big ? "text-24" : "text-20")}>
-          {SERVICE_LABELS[category]}
+          {/* SERVICE_LABELS는 BE가 쓰는 한글 원문이라 표시용으로는 번역을 씁니다
+              (상수는 ServiceCode 타입과 폴백용으로 남깁니다) */}
+          {tService.has(category) ? tService(category) : SERVICE_LABELS[category]}
         </p>
         <p
           className={cn(

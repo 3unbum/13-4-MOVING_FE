@@ -53,12 +53,14 @@ function fullAddress(address: string, detailAddress?: string) {
  */
 function InfoRow({ label, value }: { label: string; value: string }) {
   return (
-    <div className="tablet:justify-start tablet:gap-0 flex items-start justify-between gap-6">
-      <span className="text-14 text-gray-gray-300 tablet:text-16 tablet:w-28.25 shrink-0 font-normal">
+    // 태블릿 이상은 `contents`로 부모 grid에 직접 얹힙니다. 라벨 열 폭이 가장 긴 라벨에
+    // 맞춰 한 번에 정해지므로, 일본어 "見積もり依頼日"처럼 긴 라벨이 있어도 값의 시작
+    // 위치가 줄마다 어긋나지 않습니다. (라벨 90 + 간격 23 = 값 113px — 피그마 `1:9155`)
+    <div className="tablet:contents flex items-start justify-between gap-6">
+      <span className="text-14 text-gray-gray-300 tablet:text-16 shrink-0 font-normal whitespace-nowrap">
         {label}
       </span>
-      {/* 모바일(`1:9254`)은 값이 오른쪽 끝, 태블릿(`1:9184`)·PC(`1:9155`)는
-          라벨 폭 113px 뒤에서 시작해 왼쪽 정렬입니다. */}
+      {/* 모바일(`1:9254`)은 값이 오른쪽 끝, 태블릿(`1:9184`)·PC(`1:9155`)는 왼쪽 정렬입니다. */}
       <span className="text-14 text-black-black-450 tablet:text-16 tablet:text-left min-w-0 text-right font-semibold">
         {value}
       </span>
@@ -221,17 +223,21 @@ export default function QuoteDetailView({
                   정렬이 사이즈마다 다릅니다: 모바일(`1:9249`)은 라벨·값이 양 끝,
                   태블릿(`1:9178`)·PC(`1:9149`)는 값이 113px에서 시작합니다. */}
             <div className="border-line-100 tablet:justify-start tablet:pb-8 pc:pb-9 flex items-center justify-between border-b pb-5">
-              <span className="text-16 text-black-black-450 pc:text-20 tablet:w-28.25 font-semibold">
+              <span className="text-16 text-black-black-450 pc:text-20 tablet:min-w-22.5 font-semibold whitespace-nowrap">
                 {t("quotePrice")}
               </span>
-              <span className="text-18 text-black-black-450 pc:text-24 font-bold">{priceText}</span>
+              <span className="text-18 text-black-black-450 pc:text-24 tablet:ml-5.75 font-bold">
+                {priceText}
+              </span>
             </div>
 
             <div className="tablet:gap-8 pc:gap-7 flex flex-col gap-5">
               <h2 className="text-16 text-black-black-450 pc:text-20 font-semibold">
                 {t("quoteInfo")}
               </h2>
-              <div className="tablet:gap-4 flex flex-col gap-3">
+              {/* 태블릿 이상은 grid — 라벨 열(최소 90px)이 가장 긴 라벨에 맞춰 정렬됩니다.
+                  자식 InfoRow는 `tablet:contents`로 이 grid에 직접 참여합니다. */}
+              <div className="tablet:grid tablet:grid-cols-[minmax(5.625rem,auto)_1fr] tablet:gap-x-5.75 tablet:gap-y-4 flex flex-col gap-3">
                 <InfoRow label={t("requestDate")} value={formatRequestDate(request.createdAt)} />
                 <InfoRow label={t("service")} value={tService(request.category)} />
                 <InfoRow

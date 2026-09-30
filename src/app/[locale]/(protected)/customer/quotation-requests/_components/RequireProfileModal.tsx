@@ -1,6 +1,7 @@
 "use client";
 
 import Button from "@/components/common/Button";
+import { useTranslations } from "next-intl";
 import Modal from "@/components/common/Modal";
 
 interface RequireProfileModalProps {
@@ -18,6 +19,7 @@ export default function RequireProfileModal({
   onConfirm,
   onCancel,
 }: RequireProfileModalProps) {
+  const t = useTranslations("request");
   return (
     <Modal
       labelledBy="require-profile-modal-title"
@@ -29,17 +31,17 @@ export default function RequireProfileModal({
         id="require-profile-modal-title"
         className="text-32 text-black-300 w-full text-center font-bold"
       >
-        프로필을 등록하시겠어요?
+        {t("profileModalTitle")}
       </p>
       <p className="text-24 text-gray-gray-400 w-full text-center font-semibold">
-        견적 요청은 프로필 등록 후에 이용할 수 있어요.
+        {t("profileModalBody")}
       </p>
       <div className="flex w-full gap-3 p-4">
         <Button variant="outlined" size="md" onClick={onCancel}>
-          아니오
+          {t("no")}
         </Button>
         <Button variant="solid" size="md" onClick={onConfirm}>
-          예
+          {t("yes")}
         </Button>
       </div>
     </Modal>

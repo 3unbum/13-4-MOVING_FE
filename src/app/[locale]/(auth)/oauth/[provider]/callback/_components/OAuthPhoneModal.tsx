@@ -27,6 +27,8 @@ export default function OAuthPhoneModal({
   onCompleted,
 }: OAuthPhoneModalProps) {
   const titleId = useId();
+  const t = useTranslations("auth");
+  const tp = useTranslations("profile");
   const tValidation = useTranslations("validation");
   // 매 렌더마다 새 스키마가 생기면 zodResolver도 교체돼 폼이 불필요하게 다시 만들어집니다
   const schema = useMemo(() => makePhoneSchema(tValidation), [tValidation]);
@@ -44,8 +46,7 @@ export default function OAuthPhoneModal({
       const result = await authService.oauthSignup(values);
       await onCompleted(result);
     } catch (error) {
-      const message =
-        error instanceof ApiError ? error.message : "회원가입 중 문제가 발생했습니다.";
+      const message = error instanceof ApiError ? error.message : t("signupFailed");
       setError("root", { message });
     }
   };
@@ -63,22 +64,23 @@ export default function OAuthPhoneModal({
       labelledBy={titleId}
       className="tablet:w-152 tablet:min-w-152 w-[calc(100vw-2rem)] max-w-93.75 min-w-0 gap-10 rounded-4xl px-6 pt-8 pb-10"
     >
-      <ModalHeader id={titleId} title="전화번호를 입력해 주세요" size="md" onClose={handleClose} />
+      <ModalHeader id={titleId} title={t("phoneModalTitle")} size="md" onClose={handleClose} />
       <p className="text-18 text-black-300 w-full font-medium">
-        {role === "MOVER" ? "기사님" : "일반"} 계정 가입을 마치려면 전화번호가 필요해요.
+        {/* 조사·어순이 언어마다 달라 역할별 문장을 통째로 둡니다 */}
+        {t(role === "MOVER" ? "phoneModalBodyMover" : "phoneModalBodyCustomer")}
       </p>
       <form onSubmit={handleSubmit(onSubmit)} className="flex w-full flex-col gap-8" noValidate>
         <FormField
           id="phoneNumber"
-          label="전화번호"
+          label={tp("phone")}
           type="tel"
-          placeholder="하이픈(-) 없이 숫자만 입력해 주세요"
+          placeholder={tp("phonePlaceholder")}
           autoComplete="tel"
           errorMessage={errors.phoneNumber?.message}
           {...register("phoneNumber")}
         />
         <AuthSubmitButton disabled={isSubmitting || !isValid} errorMessage={errors.root?.message}>
-          가입 완료
+          {t("signupComplete")}
         </AuthSubmitButton>
       </form>
     </Modal>
