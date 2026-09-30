@@ -14,15 +14,8 @@
 
 import logo from "@/assets/images/common/logo-icon-text-lg.svg";
 import errorIcon from "@/assets/images/common/profile-icon-md.png";
-import localFont from "next/font/local";
 import Image from "next/image";
-
-const pretendard = localFont({
-  src: "../assets/fonts/PretendardVariable.ttf",
-  variable: "--font-pretendard",
-  weight: "45 920",
-  display: "swap",
-});
+import "pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css";
 
 export default function GlobalError({
   reset,
@@ -31,7 +24,7 @@ export default function GlobalError({
   reset: () => void;
 }) {
   return (
-    <html lang="ko" className={`${pretendard.variable} h-full antialiased`}>
+    <html lang="ko" className="h-full antialiased">
       <body className="flex min-h-full flex-col">
         <div className="flex min-h-screen flex-col items-center justify-center gap-7 text-center">
           <Image src={logo} alt="무빙" className="h-auto w-40" />

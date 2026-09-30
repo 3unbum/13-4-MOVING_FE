@@ -49,7 +49,7 @@ src/
 │   ├── loading.tsx
 │   └── globals.css       # 디자인 토큰(@theme) · 폰트 · 반응형 브레이크포인트
 ├── assets/
-│   ├── fonts/            # PretendardVariable.ttf (next/font/local)
+│   ├── fonts/            # (삭제됨 — pretendard npm 패키지의 dynamic-subset 사용)
 │   ├── icons/            # SVG 아이콘
 │   └── images/           # common/, landing/ 등 목적별 하위 폴더
 ├── components/
