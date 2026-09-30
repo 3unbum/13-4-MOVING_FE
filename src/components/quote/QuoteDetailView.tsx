@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { useLocale, useTranslations } from "next-intl";
 import Button from "@/components/common/Button";
 import EtcButton from "@/components/common/EtcButton";
 import { ConfirmedBadge, PendingBadge } from "@/components/common/CardParts";
@@ -9,10 +10,10 @@ import ProfileAvatar from "@/components/common/ProfileAvatar";
 import MoverMeta from "@/components/mover/MoverMeta";
 import MoverName from "@/components/mover/MoverName";
 import MoveTypeChip from "@/components/filter/ChipMoveType";
-import { SERVICE_LABELS } from "@/components/filter/ChipRegion";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import QuoteShare from "@/components/quote/QuoteShare";
 import { cn } from "@/lib/utils/cn";
+import { formatPrice, formatRequestDate, formatUsageDate, type DateLocale } from "@/lib/utils/date";
 import type { Estimate } from "@/lib/services/estimate-service";
 import type { QuotationRequest } from "@/lib/services/quotation-request-service";
 // 카드용 빨간 하트가 아니라 검은 하트입니다 (피그마 견적 상세 기준)
@@ -32,27 +33,6 @@ interface QuoteDetailViewProps {
 
 const TABLET_QUERY = "(min-width: 744px)";
 
-const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
-const KST_OFFSET_MS = 9 * 60 * 60 * 1000;
-
-function toKst(iso: string) {
-  return new Date(new Date(iso).getTime() + KST_OFFSET_MS);
-}
-
-/** "24.08.26" — 견적 요청일 */
-function formatShortDate(iso: string) {
-  const k = toKst(iso);
-  const p = (n: number) => String(n).padStart(2, "0");
-  return `${String(k.getUTCFullYear()).slice(2)}.${p(k.getUTCMonth() + 1)}.${p(k.getUTCDate())}`;
-}
-
-/** "2026. 09. 28(월)" — 이용일 */
-function formatMovingDate(iso: string) {
-  const k = toKst(iso);
-  const p = (n: number) => String(n).padStart(2, "0");
-  return `${k.getUTCFullYear()}. ${p(k.getUTCMonth() + 1)}. ${p(k.getUTCDate())}(${WEEKDAYS[k.getUTCDay()]})`;
-}
-
 /**
  * "서울 중구 삼일대로 343 5층 501호" — 도로명 + 상세주소.
  *
@@ -63,18 +43,6 @@ function formatMovingDate(iso: string) {
 function fullAddress(address: string, detailAddress?: string) {
   const detail = detailAddress?.trim();
   return detail ? `${address} ${detail}` : address;
-}
-
-/**
- * 견적가 표기.
- *
- * 반려(REJECTED) 견적은 `price`가 null입니다. `?? 0`으로 두면 화면에 "0원"이
- * 찍혀 실제로 0원에 해주겠다는 제안처럼 읽힙니다 — 받았던 견적 탭에서 반려
- * 견적 상세로 들어올 수 있으므로(시드 기준 15건) 값 없음을 그대로 밝힙니다.
- */
-function formatPrice(price: number | null) {
-  if (price === null) return "견적가 없음";
-  return `${price.toLocaleString("ko-KR")}원`;
 }
 
 /**
@@ -115,6 +83,18 @@ export default function QuoteDetailView({
 }: QuoteDetailViewProps) {
   const { mover, estimateStatus, isTargeted } = estimate;
   const isTabletUp = useMediaQuery(TABLET_QUERY);
+  const t = useTranslations("quote");
+  const tCommon = useTranslations("common");
+  const tService = useTranslations("service");
+  const locale = useLocale() as DateLocale;
+
+  /**
+   * 반려(REJECTED) 견적은 `price`가 null입니다. `?? 0`으로 두면 화면에 "0원"이
+   * 찍혀 실제로 0원에 해주겠다는 제안처럼 읽힙니다 — 받았던 견적 탭에서 반려
+   * 견적 상세로 들어올 수 있으므로(시드 기준 15건) 값 없음을 그대로 밝힙니다.
+   */
+  const priceText =
+    estimate.price === null ? tCommon("noPrice") : formatPrice(estimate.price, locale);
 
   // 견적 상태만으로는 부족합니다 — 요청이 이미 확정(ASSIGNED)되면 나머지 견적은
   // PENDING으로 남지만 더 이상 확정할 수 없습니다(BE가 `NO_ACTIVE_REQUEST`로 거부).
@@ -134,13 +114,13 @@ export default function QuoteDetailView({
   return (
     <div className="flex min-h-dvh flex-col">
       <Header size="sm" className="tablet:hidden">
-        견적 상세
+        {t("detailTitle")}
       </Header>
       <Header size="md" className="tablet:flex pc:hidden hidden">
-        견적 상세
+        {t("detailTitle")}
       </Header>
       <Header size="lg" className="pc:flex hidden">
-        견적 상세
+        {t("detailTitle")}
       </Header>
 
       {/* 히어로 — 주황 배경에 무빙 로고 마크가 흐리게 흩어집니다 (피그마 모바일 122 / PC 180).
@@ -242,25 +222,28 @@ export default function QuoteDetailView({
                   태블릿(`1:9178`)·PC(`1:9149`)는 값이 113px에서 시작합니다. */}
             <div className="border-line-100 tablet:justify-start tablet:pb-8 pc:pb-9 flex items-center justify-between border-b pb-5">
               <span className="text-16 text-black-black-450 pc:text-20 tablet:w-28.25 font-semibold">
-                견적가
+                {t("quotePrice")}
               </span>
-              <span className="text-18 text-black-black-450 pc:text-24 font-bold">
-                {formatPrice(estimate.price)}
-              </span>
+              <span className="text-18 text-black-black-450 pc:text-24 font-bold">{priceText}</span>
             </div>
 
             <div className="tablet:gap-8 pc:gap-7 flex flex-col gap-5">
-              <h2 className="text-16 text-black-black-450 pc:text-20 font-semibold">견적 정보</h2>
+              <h2 className="text-16 text-black-black-450 pc:text-20 font-semibold">
+                {t("quoteInfo")}
+              </h2>
               <div className="tablet:gap-4 flex flex-col gap-3">
-                <InfoRow label="견적 요청일" value={formatShortDate(request.createdAt)} />
-                <InfoRow label="서비스" value={SERVICE_LABELS[request.category]} />
-                <InfoRow label="이용일" value={formatMovingDate(request.movingDate)} />
+                <InfoRow label={t("requestDate")} value={formatRequestDate(request.createdAt)} />
+                <InfoRow label={t("service")} value={tService(request.category)} />
                 <InfoRow
-                  label="출발지"
+                  label={t("usageDate")}
+                  value={formatUsageDate(request.movingDate, locale)}
+                />
+                <InfoRow
+                  label={tCommon("from")}
                   value={fullAddress(request.fromAddress, request.fromDetailAddress)}
                 />
                 <InfoRow
-                  label="도착지"
+                  label={tCommon("to")}
                   value={fullAddress(request.toAddress, request.toDetailAddress)}
                 />
               </div>
@@ -269,14 +252,14 @@ export default function QuoteDetailView({
             {isUnconfirmed && (
               <div className="bg-background-200 text-14 text-gray-gray-500 flex items-center gap-2 rounded-lg px-4 py-4 font-medium">
                 <span aria-hidden>ⓘ</span>
-                확정하지 않은 견적이에요!
+                {t("unconfirmedNotice")}
               </div>
             )}
 
             {/* 모바일·태블릿은 본문 안에 공유가 들어갑니다 (PC는 우측 사이드).
                   하단 고정 CTA(110px)가 덮지 않도록 확정 대기일 때 여백을 더 둡니다. */}
             <QuoteShare
-              title="나만 알기엔 아쉬운 기사님인가요?"
+              title={t("shareTitleMobile")}
               moverId={mover.id}
               moverNickName={mover.nickName}
               className={cn(
@@ -298,10 +281,8 @@ export default function QuoteDetailView({
             {isPending && (
               <>
                 <div className="flex flex-col gap-1">
-                  <span className="text-16 text-black-300 font-semibold">견적가</span>
-                  <span className="text-24 text-black-400 font-bold">
-                    {formatPrice(estimate.price)}
-                  </span>
+                  <span className="text-16 text-black-300 font-semibold">{t("quotePrice")}</span>
+                  <span className="text-24 text-black-400 font-bold">{priceText}</span>
                 </div>
                 <Button
                   variant="solid"
@@ -310,12 +291,16 @@ export default function QuoteDetailView({
                   disabled={isConfirming}
                   className="mt-7.25 h-16"
                 >
-                  견적 확정하기
+                  {t("confirmQuote")}
                 </Button>
                 <hr className="border-line-100 my-10" />
               </>
             )}
-            <QuoteShare title="견적서 공유하기" moverId={mover.id} moverNickName={mover.nickName} />
+            <QuoteShare
+              title={t("shareTitlePc")}
+              moverId={mover.id}
+              moverNickName={mover.nickName}
+            />
           </aside>
         </div>
       </div>
@@ -336,7 +321,7 @@ export default function QuoteDetailView({
             />
             <div className="min-w-0 flex-1">
               <Button variant="solid" size="sm" onClick={onConfirm} disabled={isConfirming}>
-                견적 확정하기
+                {t("confirmQuote")}
               </Button>
             </div>
           </div>

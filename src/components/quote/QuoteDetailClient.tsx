@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { useConfirmEstimate, useQuoteDetail } from "@/hooks/useQuoteDetail";
 import { useFavoriteMover } from "@/hooks/useFavoriteMover";
 import QuoteDetailView from "@/components/quote/QuoteDetailView";
@@ -26,15 +27,12 @@ function DetailMessage({ children }: { children: React.ReactNode }) {
 export default function QuoteDetailClient({ estimateId }: QuoteDetailClientProps) {
   const { estimate, request, isLoading, error } = useQuoteDetail(estimateId);
   const [toast, setToast] = useState<string | null>(null);
+  const t = useTranslations("quote");
 
   // 확정 실패를 알려줍니다. 안 띄우면 버튼만 다시 활성화돼 아무 일도 안 일어난 것처럼 보입니다.
   // BE 메시지("이미 처리된 견적입니다" 등)가 그대로 사용자용이라 있으면 그대로 씁니다.
   const confirm = useConfirmEstimate(estimateId, request?.id, (confirmError) => {
-    setToast(
-      confirmError instanceof ApiError
-        ? confirmError.message
-        : "견적 확정에 실패했어요. 잠시 후 다시 시도해 주세요."
-    );
+    setToast(confirmError instanceof ApiError ? confirmError.message : t("confirmFailed"));
   });
 
   // 토스트는 일정 시간 뒤 스스로 사라집니다 (QuoteShare와 같은 방식)
@@ -46,7 +44,7 @@ export default function QuoteDetailClient({ estimateId }: QuoteDetailClientProps
   }, [toast]);
 
   if (error) {
-    return <DetailMessage>견적을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.</DetailMessage>;
+    return <DetailMessage>{t("loadFailed")}</DetailMessage>;
   }
 
   if (isLoading) {
@@ -58,7 +56,7 @@ export default function QuoteDetailClient({ estimateId }: QuoteDetailClientProps
   }
 
   if (!estimate || !request) {
-    return <DetailMessage>견적을 찾을 수 없어요.</DetailMessage>;
+    return <DetailMessage>{t("notFound")}</DetailMessage>;
   }
 
   return (

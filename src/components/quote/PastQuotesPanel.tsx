@@ -1,11 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { useLocale, useTranslations } from "next-intl";
 import { CardEstimateHistory } from "@/components/quote/CardEstimate";
 import QuoteEmptyState from "@/components/quote/QuoteEmptyState";
 import Sort from "@/components/common/Sort";
-import { SERVICE_LABELS } from "@/components/filter/ChipRegion";
 import { cn } from "@/lib/utils/cn";
+import { formatMovingDate, type DateLocale } from "@/lib/utils/date";
 import type { Estimate } from "@/lib/services/estimate-service";
 import type { QuotationRequest } from "@/lib/services/quotation-request-service";
 
@@ -30,33 +31,26 @@ function isConfirmedEstimate(estimate: Estimate) {
   return estimate.estimateStatus === "CONFIRMED" || estimate.estimateStatus === "COMPLETED";
 }
 
-const FILTER_OPTIONS = [
-  { value: "all", label: "전체" },
-  { value: "confirmed", label: "확정견적" },
-];
-
-const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
 const KST_OFFSET_MS = 9 * 60 * 60 * 1000;
 
-function toKst(iso: string) {
-  return new Date(new Date(iso).getTime() + KST_OFFSET_MS);
-}
-
-/** "24. 06. 24." — 요청 카드 우측 상단의 신청일 표기 */
+/**
+ * "24. 06. 24." — 요청 카드 우측 상단의 신청일 표기.
+ *
+ * ⚠️ 견적 상세의 "견적 요청일"(`date.ts`의 `formatRequestDate` → `24.08.26`)과
+ * 구분자가 다릅니다. **같은 의미의 날짜인데 피그마가 두 화면을 다르게 그립니다** —
+ * 받았던 견적 6개 프레임(`1:11657`·`1:11733` Desktop / `1:11359`·`1:11434` Tablet /
+ * `1:11510`·`1:11583` Mobile)이 전부 `24. 06. 24.`이고, 견적 상세 6개
+ * (`1:11818`·`1:11870` Desktop 외)가 전부 `24.08.26`입니다.
+ * 6개씩 일관되므로 시안 실수가 아니라 의도입니다. 공용 유틸로 합치면 한쪽이 틀어집니다.
+ *
+ * 숫자와 구분점뿐이라 로케일과 무관합니다.
+ */
 function formatShortDate(iso: string) {
-  const kst = toKst(iso);
+  const kst = new Date(new Date(iso).getTime() + KST_OFFSET_MS);
   const yy = String(kst.getUTCFullYear()).slice(2);
   const mm = String(kst.getUTCMonth() + 1).padStart(2, "0");
   const dd = String(kst.getUTCDate()).padStart(2, "0");
   return `${yy}. ${mm}. ${dd}.`;
-}
-
-/** "2026년 07월 01일 (월)" — 이용일 표기 */
-function formatFullDate(iso: string) {
-  const kst = toKst(iso);
-  const mm = String(kst.getUTCMonth() + 1).padStart(2, "0");
-  const dd = String(kst.getUTCDate()).padStart(2, "0");
-  return `${kst.getUTCFullYear()}년 ${mm}월 ${dd}일 (${WEEKDAYS[kst.getUTCDay()]})`;
 }
 
 /** 좌측 "견적 정보" 블록의 라벨+값 한 줄 */
@@ -94,6 +88,7 @@ function EstimateRow({
   /** 마감된 요청에서 확정되지 않은 견적 — 클릭을 막고 회색으로 덮습니다 (QA-12) */
   isDimmed?: boolean;
 }) {
+  const t = useTranslations("quote");
   const common = {
     category: estimate.quotationRequest.category,
     isTargeted: estimate.isTargeted,
@@ -120,7 +115,7 @@ function EstimateRow({
       type="button"
       onClick={onClick}
       disabled={isDimmed}
-      aria-label={`${estimate.mover.nickName} 기사님의 견적 상세 보기`}
+      aria-label={t("moverQuoteDetailLabel", { moverName: estimate.mover.nickName })}
       className={cn(
         "w-full text-left",
         // 이미 다른 기사님으로 확정된 요청이라 선택지가 아닙니다 — 눌러도 할 게 없습니다
@@ -146,9 +141,19 @@ function EstimateRow({
 export default function PastQuotesPanel({ blocks, onDetailClick }: PastQuotesPanelProps) {
   // 필터는 요청 블록마다 독립이라 id별로 들고 있습니다
   const [filters, setFilters] = useState<Record<number, string>>({});
+  const t = useTranslations("quote");
+  const tCommon = useTranslations("common");
+  const tService = useTranslations("service");
+  const locale = useLocale() as DateLocale;
+
+  // 라벨이 번역이라 컴포넌트 안에서 만듭니다 (모듈 상수로 두면 `t`를 못 씁니다)
+  const filterOptions = [
+    { value: "all", label: t("filterAll") },
+    { value: "confirmed", label: t("filterConfirmed") },
+  ];
 
   if (blocks.length === 0) {
-    return <QuoteEmptyState message={"아직 받았던 견적이 없어요."} />;
+    return <QuoteEmptyState message={t("emptyPast")} />;
   }
 
   return (
@@ -189,7 +194,7 @@ export default function PastQuotesPanel({ blocks, onDetailClick }: PastQuotesPan
                 {/* 모바일은 제목이 가운데, 날짜는 목록 아래에 있습니다 (`1:11517`·`1:11537`) */}
                 <div className="tablet:flex-row tablet:items-baseline tablet:justify-between flex flex-col">
                   <h3 className="text-16 text-black-black-450 tablet:text-20 tablet:text-left text-center font-semibold">
-                    견적 정보
+                    {t("quoteInfo")}
                   </h3>
                   <span className="text-14 text-gray-gray-300 tablet:block hidden font-normal">
                     {formatShortDate(request.createdAt)}
@@ -198,12 +203,15 @@ export default function PastQuotesPanel({ blocks, onDetailClick }: PastQuotesPan
 
                 {/* 모바일·태블릿만 행 사이에 구분선이 있습니다 (`1:11523`·`1:11532`) */}
                 <div className="tablet:gap-3 flex flex-col gap-2">
-                  <InfoRow label="이사 유형" value={SERVICE_LABELS[request.category]} />
+                  <InfoRow label={t("moveType")} value={tService(request.category)} />
                   <hr className="border-line-200 pc:hidden" />
-                  <InfoRow label="출발지" value={request.fromAddress} />
-                  <InfoRow label="도착지" value={request.toAddress} />
+                  <InfoRow label={tCommon("from")} value={request.fromAddress} />
+                  <InfoRow label={tCommon("to")} value={request.toAddress} />
                   <hr className="border-line-200 pc:hidden" />
-                  <InfoRow label="이용일" value={formatFullDate(request.movingDate)} />
+                  <InfoRow
+                    label={t("usageDate")}
+                    value={formatMovingDate(request.movingDate, locale)}
+                  />
                 </div>
               </div>
 
@@ -221,7 +229,7 @@ export default function PastQuotesPanel({ blocks, onDetailClick }: PastQuotesPan
             <div className="flex min-w-0 flex-1 flex-col gap-5">
               <div className="flex items-center gap-2">
                 <h3 className="text-16 text-black-black-450 tablet:text-20 font-semibold">
-                  견적서 목록
+                  {t("quoteList")}
                 </h3>
                 <span className="text-16 tablet:text-20 font-semibold text-orange-400">
                   {allEstimates.length}
@@ -233,8 +241,8 @@ export default function PastQuotesPanel({ blocks, onDetailClick }: PastQuotesPan
                 <div className="pc:hidden">
                   <Sort
                     size="lg"
-                    label="견적 상태 필터"
-                    options={FILTER_OPTIONS}
+                    label={t("statusFilter")}
+                    options={filterOptions}
                     value={filter}
                     onChange={(value) => setFilters((prev) => ({ ...prev, [request.id]: value }))}
                   />
@@ -242,8 +250,8 @@ export default function PastQuotesPanel({ blocks, onDetailClick }: PastQuotesPan
                 <div className="pc:block hidden">
                   <Sort
                     size="xl"
-                    label="견적 상태 필터"
-                    options={FILTER_OPTIONS}
+                    label={t("statusFilter")}
+                    options={filterOptions}
                     value={filter}
                     onChange={(value) => setFilters((prev) => ({ ...prev, [request.id]: value }))}
                   />

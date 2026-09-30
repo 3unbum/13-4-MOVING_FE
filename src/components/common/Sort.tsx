@@ -99,8 +99,11 @@ export default function Sort({
         className={cn(
           "inline-flex items-center bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50",
           // 필터형(피그마 Dropdown `1:11544` / `1:11691`) — 테두리 + 좌측 정렬
+          // 피그마 `1:11544`는 75×36인데, 그 폭에 들어가는 건 "전체"(24px)뿐입니다.
+          // "확정견적"만 돼도 23px 넘쳐 아이콘이 테두리 밖으로 밀립니다(기본값이 "전체"라
+          // 여태 안 보였습니다). 75는 최소폭으로 두고 긴 라벨에서는 늘어나게 합니다.
           isLg &&
-            "border-line-200 h-9 w-18.75 gap-1.5 rounded-lg border pr-2.5 pl-3.5 shadow-[4px_4px_5px_0_rgba(238,238,238,0.1)]",
+            "border-line-200 h-9 min-w-18.75 gap-1.5 rounded-lg border pr-2.5 pl-3.5 shadow-[4px_4px_5px_0_rgba(238,238,238,0.1)]",
           isXl &&
             "h-12.5 w-40 justify-between rounded-xl border border-gray-100 pr-3 pl-5 shadow-[4px_4px_5px_0_rgba(195,217,242,0.2)]",
           // 정렬형 — 기존 sm·md
@@ -150,7 +153,9 @@ export default function Sort({
             isSm
               ? "mt-1.5 w-[91px]"
               : isLg
-                ? "mt-1.5 w-18.75"
+                ? // 버튼이 라벨에 따라 늘어나므로(min-w-18.75) 목록은 그 폭을 그대로 따릅니다.
+                  // 루트가 inline-flex라 w-full이 버튼 폭과 같아집니다
+                  "mt-1.5 w-full"
                 : isXl
                   ? "mt-2 w-40"
                   : "mt-2 w-[114px]"
