@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
 import Button from "@/components/common/Button";
 import InputTextArea from "@/components/common/InputTextarea";
 import InputTextField from "@/components/common/InputTextfield";
@@ -13,7 +14,7 @@ import Chip from "@/components/filter/ChipRegion";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import FieldLabel from "@/components/profile/FieldLabel";
 import { REGION_OPTIONS, SERVICE_OPTIONS } from "@/constants/profile/options";
-import { moverProfileSchema, type MoverProfileFormValues } from "@/lib/schemas/profile-schema";
+import { makeMoverProfileSchema, type MoverProfileFormValues } from "@/lib/schemas/profile-schema";
 import { profileService } from "@/lib/services/profile-service";
 import type { MoverAccountResponse } from "@/lib/services/auth-service";
 import { ApiError } from "@/lib/utils/api-error";
@@ -49,6 +50,10 @@ export default function MoverProfileEditForm({
   account,
   onAccountUpdated,
 }: MoverProfileEditFormProps) {
+  const t = useTranslations("profile");
+  const tService = useTranslations("service");
+  const tRegion = useTranslations("region");
+  const tCommon = useTranslations("common");
   const router = useRouter();
   const { refetch } = useAuth();
   const [submitError, setSubmitError] = useState<string>();
@@ -63,6 +68,12 @@ export default function MoverProfileEditForm({
   // 객체 참조가 useForm의 values 옵션에 들어가게 된다 (MunChiho 리뷰, PR #135)
   const formValues = useMemo(() => accountToFormValues(account), [account]);
 
+  const tValidation = useTranslations("validation");
+
+  // 매 렌더마다 새 스키마가 생기면 zodResolver도 교체돼 폼이 불필요하게 다시 만들어집니다
+
+  const schema = useMemo(() => makeMoverProfileSchema(tValidation), [tValidation]);
+
   const {
     control,
     register,
@@ -70,7 +81,7 @@ export default function MoverProfileEditForm({
     setValue,
     formState: { errors, isSubmitting, isDirty },
   } = useForm<MoverProfileFormValues>({
-    resolver: zodResolver(moverProfileSchema),
+    resolver: zodResolver(schema),
     // account가 나중에(부모의 재조회로) 바뀌면 RHF가 그 시점에 폼을 다시 리셋해준다 —
     // defaultValues는 최초 렌더 시점 값으로 고정돼서 이 케이스엔 안 맞음 (CustomerProfileEditForm과 동일 패턴)
     values: formValues,
@@ -110,11 +121,7 @@ export default function MoverProfileEditForm({
       // 확인할 수 있어야 하니 (CustomerProfileEditForm도 성공 시 라우팅으로 마무리하는 동일 패턴)
       router.push("/mover/mypage");
     } catch (error) {
-      setSubmitError(
-        error instanceof ApiError
-          ? error.message
-          : "프로필 수정에 실패했어요. 잠시 후 다시 시도해주세요"
-      );
+      setSubmitError(error instanceof ApiError ? error.message : t("updateFailed"));
     }
   }
 
@@ -134,7 +141,7 @@ export default function MoverProfileEditForm({
         <div className="pc:gap-8 flex flex-col gap-5">
           <div className="flex flex-col gap-4">
             <span className="text-16 text-black-black-400 pc:text-20 font-semibold">
-              프로필 이미지
+              {t("profileImage")}
             </span>
             <Controller
               name="image"
@@ -154,10 +161,10 @@ export default function MoverProfileEditForm({
           <div className="bg-line-100 pc:block hidden h-px w-full" />
 
           <div className="flex flex-col gap-4">
-            <FieldLabel>별명</FieldLabel>
+            <FieldLabel>{t("nickName")}</FieldLabel>
             <InputTextField
-              label="별명"
-              placeholder="사이트에 노출될 별명을 입력해 주세요"
+              label={t("nickName")}
+              placeholder={t("nickNamePlaceholder")}
               size={fieldSize}
               errorMessage={errors.nickName?.message}
               {...register("nickName")}
@@ -167,12 +174,12 @@ export default function MoverProfileEditForm({
           <div className="bg-line-100 h-px w-full" />
 
           <div className="flex flex-col gap-4">
-            <FieldLabel>경력</FieldLabel>
+            <FieldLabel>{t("career")}</FieldLabel>
             <InputTextField
-              label="경력"
+              label={t("career")}
               type="text"
               inputMode="numeric"
-              placeholder="기사님의 경력을 입력해 주세요"
+              placeholder={t("careerPlaceholder")}
               size={fieldSize}
               errorMessage={errors.career?.message}
               // inputMode="numeric"은 키패드 힌트일 뿐 실제 입력을 막지 않음 — "1년"처럼 문자가
@@ -196,10 +203,10 @@ export default function MoverProfileEditForm({
           <div className="bg-line-100 h-px w-full" />
 
           <div className="flex flex-col gap-4">
-            <FieldLabel>한 줄 소개</FieldLabel>
+            <FieldLabel>{t("bio")}</FieldLabel>
             <InputTextField
-              label="한 줄 소개"
-              placeholder="한 줄 소개를 입력해 주세요"
+              label={t("bio")}
+              placeholder={t("bioPlaceholder")}
               size={fieldSize}
               errorMessage={errors.bio?.message}
               {...register("bio")}
@@ -213,10 +220,10 @@ export default function MoverProfileEditForm({
 
         <div className="pc:gap-8 flex flex-col gap-5">
           <div className="flex flex-col gap-4">
-            <FieldLabel>상세 설명</FieldLabel>
+            <FieldLabel>{t("description")}</FieldLabel>
             <InputTextArea
-              label="상세 설명"
-              placeholder="상세 내용을 입력해 주세요"
+              label={t("description")}
+              placeholder={t("descriptionPlaceholder")}
               size={fieldSize}
               errorMessage={errors.description?.message}
               {...register("description")}
@@ -226,7 +233,7 @@ export default function MoverProfileEditForm({
           <div className="bg-line-100 h-px w-full" />
 
           <div className="flex flex-col gap-4">
-            <FieldLabel>제공 서비스</FieldLabel>
+            <FieldLabel>{t("moverServices")}</FieldLabel>
             <div className="pc:gap-3 flex flex-wrap gap-1.5">
               {SERVICE_OPTIONS.map((option) => {
                 const selected = selectedServices.includes(option.value);
@@ -238,7 +245,7 @@ export default function MoverProfileEditForm({
                     onClick={() => toggle("services", option.value)}
                     className={cn("pc:px-5 pc:py-2.5 pc:text-18", !selected && "pc:font-normal")}
                   >
-                    {option.label}
+                    {tService(option.value)}
                   </Chip>
                 );
               })}
@@ -251,7 +258,7 @@ export default function MoverProfileEditForm({
           <div className="bg-line-100 h-px w-full" />
 
           <div className="flex flex-col gap-4">
-            <FieldLabel>서비스 가능 지역</FieldLabel>
+            <FieldLabel>{t("moverRegions")}</FieldLabel>
             <div className="pc:gap-4 flex flex-wrap gap-2">
               {REGION_OPTIONS.map((option) => {
                 const selected = selectedRegions.includes(option.value);
@@ -263,7 +270,7 @@ export default function MoverProfileEditForm({
                     onClick={() => toggle("regions", option.value)}
                     className={cn("pc:px-5 pc:py-2.5 pc:text-18", !selected && "pc:font-normal")}
                   >
-                    {option.label}
+                    {tRegion(option.value)}
                   </Chip>
                 );
               })}
@@ -290,7 +297,7 @@ export default function MoverProfileEditForm({
               className="pc:h-15 pc:rounded-2xl pc:text-18"
               onClick={() => router.push("/mover/mypage")}
             >
-              취소
+              {tCommon("cancel")}
             </Button>
           </div>
           <div className="pc:w-60">
@@ -302,7 +309,7 @@ export default function MoverProfileEditForm({
               // 재조회/저장 성공 시) 새 기준값과 비교해 자동으로 재계산된다 (PR #135 리뷰, singsangsong28)
               disabled={isSubmitting || isImageUploading || !isDirty}
             >
-              {isSubmitting ? "수정 중..." : "수정하기"}
+              {isSubmitting ? t("submitting") : t("submit")}
             </Button>
           </div>
         </div>

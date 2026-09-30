@@ -1,13 +1,14 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useId } from "react";
+import { useTranslations } from "next-intl";
+import { useId, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import AuthSubmitButton from "@/components/auth/AuthSubmitButton";
 import FormField from "@/components/auth/FormField";
 import Modal, { ModalHeader } from "@/components/common/Modal";
 import { authService, type AuthResult, type UserRole } from "@/lib/services/auth-service";
-import { phoneSchema, type PhoneFormValues } from "@/lib/schemas/auth-schema";
+import { makePhoneSchema, type PhoneFormValues } from "@/lib/schemas/auth-schema";
 import { ApiError } from "@/lib/utils/api-error";
 
 interface OAuthPhoneModalProps {
@@ -26,12 +27,16 @@ export default function OAuthPhoneModal({
   onCompleted,
 }: OAuthPhoneModalProps) {
   const titleId = useId();
+  const tValidation = useTranslations("validation");
+  // 매 렌더마다 새 스키마가 생기면 zodResolver도 교체돼 폼이 불필요하게 다시 만들어집니다
+  const schema = useMemo(() => makePhoneSchema(tValidation), [tValidation]);
+
   const {
     register,
     handleSubmit,
     setError,
     formState: { errors, isSubmitting, isValid },
-  } = useForm<PhoneFormValues>({ resolver: zodResolver(phoneSchema), mode: "onChange" });
+  } = useForm<PhoneFormValues>({ resolver: zodResolver(schema), mode: "onChange" });
 
   // oauthSignupToken은 BE가 httpOnly 쿠키로 들고 있어서 여기선 phoneNumber만 보낸다.
   const onSubmit = async (values: PhoneFormValues) => {
