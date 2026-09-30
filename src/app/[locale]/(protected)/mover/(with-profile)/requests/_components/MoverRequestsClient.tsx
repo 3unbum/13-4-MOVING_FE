@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 import Loading from "@/app/[locale]/loading";
 import emptyCharacter from "@/assets/images/common/empty-review.png";
@@ -21,7 +21,7 @@ import { useMoverRequestAction, useMoverRequests } from "@/hooks/useMoverRequest
 import type { MoverRequest } from "@/lib/services/mover-request-service";
 import { ApiError } from "@/lib/utils/api-error";
 import { shortenAddress } from "@/lib/utils/address";
-import { formatMovingDate } from "@/lib/utils/date";
+import { formatMovingDate, type DateLocale } from "@/lib/utils/date";
 
 const TABLET_QUERY = "(min-width: 744px)";
 const PC_QUERY = "(min-width: 1280px)";
@@ -77,6 +77,7 @@ function EmptyState({ message }: { message: string }) {
  * 내용 폭은 PC 1200 / 태블릿 600 / 모바일 327이고, 카드는 PC만 2열입니다.
  */
 export default function MoverRequestsClient() {
+  const locale = useLocale() as DateLocale;
   const t = useTranslations("moverPage");
   const tCommon = useTranslations("common");
   const isTabletUp = useMediaQuery(TABLET_QUERY);
@@ -267,7 +268,7 @@ export default function MoverRequestsClient() {
           customerName={action.request.userName}
           fromAddress={shortenAddress(action.request.fromAddress)}
           toAddress={shortenAddress(action.request.toAddress)}
-          movingDate={formatMovingDate(action.request.movingDate)}
+          movingDate={formatMovingDate(action.request.movingDate, locale)}
           price={price}
           onPriceChange={setPrice}
           comment={comment}
