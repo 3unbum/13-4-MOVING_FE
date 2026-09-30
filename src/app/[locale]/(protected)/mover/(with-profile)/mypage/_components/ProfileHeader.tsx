@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import likeMdActive from "@/assets/icons/like-md-active.svg";
 import logoMarkSm from "@/assets/icons/logo-mark-sm.svg";
 import ProfileAvatar from "@/components/common/ProfileAvatar";
@@ -11,6 +12,7 @@ interface ProfileHeaderProps {
 
 // PC 우측 버튼 컬럼은 이 컴포넌트 밖(MoverMyPageContent)에서 따로 렌더링한다.
 export default function ProfileHeader({ mover }: ProfileHeaderProps) {
+  const t = useTranslations("moverPage");
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-end gap-3">
@@ -30,7 +32,7 @@ export default function ProfileHeader({ mover }: ProfileHeaderProps) {
           <div className="flex items-center gap-1">
             <Image src={likeMdActive} alt="" className="size-6" />
             <span className="text-14 tablet:text-16 text-gray-gray-500">
-              <span className="sr-only">찜 </span>
+              <span className="sr-only">{t("favoriteSr")}</span>
               {mover.favoriteCount}
             </span>
           </div>

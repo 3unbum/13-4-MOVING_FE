@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { requireRole } from "@/lib/auth/guards";
 import MoverProfileEditPanel from "@/components/profile/MoverProfileEditPanel";
 
@@ -13,6 +14,7 @@ import MoverProfileEditPanel from "@/components/profile/MoverProfileEditPanel";
 // 카드 폭/패딩은 프로필 등록 페이지(mover/profile-register)와 동일한 실측값 재사용 — 두 폼 다
 // 그 등록 모달(1200px, 500px 2열, 컬럼 간격 120px)을 그대로 이어받는 레이아웃이라서다.
 export default async function MoverProfileEditPage() {
+  const t = await getTranslations("moverPage");
   const account = await requireRole("MOVER", "/mover/login");
 
   return (
@@ -21,7 +23,7 @@ export default async function MoverProfileEditPage() {
           (제목-구분선 16px, 구분선-본문 20px) — 구분선 자체의 mb-1(4px)로 비대칭분을 보정한다 */}
       <div className="pc:w-300 pc:gap-12 pc:rounded-4xl pc:bg-gray-50 pc:px-10 pc:pt-8 pc:pb-10 flex w-81.75 flex-col gap-4">
         <h1 className="text-18 text-black-black-450 pc:text-32 pc:font-semibold font-bold">
-          프로필 수정
+          {t("editProfileTitle")}
         </h1>
         <div className="bg-line-100 pc:mb-0 mb-1 h-px w-full" />
         <MoverProfileEditPanel initialAccount={account?.role === "MOVER" ? account : null} />

@@ -1,6 +1,7 @@
 "use client";
 
 import Button from "@/components/common/Button";
+import { useTranslations } from "next-intl";
 import DatePicker from "@/components/common/DatePicker";
 import InputTextField from "@/components/common/InputTextfield";
 import SelectCard from "@/components/common/SelectCard";
@@ -31,6 +32,8 @@ export default function QuotationRequestDesktop({
   isSubmitting,
   onSubmit,
 }: QuotationRequestDesktopProps) {
+  const t = useTranslations("request");
+  const tCommon = useTranslations("common");
   const departureDetailRef = useRef<HTMLInputElement>(null);
   const arrivalDetailRef = useRef<HTMLInputElement>(null);
 
@@ -45,13 +48,11 @@ export default function QuotationRequestDesktop({
   return (
     <div className="pc:px-11.75 tablet:px-10 tablet:block tablet:pb-12.25 tablet:pt-19.75 hidden rounded-[40px] bg-white pt-22.25 pb-26.75">
       <header className="flex flex-col items-center gap-2">
-        <p className="text-24 text-black-500 font-bold">이사 유형, 예정일과 지역을 선택해주세요</p>
-        <p className="text-16 text-gray-gray-400 font-normal">
-          견적을 요청하면 최대 5개의 견적을 받을 수 있어요 :)
-        </p>
+        <p className="text-24 text-black-500 font-bold">{t("desktopTitle")}</p>
+        <p className="text-16 text-gray-gray-400 font-normal">{t("stepSubtitle")}</p>
       </header>
       <main className="tablet:mt-16 mt-20 flex flex-col">
-        <p className="text-18 text-black-300 font-bold">이사 유형</p>
+        <p className="text-18 text-black-300 font-bold">{t("moveType")}</p>
         <section className="tablet:pb-12 mt-4 flex flex-row gap-4 pb-16">
           {MOVE_TYPES.map((type) => (
             <SelectCard
@@ -64,18 +65,22 @@ export default function QuotationRequestDesktop({
           ))}
         </section>
         <div className="flex justify-between pb-8">
-          <p className="text-18 text-black-300 shrink-0 font-bold whitespace-nowrap">이사 예정일</p>
+          <p className="text-18 text-black-300 shrink-0 font-bold whitespace-nowrap">
+            {t("movingDate")}
+          </p>
           <div>
             <DatePicker value={date} onChange={onDateChange} />
           </div>
         </div>
         <hr className="border-line-100 tablet:w-155 mx-auto h-px w-176.25 pb-8" />
         <section className="flex justify-between">
-          <p className="text-18 text-black-300 shrink-0 font-bold whitespace-nowrap">이사 지역</p>
+          <p className="text-18 text-black-300 shrink-0 font-bold whitespace-nowrap">
+            {t("movingRegion")}
+          </p>
           <div className="tablet:flex-col tablet:w-100 flex w-130 shrink-0 flex-row gap-4">
             <div className="flex flex-1 flex-col gap-3">
               <p className="text-16 text-black-black-400 shrink-0 font-medium whitespace-nowrap">
-                출발지
+                {tCommon("from")}
               </p>
               <Button
                 variant="outlined"
@@ -83,7 +88,7 @@ export default function QuotationRequestDesktop({
                 className="justify-start px-6 py-4 whitespace-nowrap"
                 onClick={departure.open}
               >
-                {departure.value?.roadAddress ?? "출발지 선택하기"}
+                {departure.value?.roadAddress ?? t("selectFrom")}
               </Button>
               {departure.value && (
                 <button
@@ -91,7 +96,7 @@ export default function QuotationRequestDesktop({
                   onClick={departure.open}
                   className="text-12 text-black-100 self-end font-medium whitespace-nowrap underline"
                 >
-                  수정하기
+                  {t("edit")}
                 </button>
               )}
               {departure.value && (
@@ -100,13 +105,13 @@ export default function QuotationRequestDesktop({
                   size="sm"
                   value={departure.detail}
                   onChange={(event) => departure.onDetailChange(event.target.value)}
-                  placeholder="상세 주소를 입력하세요 (동·호수 등)"
+                  placeholder={t("detailAddressPlaceholder")}
                 />
               )}
             </div>
             <div className="flex flex-1 flex-col gap-3">
               <p className="text-16 text-black-black-400 shrink-0 font-medium whitespace-nowrap">
-                도착지
+                {tCommon("to")}
               </p>
               <Button
                 variant="outlined"
@@ -114,7 +119,7 @@ export default function QuotationRequestDesktop({
                 className="justify-start px-6 py-4 whitespace-nowrap"
                 onClick={arrival.open}
               >
-                {arrival.value?.roadAddress ?? "도착지 선택하기"}
+                {arrival.value?.roadAddress ?? t("selectTo")}
               </Button>
               {arrival.value && (
                 <button
@@ -122,7 +127,7 @@ export default function QuotationRequestDesktop({
                   onClick={arrival.open}
                   className="text-12 text-black-100 self-end font-medium whitespace-nowrap underline"
                 >
-                  수정하기
+                  {t("edit")}
                 </button>
               )}
               {arrival.value && (
@@ -131,7 +136,7 @@ export default function QuotationRequestDesktop({
                   size="sm"
                   value={arrival.detail}
                   onChange={(event) => arrival.onDetailChange(event.target.value)}
-                  placeholder="상세 주소를 입력하세요 (동·호수 등)"
+                  placeholder={t("detailAddressPlaceholder")}
                 />
               )}
             </div>
@@ -146,7 +151,7 @@ export default function QuotationRequestDesktop({
             disabled={!canSubmit || isSubmitting}
             onClick={onSubmit}
           >
-            견적 요청하기
+            {t("submit")}
           </Button>
         </div>
       </div>

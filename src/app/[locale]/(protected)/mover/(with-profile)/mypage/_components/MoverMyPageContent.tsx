@@ -1,9 +1,6 @@
-import Chip, {
-  REGION_LABELS,
-  SERVICE_LABELS,
-  type RegionCode,
-} from "@/components/filter/ChipRegion";
+import Chip, { REGION_LABELS, type RegionCode } from "@/components/filter/ChipRegion";
 import MoverReviewSection from "@/components/review/MoverReviewSection";
+import { useTranslations } from "next-intl";
 import type { MoverListItem } from "@/lib/services/mover-service";
 import { toServiceCode } from "@/lib/utils/mover-list-mapper";
 import ActivityStats from "./ActivityStats";
@@ -11,10 +8,16 @@ import { EditBasicInfoButton, EditMoverProfileButton } from "./MoverProfileEditB
 import ProfileHeader from "./ProfileHeader";
 
 /** 목록 API가 코드·한글 라벨을 혼용하는 것과 같은 사정이라 지역도 방어적으로 정규화한다 */
-function regionLabel(value: string): string {
-  if (value in REGION_LABELS) return REGION_LABELS[value as RegionCode];
-  const found = Object.entries(REGION_LABELS).find(([, korean]) => korean === value);
-  return found?.[1] ?? value;
+/**
+ * 지역 값을 코드로 정규화합니다 — BE가 enum("SEOUL")으로 줄 때도, 한글("서울")로 줄 때도 있습니다.
+ * 표시는 호출부가 `tRegion(code)`으로 합니다.
+ */
+function toRegionCode(value: string): RegionCode | null {
+  if (value in REGION_LABELS) return value as RegionCode;
+  const found = (Object.entries(REGION_LABELS) as [RegionCode, string][]).find(
+    ([, korean]) => korean === value
+  );
+  return found?.[0] ?? null;
 }
 
 interface MoverMyPageContentProps {
@@ -24,6 +27,9 @@ interface MoverMyPageContentProps {
 
 // (main)/movers/[moverId](공개 상세)와 같은 데이터 모양(MoverListItem)을 자기 자신의 id로 조회해서 쓴다.
 export default function MoverMyPageContent({ mover, moverId }: MoverMyPageContentProps) {
+  const tMover = useTranslations("mover");
+  const tService = useTranslations("service");
+  const tRegion = useTranslations("region");
   const categories = [...new Set(mover.services.map(toServiceCode))];
 
   return (
@@ -45,7 +51,7 @@ export default function MoverMyPageContent({ mover, moverId }: MoverMyPageConten
 
           <div className="tablet:gap-4 flex flex-col gap-2">
             <h2 className="text-16 tablet:text-20 text-black-black-400 font-semibold">
-              제공 서비스
+              {tMover("moverServices")}
             </h2>
             <div className="flex flex-wrap gap-3">
               {categories.map((code) => (
@@ -55,7 +61,7 @@ export default function MoverMyPageContent({ mover, moverId }: MoverMyPageConten
                   selected
                   className="text-14 tablet:px-5 tablet:py-2.5 tablet:text-18 px-3 py-1.5"
                 >
-                  {SERVICE_LABELS[code]}
+                  {tService(code)}
                 </Chip>
               ))}
             </div>
@@ -63,7 +69,7 @@ export default function MoverMyPageContent({ mover, moverId }: MoverMyPageConten
 
           <div className="tablet:gap-4 flex flex-col gap-2">
             <h2 className="text-16 tablet:text-20 text-black-black-400 font-semibold">
-              서비스 가능 지역
+              {tMover("moverRegions")}
             </h2>
             <div className="flex flex-wrap gap-3">
               {mover.regions.map((region) => (
@@ -73,7 +79,10 @@ export default function MoverMyPageContent({ mover, moverId }: MoverMyPageConten
                   // 지역 칩(비선택)은 웨이트가 브레이크포인트마다 달라짐 — 모바일 Medium, 태블릿·PC Regular
                   className="text-14 tablet:px-5 tablet:py-2.5 tablet:text-18 tablet:font-normal px-3 py-1.5 font-medium"
                 >
-                  {regionLabel(region)}
+                  {(() => {
+                    const c = toRegionCode(region);
+                    return c ? tRegion(c) : region;
+                  })()}
                 </Chip>
               ))}
             </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import likeDefault from "@/assets/icons/like-md-default.svg";
 import likeActive from "@/assets/icons/like-md-red-active.svg";
 import Button from "@/components/common/Button";
@@ -26,13 +27,17 @@ export function MoverDetailDesktopCta({
   onToggleFavorite,
   className,
 }: MoverDetailCtaProps) {
-  const favoriteLabel = isFavorited ? "찜해제하기" : "기사님 찜하기";
+  const t = useTranslations("mover");
+  const favoriteLabel = isFavorited ? t("unfavorite") : t("favorite");
 
   return (
     <div className={cn("flex w-80 flex-col gap-4", className)}>
       <div className="text-18 text-black-black-400 leading-7 font-semibold">
-        <p className="w-full max-w-80 break-keep">{nickName} 기사님에게</p>
-        <p className="w-[185px]">지정 견적을 요청해보세요!</p>
+        {/* 줄바꿈 위치가 언어마다 달라 <line> 태그로 메시지가 정하게 합니다 */}
+        {t.rich("ctaPromptRich", {
+          name: nickName,
+          line: (chunks) => <p className="w-full max-w-80 break-keep">{chunks}</p>,
+        })}
       </div>
       <Button
         variant="solid"
@@ -40,7 +45,7 @@ export function MoverDetailDesktopCta({
         disabled={isTargeted || isRequestPending}
         onClick={onRequestQuote}
       >
-        {isTargeted ? "지정 견적 요청 완료" : "지정 견적 요청하기"}
+        {isTargeted ? t("targetedRequestDone") : t("targetedRequest")}
       </Button>
       <button
         type="button"
@@ -67,6 +72,7 @@ export function MoverDetailMobileStickyCta({
   onRequestQuote,
   onToggleFavorite,
 }: Omit<MoverDetailCtaProps, "nickName" | "className">) {
+  const t = useTranslations("mover");
   return (
     <div
       className={cn(
@@ -81,7 +87,7 @@ export function MoverDetailMobileStickyCta({
           size="sm"
           active={isFavorited}
           activeColor="red"
-          aria-label={isFavorited ? "찜해제하기" : "기사님 찜하기"}
+          aria-label={isFavorited ? t("unfavorite") : t("favorite")}
           onClick={onToggleFavorite}
         />
         <div className="min-w-0 flex-1">
@@ -91,7 +97,7 @@ export function MoverDetailMobileStickyCta({
             disabled={isTargeted || isRequestPending}
             onClick={onRequestQuote}
           >
-            {isTargeted ? "지정 견적 요청 완료" : "지정 견적 요청하기"}
+            {isTargeted ? t("targetedRequestDone") : t("targetedRequest")}
           </Button>
         </div>
       </div>

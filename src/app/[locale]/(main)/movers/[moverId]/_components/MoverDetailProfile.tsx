@@ -1,6 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { FavoriteCount } from "@/components/common/CardParts";
 import Chip, { REGION_LABELS, type RegionCode } from "@/components/filter/ChipRegion";
@@ -22,12 +23,16 @@ function isRegionCode(value: string): value is RegionCode {
   return value in REGION_LABELS;
 }
 
-/** 지역 칩 라벨 — 한글이면 그대로, enum이면 한글로 */
-function toRegionLabel(value: string): string {
-  if (isRegionCode(value)) {
-    return REGION_LABELS[value];
-  }
-  return value;
+/**
+ * 지역 값을 코드로 정규화합니다 — BE가 enum("SEOUL")으로 줄 때도, 한글("서울")로 줄 때도 있습니다.
+ * 표시는 호출부가 `t(code)`로 합니다(messages의 `region` 네임스페이스).
+ */
+function toRegionCode(value: string): RegionCode | null {
+  if (isRegionCode(value)) return value;
+  const found = (Object.entries(REGION_LABELS) as [RegionCode, string][]).find(
+    ([, korean]) => korean === value
+  );
+  return found?.[0] ?? null;
 }
 
 /** 프로필 상단 + 통계 + 서비스/지역 — Figma 1:5268 수치 */
@@ -36,6 +41,9 @@ export default function MoverDetailProfile({
   favoriteCount,
   isFavorited,
 }: MoverDetailProfileProps) {
+  const t = useTranslations("mover");
+  const tCommon = useTranslations("common");
+  const tRegion = useTranslations("region");
   const categories = mover.services.map(toServiceCode);
 
   return (
@@ -104,9 +112,12 @@ export default function MoverDetailProfile({
             "tablet:h-30 tablet:px-25"
           )}
         >
-          <StatBlock label="진행" value={`${mover.confirmedCount}건`} />
           <StatBlock
-            label="리뷰"
+            label={t("statProgress")}
+            value={tCommon("confirmedCount", { count: mover.confirmedCount })}
+          />
+          <StatBlock
+            label={t("statReview")}
             value={
               <span className="flex items-center gap-1.5">
                 <Image src={starActive} alt="" className="tablet:size-6 size-5 shrink-0" />
@@ -117,11 +128,14 @@ export default function MoverDetailProfile({
               </span>
             }
           />
-          <StatBlock label="총 경력" value={`${mover.career}년`} />
+          <StatBlock
+            label={t("statCareer")}
+            value={tCommon("careerYears", { years: mover.career })}
+          />
         </div>
       </div>
 
-      <ChipGroup title="제공 서비스">
+      <ChipGroup title={t("moverServices")}>
         {mover.services.map((service) => (
           <span key={service} className="contents">
             <Chip size="sm" selected disabled className="tablet:hidden pointer-events-none">
@@ -140,17 +154,23 @@ export default function MoverDetailProfile({
       </ChipGroup>
 
       {/* 지역은 Figma unselected(회색 아웃라인) */}
-      <ChipGroup title="서비스 가능 지역">
-        {mover.regions.map((region) => (
-          <span key={region} className="contents">
-            <Chip size="sm" disabled className="tablet:hidden pointer-events-none">
-              {toRegionLabel(region)}
-            </Chip>
-            <Chip size="md" disabled className="tablet:inline-flex pointer-events-none hidden">
-              {toRegionLabel(region)}
-            </Chip>
-          </span>
-        ))}
+      <ChipGroup title={t("moverRegions")}>
+        {mover.regions.map((region) => {
+          // 코드로 못 바꾸면(미등록 지역 등) 서버 값을 그대로 보여줍니다
+          const code = toRegionCode(region);
+          const label = code ? tRegion(code) : region;
+
+          return (
+            <span key={region} className="contents">
+              <Chip size="sm" disabled className="tablet:hidden pointer-events-none">
+                {label}
+              </Chip>
+              <Chip size="md" disabled className="tablet:inline-flex pointer-events-none hidden">
+                {label}
+              </Chip>
+            </span>
+          );
+        })}
       </ChipGroup>
     </section>
   );

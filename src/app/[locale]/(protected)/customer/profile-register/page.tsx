@@ -1,4 +1,4 @@
-import { getLocale } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { redirect } from "@/i18n/navigation";
 import { requireRole } from "@/lib/auth/guards";
 import CustomerProfileForm from "@/components/profile/CustomerProfileForm";
@@ -15,6 +15,7 @@ import CustomerProfileForm from "@/components/profile/CustomerProfileForm";
 // 타이틀↔폼 간격: 피그마상 title-block과 fields-wrapper가 형제로 16px(pc 40px) — 폼 시작 구분선은
 // CustomerProfileForm 안으로 옮김(피그마에서 구분선이 필드 리듬(20/32px)에 속해있어서)
 export default async function CustomerProfileRegisterPage() {
+  const t = await getTranslations("moverPage");
   const account = await requireRole("CUSTOMER", "/customer/login");
   if (account?.hasProfile) redirect({ href: "/", locale: await getLocale() });
 
@@ -23,10 +24,10 @@ export default async function CustomerProfileRegisterPage() {
       <div className="pc:w-180 pc:gap-10 pc:rounded-4xl pc:bg-gray-50 pc:px-10 pc:pt-6 pc:pb-10 flex w-81.75 flex-col gap-4">
         <div className="pc:gap-7 flex flex-col gap-4">
           <h1 className="text-18 text-black-black-400 pc:text-32 pc:font-semibold font-bold">
-            프로필 등록
+            {t("registerProfile")}
           </h1>
           <p className="text-12 text-black-100 pc:text-20 pc:text-black-200">
-            추가 정보를 입력하여 회원가입을 완료해주세요.
+            {t("registerSubtitle")}
           </p>
         </div>
         <CustomerProfileForm />

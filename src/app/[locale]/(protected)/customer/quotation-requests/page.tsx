@@ -1,6 +1,7 @@
 "use client";
 
 import AddressSelectModal from "@/components/address/AddressSelectModal";
+import { useTranslations } from "next-intl";
 import Toast from "@/components/common/Toast";
 import { SERVICES as MOVE_TYPES } from "@/components/filter/ChipRegion";
 import { useAddressSearch } from "@/hooks/useAddressSearch";
@@ -25,6 +26,7 @@ function formatDate(date: Date) {
 }
 
 export default function CustomerQuotationRequestsPage() {
+  const t = useTranslations("request");
   const router = useRouter();
   const { account, isLoading: isAuthLoading } = useAuth();
   // 하드 게이트 아님(리다이렉트 X) — 페이지는 그대로 렌더하고 모달만 얹는다.
@@ -69,9 +71,7 @@ export default function CustomerQuotationRequestsPage() {
       });
       router.push("/customer/my-quotes");
     } catch (error) {
-      setErrorMessage(
-        error instanceof ApiError ? error.message : "견적 요청에 실패했어요. 다시 시도해주세요."
-      );
+      setErrorMessage(error instanceof ApiError ? error.message : t("submitFailed"));
       setTimeout(() => setErrorMessage(null), 3000);
     } finally {
       setIsSubmitting(false);
@@ -122,7 +122,7 @@ export default function CustomerQuotationRequestsPage() {
         size={isTabletUp ? "md" : "sm"}
         open={departure.isOpen}
         onClose={departure.close}
-        title="출발지를 선택해주세요"
+        title={t("selectFromAddress")}
         searchValue={departure.searchValue}
         onSearchChange={departure.onSearchChange}
         onSearch={departure.onSearch}
@@ -135,7 +135,7 @@ export default function CustomerQuotationRequestsPage() {
         size={isTabletUp ? "md" : "sm"}
         open={arrival.isOpen}
         onClose={arrival.close}
-        title="도착지를 선택해주세요"
+        title={t("selectToAddress")}
         searchValue={arrival.searchValue}
         onSearchChange={arrival.onSearchChange}
         onSearch={arrival.onSearch}

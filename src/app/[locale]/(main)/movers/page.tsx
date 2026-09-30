@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState, type KeyboardEvent } from "react";
+import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import Filter from "@/components/common/Filter";
 import Header from "@/components/common/Header";
@@ -79,6 +80,7 @@ function ResponsiveMoverCard({
 }
 
 export default function MoversPage() {
+  const t = useTranslations("mover");
   const router = useRouter();
   const { account, isAuthenticated } = useAuth();
   // 찜 API는 CUSTOMER 전용 — 사이드바·토글도 동일 기준
@@ -156,7 +158,7 @@ export default function MoversPage() {
     <div className="flex min-h-screen flex-col bg-gray-50">
       <div className="mx-auto w-full max-w-[1920px]">
         <Header size="lg" className="pc:flex hidden">
-          기사님 찾기
+          {t("findMovers")}
         </Header>
 
         <main
@@ -175,16 +177,16 @@ export default function MoversPage() {
                 className="pc:hidden"
                 value={search}
                 onChange={setSearch}
-                label="기사님 별명 검색"
-                placeholder="찾으시는 기사님을 입력해주세요"
+                label={t("searchMoverLabel")}
+                placeholder={t("searchMoverPlaceholder")}
               />
               <InputSearchbar
                 size="md"
                 className="pc:flex hidden"
                 value={search}
                 onChange={setSearch}
-                label="기사님 별명 검색"
-                placeholder="찾으시는 기사님을 입력해주세요"
+                label={t("searchMoverLabel")}
+                placeholder={t("searchMoverPlaceholder")}
               />
             </div>
 
@@ -193,7 +195,7 @@ export default function MoversPage() {
               <div className="pc:hidden tablet:gap-3 flex items-center gap-2">
                 <Filter
                   size="sm"
-                  label="지역"
+                  label={t("region")}
                   layout="double"
                   columns={REGION_COLUMNS}
                   value={region}
@@ -201,7 +203,7 @@ export default function MoversPage() {
                 />
                 <Filter
                   size="sm"
-                  label="서비스"
+                  label={t("service")}
                   options={[...SERVICE_OPTIONS]}
                   value={service}
                   onChange={setService}
@@ -211,7 +213,7 @@ export default function MoversPage() {
                 <div className="flex items-center gap-3">
                   <Filter
                     size="md"
-                    label="지역"
+                    label={t("region")}
                     layout="double"
                     columns={REGION_COLUMNS}
                     value={region}
@@ -219,7 +221,7 @@ export default function MoversPage() {
                   />
                   <Filter
                     size="md"
-                    label="서비스"
+                    label={t("service")}
                     options={[...SERVICE_OPTIONS]}
                     value={service}
                     onChange={setService}
@@ -230,7 +232,7 @@ export default function MoversPage() {
                   onClick={resetFilters}
                   className="text-16 text-gray-gray-300 ml-6.25 font-medium whitespace-nowrap"
                 >
-                  초기화
+                  {t("reset")}
                 </button>
               </div>
 
@@ -257,22 +259,18 @@ export default function MoversPage() {
           <div className="tablet:mt-6 pc:mt-9.25 pc:gap-13.5 mt-3 flex items-start">
             <div className="pc:w-205 pc:flex-none flex min-w-0 flex-1 flex-col">
               {isPending && (
-                <p className="text-14 text-gray-gray-500 py-8 text-center">
-                  기사님 목록을 불러오는 중…
-                </p>
+                <p className="text-14 text-gray-gray-500 py-8 text-center">{t("loadingMovers")}</p>
               )}
 
               {isError && (
                 <p className="text-14 py-8 text-center text-red-500" role="alert">
-                  목록을 불러오지 못했습니다.
+                  {t("loadFailed")}
                   {error instanceof Error ? ` (${error.message})` : null}
                 </p>
               )}
 
               {!isPending && !isError && movers.length === 0 && (
-                <p className="text-14 text-gray-gray-500 py-8 text-center">
-                  조건에 맞는 기사님이 없습니다.
-                </p>
+                <p className="text-14 text-gray-gray-500 py-8 text-center">{t("noResults")}</p>
               )}
 
               <ul className="pc:gap-5 flex flex-col gap-6">
@@ -300,22 +298,24 @@ export default function MoversPage() {
               <div ref={sentinelRef} className="h-1 w-full shrink-0" aria-hidden />
 
               {isFetchingNextPage && (
-                <p className="text-14 text-gray-gray-500 py-4 text-center">더 불러오는 중…</p>
+                <p className="text-14 text-gray-gray-500 py-4 text-center">{t("loadingMore")}</p>
               )}
             </div>
 
             {/* PC + CUSTOMER만 — GET /favorites?limit=3 */}
             {isCustomer && (
               <aside className="pc:flex hidden w-81.75 shrink-0 flex-col gap-4">
-                <h2 className="text-20 text-black-black-450 font-semibold">찜한 기사님</h2>
-                {isSidebarPending && <p className="text-14 text-gray-gray-500">불러오는 중…</p>}
+                <h2 className="text-20 text-black-black-450 font-semibold">
+                  {t("favoriteMovers")}
+                </h2>
+                {isSidebarPending && <p className="text-14 text-gray-gray-500">{t("loading")}</p>}
                 {isSidebarError && (
                   <p className="text-14 text-red-500" role="alert">
-                    찜 목록을 불러오지 못했습니다.
+                    {t("favoriteLoadFailed")}
                   </p>
                 )}
                 {!isSidebarPending && !isSidebarError && sidebarMovers.length === 0 && (
-                  <p className="text-14 text-gray-gray-500">찜한 기사님이 없습니다.</p>
+                  <p className="text-14 text-gray-gray-500">{t("noFavorites")}</p>
                 )}
                 <ul className="flex flex-col gap-4">
                   {sidebarMovers.map((mover) => {
@@ -357,9 +357,9 @@ export default function MoversPage() {
       <InfoRequiredModal
         open={loginModalOpen}
         onClose={() => setLoginModalOpen(false)}
-        title="로그인이 필요합니다"
-        message="찜하기는 로그인 후 이용할 수 있어요."
-        actionLabel="로그인하기"
+        title={t("loginRequired")}
+        message={t("loginToFavorite")}
+        actionLabel={t("goLogin")}
         onAction={goToCustomerLogin}
       />
     </div>

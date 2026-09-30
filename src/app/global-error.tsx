@@ -1,5 +1,17 @@
 "use client";
 
+/**
+ * ⚠️ **이 파일만 다국어에서 제외합니다** (팀 결정 2026-09-30).
+ *
+ * `[locale]` 세그먼트 밖이라 라우트 params로 locale을 받을 수 없고, `global-error`는
+ * 루트 레이아웃을 **대체**하므로 `[locale]/layout.tsx`의 `NextIntlClientProvider`가
+ * 걸리지 않습니다. `useTranslations`를 부르면 "No intl context found"로 터집니다.
+ * `"use client"`라 `getTranslations`도 못 씁니다.
+ *
+ * 앱 전체가 죽었을 때만 보이는 화면이라 한국어로 두고, `lang="ko"`도 그대로 둡니다.
+ * 굳이 다국어로 하려면 메시지 JSON을 직접 번들에 넣어야 해서 비용 대비 이득이 없습니다.
+ */
+
 import logo from "@/assets/images/common/logo-icon-text-lg.svg";
 import errorIcon from "@/assets/images/common/profile-icon-md.png";
 import localFont from "next/font/local";
