@@ -242,7 +242,12 @@
     "updateFailed": "프로필 수정에 실패했어요. 잠시 후 다시 시도해 주세요",
     "registerFailed": "프로필 등록에 실패했어요. 잠시 후 다시 시도해 주세요",
     "basicInfoUpdateFailed": "기본정보 수정에 실패했어요. 잠시 후 다시 시도해 주세요",
-    "accountLoadFailed": "계정 정보를 불러오지 못했어요. 새로고침해 주세요"
+    "accountLoadFailed": "계정 정보를 불러오지 못했어요. 새로고침해 주세요",
+    "password": "비밀번호",
+    "passwordPlaceholder": "비밀번호를 입력해 주세요",
+    "passwordConfirm": "비밀번호 확인",
+    "passwordConfirmPlaceholder": "비밀번호를 다시 한번 입력해 주세요",
+    "emailPlaceholder": "이메일을 입력해 주세요"
   },
   "auth": {
     "snsSignup": "SNS 계정으로 간편 가입하기",
@@ -257,7 +262,30 @@
     "kakao": "카카오",
     "naver": "네이버",
     "login": "로그인",
-    "signup": "회원가입"
+    "signup": "회원가입",
+    "loginTitle": "로그인",
+    "signupTitle": "회원가입",
+    "ifCustomer": "일반 유저라면?",
+    "customerPage": "일반 유저 전용 페이지",
+    "ifMover": "기사님이신가요?",
+    "moverPage": "기사님 전용 페이지",
+    "alreadyMember": "이미 무빙 회원이신가요?",
+    "notMemberYet": "아직 무빙 회원이 아니신가요?",
+    "signupWithEmail": "이메일로 회원가입하기",
+    "loginFailed": "로그인 중 문제가 발생했어요. 잠시 후 다시 시도해 주세요.",
+    "signupFailed": "회원가입 중 문제가 발생했어요. 잠시 후 다시 시도해 주세요.",
+    "oauthFailed": "소셜 로그인 중 문제가 발생했어요. 잠시 후 다시 시도해 주세요.",
+    "retryAfter": "{time} 후 다시 시도해 주세요.",
+    "phoneModalTitle": "전화번호를 입력해 주세요",
+    "phoneModalBodyMover": "기사님 계정 가입을 마치려면 전화번호가 필요해요.",
+    "phoneModalBodyCustomer": "일반 계정 가입을 마치려면 전화번호가 필요해요.",
+    "signupComplete": "가입 완료",
+    "oauthCancelled": "소셜 로그인이 취소되었어요.",
+    "invalidAccess": "잘못된 접근이에요.",
+    "invalidAccessRetry": "잘못된 접근이에요. 로그인을 다시 시도해 주세요.",
+    "accountLoadFailed": "계정 정보를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.",
+    "backToHome": "홈으로 돌아가기",
+    "processingLogin": "로그인 처리 중이에요..."
   },
   "review": {
     "writeReview": "리뷰 쓰기",
@@ -277,7 +305,14 @@
     "empty": "아직 등록된 리뷰가 없어요!",
     "emptyHint": "가장 먼저 리뷰를 등록해보세요",
     "chipsPrompt": "어떤 점이 좋았는지 선택해 주세요",
-    "chipsHint": "키워드를 고르면 후기가 자동으로 작성돼요 (최대 {max}개)"
+    "chipsHint": "키워드를 고르면 후기가 자동으로 작성돼요 (최대 {max}개)",
+    "tabWritable": "작성 가능한 리뷰",
+    "tabWritten": "내가 작성한 리뷰",
+    "tabsLabel": "이사 리뷰 탭",
+    "submitted": "리뷰가 등록되었어요",
+    "submitFailed": "리뷰 등록에 실패했어요. 잠시 후 다시 시도해 주세요.",
+    "emptyWritable": "작성 가능한 리뷰가 없어요!",
+    "goWrite": "리뷰 작성하러 가기"
   },
   "filter": {
     "title": "필터",

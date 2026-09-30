@@ -242,7 +242,12 @@
     "updateFailed": "プロフィールの更新に失敗しました。しばらくしてからもう一度お試しください",
     "registerFailed": "プロフィールの登録に失敗しました。しばらくしてからもう一度お試しください",
     "basicInfoUpdateFailed": "基本情報の更新に失敗しました。しばらくしてからもう一度お試しください",
-    "accountLoadFailed": "アカウント情報を読み込めませんでした。ページを更新してください"
+    "accountLoadFailed": "アカウント情報を読み込めませんでした。ページを更新してください",
+    "password": "パスワード",
+    "passwordPlaceholder": "パスワードを入力してください",
+    "passwordConfirm": "パスワード（確認）",
+    "passwordConfirmPlaceholder": "パスワードをもう一度入力してください",
+    "emailPlaceholder": "メールアドレスを入力してください"
   },
   "auth": {
     "snsSignup": "SNSアカウントで簡単登録",
@@ -257,7 +262,30 @@
     "kakao": "Kakao",
     "naver": "Naver",
     "login": "ログイン",
-    "signup": "新規登録"
+    "signup": "新規登録",
+    "loginTitle": "ログイン",
+    "signupTitle": "新規登録",
+    "ifCustomer": "一般ユーザーの方はこちら",
+    "customerPage": "一般ユーザー専用ページ",
+    "ifMover": "業者の方ですか？",
+    "moverPage": "業者専用ページ",
+    "alreadyMember": "すでに Moving 会員ですか？",
+    "notMemberYet": "まだ Moving 会員ではありませんか？",
+    "signupWithEmail": "メールアドレスで登録する",
+    "loginFailed": "ログイン中に問題が発生しました。しばらくしてからもう一度お試しください。",
+    "signupFailed": "登録中に問題が発生しました。しばらくしてからもう一度お試しください。",
+    "oauthFailed": "ソーシャルログイン中に問題が発生しました。しばらくしてからもう一度お試しください。",
+    "retryAfter": "{time} 後にもう一度お試しください。",
+    "phoneModalTitle": "電話番号を入力してください",
+    "phoneModalBodyMover": "業者アカウントの登録を完了するには電話番号が必要です。",
+    "phoneModalBodyCustomer": "アカウントの登録を完了するには電話番号が必要です。",
+    "signupComplete": "登録を完了",
+    "oauthCancelled": "ソーシャルログインがキャンセルされました。",
+    "invalidAccess": "不正なアクセスです。",
+    "invalidAccessRetry": "不正なアクセスです。もう一度ログインしてください。",
+    "accountLoadFailed": "アカウント情報を読み込めませんでした。しばらくしてからもう一度お試しください。",
+    "backToHome": "ホームに戻る",
+    "processingLogin": "ログイン処理中です..."
   },
   "review": {
     "writeReview": "レビューを書く",
@@ -277,7 +305,14 @@
     "empty": "まだレビューがありません！",
     "emptyHint": "最初のレビューを投稿してみましょう",
     "chipsPrompt": "どんな点がよかったですか？",
-    "chipsHint": "キーワードを選ぶとレビューが自動で作成されます（最大{max}個）"
+    "chipsHint": "キーワードを選ぶとレビューが自動で作成されます（最大{max}個）",
+    "tabWritable": "作成可能なレビュー",
+    "tabWritten": "作成したレビュー",
+    "tabsLabel": "レビュータブ",
+    "submitted": "レビューを投稿しました",
+    "submitFailed": "レビューの投稿に失敗しました。しばらくしてからもう一度お試しください。",
+    "emptyWritable": "作成可能なレビューがありません！",
+    "goWrite": "レビューを書く"
   },
   "filter": {
     "title": "絞り込み",

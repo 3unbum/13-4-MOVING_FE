@@ -41,16 +41,34 @@ function weekdayLabel(kst: Date, locale: DateLocale) {
  * "2024. 07. 01. (월)"로 나와 시안과 달라집니다.
  * 영어·중국어만 각 로케일 관례를 따릅니다.
  */
-export function formatMovingDate(iso: string, locale: DateLocale = "ko") {
+export function formatMovingDate(
+  iso: string,
+  locale: DateLocale = "ko",
+  /** 작은 카드처럼 폭이 좁은 곳은 요일을 뺍니다 (리뷰 목록 `written` 탭 sm) */
+  withWeekday = true
+) {
   const kst = toKst(iso);
   const yyyy = kst.getUTCFullYear();
   const mm = String(kst.getUTCMonth() + 1).padStart(2, "0");
   const dd = String(kst.getUTCDate()).padStart(2, "0");
-  const weekday = weekdayLabel(kst, locale);
+  const suffix = withWeekday ? ` (${weekdayLabel(kst, locale)})` : "";
 
-  if (locale === "ko") return `${yyyy}년 ${mm}월 ${dd}일 (${weekday})`;
-  if (locale === "zh" || locale === "ja") return `${yyyy}年 ${mm}月 ${dd}日 (${weekday})`;
-  return `${mm}/${dd}/${yyyy} (${weekday})`;
+  if (locale === "ko") return `${yyyy}년 ${mm}월 ${dd}일${suffix}`;
+  if (locale === "zh" || locale === "ja") return `${yyyy}年 ${mm}月 ${dd}日${suffix}`;
+  return `${mm}/${dd}/${yyyy}${suffix}`;
+}
+
+/**
+ * "2024. 08. 26" — 리뷰 작성일 (피그마 `1:12467`).
+ *
+ * `formatRequestDate`(`24.08.26`)와 달리 연도가 네 자리고 점 뒤에 공백이 있습니다.
+ * 숫자 표기라 로케일과 무관합니다.
+ */
+export function formatWrittenDate(iso: string) {
+  const kst = toKst(iso);
+  const pad = (n: number) => String(n).padStart(2, "0");
+
+  return `${kst.getUTCFullYear()}. ${pad(kst.getUTCMonth() + 1)}. ${pad(kst.getUTCDate())}`;
 }
 
 /** "24.08.26" — 견적 상세의 "견적 요청일" (피그마 `1:9354`). 숫자 표기라 로케일 무관 */

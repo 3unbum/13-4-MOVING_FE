@@ -242,7 +242,12 @@
     "updateFailed": "Couldn't update your profile. Please try again in a moment",
     "registerFailed": "Couldn't register your profile. Please try again in a moment",
     "basicInfoUpdateFailed": "Couldn't update your information. Please try again in a moment",
-    "accountLoadFailed": "Couldn't load your account. Please refresh the page"
+    "accountLoadFailed": "Couldn't load your account. Please refresh the page",
+    "password": "Password",
+    "passwordPlaceholder": "Enter your password",
+    "passwordConfirm": "Confirm Password",
+    "passwordConfirmPlaceholder": "Re-enter your password",
+    "emailPlaceholder": "Enter your email"
   },
   "auth": {
     "snsSignup": "Quick sign-up with social account",
@@ -257,7 +262,30 @@
     "kakao": "Kakao",
     "naver": "Naver",
     "login": "Log in",
-    "signup": "Sign up"
+    "signup": "Sign up",
+    "loginTitle": "Log in",
+    "signupTitle": "Sign up",
+    "ifCustomer": "Looking for a customer account?",
+    "customerPage": "Go to customer page",
+    "ifMover": "Are you a mover?",
+    "moverPage": "Go to mover page",
+    "alreadyMember": "Already a Moving member?",
+    "notMemberYet": "Not a Moving member yet?",
+    "signupWithEmail": "Sign up with email",
+    "loginFailed": "Something went wrong while logging in. Please try again in a moment.",
+    "signupFailed": "Something went wrong while signing up. Please try again in a moment.",
+    "oauthFailed": "Something went wrong with social login. Please try again in a moment.",
+    "retryAfter": "Try again in {time}.",
+    "phoneModalTitle": "Enter your phone number",
+    "phoneModalBodyMover": "We need your phone number to finish creating your mover account.",
+    "phoneModalBodyCustomer": "We need your phone number to finish creating your account.",
+    "signupComplete": "Complete Sign-up",
+    "oauthCancelled": "Social login was cancelled.",
+    "invalidAccess": "Invalid access.",
+    "invalidAccessRetry": "Invalid access. Please try logging in again.",
+    "accountLoadFailed": "Couldn't load your account. Please try again in a moment.",
+    "backToHome": "Back to home",
+    "processingLogin": "Logging you in..."
   },
   "review": {
     "writeReview": "Write a Review",
@@ -277,7 +305,14 @@
     "empty": "No reviews yet!",
     "emptyHint": "Be the first to leave a review",
     "chipsPrompt": "What did you like?",
-    "chipsHint": "Pick keywords and your review is written for you (up to {max})"
+    "chipsHint": "Pick keywords and your review is written for you (up to {max})",
+    "tabWritable": "Reviews to Write",
+    "tabWritten": "My Reviews",
+    "tabsLabel": "Review tabs",
+    "submitted": "Review submitted",
+    "submitFailed": "Couldn't submit your review. Please try again in a moment.",
+    "emptyWritable": "No reviews to write!",
+    "goWrite": "Write a Review"
   },
   "filter": {
     "title": "Filter",

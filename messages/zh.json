@@ -242,7 +242,12 @@
     "updateFailed": "个人资料修改失败，请稍后重试",
     "registerFailed": "个人资料注册失败，请稍后重试",
     "basicInfoUpdateFailed": "基本信息修改失败，请稍后重试",
-    "accountLoadFailed": "无法加载账户信息，请刷新页面"
+    "accountLoadFailed": "无法加载账户信息，请刷新页面",
+    "password": "密码",
+    "passwordPlaceholder": "请输入密码",
+    "passwordConfirm": "确认密码",
+    "passwordConfirmPlaceholder": "请再次输入密码",
+    "emailPlaceholder": "请输入邮箱"
   },
   "auth": {
     "snsSignup": "使用社交账号快速注册",
@@ -257,7 +262,30 @@
     "kakao": "Kakao",
     "naver": "Naver",
     "login": "登录",
-    "signup": "注册"
+    "signup": "注册",
+    "loginTitle": "登录",
+    "signupTitle": "注册",
+    "ifCustomer": "您是普通用户吗？",
+    "customerPage": "普通用户专用页面",
+    "ifMover": "您是师傅吗？",
+    "moverPage": "师傅专用页面",
+    "alreadyMember": "已经是 Moving 会员了吗？",
+    "notMemberYet": "还不是 Moving 会员吗？",
+    "signupWithEmail": "使用邮箱注册",
+    "loginFailed": "登录时出现问题，请稍后重试。",
+    "signupFailed": "注册时出现问题，请稍后重试。",
+    "oauthFailed": "社交登录时出现问题，请稍后重试。",
+    "retryAfter": "请在 {time} 后重试。",
+    "phoneModalTitle": "请输入电话号码",
+    "phoneModalBodyMover": "完成师傅账号注册需要电话号码。",
+    "phoneModalBodyCustomer": "完成普通账号注册需要电话号码。",
+    "signupComplete": "完成注册",
+    "oauthCancelled": "社交登录已取消。",
+    "invalidAccess": "访问无效。",
+    "invalidAccessRetry": "访问无效，请重新登录。",
+    "accountLoadFailed": "无法加载账户信息，请稍后重试。",
+    "backToHome": "返回首页",
+    "processingLogin": "正在处理登录..."
   },
   "review": {
     "writeReview": "写评价",
@@ -277,7 +305,14 @@
     "empty": "还没有评价！",
     "emptyHint": "来写下第一条评价吧",
     "chipsPrompt": "您对哪些方面满意？",
-    "chipsHint": "选择关键词即可自动生成评价（最多{max}个）"
+    "chipsHint": "选择关键词即可自动生成评价（最多{max}个）",
+    "tabWritable": "可写的评价",
+    "tabWritten": "我写的评价",
+    "tabsLabel": "搬家评价标签",
+    "submitted": "评价已提交",
+    "submitFailed": "评价提交失败，请稍后重试。",
+    "emptyWritable": "没有可写的评价！",
+    "goWrite": "去写评价"
   },
   "filter": {
     "title": "筛选",

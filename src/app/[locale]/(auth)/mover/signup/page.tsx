@@ -21,6 +21,8 @@ import { useAuth } from "@/providers/AuthProvider";
 export default function MoverSignupPage() {
   const router = useRouter();
   const { refetch } = useAuth();
+  const t = useTranslations("auth");
+  const tp = useTranslations("profile");
   const tValidation = useTranslations("validation");
   // 매 렌더마다 새 스키마가 생기면 zodResolver도 교체돼 폼이 불필요하게 다시 만들어집니다
   const schema = useMemo(() => makeSignupSchema(tValidation), [tValidation]);
@@ -45,8 +47,7 @@ export default function MoverSignupPage() {
         setError("email", { message: error.message });
         return;
       }
-      const message =
-        error instanceof ApiError ? error.message : "회원가입 중 문제가 발생했습니다.";
+      const message = error instanceof ApiError ? error.message : t("signupFailed");
       setError("root", { message });
     }
   };
@@ -58,11 +59,7 @@ export default function MoverSignupPage() {
       mascotTabletPositionClassName="-bottom-18 left-125.75"
       mascotPcPositionClassName="-bottom-8.5 left-170"
     >
-      <AuthHeader
-        prompt="일반 유저라면?"
-        href="/customer/signup"
-        linkText="일반 유저 전용 페이지"
-      />
+      <AuthHeader prompt={t("ifCustomer")} href="/customer/signup" linkText={t("customerPage")} />
 
       <div className="flex w-full flex-col gap-12">
         <div className="tablet:gap-6 flex w-full flex-col gap-4">
@@ -74,36 +71,36 @@ export default function MoverSignupPage() {
             <div className="tablet:gap-6 flex flex-col gap-4">
               <FormField
                 id="name"
-                label="이름"
+                label={tp("name")}
                 type="text"
-                placeholder="이름을 입력해 주세요"
+                placeholder={tp("namePlaceholder")}
                 autoComplete="name"
                 errorMessage={errors.name?.message}
                 {...register("name")}
               />
               <FormField
                 id="email"
-                label="이메일"
+                label={tp("email")}
                 type="email"
-                placeholder="이메일을 입력해 주세요"
+                placeholder={tp("emailPlaceholder")}
                 autoComplete="email"
                 errorMessage={errors.email?.message}
                 {...register("email")}
               />
               <FormField
                 id="phoneNumber"
-                label="전화번호"
+                label={tp("phone")}
                 type="tel"
-                placeholder="하이픈(-) 없이 숫자만 입력해 주세요"
+                placeholder={tp("phonePlaceholder")}
                 autoComplete="tel"
                 errorMessage={errors.phoneNumber?.message}
                 {...register("phoneNumber")}
               />
               <FormField
                 id="password"
-                label="비밀번호"
+                label={tp("password")}
                 type="password"
-                placeholder="비밀번호를 입력해 주세요"
+                placeholder={tp("passwordPlaceholder")}
                 autoComplete="new-password"
                 errorMessage={errors.password?.message}
                 onCopy={(e) => e.preventDefault()}
@@ -112,9 +109,9 @@ export default function MoverSignupPage() {
               />
               <FormField
                 id="passwordConfirm"
-                label="비밀번호 확인"
+                label={tp("passwordConfirm")}
                 type="password"
-                placeholder="비밀번호 다시 한번 입력해 주세요"
+                placeholder={tp("passwordConfirmPlaceholder")}
                 autoComplete="new-password"
                 errorMessage={errors.passwordConfirm?.message}
                 onCopy={(e) => e.preventDefault()}
@@ -127,11 +124,15 @@ export default function MoverSignupPage() {
               disabled={isSubmitting || !isValid}
               errorMessage={errors.root?.message}
             >
-              회원가입
+              {t("signupTitle")}
             </AuthSubmitButton>
           </form>
 
-          <AuthSwitchLink prompt="이미 무빙 회원이신가요?" href="/mover/login" linkText="로그인" />
+          <AuthSwitchLink
+            prompt={t("alreadyMember")}
+            href="/mover/login"
+            linkText={t("loginTitle")}
+          />
         </div>
 
         <SocialLoginSection action="signup" role="MOVER" />

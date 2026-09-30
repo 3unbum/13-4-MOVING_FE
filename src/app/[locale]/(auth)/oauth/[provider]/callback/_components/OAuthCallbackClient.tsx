@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 import ProfileRegisterModal from "@/components/auth/ProfileRegisterModal";
 import type { OAuthProviderKey } from "@/constants/auth/oauth";
@@ -21,29 +22,37 @@ type Status = "exchanging" | "needsPhone" | "askProfile" | "error";
 
 type AccessCheck =
   | { ok: true; provider: OAuthProviderKey; code: string; state: string }
-  | { ok: false; reason: string };
+  | { ok: false; reasonKey: "oauthCancelled" | "invalidAccess" };
 
-/** 형식 검사만 — state 대조는 sessionStorage가 필요해 SSR에서 못 읽으므로 effect에서 한다. */
+/**
+ * 형식 검사만 — state 대조는 sessionStorage가 필요해 SSR에서 못 읽으므로 effect에서 한다.
+ *
+ * 컴포넌트 밖이라 `useTranslations`를 못 쓴다. 문구 대신 **번역 키**를 돌려주고
+ * 호출부가 렌더 시점에 번역한다 — 언어를 바꿔도 문구가 따라온다.
+ */
 function checkAccess({
   provider,
   code,
   state,
   providerError,
 }: OAuthCallbackClientProps): AccessCheck {
-  if (providerError) return { ok: false, reason: "소셜 로그인이 취소되었습니다." };
+  if (providerError) return { ok: false, reasonKey: "oauthCancelled" };
   if (!isOAuthProviderKey(provider) || !code || !state) {
-    return { ok: false, reason: "잘못된 접근입니다." };
+    return { ok: false, reasonKey: "invalidAccess" };
   }
   return { ok: true, provider, code, state };
 }
 
 export default function OAuthCallbackClient(props: OAuthCallbackClientProps) {
+  const t = useTranslations("auth");
   const access = checkAccess(props);
   const router = useRouter();
   const { refetch } = useAuth();
   // 렌더링 시점에 판정 가능한 값이라 effect의 setState 대신 lazy initial state로 반영한다.
   const [status, setStatus] = useState<Status>(access.ok ? "exchanging" : "error");
-  const [errorMessage, setErrorMessage] = useState(access.ok ? "" : access.reason);
+  // 자체 문구는 번역 키로, BE가 내려준 메시지는 원문 그대로 — 렌더에서 갈라 씁니다
+  const [errorKey, setErrorKey] = useState<string | null>(access.ok ? null : access.reasonKey);
+  const [errorText, setErrorText] = useState<string | null>(null);
   const [resolvedRole, setResolvedRole] = useState<UserRole | null>(null);
 
   // code는 1회용이라 Strict Mode가 effect를 두 번 실행해도 요청은 한 번만 나가야 한다.
@@ -56,7 +65,7 @@ export default function OAuthCallbackClient(props: OAuthCallbackClientProps) {
       await refetch();
     } catch {
       // 가입·로그인은 이미 성공했고 계정 조회만 실패한 상태 — 안 잡으면 화면이 "처리 중"에 멈춘다.
-      setErrorMessage("계정 정보를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.");
+      setErrorKey("accountLoadFailed");
       setStatus("error");
       return;
     }
@@ -84,7 +93,7 @@ export default function OAuthCallbackClient(props: OAuthCallbackClientProps) {
       // 이 브라우저가 시작한 요청인지 확인 — 공격자가 만든 링크는 짝이 되는 nonce가 없어 여기서 막힌다.
       const role = consumeOAuthState(state);
       if (!role) {
-        setErrorMessage("잘못된 접근입니다. 로그인을 다시 시도해 주세요.");
+        setErrorKey("invalidAccessRetry");
         setStatus("error");
         return;
       }
@@ -103,9 +112,11 @@ export default function OAuthCallbackClient(props: OAuthCallbackClientProps) {
         }
         await finishAuth(role, result.hasProfile);
       } catch (error) {
-        setErrorMessage(
-          error instanceof ApiError ? error.message : "소셜 로그인 중 문제가 발생했습니다."
-        );
+        if (error instanceof ApiError) {
+          setErrorText(error.message);
+        } else {
+          setErrorKey("oauthFailed");
+        }
         setStatus("error");
       }
     })();
@@ -121,9 +132,9 @@ export default function OAuthCallbackClient(props: OAuthCallbackClientProps) {
   if (status === "error") {
     return (
       <div className="flex flex-col items-center gap-4 p-10 text-center">
-        <p>{errorMessage}</p>
+        <p>{errorText ?? (errorKey ? t(errorKey) : null)}</p>
         <button type="button" className="underline" onClick={() => router.replace("/")}>
-          홈으로 돌아가기
+          {t("backToHome")}
         </button>
       </div>
     );
@@ -131,7 +142,7 @@ export default function OAuthCallbackClient(props: OAuthCallbackClientProps) {
 
   return (
     <>
-      <p className="p-10 text-center">로그인 처리 중입니다...</p>
+      <p className="p-10 text-center">{t("processingLogin")}</p>
       {resolvedRole && (
         <OAuthPhoneModal
           open={status === "needsPhone"}
