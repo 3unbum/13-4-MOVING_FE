@@ -7,13 +7,45 @@
     "more": "더 보기",
     "loading": "불러오는 중...",
     "customerName": "{name} 고객님",
-    "moverName": "{name} 기사님"
+    "moverName": "{name} 기사님",
+    "search": "검색",
+    "clearSearch": "검색어 지우기",
+    "searchPlaceholder": "텍스트를 입력해 주세요.",
+    "select": "선택",
+    "sort": "정렬",
+    "filter": "필터",
+    "filterOptions": "필터 옵션",
+    "regionFilterOptions": "지역 필터 옵션",
+    "prevMonth": "이전 달",
+    "nextMonth": "다음 달",
+    "datePlaceholder": "날짜를 선택해주세요",
+    "movingDatePlaceholder": "이사 예정일을 선택해주세요",
+    "pagination": "페이지네이션",
+    "prevPage": "이전 페이지",
+    "nextPage": "다음 페이지",
+    "showPassword": "비밀번호 보기",
+    "hidePassword": "비밀번호 숨기기",
+    "profileImage": "프로필이미지",
+    "favorite": "찜하기",
+    "copyLink": "링크 복사",
+    "shareKakao": "카카오톡 공유",
+    "shareFacebook": "페이스북 공유",
+    "from": "출발지",
+    "to": "도착지",
+    "movingDate": "이사일",
+    "noPrice": "견적가 없음",
+    "price": "{amount}원",
+    "options": "옵션",
+    "requestedAt": "견적 신청일",
+    "selectDate": "날짜 선택",
+    "done": "선택완료"
   },
   "locale": {
     "label": "언어",
     "ko": "한국어",
     "en": "English",
-    "zh": "中文"
+    "zh": "中文",
+    "ja": "日本語"
   },
   "gnb": {
     "home": "무빙 홈",
@@ -33,5 +65,27 @@
       "mover-my-quotes": "내 견적 관리",
       "guest-movers": "기사님 찾기"
     }
+  },
+  "service": {
+    "SMALL": "소형이사",
+    "HOME": "가정이사",
+    "OFFICE": "사무실이사",
+    "descSMALL": "원룸, 투룸, 20평대 미만",
+    "descHOME": "쓰리룸, 20평대 이상",
+    "descOFFICE": "사무실, 상업공간"
+  },
+  "profileImage": {
+    "upload": "프로필 이미지 업로드",
+    "change": "프로필 이미지 변경",
+    "invalidType": "jpeg, png, webp 파일만 업로드할 수 있어요",
+    "tooLarge": "이미지 용량은 5MB를 초과할 수 없어요",
+    "uploadFailed": "이미지 업로드에 실패했어요. 다시 시도해주세요",
+    "uploading": "업로드 중..."
+  },
+  "card": {
+    "confirmed": "확정견적",
+    "pending": "견적대기",
+    "rejected": "반려됨",
+    "quoteAmount": "견적 금액"
   }
 }

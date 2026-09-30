@@ -1,3 +1,6 @@
+"use client";
+
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils/cn";
 import Image from "next/image";
 import type { ButtonHTMLAttributes } from "react";
@@ -20,11 +23,13 @@ export default function FilterButton({
   "aria-label": ariaLabel,
   ...props
 }: FilterButtonProps) {
+  const t = useTranslations("common");
+
   return (
     <button
       type={type}
       aria-pressed={active}
-      aria-label={ariaLabel ?? "필터"}
+      aria-label={ariaLabel ?? t("filter")}
       className={cn(
         "flex size-8 shrink-0 items-center justify-center rounded-lg border p-1 transition-colors",
         active

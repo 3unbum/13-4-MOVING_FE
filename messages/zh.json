@@ -7,13 +7,45 @@
     "more": "查看更多",
     "loading": "加载中...",
     "customerName": "{name} 客户",
-    "moverName": "{name} 师傅"
+    "moverName": "{name} 师傅",
+    "search": "搜索",
+    "clearSearch": "清除搜索内容",
+    "searchPlaceholder": "请输入内容",
+    "select": "选择",
+    "sort": "排序",
+    "filter": "筛选",
+    "filterOptions": "筛选选项",
+    "regionFilterOptions": "地区筛选选项",
+    "prevMonth": "上个月",
+    "nextMonth": "下个月",
+    "datePlaceholder": "请选择日期",
+    "movingDatePlaceholder": "请选择搬家日期",
+    "pagination": "分页",
+    "prevPage": "上一页",
+    "nextPage": "下一页",
+    "showPassword": "显示密码",
+    "hidePassword": "隐藏密码",
+    "profileImage": "头像",
+    "favorite": "收藏",
+    "copyLink": "复制链接",
+    "shareKakao": "分享到 KakaoTalk",
+    "shareFacebook": "分享到 Facebook",
+    "from": "出发地",
+    "to": "目的地",
+    "movingDate": "搬家日期",
+    "noPrice": "暂无报价",
+    "price": "{amount} 韩元",
+    "options": "选项",
+    "requestedAt": "申请日期",
+    "selectDate": "选择日期",
+    "done": "选择完成"
   },
   "locale": {
     "label": "语言",
     "ko": "한국어",
     "en": "English",
-    "zh": "中文"
+    "zh": "中文",
+    "ja": "日本語"
   },
   "gnb": {
     "home": "Moving 首页",
@@ -33,5 +65,27 @@
       "mover-my-quotes": "我的报价管理",
       "guest-movers": "寻找师傅"
     }
+  },
+  "service": {
+    "SMALL": "小型搬家",
+    "HOME": "家庭搬家",
+    "OFFICE": "办公室搬家",
+    "descSMALL": "一居室、两居室，20坪以下",
+    "descHOME": "三居室以上，20坪以上",
+    "descOFFICE": "办公室、商业空间"
+  },
+  "profileImage": {
+    "upload": "上传头像",
+    "change": "更换头像",
+    "invalidType": "仅支持上传 jpeg、png、webp 格式的文件",
+    "tooLarge": "图片大小不能超过 5MB",
+    "uploadFailed": "图片上传失败，请重试",
+    "uploading": "上传中..."
+  },
+  "card": {
+    "confirmed": "已确认报价",
+    "pending": "等待报价",
+    "rejected": "已拒绝",
+    "quoteAmount": "报价金额"
   }
 }

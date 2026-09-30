@@ -1,3 +1,6 @@
+"use client";
+
+import { useTranslations } from "next-intl";
 import checkIcon from "@/assets/icons/check.svg";
 import homeImg from "@/assets/images/common/이사유형_가정이사.png";
 import officeImg from "@/assets/images/common/이사유형_사무실이사.png";
@@ -15,7 +18,12 @@ interface SelectCardProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   selected?: boolean;
 }
 
-// BE ServiceType과 값 맞춤 (견적 요청 category로 그대로 전송)
+/**
+ * BE ServiceType과 값 맞춤 (견적 요청 category로 그대로 전송).
+ *
+ * ⚠️ 표시용 한글은 `messages/*.json`의 `service` 네임스페이스로 옮겼습니다.
+ * 이 상수는 **번역을 못 쓰는 곳**(서버 컴포넌트·상수 파일)의 폴백으로만 남깁니다.
+ */
 export const SELECT_CARD_LABELS: Record<SelectCardVariant, string> = {
   SMALL: "소형이사",
   HOME: "가정이사",
@@ -42,6 +50,7 @@ export default function SelectCard({
   className,
   ...props
 }: SelectCardProps) {
+  const t = useTranslations("service");
   const isMd = size === "md";
 
   return (
@@ -76,7 +85,7 @@ export default function SelectCard({
           <span
             className={cn("text-16 font-semibold", selected ? "text-orange-400" : "text-black-500")}
           >
-            {SELECT_CARD_LABELS[variant]}
+            {t(variant)}
           </span>
           <span
             className={cn(
@@ -84,7 +93,7 @@ export default function SelectCard({
               selected ? "text-orange-400" : "text-gray-gray-500"
             )}
           >
-            {SELECT_CARD_SUBTITLES[variant]}
+            {t(`desc${variant}`)}
           </span>
         </span>
       </div>

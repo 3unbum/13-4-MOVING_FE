@@ -1,7 +1,11 @@
+"use client";
+
+import { useLocale, useTranslations } from "next-intl";
 import checkCircleOrange from "@/assets/icons/check-circle-orange-sm.svg";
 import likeDefault from "@/assets/icons/like-md-default.svg";
 import likeRedActive from "@/assets/icons/like-md-red-active.svg";
 import { cn } from "@/lib/utils/cn";
+import { formatPrice, type DateLocale } from "@/lib/utils/date";
 import Image from "next/image";
 import type { ReactNode } from "react";
 
@@ -33,6 +37,7 @@ export function FavoriteCount({
   className?: string;
   onClick?: () => void;
 }) {
+  const t = useTranslations("common");
   const heart = (
     <Image src={isFavorited ? likeRedActive : likeDefault} alt="" className="size-6 shrink-0" />
   );
@@ -65,7 +70,7 @@ export function FavoriteCount({
   return (
     <button
       type="button"
-      aria-label="찜하기"
+      aria-label={t("favorite")}
       aria-pressed={isFavorited}
       // 찜 클릭·키보드가 부모 카드 이동으로 전파되지 않게 막음
       onClick={(event) => {
@@ -88,6 +93,7 @@ export function FavoriteCount({
  * 조건부 렌더링 대신 visible prop으로 투명도만 조절합니다. 레이아웃이 흔들리지 않습니다.
  */
 export function ConfirmedBadge({ visible = true }: { visible?: boolean }) {
+  const t = useTranslations("card");
   return (
     <span
       aria-hidden={!visible}
@@ -97,16 +103,17 @@ export function ConfirmedBadge({ visible = true }: { visible?: boolean }) {
       )}
     >
       <Image src={checkCircleOrange} alt="" className="size-5 shrink-0" />
-      확정견적
+      {t("confirmed")}
     </span>
   );
 }
 
 /** "견적대기" 배지 — 대기중인 내역 카드. 텍스트만 있고 아이콘이 없습니다 */
 export function PendingBadge() {
+  const t = useTranslations("card");
   return (
     <span className="text-16 text-gray-gray-300 shrink-0 px-2 font-semibold whitespace-nowrap">
-      견적대기
+      {t("pending")}
     </span>
   );
 }
@@ -119,9 +126,10 @@ export function PendingBadge() {
  * (1차 QA-9). 색은 반려·경고 계열인 red-200을 씁니다.
  */
 export function RejectedBadge() {
+  const t = useTranslations("card");
   return (
     <span className="text-16 shrink-0 px-2 font-semibold whitespace-nowrap text-red-200">
-      반려됨
+      {t("rejected")}
     </span>
   );
 }
@@ -137,6 +145,8 @@ export function ElapsedTime({ children }: { children: ReactNode }) {
  * 피그마가 높이를 고정하고 내용을 아래로 붙입니다 (lg 52 / sm 47).
  */
 export function PriceFooter({ price, size = "sm" }: { price: number; size?: "sm" | "lg" }) {
+  const t = useTranslations("card");
+  const locale = useLocale() as DateLocale;
   const isLg = size === "lg";
 
   return (
@@ -152,7 +162,7 @@ export function PriceFooter({ price, size = "sm" }: { price: number; size?: "sm"
           isLg ? "text-16 text-black-black-450" : "text-14 text-gray-gray-300"
         )}
       >
-        견적 금액
+        {t("quoteAmount")}
       </span>
       <span
         className={cn(
@@ -160,7 +170,7 @@ export function PriceFooter({ price, size = "sm" }: { price: number; size?: "sm"
           isLg ? "text-24" : "text-18"
         )}
       >
-        {price.toLocaleString()}원
+        {formatPrice(price, locale)}
       </span>
     </div>
   );
@@ -178,13 +188,16 @@ export function PriceInline({
   price: number | null;
   size?: "sm" | "lg";
 }) {
+  const t = useTranslations("card");
+  const tc = useTranslations("common");
+  const locale = useLocale() as DateLocale;
   const isLg = size === "lg";
 
   return (
     <div className="flex items-center gap-3 whitespace-nowrap">
-      <span className="text-14 text-gray-gray-500 font-medium">견적 금액</span>
+      <span className="text-14 text-gray-gray-500 font-medium">{t("quoteAmount")}</span>
       <span className={cn("text-black-black-400 font-bold", isLg ? "text-24" : "text-18")}>
-        {price === null ? "견적가 없음" : `${price.toLocaleString()}원`}
+        {price === null ? tc("noPrice") : formatPrice(price, locale)}
       </span>
     </div>
   );

@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import { cn } from "@/lib/utils/cn";
 import Image from "next/image";
 import { forwardRef, useId, useState } from "react";
@@ -35,6 +37,7 @@ const InputTextField = forwardRef<HTMLInputElement, InputTextFieldProps>(functio
   },
   ref
 ) {
+  const t = useTranslations("common");
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const generatedId = useId();
   const inputId = id ?? generatedId;
@@ -75,7 +78,7 @@ const InputTextField = forwardRef<HTMLInputElement, InputTextFieldProps>(functio
             type="button"
             onClick={() => setIsPasswordVisible((prev) => !prev)}
             disabled={disabled}
-            aria-label={isPasswordVisible ? "비밀번호 숨기기" : "비밀번호 보기"}
+            aria-label={isPasswordVisible ? t("hidePassword") : t("showPassword")}
             className="ml-2 flex shrink-0 items-center justify-center disabled:cursor-not-allowed"
           >
             <Image

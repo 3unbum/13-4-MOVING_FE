@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import { cn } from "@/lib/utils/cn";
 import Image from "next/image";
 import { useId, useState } from "react";
@@ -38,12 +40,15 @@ export default function InputSearchbar({
   disabled,
   className,
   id,
-  placeholder = "텍스트를 입력해 주세요.",
+  placeholder,
   label,
   onFocus,
   onBlur,
   ...props
 }: InputSearchbarProps) {
+  const t = useTranslations("common");
+  // 호출부가 안 주면 번역된 기본 문구 — label 폴백으로도 쓰여서 비면 안 됩니다
+  const placeholderText = placeholder ?? t("searchPlaceholder");
   const [isFocused, setIsFocused] = useState(false);
   const generatedId = useId();
   const inputId = id ?? generatedId;
@@ -74,7 +79,7 @@ export default function InputSearchbar({
         />
       )}
       <label htmlFor={inputId} className="sr-only">
-        {label ?? placeholder}
+        {label ?? placeholderText}
       </label>
       <input
         id={inputId}
@@ -90,7 +95,7 @@ export default function InputSearchbar({
           onBlur?.(e);
         }}
         disabled={disabled}
-        placeholder={placeholder}
+        placeholder={placeholderText}
         className={cn(
           "text-black-400 min-w-0 flex-1 bg-transparent font-normal placeholder:text-gray-400 focus:outline-none disabled:cursor-not-allowed",
           isMd ? "text-18" : "text-14"
@@ -106,7 +111,7 @@ export default function InputSearchbar({
               onMouseDown={(e) => e.preventDefault()}
               onClick={() => onChange("")}
               disabled={disabled}
-              aria-label="검색어 지우기"
+              aria-label={t("clearSearch")}
               className="flex shrink-0 items-center justify-center"
             >
               <Image
@@ -120,7 +125,7 @@ export default function InputSearchbar({
             type="submit"
             onMouseDown={(e) => e.preventDefault()}
             disabled={disabled}
-            aria-label="검색"
+            aria-label={t("search")}
             className="flex shrink-0 items-center justify-center"
           >
             <Image

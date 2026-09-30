@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import { cn } from "@/lib/utils/cn";
 import Image from "next/image";
 import type { ReactNode } from "react";
@@ -69,6 +71,7 @@ export interface ModalHeaderProps {
 }
 
 export function ModalHeader({ id, title, size = "sm", onClose }: ModalHeaderProps) {
+  const t = useTranslations("common");
   const isMd = size === "md";
 
   return (
@@ -82,7 +85,7 @@ export function ModalHeader({ id, title, size = "sm", onClose }: ModalHeaderProp
       >
         {title}
       </p>
-      <button type="button" onClick={onClose} aria-label="닫기" className="shrink-0">
+      <button type="button" onClick={onClose} aria-label={t("close")} className="shrink-0">
         <Image src={isMd ? xMd : xSm} alt="" className={isMd ? "size-9" : "size-6"} />
       </button>
     </div>

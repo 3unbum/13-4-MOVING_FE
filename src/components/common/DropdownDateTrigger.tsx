@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import calendarMd from "@/assets/icons/calendar-md.svg";
 import chevronDownLgDark from "@/assets/icons/chevron-down-lg-dark.svg";
 import { cn } from "@/lib/utils/cn";
@@ -80,7 +82,7 @@ export interface DropdownDateTriggerProps {
 export default function DropdownDateTrigger({
   displayValue,
   value,
-  placeholder = "날짜를 선택해주세요",
+  placeholder,
   className,
   disabled = false,
   open,
@@ -88,12 +90,13 @@ export default function DropdownDateTrigger({
   children,
   closeOnOutsideClick = true,
 }: DropdownDateTriggerProps) {
+  const t = useTranslations("common");
   const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
   const isControlled = open !== undefined;
   const isOpen = isControlled ? open : uncontrolledOpen;
   const rootRef = useRef<HTMLDivElement>(null);
 
-  const label = displayValue ?? value ?? placeholder;
+  const label = displayValue ?? value ?? placeholder ?? t("datePlaceholder");
 
   const setOpen = (next: boolean) => {
     if (!isControlled) {
@@ -116,7 +119,7 @@ export default function DropdownDateTrigger({
         disabled={disabled}
         aria-haspopup="dialog"
         aria-expanded={isOpen}
-        aria-label={`날짜 선택: ${label}`}
+        aria-label={`${t("selectDate")}: ${label}`}
         onClick={() => setOpen(!isOpen)}
         className={cn(
           "flex h-[50px] w-full items-center rounded-xl bg-gray-50 py-4 pr-3 pl-5 disabled:cursor-not-allowed disabled:opacity-50",

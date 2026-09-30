@@ -1,3 +1,6 @@
+"use client";
+
+import { useTranslations } from "next-intl";
 import profile140 from "@/assets/images/common/프로필_140.png";
 import profile50 from "@/assets/images/common/프로필_50.png";
 import { cn } from "@/lib/utils/cn";
@@ -52,13 +55,11 @@ const FALLBACK_FRAME_CLASS: Record<Exclude<ProfileAvatarSize, "50">, string> = {
 };
 
 // 사용법: <ProfileAvatar src={mover.image} alt={mover.nickName} size="134" />
-export default function ProfileAvatar({
-  src,
-  alt = "프로필이미지",
-  size = "50",
-  className,
-}: ProfileAvatarProps) {
+export default function ProfileAvatar({ src, alt, size = "50", className }: ProfileAvatarProps) {
+  const t = useTranslations("common");
   const hasSrc = Boolean(src);
+  // 호출부가 기사님 닉네임을 주면 그대로, 없으면 번역된 기본 문구
+  const altText = alt ?? t("profileImage");
 
   return (
     <div
@@ -71,7 +72,7 @@ export default function ProfileAvatar({
       {hasSrc ? (
         <Image
           src={src!}
-          alt={alt}
+          alt={altText}
           fill
           sizes={SIZE_PX[size]}
           quality={90}
@@ -81,7 +82,7 @@ export default function ProfileAvatar({
         // 프로필_50은 이미 상체 크롭된 1x 에셋 — offset 프레임 불필요
         <Image
           src={FALLBACK_IMAGE[size]}
-          alt={alt}
+          alt={altText}
           fill
           sizes={SIZE_PX[size]}
           quality={90}
@@ -91,7 +92,7 @@ export default function ProfileAvatar({
         <div className={FALLBACK_FRAME_CLASS[size]}>
           <Image
             src={FALLBACK_IMAGE[size]}
-            alt={alt}
+            alt={altText}
             fill
             sizes={SIZE_PX[size]}
             quality={90}

@@ -1,0 +1,91 @@
+{
+  "common": {
+    "confirm": "確認",
+    "cancel": "キャンセル",
+    "close": "閉じる",
+    "next": "次へ",
+    "more": "もっと見る",
+    "loading": "読み込み中...",
+    "customerName": "{name} 様",
+    "moverName": "{name} さん",
+    "search": "検索",
+    "clearSearch": "検索条件をクリア",
+    "searchPlaceholder": "入力してください",
+    "select": "選択",
+    "sort": "並び替え",
+    "filter": "絞り込み",
+    "filterOptions": "絞り込みオプション",
+    "regionFilterOptions": "地域の絞り込みオプション",
+    "prevMonth": "前の月",
+    "nextMonth": "次の月",
+    "datePlaceholder": "日付を選択してください",
+    "movingDatePlaceholder": "引っ越し予定日を選択してください",
+    "pagination": "ページネーション",
+    "prevPage": "前のページ",
+    "nextPage": "次のページ",
+    "showPassword": "パスワードを表示",
+    "hidePassword": "パスワードを非表示",
+    "profileImage": "プロフィール画像",
+    "favorite": "お気に入り",
+    "copyLink": "リンクをコピー",
+    "shareKakao": "KakaoTalkで共有",
+    "shareFacebook": "Facebookで共有",
+    "from": "出発地",
+    "to": "到着地",
+    "movingDate": "引っ越し日",
+    "noPrice": "見積もりなし",
+    "price": "{amount} ウォン",
+    "options": "オプション",
+    "requestedAt": "見積もり依頼日",
+    "selectDate": "日付選択",
+    "done": "選択完了"
+  },
+  "locale": {
+    "label": "言語",
+    "ko": "한국어",
+    "en": "English",
+    "zh": "中文",
+    "ja": "日本語"
+  },
+  "gnb": {
+    "home": "Moving ホーム",
+    "menu": "メニュー",
+    "openMenu": "メニューを開く",
+    "closeMenu": "メニューを閉じる",
+    "mainMenu": "メインメニュー",
+    "notification": "お知らせ",
+    "profileMenu": "プロフィールメニュー",
+    "profileMenuOptions": "プロフィールメニューのオプション",
+    "logoutFailed": "ログアウトに失敗しました",
+    "nav": {
+      "customer-quotation-requests": "見積もり依頼",
+      "customer-movers": "業者を探す",
+      "customer-my-quotes": "見積もり管理",
+      "mover-requests": "受信した依頼",
+      "mover-my-quotes": "見積もり管理",
+      "guest-movers": "業者を探す"
+    }
+  },
+  "service": {
+    "SMALL": "小規模引っ越し",
+    "HOME": "家庭の引っ越し",
+    "OFFICE": "オフィス引っ越し",
+    "descSMALL": "ワンルーム・2部屋、20坪未満",
+    "descHOME": "3部屋以上、20坪以上",
+    "descOFFICE": "オフィス・商業スペース"
+  },
+  "profileImage": {
+    "upload": "プロフィール画像をアップロード",
+    "change": "プロフィール画像を変更",
+    "invalidType": "jpeg・png・webp 形式のファイルのみアップロードできます",
+    "tooLarge": "画像サイズは5MBを超えられません",
+    "uploadFailed": "画像のアップロードに失敗しました。もう一度お試しください",
+    "uploading": "アップロード中..."
+  },
+  "card": {
+    "confirmed": "確定見積もり",
+    "pending": "見積もり待ち",
+    "rejected": "却下されました",
+    "quoteAmount": "見積もり金額"
+  }
+}
