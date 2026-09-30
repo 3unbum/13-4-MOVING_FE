@@ -1,6 +1,7 @@
 "use client";
 
 import xMd from "@/assets/icons/x-md.svg";
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils/cn";
 import Image from "next/image";
 import {
@@ -36,7 +37,7 @@ export interface DropdownNotificationProps {
  *
  * @example
  * <div ref={wrapRef} className="relative">
- *   <button type="button" aria-label="알림" onClick={() => setOpen((v) => !v)}>
+ *   <button type="button" aria-label={tGnb("notification")} onClick={() => setOpen((v) => !v)}>
  *     <AlarmIcon />
  *   </button>
  *   {open ? (
@@ -51,7 +52,7 @@ export interface DropdownNotificationProps {
  * </div>
  */
 export default function DropdownNotification({
-  header = "알림",
+  header,
   children,
   size = "md",
   className,
@@ -59,6 +60,8 @@ export default function DropdownNotification({
   containerRef,
   closeOnOutsideClick = true,
 }: DropdownNotificationProps) {
+  const tGnb = useTranslations("gnb");
+  const tCommon = useTranslations("common");
   const panelRef = useRef<HTMLDivElement>(null);
   const listId = useId();
   const isSm = size === "sm";
@@ -76,7 +79,7 @@ export default function DropdownNotification({
       ref={panelRef}
       id={listId}
       role="menu"
-      aria-label="알림"
+      aria-label={tGnb("notification")}
       className={cn(
         "border-line-200 inline-flex flex-col overflow-hidden rounded-3xl border bg-gray-50 pt-2.5 shadow-[2px_2px_8px_rgba(0,0,0,0.06)]",
         isSm ? "w-78" : "w-[359px]",
@@ -99,7 +102,7 @@ export default function DropdownNotification({
         </div>
         <button
           type="button"
-          aria-label="닫기"
+          aria-label={tCommon("close")}
           onClick={() => onClose?.()}
           className="size-6 shrink-0"
         >

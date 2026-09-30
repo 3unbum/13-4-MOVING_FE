@@ -1,6 +1,6 @@
 "use client";
 
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useState, useRef, useTransition } from "react";
 import DropdownProfile from "@/components/layout/DropdownProfile";
 import { usePathname, useRouter } from "@/i18n/navigation";
@@ -24,6 +24,8 @@ interface LocaleSwitcherProps {
  * (`/en/movers`에서 한국어를 고르면 `/movers`로 갑니다)
  */
 export default function LocaleSwitcher({ size = "md", className }: LocaleSwitcherProps) {
+  const tLocale = useTranslations("locale");
+  const tCommon = useTranslations("common");
   const locale = useLocale() as Locale;
   const pathname = usePathname();
   const router = useRouter();
@@ -45,7 +47,7 @@ export default function LocaleSwitcher({ size = "md", className }: LocaleSwitche
     <div ref={wrapRef} className={cn("relative", className)}>
       <button
         type="button"
-        aria-label="언어 선택"
+        aria-label={tLocale("label")}
         aria-haspopup="menu"
         aria-expanded={isOpen}
         disabled={isPending}
@@ -65,7 +67,7 @@ export default function LocaleSwitcher({ size = "md", className }: LocaleSwitche
         <div className="absolute top-full right-0 z-[var(--z-gnb-dropdown)] mt-3">
           <DropdownProfile
             size="sm"
-            ariaLabel="언어 선택 옵션"
+            ariaLabel={`${tLocale("label")} ${tCommon("options")}`}
             value={locale}
             options={routing.locales.map((value) => ({
               value,

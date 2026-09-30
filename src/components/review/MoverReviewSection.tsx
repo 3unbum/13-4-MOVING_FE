@@ -1,6 +1,7 @@
 "use client";
 
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import Pagination from "@/components/common/Pagination";
 import ProgressBar from "@/components/common/ProgressBar";
@@ -51,6 +52,7 @@ function toProgressBarData(distribution: MoverRatingDistribution) {
  * 마이페이지: <MoverReviewSection moverId={account.userId} />
  */
 export default function MoverReviewSection({ moverId, className }: MoverReviewSectionProps) {
+  const t = useTranslations("review");
   const [page, setPage] = useState(1);
   const enabled = moverId != null;
 
@@ -75,7 +77,7 @@ export default function MoverReviewSection({ moverId, className }: MoverReviewSe
         className={cn("text-16 text-gray-gray-400 min-h-[200px] py-20 text-center", className)}
         role="status"
       >
-        리뷰를 불러오는 중이에요.
+        {t("loading")}
       </div>
     );
   }
@@ -83,7 +85,7 @@ export default function MoverReviewSection({ moverId, className }: MoverReviewSe
   if (listQuery.isError || distributionQuery.isError) {
     return (
       <p className={cn("text-16 text-gray-gray-400 py-20 text-center", className)}>
-        리뷰를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.
+        {t("loadFailed")}
       </p>
     );
   }
@@ -96,12 +98,10 @@ export default function MoverReviewSection({ moverId, className }: MoverReviewSe
   if (isEmpty) {
     return (
       <div className={cn("flex w-full flex-col", className)}>
-        <h2 className="text-16 tablet:text-20 text-black-black-400 font-semibold">리뷰</h2>
+        <h2 className="text-16 tablet:text-20 text-black-black-400 font-semibold">{t("title")}</h2>
         <div className="flex flex-col items-center py-6 text-center">
-          <p className="text-16 text-black-500 leading-7 font-semibold">
-            아직 등록된 리뷰가 없어요!
-          </p>
-          <p className="text-14 text-gray-gray-400 leading-7">가장 먼저 리뷰를 등록해보세요</p>
+          <p className="text-16 text-black-500 leading-7 font-semibold">{t("empty")}</p>
+          <p className="text-14 text-gray-gray-400 leading-7">{t("emptyHint")}</p>
         </div>
       </div>
     );

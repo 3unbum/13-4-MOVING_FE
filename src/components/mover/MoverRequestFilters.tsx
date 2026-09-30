@@ -1,17 +1,12 @@
 "use client";
 
 import CheckboxButton from "@/components/common/CheckboxButton";
+import { useTranslations } from "next-intl";
 import FilterButton from "@/components/common/FilterButton";
 import InputSearchbar from "@/components/common/InputSearchbar";
 import Sort from "@/components/common/Sort";
-import Chip, { SERVICES, SERVICE_LABELS, type ServiceCode } from "@/components/filter/ChipRegion";
+import Chip, { SERVICES, type ServiceCode } from "@/components/filter/ChipRegion";
 import type { MoverRequestSort } from "@/lib/services/mover-request-service";
-
-/** 피그마 드롭다운 2종 — BE의 `targetedAt`(지정받은 시점순)은 화면에 없습니다 */
-const SORT_OPTIONS = [
-  { value: "latest", label: "요청일 빠른순" },
-  { value: "movingDate", label: "이사 빠른순" },
-];
 
 /** 이미 있으면 빼고 없으면 넣습니다 — 칩·바텀시트가 같은 규칙을 씁니다 */
 export function toggleCategory(categories: ServiceCode[], service: ServiceCode) {
@@ -60,6 +55,15 @@ export default function MoverRequestFilters({
   onOpenFilterModal,
   isPc,
 }: MoverRequestFiltersProps) {
+  const t = useTranslations("filter");
+  const tService = useTranslations("service");
+
+  /** 피그마 드롭다운 2종 — BE의 `targetedAt`(지정받은 시점순)은 화면에 없습니다 */
+  const sortOptions = [
+    { value: "latest", label: t("sortLatest") },
+    { value: "movingDate", label: t("sortMovingDate") },
+  ];
+
   const patch = (next: Partial<MoverRequestFilterState>) => onChange({ ...filters, ...next });
 
   return (
@@ -69,8 +73,8 @@ export default function MoverRequestFilters({
         size="md"
         value={keyword}
         onChange={onKeywordChange}
-        placeholder="어떤 고객님을 찾고 계세요?"
-        label="고객 이름 검색"
+        placeholder={t("searchCustomer")}
+        label={t("searchCustomerLabel")}
         // 피그마(`1:10437`)는 배경이 background-200이고 높이가 PC 64 / 그 외 52입니다.
         // 컴포넌트 기본값은 background-100이라 값 기준으로 덮어씁니다.
         className="bg-background-200 pc:h-16 h-13"
@@ -87,7 +91,7 @@ export default function MoverRequestFilters({
             // (피그마 `1:10577`에 소형이사·가정이사가 함께 선택된 상태가 있습니다)
             onClick={() => patch({ categories: toggleCategory(filters.categories, service) })}
           >
-            {SERVICE_LABELS[service]}
+            {tService(service)}
           </Chip>
         ))}
       </div>
@@ -99,7 +103,8 @@ export default function MoverRequestFilters({
           그 절반만큼 내려갑니다 — 피그마는 둘 다 같은 y에서 시작합니다 */}
       <div className="tablet:mt-7 pc:mt-10 pc:block mt-4 flex w-full items-start justify-between">
         <p className="text-14 text-black-black-400 pc:text-16 font-medium">
-          전체 <span className="text-orange-400">{totalCount}건</span>
+          {t("totalCount")}{" "}
+          <span className="text-orange-400">{t("countUnit", { count: totalCount })}</span>
         </p>
 
         <div className="pc:mt-3 pc:w-full flex items-center justify-between">
@@ -111,7 +116,7 @@ export default function MoverRequestFilters({
                 checked={filters.isTargeted}
                 onChange={(e) => patch({ isTargeted: e.target.checked })}
               />
-              지정 견적 요청
+              {t("targetedOnly")}
             </label>
             <label className="group text-16 text-black-black-400 flex cursor-pointer items-center gap-2 font-medium">
               <CheckboxButton
@@ -119,7 +124,7 @@ export default function MoverRequestFilters({
                 checked={filters.isServiceRegion}
                 onChange={(e) => patch({ isServiceRegion: e.target.checked })}
               />
-              서비스 가능 지역
+              {t("serviceRegionOnly")}
             </label>
           </div>
 
@@ -128,8 +133,8 @@ export default function MoverRequestFilters({
             <Sort
               // 피그마는 PC만 114x40(md)이고 태블릿·모바일은 91x32(sm)입니다
               size={isPc ? "md" : "sm"}
-              label="정렬"
-              options={SORT_OPTIONS}
+              label={t("sort")}
+              options={sortOptions}
               value={filters.sort}
               onChange={(value) => patch({ sort: value as MoverRequestSort })}
             />
@@ -139,7 +144,7 @@ export default function MoverRequestFilters({
                   filters.categories.length > 0 || filters.isTargeted || filters.isServiceRegion
                 }
                 onClick={onOpenFilterModal}
-                aria-label="필터 열기"
+                aria-label={t("openFilter")}
               />
             </div>
           </div>

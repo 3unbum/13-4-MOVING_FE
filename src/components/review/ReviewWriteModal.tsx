@@ -1,6 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils/cn";
+import { useLocale, useTranslations } from "next-intl";
 import Image from "next/image";
 import { useId, useState } from "react";
 import starLgActive from "@/assets/icons/star-lg-active.svg";
@@ -64,6 +65,9 @@ export default function ReviewWriteModal({
   onSubmit,
   isSubmitting = false,
 }: ReviewWriteModalProps) {
+  const t = useTranslations("review");
+  // 칩 자동 문장 생성은 한국어 어미 규칙에 묶여 있습니다 (ReviewChips 참고)
+  const showChips = useLocale() === "ko";
   const titleId = useId();
   const isMd = size === "md";
   const resolvedPosition = position ?? (isMd ? "center" : "bottom");
@@ -112,7 +116,7 @@ export default function ReviewWriteModal({
             )
       }
     >
-      <ModalHeader id={titleId} title="리뷰 쓰기" size={size} onClose={onClose} />
+      <ModalHeader id={titleId} title={t("writeReview")} size={size} onClose={onClose} />
 
       <div className="flex min-h-0 w-full flex-1 flex-col items-start gap-8 overflow-y-auto">
         <div className="flex w-full flex-col items-start gap-4">
@@ -140,26 +144,28 @@ export default function ReviewWriteModal({
 
         <div className="flex w-full flex-col items-start gap-3">
           <p className={cn("text-black-300 font-semibold", isMd ? "text-18" : "text-16")}>
-            평점을 선택해 주세요
+            {t("ratingPrompt")}
           </p>
           <StarRatingInput size={size} value={rating} onChange={onRatingChange} />
         </div>
 
-        <ReviewKeywordChips
-          size={size}
-          selectedIds={selectedChipIds}
-          onToggle={handleToggleChip}
-          disabled={isSubmitting}
-        />
+        {showChips && (
+          <ReviewKeywordChips
+            size={size}
+            selectedIds={selectedChipIds}
+            onToggle={handleToggleChip}
+            disabled={isSubmitting}
+          />
+        )}
 
         <div className="flex w-full flex-col items-start gap-3">
           <p className={cn("text-black-300 font-semibold", isMd ? "text-18" : "text-16")}>
-            상세 후기를 작성해 주세요
+            {t("detailPrompt")}
           </p>
           <InputTextArea
             size={isMd ? "md" : "sm"}
-            label="상세 후기"
-            placeholder="키워드를 고르거나 직접 입력해 주세요 (최소 10자)"
+            label={t("detailLabel")}
+            placeholder={t("detailPlaceholder")}
             maxLength={200}
             value={review}
             onChange={(event) => handleReviewInput(event.target.value)}
@@ -175,7 +181,7 @@ export default function ReviewWriteModal({
         disabled={!isValid || isSubmitting}
         onClick={onSubmit}
       >
-        리뷰 등록
+        {t("submit")}
       </Button>
     </Modal>
   );
@@ -190,19 +196,20 @@ function StarRatingInput({
   value: number;
   onChange: (rating: number) => void;
 }) {
+  const t = useTranslations("review");
   const isMd = size === "md";
   const activeIcon = isMd ? starLgActive : starMdActive;
   const defaultIcon = isMd ? starLgDefault : starMdDefault;
 
   return (
-    <div role="radiogroup" aria-label="평점" className="flex items-start">
+    <div role="radiogroup" aria-label={t("rating")} className="flex items-start">
       {[1, 2, 3, 4, 5].map((star) => (
         <button
           key={star}
           type="button"
           role="radio"
           aria-checked={value === star}
-          aria-label={`${star}점`}
+          aria-label={t("ratingStar", { star })}
           onClick={() => onChange(star)}
         >
           <Image

@@ -13,14 +13,15 @@ interface MoverBasicInfoEditPanelProps {
 // 버튼에서 이 라우트(/mover/mypage/edit/basic-info)로 들어온다 — 탭이 아니라 독립된 화면.
 export default function MoverBasicInfoEditPanel({ initialAccount }: MoverBasicInfoEditPanelProps) {
   const tCommon = useTranslations("common");
-  const { account, isLoading, error, setAccount } = useMoverAccount(initialAccount);
+  const tProfile = useTranslations("profile");
+  const { account, isLoading, setAccount } = useMoverAccount(initialAccount);
 
   if (isLoading) {
     return <p className="text-14 text-black-100 pc:text-16">{tCommon("loading")}</p>;
   }
 
   if (!account) {
-    return <p className="text-14 pc:text-16 text-red-200">{error}</p>;
+    return <p className="text-14 pc:text-16 text-red-200">{tProfile("accountLoadFailed")}</p>;
   }
 
   return <MoverBasicInfoEditForm account={account} onAccountUpdated={setAccount} />;

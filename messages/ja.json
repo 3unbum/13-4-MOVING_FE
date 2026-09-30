@@ -38,7 +38,27 @@
     "options": "オプション",
     "requestedAt": "見積もり依頼日",
     "selectDate": "日付選択",
-    "done": "選択完了"
+    "done": "選択完了",
+    "viewResults": "検索する",
+    "selectComplete": "選択完了",
+    "roadAddress": "道路名",
+    "lotAddress": "地番",
+    "career": "経歴",
+    "careerYears": "{years}年",
+    "confirmedCount": "{count}件",
+    "confirmed": "確定",
+    "ratingLabel": "評価 {rating}点（5点満点）",
+    "reviewCount": "{count}件のレビュー",
+    "ratingPoint": "{rating}点",
+    "moverSuffix": "さん",
+    "customerSuffix": "様",
+    "careerRich": "<label>経歴</label><value>{years}年</value>",
+    "confirmedRich": "<value>{count}件</value><label>確定</label>",
+    "selectMover": "{name} さんを選択",
+    "copySuccess": "リンクをコピーしました！",
+    "copyFailed": "リンクのコピーに失敗しました。{url}",
+    "requestFailed": "リクエストに失敗しました",
+    "favoriteRemoveFailed": "お気に入りの解除に失敗しました。もう一度お試しください。"
   },
   "locale": {
     "label": "言語",
@@ -64,6 +84,13 @@
       "mover-requests": "受信した依頼",
       "mover-my-quotes": "見積もり管理",
       "guest-movers": "業者を探す"
+    },
+    "menu_items": {
+      "edit": "プロフィール管理",
+      "favorite": "お気に入りの業者",
+      "review": "引っ越しレビュー",
+      "logout": "ログアウト",
+      "mypage": "マイページ"
     }
   },
   "service": {
@@ -231,5 +258,47 @@
     "naver": "Naver",
     "login": "ログイン",
     "signup": "新規登録"
+  },
+  "review": {
+    "writeReview": "レビューを書く",
+    "ratingPrompt": "評価を選択してください",
+    "rating": "評価",
+    "ratingStar": "{star}点",
+    "detailPrompt": "詳細なレビューを入力してください",
+    "detailLabel": "詳細レビュー",
+    "detailPlaceholder": "レビューを入力してください（10文字以上）",
+    "submit": "レビューを投稿",
+    "writeAction": "レビューを書く",
+    "quoteAmount": "見積もり金額",
+    "writtenAt": "作成日",
+    "loading": "レビューを読み込んでいます。",
+    "loadFailed": "レビューを読み込めませんでした。しばらくしてからもう一度お試しください。",
+    "title": "レビュー",
+    "empty": "まだレビューがありません！",
+    "emptyHint": "最初のレビューを投稿してみましょう",
+    "chipsPrompt": "どんな点がよかったですか？",
+    "chipsHint": "キーワードを選ぶとレビューが自動で作成されます（最大{max}個）"
+  },
+  "filter": {
+    "title": "絞り込み",
+    "moveType": "引っ越しタイプ",
+    "selectMoveType": "引っ越しタイプを選択",
+    "regionAndQuote": "地域・見積もり",
+    "targetedOnly": "指定見積もり依頼",
+    "serviceRegionOnly": "対応可能地域",
+    "openFilter": "絞り込みを開く",
+    "sortLatest": "依頼日が新しい順",
+    "sortMovingDate": "引っ越し日が近い順",
+    "searchCustomer": "どのお客様をお探しですか？",
+    "searchCustomerLabel": "お客様名で検索",
+    "totalCount": "すべて",
+    "countUnit": "{count}件",
+    "sort": "並び替え",
+    "selectAddress": "出発地を選択してください",
+    "all": "すべて",
+    "sortReview": "レビューが多い順",
+    "sortRating": "評価が高い順",
+    "sortCareer": "経歴が長い順",
+    "sortConfirmed": "確定が多い順"
   }
 }

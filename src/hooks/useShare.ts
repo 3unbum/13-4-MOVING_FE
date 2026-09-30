@@ -1,12 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { useKakaoSdk } from "@/hooks/useKakaoSdk";
 
 /** 토스트 노출 시간 — QuoteDetailClient와 같은 값입니다 */
 const TOAST_DURATION_MS = 3000;
-
-const COPY_SUCCESS_MESSAGE = "링크가 복사되었어요!";
 
 interface UseShareParams {
   /** 공유할 경로 또는 절대 URL (예: `/movers/12`) */
@@ -27,6 +26,7 @@ interface UseShareParams {
  * 대상(기사님)이 화면마다 다르기 때문입니다.
  */
 export function useShare({ url, text, buttonTitle }: UseShareParams) {
+  const t = useTranslations("common");
   const [toast, setToast] = useState<string | null>(null);
   const isKakaoReady = useKakaoSdk();
 
@@ -46,12 +46,12 @@ export function useShare({ url, text, buttonTitle }: UseShareParams) {
 
     try {
       await navigator.clipboard.writeText(shareUrl);
-      setToast(COPY_SUCCESS_MESSAGE);
+      setToast(t("copySuccess"));
     } catch {
       // 클립보드는 https·사용자 제스처 등 조건이 안 맞으면 거부됩니다.
       // 지금 보고 있는 주소가 공유 대상과 다를 수 있어("주소창에서 복사"가 틀린 안내가 됨)
       // 공유할 URL을 그대로 띄워 직접 복사할 수 있게 합니다.
-      setToast(`링크 복사에 실패했어요. ${shareUrl}`);
+      setToast(t("copyFailed", { url: shareUrl }));
     }
   };
 

@@ -14,7 +14,9 @@ export function useMoverAccount(initialAccount: MoverAccountResponse | null) {
   const router = useRouter();
   const [account, setAccount] = useState<MoverAccountResponse | null>(initialAccount);
   const [isLoading, setIsLoading] = useState(!initialAccount);
-  const [error, setError] = useState<string>();
+  // 메시지가 아니라 실패 여부만 들고 있습니다 — 문구는 소비처가 렌더 시점에 번역해야
+  // 언어를 바꿨을 때 같이 바뀝니다 (훅에서 t를 쓰면 조회 effect가 t에 의존하게 됩니다)
+  const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
     if (account) return;
@@ -32,7 +34,7 @@ export function useMoverAccount(initialAccount: MoverAccountResponse | null) {
         setAccount(data);
       })
       .catch(() => {
-        if (active) setError("계정 정보를 불러오지 못했어요. 새로고침해 주세요");
+        if (active) setHasError(true);
       })
       .finally(() => {
         if (active) setIsLoading(false);
@@ -42,5 +44,5 @@ export function useMoverAccount(initialAccount: MoverAccountResponse | null) {
     };
   }, [account, router]);
 
-  return { account, isLoading, error, setAccount };
+  return { account, isLoading, hasError, setAccount };
 }

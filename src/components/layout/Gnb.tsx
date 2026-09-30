@@ -1,6 +1,7 @@
 "use client";
 
 import alarmLg from "@/assets/icons/alarm-lg.svg";
+import { useTranslations } from "next-intl";
 import alarmMd from "@/assets/icons/alarm-md.svg";
 import menuMd from "@/assets/icons/menu-md.svg";
 import profileLgDefault from "@/assets/icons/profile-lg-default.svg";
@@ -67,6 +68,10 @@ export default function Gnb({
   onNotificationSelect,
   onProfileSelect,
 }: GnbProps) {
+  const tNav = useTranslations("gnb.nav");
+  const t = useTranslations("gnb");
+  const tCommon = useTranslations("common");
+  const tAuth = useTranslations("auth");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [openPanel, setOpenPanel] = useState<GnbPanel>("none");
   const pathname = usePathname();
@@ -76,7 +81,7 @@ export default function Gnb({
   const navItems = getGnbNavItems(isLoggedIn, role);
   const menuOptions = profileOptions ?? getGnbProfileOptions(role);
   const profileHeader = userName
-    ? `${userName} ${role === "mover" ? "기사님" : "고객님"}`
+    ? tCommon(role === "mover" ? "moverName" : "customerName", { name: userName })
     : undefined;
 
   const togglePanel = (panel: Exclude<GnbPanel, "none">) => {
@@ -122,7 +127,7 @@ export default function Gnb({
           <div className="pc:h-22 flex w-full flex-1 items-center justify-between">
             <div className="pc:h-full pc:gap-20 flex items-center">
               <LogoLink iconOnlyOnMobile />
-              <nav className="pc:flex hidden h-full items-center gap-10" aria-label="주요 메뉴">
+              <nav className="pc:flex hidden h-full items-center gap-10" aria-label={t("mainMenu")}>
                 {navItems.map((item) => {
                   const isActive = isGnbNavActive(pathname, item.href);
                   return (
@@ -135,7 +140,7 @@ export default function Gnb({
                         getGnbNavColorClass(isActive)
                       )}
                     >
-                      {item.label}
+                      {tNav(item.id)}
                     </Link>
                   );
                 })}
@@ -149,7 +154,7 @@ export default function Gnb({
 
               <button
                 type="button"
-                aria-label="알림"
+                aria-label={t("notification")}
                 aria-expanded={openPanel === "notification"}
                 onClick={() => togglePanel("notification")}
                 className="pc:size-9 size-6"
@@ -166,7 +171,7 @@ export default function Gnb({
 
               <button
                 type="button"
-                aria-label="프로필 메뉴"
+                aria-label={t("profileMenu")}
                 aria-expanded={openPanel === "profile"}
                 onClick={() => togglePanel("profile")}
                 className="pc:hidden size-6"
@@ -176,7 +181,7 @@ export default function Gnb({
 
               <button
                 type="button"
-                aria-label="프로필 메뉴"
+                aria-label={t("profileMenu")}
                 aria-expanded={openPanel === "profile"}
                 onClick={() => togglePanel("profile")}
                 className="pc:flex hidden items-center gap-4"
@@ -191,7 +196,7 @@ export default function Gnb({
 
               <button
                 type="button"
-                aria-label="메뉴 열기"
+                aria-label={t("openMenu")}
                 aria-expanded={isMenuOpen}
                 onClick={() => {
                   closePanel();
@@ -247,7 +252,7 @@ export default function Gnb({
           <>
             <LogoLink />
 
-            <nav className="pc:block relative hidden h-6.5 flex-1" aria-label="주요 메뉴">
+            <nav className="pc:block relative hidden h-6.5 flex-1" aria-label={t("mainMenu")}>
               {LOGOUT_NAV.map((item) => {
                 const isActive = isGnbNavActive(pathname, item.href);
                 return (
@@ -260,7 +265,7 @@ export default function Gnb({
                       getGnbNavColorClass(isActive)
                     )}
                   >
-                    {item.label}
+                    {tNav(item.id)}
                   </Link>
                 );
               })}
@@ -272,14 +277,14 @@ export default function Gnb({
               <LocaleSwitcher size="md" />
               <div className="w-29">
                 <Button size="xs" onClick={onLoginClick}>
-                  로그인
+                  {tAuth("login")}
                 </Button>
               </div>
             </div>
 
             <button
               type="button"
-              aria-label="메뉴 열기"
+              aria-label={t("openMenu")}
               aria-expanded={isMenuOpen}
               onClick={() => setIsMenuOpen(true)}
               className="pc:hidden size-6"
@@ -305,7 +310,7 @@ export default function Gnb({
               }}
               className="text-16 text-black-500 flex w-full items-center overflow-hidden px-5 py-6 text-left font-medium"
             >
-              로그인
+              {tAuth("login")}
             </button>
           )
         }
@@ -349,7 +354,7 @@ function LogoSm({ className }: { className?: string }) {
   return (
     <Image
       src={logoSm}
-      alt="무빙"
+      alt=""
       width={88}
       height={34}
       className={cn("h-8.5 w-22 max-w-none", className)}
@@ -359,8 +364,9 @@ function LogoSm({ className }: { className?: string }) {
 }
 
 function LogoLink({ iconOnlyOnMobile = false }: LogoLinkProps) {
+  const t = useTranslations("gnb");
   return (
-    <Link href="/" aria-label="무빙 홈" className="relative shrink-0">
+    <Link href="/" aria-label={t("home")} className="relative shrink-0">
       {iconOnlyOnMobile ? (
         <>
           <span className="tablet:hidden block h-8.5 w-8 overflow-hidden">
@@ -377,7 +383,7 @@ function LogoLink({ iconOnlyOnMobile = false }: LogoLinkProps) {
       )}
       <Image
         src={logoLg}
-        alt="무빙"
+        alt=""
         width={116}
         height={44}
         className="pc:block hidden h-11 w-29"

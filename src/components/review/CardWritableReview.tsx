@@ -1,4 +1,6 @@
 import Button from "@/components/common/Button";
+import { formatPrice, type DateLocale } from "@/lib/utils/date";
+import { useLocale, useTranslations } from "next-intl";
 import MoveTypeChip from "@/components/filter/ChipMoveType";
 import type { ServiceCode } from "@/components/filter/ChipRegion";
 import InfoItem from "@/components/common/InfoItem";
@@ -64,6 +66,9 @@ export default function CardWritableReview({
   className,
   ...props
 }: CardWritableReviewProps) {
+  const t = useTranslations("review");
+  const tCommon = useTranslations("common");
+  const locale = useLocale() as DateLocale;
   const isLg = size === "lg";
   const isMd = size === "md";
   const isSm = size === "sm";
@@ -83,7 +88,7 @@ export default function CardWritableReview({
 
   const writeButton = (
     <Button variant="solid" size="sm" disabled={disabled} onClick={onWriteClick}>
-      리뷰 작성하기
+      {t("writeAction")}
     </Button>
   );
 
@@ -107,9 +112,9 @@ export default function CardWritableReview({
 
             {price != null ? (
               <div className="flex w-40 shrink-0 flex-col items-end">
-                <span className="text-16 text-gray-gray-500 font-medium">견적 금액</span>
+                <span className="text-16 text-gray-gray-500 font-medium">{t("quoteAmount")}</span>
                 <span className="text-24 text-black-black-400 font-bold whitespace-nowrap">
-                  {price.toLocaleString()}원
+                  {formatPrice(price, locale)}
                 </span>
               </div>
             ) : null}
@@ -118,11 +123,15 @@ export default function CardWritableReview({
 
         <div className="flex w-full items-center justify-between gap-5">
           <div className="flex min-w-0 items-center gap-5">
-            <InfoItem label="출발지" value={from} valueClassName={infoValueClass} />
+            <InfoItem label={tCommon("from")} value={from} valueClassName={infoValueClass} />
             <VerticalLine />
-            <InfoItem label="도착지" value={to} valueClassName={infoValueClass} />
+            <InfoItem label={tCommon("to")} value={to} valueClassName={infoValueClass} />
             <VerticalLine />
-            <InfoItem label="이사일" value={movingDate} valueClassName={infoValueClass} />
+            <InfoItem
+              label={tCommon("movingDate")}
+              value={movingDate}
+              valueClassName={infoValueClass}
+            />
           </div>
           <div className="w-40 shrink-0">{writeButton}</div>
         </div>
@@ -151,17 +160,21 @@ export default function CardWritableReview({
 
           {/* md는 금액이 이사 정보와 같은 줄입니다 */}
           <div className="flex w-full items-center gap-4">
-            <InfoItem label="출발지" value={from} valueClassName={infoValueClass} />
-            <InfoItem label="도착지" value={to} valueClassName={infoValueClass} />
+            <InfoItem label={tCommon("from")} value={from} valueClassName={infoValueClass} />
+            <InfoItem label={tCommon("to")} value={to} valueClassName={infoValueClass} />
             <VerticalLine />
-            <InfoItem label="이사일" value={movingDate} valueClassName={infoValueClass} />
+            <InfoItem
+              label={tCommon("movingDate")}
+              value={movingDate}
+              valueClassName={infoValueClass}
+            />
             {price != null ? (
               <>
                 <VerticalLine />
                 <div className="flex shrink-0 flex-col items-end">
-                  <span className="text-14 text-gray-gray-500">견적금액</span>
+                  <span className="text-14 text-gray-gray-500">{t("quoteAmount")}</span>
                   <span className="text-18 text-black-black-400 font-bold whitespace-nowrap">
-                    {price.toLocaleString()}원
+                    {formatPrice(price, locale)}
                   </span>
                 </div>
               </>
@@ -201,17 +214,21 @@ export default function CardWritableReview({
         {/* sm은 이사 정보가 2행 (출발지·도착지 / 이사일) */}
         <div className="flex w-full flex-col items-start justify-center gap-4">
           <div className="flex w-full items-center gap-4">
-            <InfoItem label="출발지" value={from} valueClassName={infoValueClass} />
-            <InfoItem label="도착지" value={to} valueClassName={infoValueClass} />
+            <InfoItem label={tCommon("from")} value={from} valueClassName={infoValueClass} />
+            <InfoItem label={tCommon("to")} value={to} valueClassName={infoValueClass} />
           </div>
-          <InfoItem label="이사일" value={movingDate} valueClassName={infoValueClass} />
+          <InfoItem
+            label={tCommon("movingDate")}
+            value={movingDate}
+            valueClassName={infoValueClass}
+          />
         </div>
 
         {price != null ? (
           <div className="border-line-200 flex h-11.75 w-full items-end justify-between border-t">
-            <span className="text-14 text-gray-gray-300 font-medium">견적 금액</span>
+            <span className="text-14 text-gray-gray-300 font-medium">{t("quoteAmount")}</span>
             <span className="text-18 text-black-black-400 font-bold whitespace-nowrap">
-              {price.toLocaleString()}원
+              {formatPrice(price, locale)}
             </span>
           </div>
         ) : null}

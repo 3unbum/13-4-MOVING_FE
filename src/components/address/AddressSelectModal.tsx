@@ -1,6 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils/cn";
+import { useTranslations } from "next-intl";
 import { useId } from "react";
 import AddressCard from "@/components/address/AddressCard";
 import Button from "@/components/common/Button";
@@ -37,7 +38,7 @@ interface AddressSelectModalProps {
 export default function AddressSelectModal({
   open,
   onClose,
-  title = "출발지를 선택해주세요",
+  title,
   size = "md",
   searchValue,
   onSearchChange,
@@ -47,6 +48,9 @@ export default function AddressSelectModal({
   onSelect,
   onConfirm,
 }: AddressSelectModalProps) {
+  const tFilter = useTranslations("filter");
+  const tCommon = useTranslations("common");
+  const resolvedTitle = title ?? tFilter("selectAddress");
   const titleId = useId();
   const isMd = size === "md";
   const canConfirm = results.some((result) => result.id === selectedId);
@@ -62,7 +66,7 @@ export default function AddressSelectModal({
           : "w-[292px] min-w-[292px] gap-7.5 rounded-3xl px-4 py-6"
       )}
     >
-      <ModalHeader id={titleId} title={title} size={size} onClose={onClose} />
+      <ModalHeader id={titleId} title={resolvedTitle} size={size} onClose={onClose} />
 
       <div className="flex min-h-0 w-full flex-1 flex-col items-start gap-6 overflow-y-auto">
         <InputSearchbar
@@ -96,7 +100,7 @@ export default function AddressSelectModal({
         disabled={!canConfirm}
         onClick={onConfirm}
       >
-        선택완료
+        {tCommon("selectComplete")}
       </Button>
     </Modal>
   );

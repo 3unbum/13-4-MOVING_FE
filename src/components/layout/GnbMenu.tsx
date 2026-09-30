@@ -1,6 +1,7 @@
 "use client";
 
 import xMd from "@/assets/icons/x-md.svg";
+import { useTranslations } from "next-intl";
 import LocaleSwitcher from "@/components/layout/LocaleSwitcher";
 import { CUSTOMER_NAV, MOVER_NAV, type GnbNavItem, type GnbRole } from "@/constants/gnb/nav";
 import { useDialog } from "@/hooks/useDialog";
@@ -29,6 +30,8 @@ export default function GnbMenu({
   footer,
   className,
 }: GnbMenuProps) {
+  const tNav = useTranslations("gnb.nav");
+  const t = useTranslations("gnb");
   const menuItems = items ?? (role === "mover" ? MOVER_NAV : CUSTOMER_NAV);
   const pathname = usePathname();
 
@@ -43,12 +46,12 @@ export default function GnbMenu({
       className="pc:hidden fixed inset-0 z-[var(--z-gnb)]"
       role="dialog"
       aria-modal="true"
-      aria-label="메뉴"
+      aria-label={t("menu")}
     >
       <button
         type="button"
         className="bg-black-500/40 absolute inset-0"
-        aria-label="메뉴 닫기"
+        aria-label={t("closeMenu")}
         onClick={onClose}
       />
       <nav
@@ -57,7 +60,7 @@ export default function GnbMenu({
         className={cn("absolute top-0 right-0 flex h-full w-55 flex-col bg-gray-50", className)}
       >
         <div className="border-line-100 flex h-13.5 items-center justify-end border-b px-4 py-2.5">
-          <button type="button" aria-label="메뉴 닫기" onClick={onClose} className="size-6">
+          <button type="button" aria-label={t("closeMenu")} onClick={onClose} className="size-6">
             <Image src={xMd} alt="" width={24} height={24} className="size-6" />
           </button>
         </div>
@@ -75,7 +78,7 @@ export default function GnbMenu({
                     getGnbNavColorClass(isActive)
                   )}
                 >
-                  {item.label}
+                  {tNav(item.id)}
                 </Link>
               </li>
             );

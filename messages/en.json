@@ -38,7 +38,27 @@
     "options": "options",
     "requestedAt": "Requested on",
     "selectDate": "Select date",
-    "done": "Done"
+    "done": "Done",
+    "viewResults": "View Results",
+    "selectComplete": "Done",
+    "roadAddress": "Road",
+    "lotAddress": "Lot",
+    "career": "Experience",
+    "careerYears": "{years} yrs",
+    "confirmedCount": "{count}",
+    "confirmed": "confirmed",
+    "ratingLabel": "Rating {rating} out of 5",
+    "reviewCount": "{count} reviews",
+    "ratingPoint": "{rating}",
+    "moverSuffix": "",
+    "customerSuffix": "",
+    "careerRich": "<value>{years} yrs</value><label>experience</label>",
+    "confirmedRich": "<value>{count}</value><label>confirmed</label>",
+    "selectMover": "Select {name}",
+    "copySuccess": "Link copied!",
+    "copyFailed": "Couldn't copy the link. {url}",
+    "requestFailed": "Request failed",
+    "favoriteRemoveFailed": "Couldn't remove from favorites. Please try again."
   },
   "locale": {
     "label": "Language",
@@ -64,6 +84,13 @@
       "mover-requests": "Requests",
       "mover-my-quotes": "My quotes",
       "guest-movers": "Find movers"
+    },
+    "menu_items": {
+      "edit": "Manage Profile",
+      "favorite": "Saved Movers",
+      "review": "My Reviews",
+      "logout": "Log out",
+      "mypage": "My Page"
     }
   },
   "service": {
@@ -231,5 +258,47 @@
     "naver": "Naver",
     "login": "Log in",
     "signup": "Sign up"
+  },
+  "review": {
+    "writeReview": "Write a Review",
+    "ratingPrompt": "Select a rating",
+    "rating": "Rating",
+    "ratingStar": "{star} stars",
+    "detailPrompt": "Write your review",
+    "detailLabel": "Review",
+    "detailPlaceholder": "Write your review (at least 10 characters)",
+    "submit": "Submit Review",
+    "writeAction": "Write a Review",
+    "quoteAmount": "Quote Amount",
+    "writtenAt": "Written on",
+    "loading": "Loading reviews.",
+    "loadFailed": "Couldn't load reviews. Please try again in a moment.",
+    "title": "Reviews",
+    "empty": "No reviews yet!",
+    "emptyHint": "Be the first to leave a review",
+    "chipsPrompt": "What did you like?",
+    "chipsHint": "Pick keywords and your review is written for you (up to {max})"
+  },
+  "filter": {
+    "title": "Filter",
+    "moveType": "Moving Type",
+    "selectMoveType": "Select moving type",
+    "regionAndQuote": "Region & Quote",
+    "targetedOnly": "Designated quote requests",
+    "serviceRegionOnly": "My service areas",
+    "openFilter": "Open filter",
+    "sortLatest": "Newest request",
+    "sortMovingDate": "Earliest move",
+    "searchCustomer": "Who are you looking for?",
+    "searchCustomerLabel": "Search by customer name",
+    "totalCount": "Total",
+    "countUnit": "{count}",
+    "sort": "Sort",
+    "selectAddress": "Select a departure address",
+    "all": "All",
+    "sortReview": "Most reviewed",
+    "sortRating": "Highest rated",
+    "sortCareer": "Most experienced",
+    "sortConfirmed": "Most bookings"
   }
 }

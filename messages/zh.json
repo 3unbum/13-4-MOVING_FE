@@ -38,7 +38,27 @@
     "options": "选项",
     "requestedAt": "申请日期",
     "selectDate": "选择日期",
-    "done": "选择完成"
+    "done": "选择完成",
+    "viewResults": "查询",
+    "selectComplete": "选择完成",
+    "roadAddress": "路名",
+    "lotAddress": "地号",
+    "career": "经验",
+    "careerYears": "{years}年",
+    "confirmedCount": "{count}件",
+    "confirmed": "确定",
+    "ratingLabel": "评分 {rating} 分（满分5分）",
+    "reviewCount": "{count}条评价",
+    "ratingPoint": "{rating}分",
+    "moverSuffix": "师傅",
+    "customerSuffix": "客户",
+    "careerRich": "<label>经验</label><value>{years}年</value>",
+    "confirmedRich": "<value>{count}件</value><label>确定</label>",
+    "selectMover": "选择 {name} 师傅",
+    "copySuccess": "链接已复制！",
+    "copyFailed": "链接复制失败。{url}",
+    "requestFailed": "请求失败",
+    "favoriteRemoveFailed": "取消收藏失败，请重试。"
   },
   "locale": {
     "label": "语言",
@@ -64,6 +84,13 @@
       "mover-requests": "收到的请求",
       "mover-my-quotes": "我的报价管理",
       "guest-movers": "寻找师傅"
+    },
+    "menu_items": {
+      "edit": "个人资料管理",
+      "favorite": "收藏的师傅",
+      "review": "搬家评价",
+      "logout": "退出登录",
+      "mypage": "我的页面"
     }
   },
   "service": {
@@ -231,5 +258,47 @@
     "naver": "Naver",
     "login": "登录",
     "signup": "注册"
+  },
+  "review": {
+    "writeReview": "写评价",
+    "ratingPrompt": "请选择评分",
+    "rating": "评分",
+    "ratingStar": "{star}分",
+    "detailPrompt": "请填写详细评价",
+    "detailLabel": "详细评价",
+    "detailPlaceholder": "请填写评价内容（至少10个字）",
+    "submit": "提交评价",
+    "writeAction": "去写评价",
+    "quoteAmount": "报价金额",
+    "writtenAt": "撰写日期",
+    "loading": "正在加载评价。",
+    "loadFailed": "无法加载评价，请稍后重试。",
+    "title": "评价",
+    "empty": "还没有评价！",
+    "emptyHint": "来写下第一条评价吧",
+    "chipsPrompt": "您对哪些方面满意？",
+    "chipsHint": "选择关键词即可自动生成评价（最多{max}个）"
+  },
+  "filter": {
+    "title": "筛选",
+    "moveType": "搬家类型",
+    "selectMoveType": "选择搬家类型",
+    "regionAndQuote": "地区及报价",
+    "targetedOnly": "指定报价申请",
+    "serviceRegionOnly": "可服务地区",
+    "openFilter": "打开筛选",
+    "sortLatest": "申请日期最新",
+    "sortMovingDate": "搬家日期最近",
+    "searchCustomer": "您在寻找哪位客户？",
+    "searchCustomerLabel": "按客户姓名搜索",
+    "totalCount": "全部",
+    "countUnit": "{count}件",
+    "sort": "排序",
+    "selectAddress": "请选择出发地",
+    "all": "全部",
+    "sortReview": "评价最多",
+    "sortRating": "评分最高",
+    "sortCareer": "经验最丰富",
+    "sortConfirmed": "确定最多"
   }
 }

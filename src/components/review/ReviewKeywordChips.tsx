@@ -1,6 +1,7 @@
 "use client";
 
 import Chip from "@/components/filter/ChipRegion";
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils/cn";
 import { MAX_REVIEW_CHIPS, REVIEW_CHIP_GROUPS } from "./ReviewChips";
 
@@ -18,6 +19,7 @@ export default function ReviewKeywordChips({
   onToggle,
   disabled = false,
 }: ReviewKeywordChipsProps) {
+  const t = useTranslations("review");
   const isMd = size === "md";
   const atMax = selectedIds.length >= MAX_REVIEW_CHIPS;
 
@@ -25,10 +27,10 @@ export default function ReviewKeywordChips({
     <div className="flex w-full flex-col items-start gap-3">
       <div className="flex w-full flex-col gap-1">
         <p className={cn("text-black-300 font-semibold", isMd ? "text-18" : "text-16")}>
-          어떤 점이 좋았는지 선택해 주세요
+          {t("chipsPrompt")}
         </p>
         <p className={cn("text-gray-400", isMd ? "text-14" : "text-13")}>
-          키워드를 고르면 후기가 자동으로 작성돼요 (최대 {MAX_REVIEW_CHIPS}개)
+          {t("chipsHint", { max: MAX_REVIEW_CHIPS })}
         </p>
       </div>
 
