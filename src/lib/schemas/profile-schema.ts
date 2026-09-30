@@ -31,8 +31,9 @@ export const moverProfileSchema = z.object({
 // BE customerProfileUpdateSchema 대응(#72). name/phoneNumber/region/services는 이미 등록된 값을
 // 폼에 프리필해서 보여주므로 여기선 상시 필수로 검증(= "비워서 지우기"는 지원하지 않음, PATCH의
 // optional은 BE가 부분 수정을 허용한다는 뜻이지 FE가 빈 값을 보낸다는 뜻이 아님).
-// 비밀번호만 진짜 선택 입력 — 비워두면 "변경 안 함". newPasswordConfirm은 FE 전용 필드라 BE로는
-// 안 보냄(profileService.updateCustomer 호출부에서 제외).
+// currentPassword는 이제 항상 필수(계정 정보는 무엇을 바꾸든 재확인 필요, "새 비밀번호를
+// 바꿀 때만"이 아님). newPassword/newPasswordConfirm만 진짜 선택 입력(비워두면 "변경 안 함").
+// newPasswordConfirm은 FE 전용 필드라 BE로는 안 보냄(profileService.updateCustomer 호출부에서 제외).
 export const customerProfileUpdateSchema = z
   .object({
     name: z.string().trim().min(1, "이름을 입력해주세요"),
@@ -40,7 +41,7 @@ export const customerProfileUpdateSchema = z
       .string()
       .min(1, "전화번호를 입력해주세요")
       .regex(PHONE_PATTERN, "올바른 전화번호 형식이 아닙니다"),
-    currentPassword: z.string().optional(),
+    currentPassword: z.string().trim().min(1, "현재 비밀번호를 입력해주세요"),
     newPassword: z
       .string()
       .regex(PASSWORD_PATTERN, "비밀번호는 영문, 숫자, 특수문자를 포함해 8자 이상이어야 합니다")
@@ -51,24 +52,6 @@ export const customerProfileUpdateSchema = z
     region: z.enum(regionValues, { message: "내가 사는 지역을 선택해주세요" }),
     services: z.array(z.enum(serviceValues)).min(1, "이용 서비스를 1개 이상 선택해주세요"),
   })
-  // newPassword/newPasswordConfirm 중 하나라도 채워졌으면 세 필드 모두 필요하다 — 단,
-  // currentPassword만 채워진 경우는 통과시킨다: 브라우저 자동완성이 currentPassword만
-  // 미리 채워 넣는 경우가 있어서, 그 상태로 이름/전화번호만 바꾸는 정상적인 제출까지
-  // "비밀번호를 변경하려면 세 필드를 모두 입력해주세요"로 막아버리는 문제가 있었다
-  // (coderabbitai 리뷰로 처음 추가한 all-or-nothing 버전의 회귀, MunChiho 리뷰, PR #135)
-  .refine(
-    (data) => {
-      const hasCurrent = Boolean(data.currentPassword?.trim());
-      const hasNew = Boolean(data.newPassword?.trim());
-      const hasConfirm = Boolean(data.newPasswordConfirm?.trim());
-      if (!hasNew && !hasConfirm) return true;
-      return hasCurrent && hasNew && hasConfirm;
-    },
-    {
-      message: "비밀번호를 변경하려면 세 필드를 모두 입력해주세요",
-      path: ["newPassword"],
-    }
-  )
   // 소셜 로그인 계정(비밀번호 없음)이 새 비밀번호를 시도하는 경우는 여기서 막지 않음 — BE가
   // "소셜 로그인 계정은 비밀번호를 변경할 수 없습니다"로 응답하고, 그 메시지를 submitError로 그대로 노출한다
   .refine((data) => !data.newPassword || data.newPassword === data.newPasswordConfirm, {
@@ -86,9 +69,11 @@ export const customerProfileUpdateSchema = z
 // "기본정보 수정"이 별도 프레임(별도 폼)으로 분리돼 있어 — 프로필 필드(별명/경력/한줄소개/상세설명/
 // 서비스/지역)는 register와 완전히 동일해서 moverProfileSchema를 그대로 재사용하고, 여기선
 // 계정 정보(이름/전화번호/비밀번호)만 다룬다. customerProfileUpdateSchema와 동일하게 이름/전화번호는
-// 프리필된 값이라 상시 필수(= "비워서 지우기" 미지원), 비밀번호만 진짜 선택 입력(비워두면 "변경 안 함").
-// newPasswordConfirm은 FE 전용 필드라 BE로는 안 보냄(profileService.updateMover 호출부에서 제외).
-// 이메일은 BE moverProfileUpdateSchema에 필드 자체가 없어 이 화면에서 수정 불가 — 읽기 전용으로만 노출.
+// 프리필된 값이라 상시 필수(= "비워서 지우기" 미지원). currentPassword도 이제 상시 필수
+// (customerProfileUpdateSchema와 동일). newPassword/newPasswordConfirm만 진짜 선택 입력
+// (비워두면 "변경 안 함"). newPasswordConfirm은 FE 전용 필드라 BE로는 안 보냄
+// (profileService.updateMover 호출부에서 제외). 이메일은 BE moverProfileUpdateSchema에 필드
+// 자체가 없어 이 화면에서 수정 불가 — 읽기 전용으로만 노출.
 export const moverBasicInfoUpdateSchema = z
   .object({
     name: z.string().trim().min(1, "이름을 입력해주세요"),
@@ -96,7 +81,7 @@ export const moverBasicInfoUpdateSchema = z
       .string()
       .min(1, "전화번호를 입력해주세요")
       .regex(PHONE_PATTERN, "올바른 전화번호 형식이 아닙니다"),
-    currentPassword: z.string().optional(),
+    currentPassword: z.string().trim().min(1, "현재 비밀번호를 입력해주세요"),
     newPassword: z
       .string()
       .regex(PASSWORD_PATTERN, "비밀번호는 영문, 숫자, 특수문자를 포함해 8자 이상이어야 합니다")
@@ -104,24 +89,6 @@ export const moverBasicInfoUpdateSchema = z
       .or(z.literal("")),
     newPasswordConfirm: z.string().optional(),
   })
-  // newPassword/newPasswordConfirm 중 하나라도 채워졌으면 세 필드 모두 필요하다 — 단,
-  // currentPassword만 채워진 경우는 통과시킨다: 브라우저 자동완성이 currentPassword만
-  // 미리 채워 넣는 경우가 있어서, 그 상태로 이름/전화번호만 바꾸는 정상적인 제출까지
-  // "비밀번호를 변경하려면 세 필드를 모두 입력해주세요"로 막아버리는 문제가 있었다
-  // (coderabbitai 리뷰로 처음 추가한 all-or-nothing 버전의 회귀, MunChiho 리뷰, PR #135)
-  .refine(
-    (data) => {
-      const hasCurrent = Boolean(data.currentPassword?.trim());
-      const hasNew = Boolean(data.newPassword?.trim());
-      const hasConfirm = Boolean(data.newPasswordConfirm?.trim());
-      if (!hasNew && !hasConfirm) return true;
-      return hasCurrent && hasNew && hasConfirm;
-    },
-    {
-      message: "비밀번호를 변경하려면 세 필드를 모두 입력해주세요",
-      path: ["newPassword"],
-    }
-  )
   // 소셜 로그인 계정(비밀번호 없음)이 새 비밀번호를 시도하는 경우는 여기서 막지 않음 — BE가
   // "소셜 로그인 계정은 비밀번호를 변경할 수 없습니다"로 응답하고, 그 메시지를 submitError로 그대로 노출한다
   .refine((data) => !data.newPassword || data.newPassword === data.newPasswordConfirm, {
