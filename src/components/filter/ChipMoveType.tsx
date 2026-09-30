@@ -1,4 +1,5 @@
 import solidBoxMd from "@/assets/icons/solid-box-md.svg";
+import { useTranslations } from "next-intl";
 import solidBoxSm from "@/assets/icons/solid-box-sm.svg";
 import solidCompanyMd from "@/assets/icons/solid-company-md.svg";
 import solidCompanySm from "@/assets/icons/solid-company-sm.svg";
@@ -34,13 +35,6 @@ const ICONS: Record<MoveTypeChipVariant, Record<MoveTypeChipSize, string>> = {
   TARGETED: { sm: solidDocumentSm, md: solidDocumentMd },
 };
 
-const LABELS: Record<MoveTypeChipVariant, string> = {
-  SMALL: "소형이사",
-  OFFICE: "사무실이사",
-  HOME: "가정이사",
-  TARGETED: "지정 견적 요청",
-};
-
 // 사용법: <MoveTypeChip variant="SMALL" size="md" />
 export default function MoveTypeChip({
   variant,
@@ -48,6 +42,7 @@ export default function MoveTypeChip({
   className,
   ...props
 }: MoveTypeChipProps) {
+  const t = useTranslations("service");
   const isMd = size === "md";
   const isRequested = variant === "TARGETED";
 
@@ -65,7 +60,7 @@ export default function MoveTypeChip({
       {...props}
     >
       <Image src={ICONS[variant][size]} alt="" className="size-5 shrink-0" />
-      {LABELS[variant]}
+      {t(variant)}
     </span>
   );
 }

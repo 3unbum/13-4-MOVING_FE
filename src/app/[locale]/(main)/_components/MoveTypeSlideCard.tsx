@@ -1,12 +1,8 @@
 "use client";
 
-import {
-  SELECT_CARD_IMAGES,
-  SELECT_CARD_LABELS,
-  SELECT_CARD_SUBTITLES,
-  type SelectCardVariant,
-} from "@/components/common/SelectCard";
+import { SELECT_CARD_IMAGES, type SelectCardVariant } from "@/components/common/SelectCard";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { useTranslations } from "next-intl";
 import { motion, useTransform, type MotionValue } from "motion/react";
 import Image from "next/image";
 
@@ -53,6 +49,7 @@ const CENTER_SIZE = { width: 245, height: 261, image: 160, labelFont: 20, subtit
 // depth(-1 뒤 ~ 1 앞)로 위치·투명도·앞뒤 쌓임 순서·기울기(rotateY)를 파생시켜 입체감을 낸다.
 // 크기는 모바일=scale(내용물까지 통째로 같이 커짐), 태블릿/PC=박스와 내용물(이미지/폰트) 각각 지정된 px로 보간.
 export default function MoveTypeSlideCard({ variant, angle, offsetDeg }: MoveTypeSlideCardProps) {
+  const t = useTranslations("service");
   const isTabletUp = useMediaQuery(TABLET_QUERY);
   const isPcUp = useMediaQuery(PC_QUERY);
 
@@ -117,13 +114,13 @@ export default function MoveTypeSlideCard({ variant, angle, offsetDeg }: MoveTyp
         <Image src={SELECT_CARD_IMAGES[variant]} alt="" fill className="object-contain" />
       </motion.div>
       <motion.span style={{ color: labelColor, fontSize: labelFontSize }} className="font-bold">
-        {SELECT_CARD_LABELS[variant]}
+        {t(variant)}
       </motion.span>
       <motion.span
         style={{ fontSize: subtitleFontSize }}
         className="text-gray-gray-500 whitespace-nowrap"
       >
-        {SELECT_CARD_SUBTITLES[variant]}
+        {t(`desc${variant}`)}
       </motion.span>
     </motion.div>
   );

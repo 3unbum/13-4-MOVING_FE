@@ -44,6 +44,7 @@ export default function MoverDetailProfile({
   const t = useTranslations("mover");
   const tCommon = useTranslations("common");
   const tRegion = useTranslations("region");
+  const tService = useTranslations("service");
   const categories = mover.services.map(toServiceCode);
 
   return (
@@ -136,21 +137,26 @@ export default function MoverDetailProfile({
       </div>
 
       <ChipGroup title={t("moverServices")}>
-        {mover.services.map((service) => (
-          <span key={service} className="contents">
-            <Chip size="sm" selected disabled className="tablet:hidden pointer-events-none">
-              {service}
-            </Chip>
-            <Chip
-              size="md"
-              selected
-              disabled
-              className="tablet:inline-flex pointer-events-none hidden"
-            >
-              {service}
-            </Chip>
-          </span>
-        ))}
+        {mover.services.map((service) => {
+          // BE가 한글("소형이사")로 줄 때도, enum("SMALL")으로 줄 때도 있어 코드로 정규화합니다
+          const label = tService(toServiceCode(service));
+
+          return (
+            <span key={service} className="contents">
+              <Chip size="sm" selected disabled className="tablet:hidden pointer-events-none">
+                {label}
+              </Chip>
+              <Chip
+                size="md"
+                selected
+                disabled
+                className="tablet:inline-flex pointer-events-none hidden"
+              >
+                {label}
+              </Chip>
+            </span>
+          );
+        })}
       </ChipGroup>
 
       {/* 지역은 Figma unselected(회색 아웃라인) */}

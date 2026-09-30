@@ -3,7 +3,7 @@
 import { useMemo, useState, type KeyboardEvent } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
-import Filter from "@/components/common/Filter";
+import Filter, { type FilterOption } from "@/components/common/Filter";
 import Header from "@/components/common/Header";
 import InputSearchbar from "@/components/common/InputSearchbar";
 import Sort from "@/components/common/Sort";
@@ -81,6 +81,24 @@ function ResponsiveMoverCard({
 
 export default function MoversPage() {
   const t = useTranslations("mover");
+  const tRegion = useTranslations("region");
+  const tService = useTranslations("service");
+  const tFilter = useTranslations("filter");
+
+  // 상수는 value(코드)만 쓰고 표시 라벨은 여기서 번역합니다 — label은 폴백으로만 남습니다
+  const serviceOptions = SERVICE_OPTIONS.map((option) => ({
+    ...option,
+    label: tService(option.value),
+  }));
+  // Filter가 2열 튜플을 요구해서 map(배열) 대신 각 열을 따로 만듭니다
+  const regionColumns: [FilterOption[], FilterOption[]] = [
+    REGION_COLUMNS[0].map((option) => ({ ...option, label: tRegion(option.value) })),
+    REGION_COLUMNS[1].map((option) => ({ ...option, label: tRegion(option.value) })),
+  ];
+  const sortOptions = SORT_OPTIONS.map((option) => ({
+    ...option,
+    label: tFilter(`sort${option.value.charAt(0).toUpperCase()}${option.value.slice(1)}`),
+  }));
   const router = useRouter();
   const { account, isAuthenticated } = useAuth();
   // 찜 API는 CUSTOMER 전용 — 사이드바·토글도 동일 기준
@@ -197,14 +215,14 @@ export default function MoversPage() {
                   size="sm"
                   label={t("region")}
                   layout="double"
-                  columns={REGION_COLUMNS}
+                  columns={regionColumns}
                   value={region}
                   onChange={setRegion}
                 />
                 <Filter
                   size="sm"
                   label={t("service")}
-                  options={[...SERVICE_OPTIONS]}
+                  options={serviceOptions}
                   value={service}
                   onChange={setService}
                 />
@@ -215,14 +233,14 @@ export default function MoversPage() {
                     size="md"
                     label={t("region")}
                     layout="double"
-                    columns={REGION_COLUMNS}
+                    columns={regionColumns}
                     value={region}
                     onChange={setRegion}
                   />
                   <Filter
                     size="md"
                     label={t("service")}
-                    options={[...SERVICE_OPTIONS]}
+                    options={serviceOptions}
                     value={service}
                     onChange={setService}
                   />
@@ -240,14 +258,14 @@ export default function MoversPage() {
                 <Sort
                   size="sm"
                   className="pc:hidden"
-                  options={SORT_OPTIONS}
+                  options={sortOptions}
                   value={sort}
                   onChange={(value) => setSort(value as MoverListSort)}
                 />
                 <Sort
                   size="md"
                   className="pc:inline-flex hidden"
-                  options={SORT_OPTIONS}
+                  options={sortOptions}
                   value={sort}
                   onChange={(value) => setSort(value as MoverListSort)}
                 />

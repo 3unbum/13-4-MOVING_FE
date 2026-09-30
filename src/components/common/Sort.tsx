@@ -111,7 +111,9 @@ export default function Sort({
           isSm && "gap-0.5 py-1.5 pr-1.5 pl-2",
           !isSm &&
             !isDropdown &&
-            "w-[114px] gap-2.5 px-2.5 py-2 shadow-[4px_4px_5px_0_rgba(220,220,220,0.2)]"
+            // 피그마 114는 최소폭 — 일본어 "レビューが多い順"(112px)·영어 "Most experienced"(127px)가
+            // 고정폭 안에서 두 줄로 접힙니다. 한국어(65px)는 그대로입니다.
+            "min-w-[114px] gap-2.5 px-2.5 py-2 shadow-[4px_4px_5px_0_rgba(220,220,220,0.2)]"
         )}
       >
         <span
@@ -151,14 +153,14 @@ export default function Sort({
           className={cn(
             "border-line-100 absolute top-full left-0 z-[var(--z-filter-dropdown)] flex flex-col overflow-hidden rounded-lg border bg-gray-50",
             isSm
-              ? "mt-1.5 w-[91px]"
+              ? "mt-1.5 min-w-[91px]"
               : isLg
                 ? // 버튼이 라벨에 따라 늘어나므로(min-w-18.75) 목록은 그 폭을 그대로 따릅니다.
                   // 루트가 inline-flex라 w-full이 버튼 폭과 같아집니다
                   "mt-1.5 w-full"
                 : isXl
-                  ? "mt-2 w-40"
-                  : "mt-2 w-[114px]"
+                  ? "mt-2 min-w-40"
+                  : "mt-2 min-w-[114px]"
           )}
         >
           {options.map((option, index) => {
@@ -172,7 +174,7 @@ export default function Sort({
                   aria-current={option.value === value ? "true" : undefined}
                   onClick={() => handleSelect(option.value)}
                   className={cn(
-                    "text-black-black-400 hover:bg-background-200 flex w-full items-center bg-gray-50 font-medium",
+                    "text-black-black-400 hover:bg-background-200 flex w-full items-center bg-gray-50 font-medium whitespace-nowrap",
                     isSm
                       ? "text-12 h-8 py-1.5 pr-1.5 pl-2.5"
                       : isLg

@@ -1,7 +1,6 @@
 "use client";
 
 import { cn } from "@/lib/utils/cn";
-import { useTranslations } from "next-intl";
 import { useId, useRef, type ReactNode, type RefObject } from "react";
 import { useOutsideClose } from "@/hooks/useOutsideClose";
 
@@ -135,7 +134,6 @@ interface ProfileOptionListProps {
 }
 
 function ProfileOptionList({ id, options, value, size, onSelect }: ProfileOptionListProps) {
-  const t = useTranslations("gnb.menu_items");
   const isSm = size === "sm";
   const defaultOptions = options.filter((option) => option.tone !== "muted");
   const mutedOptions = options.filter((option) => option.tone === "muted");
@@ -154,7 +152,7 @@ function ProfileOptionList({ id, options, value, size, onSelect }: ProfileOption
               option.value === value && "bg-background-300"
             )}
           >
-            {t(option.value)}
+            {option.label}
           </button>
         </li>
       ))}
@@ -172,7 +170,7 @@ function ProfileOptionList({ id, options, value, size, onSelect }: ProfileOption
                 : "text-14 px-4 pt-3.5 pb-3.5 font-medium"
             )}
           >
-            {t(option.value)}
+            {option.label}
           </button>
         </li>
       ))}

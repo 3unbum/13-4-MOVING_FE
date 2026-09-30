@@ -99,7 +99,9 @@
     "OFFICE": "办公室搬家",
     "descSMALL": "一居室、两居室，20坪以下",
     "descHOME": "三居室以上，20坪以上",
-    "descOFFICE": "办公室、商业空间"
+    "descOFFICE": "办公室、商业空间",
+    "TARGETED": "指定报价申请",
+    "ALL": "全部"
   },
   "profileImage": {
     "upload": "上传头像",
@@ -206,7 +208,8 @@
     "DAEGU": "大邱",
     "ULSAN": "蔚山",
     "BUSAN": "釜山",
-    "JEJU": "济州"
+    "JEJU": "济州",
+    "ALL": "全部"
   },
   "profile": {
     "profileImage": "头像",

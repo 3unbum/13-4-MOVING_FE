@@ -99,7 +99,9 @@
     "OFFICE": "オフィス引っ越し",
     "descSMALL": "ワンルーム・2部屋、20坪未満",
     "descHOME": "3部屋以上、20坪以上",
-    "descOFFICE": "オフィス・商業スペース"
+    "descOFFICE": "オフィス・商業スペース",
+    "TARGETED": "指定見積もり依頼",
+    "ALL": "すべて"
   },
   "profileImage": {
     "upload": "プロフィール画像をアップロード",
@@ -206,7 +208,8 @@
     "DAEGU": "大邱",
     "ULSAN": "蔚山",
     "BUSAN": "釜山",
-    "JEJU": "済州"
+    "JEJU": "済州",
+    "ALL": "すべて"
   },
   "profile": {
     "profileImage": "プロフィール画像",

@@ -99,7 +99,9 @@
     "OFFICE": "사무실이사",
     "descSMALL": "원룸, 투룸, 20평대 미만",
     "descHOME": "쓰리룸, 20평대 이상",
-    "descOFFICE": "사무실, 상업공간"
+    "descOFFICE": "사무실, 상업공간",
+    "TARGETED": "지정 견적 요청",
+    "ALL": "전체"
   },
   "profileImage": {
     "upload": "프로필 이미지 업로드",
@@ -206,7 +208,8 @@
     "DAEGU": "대구",
     "ULSAN": "울산",
     "BUSAN": "부산",
-    "JEJU": "제주"
+    "JEJU": "제주",
+    "ALL": "전체"
   },
   "profile": {
     "profileImage": "프로필 이미지",

@@ -99,7 +99,9 @@
     "OFFICE": "Office move",
     "descSMALL": "Studio or 2-room, under 20 pyeong",
     "descHOME": "3-room or larger, over 20 pyeong",
-    "descOFFICE": "Offices and commercial spaces"
+    "descOFFICE": "Offices and commercial spaces",
+    "TARGETED": "Designated Quote",
+    "ALL": "All"
   },
   "profileImage": {
     "upload": "Upload profile image",
@@ -206,7 +208,8 @@
     "DAEGU": "Daegu",
     "ULSAN": "Ulsan",
     "BUSAN": "Busan",
-    "JEJU": "Jeju"
+    "JEJU": "Jeju",
+    "ALL": "All"
   },
   "profile": {
     "profileImage": "Profile Image",

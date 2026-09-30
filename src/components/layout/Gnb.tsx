@@ -72,6 +72,7 @@ export default function Gnb({
   const t = useTranslations("gnb");
   const tCommon = useTranslations("common");
   const tAuth = useTranslations("auth");
+  const tMenu = useTranslations("gnb.menu_items");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [openPanel, setOpenPanel] = useState<GnbPanel>("none");
   const pathname = usePathname();
@@ -79,7 +80,12 @@ export default function Gnb({
   const actionsRef = useRef<HTMLDivElement>(null);
 
   const navItems = getGnbNavItems(isLoggedIn, role);
-  const menuOptions = profileOptions ?? getGnbProfileOptions(role);
+  // DropdownProfile은 언어 선택에도 재사용되는 범용 컴포넌트라 번역을 모릅니다.
+  // 라벨은 여기서 만들어 넘깁니다 (상수의 label은 폴백).
+  const menuOptions = (profileOptions ?? getGnbProfileOptions(role)).map((option) => ({
+    ...option,
+    label: tMenu(option.value),
+  }));
   const profileHeader = userName
     ? tCommon(role === "mover" ? "moverName" : "customerName", { name: userName })
     : undefined;
