@@ -1,9 +1,10 @@
 "use client";
 
 import { useRouter } from "@/i18n/navigation";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
 import Button from "@/components/common/Button";
 import InputTextArea from "@/components/common/InputTextarea";
 import InputTextField from "@/components/common/InputTextfield";
@@ -12,7 +13,7 @@ import Toast from "@/components/common/Toast";
 import Chip from "@/components/filter/ChipRegion";
 import FieldLabel from "@/components/profile/FieldLabel";
 import { REGION_OPTIONS, SERVICE_OPTIONS } from "@/constants/profile/options";
-import { moverProfileSchema, type MoverProfileFormValues } from "@/lib/schemas/profile-schema";
+import { makeMoverProfileSchema, type MoverProfileFormValues } from "@/lib/schemas/profile-schema";
 import { profileService } from "@/lib/services/profile-service";
 import { cn } from "@/lib/utils/cn";
 import { useAuth } from "@/providers/AuthProvider";
@@ -22,12 +23,21 @@ import { useAuth } from "@/providers/AuthProvider";
 // 데스크탑(pc)에서는 피그마 카드가 2열(왼쪽: 이미지·별명·경력·한줄소개 / 오른쪽: 상세설명·서비스·지역)
 // 이라 pc:grid로 나눔 — 모바일·태블릿은 세로 한 줄.
 export default function MoverProfileForm() {
+  const t = useTranslations("profile");
+  const tService = useTranslations("service");
+  const tRegion = useTranslations("region");
   const router = useRouter();
   const { refetch } = useAuth();
   const [submitError, setSubmitError] = useState<string | undefined>();
   // ProfileImageUpload가 서버 업로드 중일 때는 제출을 막아야 함 — onChange가 업로드 완료 후에만
   // 호출되므로, 업로드 중 제출하면 새 이미지 URL이 반영되기 전에 폼이 전송될 수 있다
   const [isImageUploading, setIsImageUploading] = useState(false);
+
+  const tValidation = useTranslations("validation");
+
+  // 매 렌더마다 새 스키마가 생기면 zodResolver도 교체돼 폼이 불필요하게 다시 만들어집니다
+
+  const schema = useMemo(() => makeMoverProfileSchema(tValidation), [tValidation]);
 
   const {
     control,
@@ -36,7 +46,7 @@ export default function MoverProfileForm() {
     setValue,
     formState: { errors, isSubmitting },
   } = useForm<MoverProfileFormValues>({
-    resolver: zodResolver(moverProfileSchema),
+    resolver: zodResolver(schema),
     defaultValues: {
       image: undefined,
       nickName: "",
@@ -70,7 +80,7 @@ export default function MoverProfileForm() {
       });
       router.push("/mover/requests");
     } catch {
-      setSubmitError("프로필 등록에 실패했어요. 잠시 후 다시 시도해주세요");
+      setSubmitError(t("registerFailed"));
     }
   }
 
@@ -80,7 +90,7 @@ export default function MoverProfileForm() {
         <div className="pc:gap-8 flex flex-col gap-5">
           <div className="flex flex-col gap-4">
             <span className="text-16 text-black-black-400 pc:text-20 font-semibold">
-              프로필 이미지
+              {t("profileImage")}
             </span>
             <Controller
               name="image"
@@ -100,10 +110,10 @@ export default function MoverProfileForm() {
           <div className="bg-line-100 pc:block hidden h-px w-full" />
 
           <div className="flex flex-col gap-4">
-            <FieldLabel>별명</FieldLabel>
+            <FieldLabel>{t("nickName")}</FieldLabel>
             <InputTextField
-              label="별명"
-              placeholder="사이트에 노출될 별명을 입력해 주세요"
+              label={t("nickName")}
+              placeholder={t("nickNamePlaceholder")}
               size="sm"
               className="pc:[&_input]:text-18"
               errorMessage={errors.nickName?.message}
@@ -114,12 +124,12 @@ export default function MoverProfileForm() {
           <div className="bg-line-100 h-px w-full" />
 
           <div className="flex flex-col gap-4">
-            <FieldLabel>경력</FieldLabel>
+            <FieldLabel>{t("career")}</FieldLabel>
             <InputTextField
-              label="경력"
+              label={t("career")}
               type="text"
               inputMode="numeric"
-              placeholder="기사님의 경력을 입력해 주세요"
+              placeholder={t("careerPlaceholder")}
               size="sm"
               className="pc:[&_input]:text-18"
               errorMessage={errors.career?.message}
@@ -144,10 +154,10 @@ export default function MoverProfileForm() {
           <div className="bg-line-100 h-px w-full" />
 
           <div className="flex flex-col gap-4">
-            <FieldLabel>한 줄 소개</FieldLabel>
+            <FieldLabel>{t("bio")}</FieldLabel>
             <InputTextField
-              label="한 줄 소개"
-              placeholder="한 줄 소개를 입력해 주세요"
+              label={t("bio")}
+              placeholder={t("bioPlaceholder")}
               size="sm"
               className="pc:[&_input]:text-18"
               errorMessage={errors.bio?.message}
@@ -160,10 +170,10 @@ export default function MoverProfileForm() {
 
         <div className="pc:gap-8 flex flex-col gap-5">
           <div className="flex flex-col gap-4">
-            <FieldLabel>상세 설명</FieldLabel>
+            <FieldLabel>{t("description")}</FieldLabel>
             <InputTextArea
-              label="상세 설명"
-              placeholder="상세 내용을 입력해 주세요"
+              label={t("description")}
+              placeholder={t("descriptionPlaceholder")}
               size="sm"
               className="pc:[&_textarea]:px-6 pc:[&_textarea]:text-18"
               errorMessage={errors.description?.message}
@@ -174,7 +184,7 @@ export default function MoverProfileForm() {
           <div className="bg-line-100 h-px w-full" />
 
           <div className="flex flex-col gap-4">
-            <FieldLabel>제공 서비스</FieldLabel>
+            <FieldLabel>{t("moverServices")}</FieldLabel>
             <div className="pc:gap-3 flex flex-wrap gap-1.5">
               {SERVICE_OPTIONS.map((option) => {
                 const selected = selectedServices.includes(option.value);
@@ -186,7 +196,7 @@ export default function MoverProfileForm() {
                     onClick={() => toggle("services", option.value)}
                     className={cn("pc:px-5 pc:py-2.5 pc:text-18", !selected && "pc:font-normal")}
                   >
-                    {option.label}
+                    {tService(option.value)}
                   </Chip>
                 );
               })}
@@ -199,7 +209,7 @@ export default function MoverProfileForm() {
           <div className="bg-line-100 h-px w-full" />
 
           <div className="flex flex-col gap-4">
-            <FieldLabel>서비스 가능 지역</FieldLabel>
+            <FieldLabel>{t("moverRegions")}</FieldLabel>
             <div className="pc:gap-3.5 flex flex-wrap gap-2">
               {REGION_OPTIONS.map((option) => {
                 const selected = selectedRegions.includes(option.value);
@@ -211,7 +221,7 @@ export default function MoverProfileForm() {
                     onClick={() => toggle("regions", option.value)}
                     className={cn("pc:px-5 pc:py-2.5 pc:text-18", !selected && "pc:font-normal")}
                   >
-                    {option.label}
+                    {tRegion(option.value)}
                   </Chip>
                 );
               })}
@@ -230,7 +240,7 @@ export default function MoverProfileForm() {
           className="pc:h-15 pc:gap-2 pc:rounded-2xl pc:text-18"
           disabled={isSubmitting || isImageUploading}
         >
-          {isSubmitting ? "등록 중..." : "시작하기"}
+          {isSubmitting ? t("registering") : t("register")}
         </Button>
       </div>
 

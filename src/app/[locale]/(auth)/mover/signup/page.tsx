@@ -1,6 +1,8 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
+import { useMemo } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useForm } from "react-hook-form";
 import truckLg from "@/assets/images/common/truck_lg.png";
@@ -12,19 +14,23 @@ import AuthSwitchLink from "@/components/auth/AuthSwitchLink";
 import FormField from "@/components/auth/FormField";
 import SocialLoginSection from "@/components/auth/SocialLoginSection";
 import { authService } from "@/lib/services/auth-service";
-import { signupSchema, type SignupFormValues } from "@/lib/schemas/auth-schema";
+import { makeSignupSchema, type SignupFormValues } from "@/lib/schemas/auth-schema";
 import { ApiError } from "@/lib/utils/api-error";
 import { useAuth } from "@/providers/AuthProvider";
 
 export default function MoverSignupPage() {
   const router = useRouter();
   const { refetch } = useAuth();
+  const tValidation = useTranslations("validation");
+  // 매 렌더마다 새 스키마가 생기면 zodResolver도 교체돼 폼이 불필요하게 다시 만들어집니다
+  const schema = useMemo(() => makeSignupSchema(tValidation), [tValidation]);
+
   const {
     register,
     handleSubmit,
     setError,
     formState: { errors, isSubmitting, isValid },
-  } = useForm<SignupFormValues>({ resolver: zodResolver(signupSchema), mode: "onChange" });
+  } = useForm<SignupFormValues>({ resolver: zodResolver(schema), mode: "onChange" });
 
   const onSubmit = async (values: SignupFormValues) => {
     const { passwordConfirm: _passwordConfirm, ...signupValues } = values;
@@ -128,7 +134,7 @@ export default function MoverSignupPage() {
           <AuthSwitchLink prompt="이미 무빙 회원이신가요?" href="/mover/login" linkText="로그인" />
         </div>
 
-        <SocialLoginSection actionLabel="회원가입" role="MOVER" />
+        <SocialLoginSection action="signup" role="MOVER" />
       </div>
     </AuthCard>
   );
