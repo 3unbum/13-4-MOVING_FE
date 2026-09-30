@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import clipLg from "@/assets/icons/clip-lg.svg";
 import clipMd from "@/assets/icons/clip-md.svg";
 import facebookLg from "@/assets/icons/facebook-lg.svg";
@@ -66,10 +67,13 @@ function ShareButton({
  * 없거나 SDK 로드에 실패하면, 페이스북은 팝업이 차단되면 링크 복사로 폴백합니다.
  */
 export default function QuoteShare({ title, moverId, moverNickName, className }: QuoteShareProps) {
+  const t = useTranslations("quote");
+  const tCommon = useTranslations("common");
+
   const { copyLink, shareToKakao, shareToFacebook, isKakaoReady, toast } = useShare({
     url: `/movers/${moverId}`,
-    text: `이사를 준비하시나요? ${moverNickName} 기사님을 추천합니다. 무빙에서 확인해 보세요!`,
-    buttonTitle: "기사님 정보 보러가기",
+    text: t("shareText", { moverName: moverNickName }),
+    buttonTitle: t("shareButtonTitle"),
   });
 
   return (
@@ -77,20 +81,20 @@ export default function QuoteShare({ title, moverId, moverNickName, className }:
       <p className="text-16 text-black-300 pc:text-20 font-semibold">{title}</p>
 
       <div className="pc:gap-4 flex items-center gap-3">
-        <ShareButton label="링크 복사하기" variant="clip" onClick={copyLink}>
+        <ShareButton label={tCommon("copyLink")} variant="clip" onClick={copyLink}>
           <Image src={clipMd} alt="" className="pc:hidden size-6" />
           <Image src={clipLg} alt="" className="pc:block hidden size-9" />
         </ShareButton>
 
         <ShareButton
-          label={isKakaoReady ? "카카오톡으로 공유하기" : "링크 복사하기 (카카오톡 공유는 준비 중)"}
+          label={isKakaoReady ? tCommon("shareKakao") : t("shareKakaoFallback")}
           variant="kakao"
           onClick={shareToKakao}
         >
           <Image src={kakao} alt="" className="pc:size-7 size-6" />
         </ShareButton>
 
-        <ShareButton label="페이스북으로 공유하기" variant="facebook" onClick={shareToFacebook}>
+        <ShareButton label={tCommon("shareFacebook")} variant="facebook" onClick={shareToFacebook}>
           <Image src={facebookMd} alt="" className="pc:hidden size-6" />
           <Image src={facebookLg} alt="" className="pc:block hidden size-7" />
         </ShareButton>

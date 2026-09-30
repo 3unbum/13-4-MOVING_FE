@@ -2,6 +2,7 @@
 
 import { cn } from "@/lib/utils/cn";
 import { useId } from "react";
+import { useTranslations } from "next-intl";
 import Button from "@/components/common/Button";
 import Modal, { ModalHeader } from "@/components/common/Modal";
 
@@ -21,13 +22,19 @@ export default function InfoRequiredModal({
   open,
   onClose,
   size = "md",
-  title = "지정 견적 요청하기",
-  message = "일반 견적 요청을 먼저 진행해 주세요.",
-  actionLabel = "일반 견적 요청 하기",
+  title,
+  message,
+  actionLabel,
   onAction,
 }: InfoRequiredModalProps) {
   const titleId = useId();
   const isMd = size === "md";
+  const t = useTranslations("quote");
+
+  // 기본 매개변수로는 `t`를 못 씁니다(훅이 함수 본문 안에서만 호출 가능) — 여기서 채웁니다
+  const resolvedTitle = title ?? t("targetedTitle");
+  const resolvedMessage = message ?? t("targetedMessage");
+  const resolvedActionLabel = actionLabel ?? t("targetedAction");
 
   return (
     <Modal
@@ -41,12 +48,12 @@ export default function InfoRequiredModal({
           : "w-[292px] min-w-[292px] gap-7.5 rounded-3xl px-4 py-6"
       )}
     >
-      <ModalHeader id={titleId} title={title} size={size} onClose={onClose} />
+      <ModalHeader id={titleId} title={resolvedTitle} size={size} onClose={onClose} />
       <p className="text-18 text-black-300 min-h-0 w-full flex-1 overflow-y-auto font-medium">
-        {message}
+        {resolvedMessage}
       </p>
       <Button variant="solid" size={isMd ? "lg" : "sm"} className="shrink-0" onClick={onAction}>
-        {actionLabel}
+        {resolvedActionLabel}
       </Button>
     </Modal>
   );
