@@ -6,22 +6,17 @@ import { useRouter } from "@/i18n/navigation";
 import CheckboxButton from "@/components/common/CheckboxButton";
 import Header from "@/components/common/Header";
 import Toast from "@/components/common/Toast";
-import { SERVICE_LABELS, type ServiceCode } from "@/components/filter/ChipRegion";
 import CardMover from "@/components/mover/CardMover";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { favoriteQueryKeys } from "@/constants/query-keys/favorites";
 import { favoriteService } from "@/lib/services/favorite-service";
 import { ApiError } from "@/lib/utils/api-error";
 import { cn } from "@/lib/utils/cn";
+import { toServiceCode } from "@/lib/utils/mover-list-mapper";
 import FavoritesEmptyFallback from "./_components/FavoritesEmptyFallback";
 
 const TABLET_QUERY = "(min-width: 744px)";
 const PC_QUERY = "(min-width: 1280px)";
-
-/** BE moverServices.service는 ServiceType. 유효한 값만 칩으로 쓴다. */
-function toServiceCodes(services: string[]): ServiceCode[] {
-  return services.filter((service): service is ServiceCode => service in SERVICE_LABELS);
-}
 
 export default function CustomerFavoritesPage() {
   const router = useRouter();
@@ -139,7 +134,7 @@ export default function CustomerFavoritesPage() {
                 <li key={item.id}>
                   <CardMover
                     size={cardSize}
-                    categories={toServiceCodes(item.services)}
+                    categories={item.services.map(toServiceCode)}
                     title={item.bio}
                     nickName={item.nickName}
                     profileImage={item.image}
