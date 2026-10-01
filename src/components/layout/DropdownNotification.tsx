@@ -74,7 +74,8 @@ export default function DropdownNotification({
   const itemCount = Children.count(children);
   const hasItems = itemCount > 0;
   // 3장까지는 그대로 펼칩니다. 4장부터 패널 안에서 스크롤합니다.
-  const scrolls = itemCount >= 4;
+  // 미읽음 필터로 화면에 3장 이하만 있어도, 다음 페이지 미읽음을 받으려면 센티널이 필요합니다.
+  const scrolls = itemCount >= 4 || (unreadOnly && hasMore);
   const sentinelRef = useInfiniteScrollTrigger(() => onLoadMore?.(), {
     enabled: scrolls && hasMore && Boolean(onLoadMore),
     isLoading: isLoadingMore,

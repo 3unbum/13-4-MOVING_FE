@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { ApiError } from "@/lib/utils/api-error";
 import {
   notificationKeys,
   notificationService,
@@ -125,9 +126,18 @@ function useNotificationStream(enabled: boolean) {
       try {
         await notificationService.list({ take: 1 });
         connect();
-      } catch {
-        // refresh까지 실패하면 세션이 없는 상태입니다. 더 붙이지 않습니다.
-        stopped = true;
+      } catch (error) {
+        // refresh까지 실패한 401만 세션 없음으로 봅니다. 네트워크·5xx는 한도 안에서 다시 붙입니다.
+        if (error instanceof ApiError && error.status === 401) {
+          stopped = true;
+          return;
+        }
+        failures += 1;
+        if (failures > STREAM_MAX_FAILURES) return;
+        clearTimeout(retryTimer);
+        retryTimer = setTimeout(() => {
+          void reconnect();
+        }, STREAM_RETRY_MS);
       }
     };
 
@@ -191,13 +201,14 @@ export function useNotifications(enabled: boolean, summaryEnabled: boolean) {
 
   const removeAll = useMutation({
     mutationFn: async () => {
-      // 목록은 페이지라, 빈 페이지가 나올 때까지 지웁니다. 상한은 무한 루프 방지입니다.
-      for (let page = 0; page < 5; page += 1) {
+      // 목록은 페이지라 첫 페이지를 반복해서 지웁니다. 커서는 다음 요청에 넘기지 않습니다.
+      // 종료는 빈 목록이거나, BE가 한 건도 안 지운 때입니다.
+      for (;;) {
         const result = await notificationService.list({ take: 20 });
         const ids = result.items.map((item) => item.id);
         if (ids.length === 0) return;
         const deleted = await notificationService.removeMany(ids);
-        if (deleted.deletedCount === 0 || !result.nextCursor) return;
+        if (deleted.deletedCount === 0) return;
       }
     },
     onSuccess: invalidate,

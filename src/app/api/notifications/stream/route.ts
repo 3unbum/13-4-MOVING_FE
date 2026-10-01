@@ -20,6 +20,7 @@ export async function GET(request: NextRequest) {
         accept: "text/event-stream",
       },
       cache: "no-store",
+      signal: request.signal,
     });
   } catch {
     return new Response(null, { status: 502 });
