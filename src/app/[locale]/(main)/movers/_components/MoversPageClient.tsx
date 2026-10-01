@@ -1,0 +1,386 @@
+"use client";
+
+import { useMemo, useState, type KeyboardEvent } from "react";
+import { useTranslations } from "next-intl";
+import { useRouter } from "@/i18n/navigation";
+import Filter, { type FilterOption } from "@/components/common/Filter";
+import Header from "@/components/common/Header";
+import InputSearchbar from "@/components/common/InputSearchbar";
+import Sort from "@/components/common/Sort";
+import CardMover from "@/components/mover/CardMover";
+import InfoRequiredModal from "@/components/quote/InfoRequiredModal";
+import { REGION_COLUMNS, SERVICE_OPTIONS, SORT_OPTIONS } from "@/constants/movers/filters";
+import type { MoverListFilters } from "@/constants/query-keys/movers";
+import { useDebounce } from "@/hooks/useDebounce";
+import { useInfiniteScrollTrigger } from "@/hooks/useInfiniteScrollTrigger";
+import { useMoverListUrlFilters } from "@/hooks/useMoverListUrlFilters";
+import { useMoversInfinite } from "@/hooks/useMoversInfinite";
+import { useSidebarFavorites } from "@/hooks/useSidebarFavorites";
+import { useToggleMoverFavorite } from "@/hooks/useToggleMoverFavorite";
+import type { MoverListSort } from "@/lib/services/mover-service";
+import { toMoverListRegionParam, toMoverListServiceParam } from "@/lib/utils/mover-filter-params";
+import type { MoverListUrlFilters } from "@/lib/utils/mover-list-url-filters";
+import { mapFavoriteCardToCard, mapMoverListItemToCard } from "@/lib/utils/mover-list-mapper";
+import { cn } from "@/lib/utils/cn";
+import { useAuth } from "@/providers/AuthProvider";
+
+type MoverCardViewModel = ReturnType<typeof mapMoverListItemToCard>;
+
+function getMoverCardNavProps(onNavigate: () => void) {
+  return {
+    role: "link" as const,
+    tabIndex: 0,
+    onClick: onNavigate,
+    onKeyDown: (event: KeyboardEvent<HTMLElement>) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        onNavigate();
+      }
+    },
+  };
+}
+
+function ResponsiveMoverCard({
+  mover,
+  isFavorited,
+  onFavoriteClick,
+  onNavigate,
+}: {
+  mover: MoverCardViewModel;
+  isFavorited: boolean;
+  onFavoriteClick?: () => void;
+  onNavigate: () => void;
+}) {
+  const shared = {
+    categories: mover.categories,
+    title: mover.title,
+    description: mover.description,
+    nickName: mover.nickName,
+    profileImage: mover.profileImage,
+    rating: mover.rating,
+    reviewCount: mover.reviewCount,
+    career: mover.career,
+    confirmedCount: mover.confirmedCount,
+    favoriteCount: mover.favoriteCount,
+    isFavorited,
+    onFavoriteClick,
+    ...getMoverCardNavProps(onNavigate),
+  };
+
+  return (
+    <>
+      {/* Mobile 목록: Figma md(327×226) — bio+description / Tablet·PC: lg */}
+      <CardMover {...shared} size="md" className="tablet:hidden cursor-pointer" />
+      <CardMover {...shared} size="lg" className="tablet:block hidden cursor-pointer" />
+    </>
+  );
+}
+
+interface MoversPageClientProps {
+  /**
+   * 서버 page가 URL 쿼리에서 파싱한 초기 필터.
+   * 상세 뒤로가기 시 page가 다시 렌더되며 이 값으로 복원됩니다.
+   */
+  initialFilters: MoverListUrlFilters;
+}
+
+/**
+ * 기사님 찾기 화면 본문.
+ * page.tsx를 서버로 두기 위해 UI·데이터 로직만 여기로 분리했습니다.
+ * (필터 유지 로직 자체는 useMoverListUrlFilters에 있습니다)
+ */
+export default function MoversPageClient({ initialFilters }: MoversPageClientProps) {
+  const t = useTranslations("mover");
+  const tRegion = useTranslations("region");
+  const tService = useTranslations("service");
+  const tFilter = useTranslations("filter");
+
+  // 상수는 value(코드)만 쓰고 표시 라벨은 여기서 번역합니다 — label은 폴백으로만 남습니다
+  const serviceOptions = SERVICE_OPTIONS.map((option) => ({
+    ...option,
+    label: tService(option.value),
+  }));
+  // Filter가 2열 튜플을 요구해서 map(배열) 대신 각 열을 따로 만듭니다
+  const regionColumns: [FilterOption[], FilterOption[]] = [
+    REGION_COLUMNS[0].map((option) => ({ ...option, label: tRegion(option.value) })),
+    REGION_COLUMNS[1].map((option) => ({ ...option, label: tRegion(option.value) })),
+  ];
+  const sortOptions = SORT_OPTIONS.map((option) => ({
+    ...option,
+    label: tFilter(`sort${option.value.charAt(0).toUpperCase()}${option.value.slice(1)}`),
+  }));
+  const router = useRouter();
+  const { account, isAuthenticated } = useAuth();
+  // 찜 API는 CUSTOMER 전용 — 사이드바·토글도 동일 기준
+  const isCustomer = isAuthenticated && account?.role === "CUSTOMER";
+
+  // URL query와 동기화 — 상세 뒤로가기 시에도 필터·검색·정렬 유지
+  const { search, setSearch, region, setRegion, service, setService, sort, setSort, resetFilters } =
+    useMoverListUrlFilters(initialFilters);
+  const [loginModalOpen, setLoginModalOpen] = useState(false);
+
+  // 입력은 즉시 반영, API keyword만 300ms debounce
+  const debouncedSearch = useDebounce(search, 300);
+  const keywordForQuery = debouncedSearch.trim() || undefined;
+
+  // queryKey에 포함 → 필터 바뀌면 목록을 처음부터 다시 fetch
+  const listFilters: MoverListFilters = useMemo(
+    () => ({
+      keyword: keywordForQuery,
+      region: toMoverListRegionParam(region),
+      service: toMoverListServiceParam(service),
+      sort,
+    }),
+    [keywordForQuery, region, service, sort]
+  );
+
+  // ── 서버 상태 ──
+  const { favoritedIds, isFavoritesLoading, toggleFavorite, getFavoriteCount } =
+    useToggleMoverFavorite({
+      onRequireLogin: () => setLoginModalOpen(true),
+    });
+
+  const {
+    data: sidebarFavorites,
+    isPending: isSidebarPending,
+    isError: isSidebarError,
+  } = useSidebarFavorites();
+
+  const { data, isPending, isError, error, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useMoversInfinite(listFilters);
+
+  // infinite query pages → 카드용 flat 배열
+  const movers = useMemo(
+    () => data?.pages.flatMap((page) => page.data.map(mapMoverListItemToCard)) ?? [],
+    [data]
+  );
+
+  const sidebarMovers = useMemo(
+    () => sidebarFavorites?.items.map(mapFavoriteCardToCard) ?? [],
+    [sidebarFavorites]
+  );
+
+  // 목록 맨 아래 sentinel이 보이면 다음 커서 페이지 요청
+  const sentinelRef = useInfiniteScrollTrigger(
+    () => {
+      void fetchNextPage();
+    },
+    { enabled: Boolean(hasNextPage), isLoading: isFetchingNextPage }
+  );
+
+  const goToCustomerLogin = () => {
+    setLoginModalOpen(false);
+    router.push("/customer/login");
+  };
+
+  return (
+    <div className="flex min-h-screen flex-col bg-gray-50">
+      <div className="mx-auto w-full max-w-[1920px]">
+        <Header size="lg" className="pc:flex hidden">
+          {t("findMovers")}
+        </Header>
+
+        <main
+          className={cn(
+            "w-full flex-1",
+            "px-6 pt-1.5 pb-10",
+            "tablet:px-18 tablet:pt-2.5",
+            "pc:px-90 pc:pt-0.75 pc:pb-20"
+          )}
+        >
+          {/* ── 검색·필터·정렬 (PC 검색열 819px, 목록은 820px) ── */}
+          <div className="pc:w-204.75">
+            <div className="pc:pb-0 tablet:pb-2.5 pb-1.5">
+              <InputSearchbar
+                size="sm"
+                className="pc:hidden"
+                value={search}
+                onChange={setSearch}
+                label={t("searchMoverLabel")}
+                placeholder={t("searchMoverPlaceholder")}
+              />
+              <InputSearchbar
+                size="md"
+                className="pc:flex hidden"
+                value={search}
+                onChange={setSearch}
+                label={t("searchMoverLabel")}
+                placeholder={t("searchMoverPlaceholder")}
+              />
+            </div>
+
+            <div className={cn("flex items-center py-4", "pc:mt-9.5 pc:py-0")}>
+              {/* Mobile 필터 간격 8px, Tablet 12px. 초기화는 PC만 (Figma) */}
+              <div className="pc:hidden tablet:gap-3 flex items-center gap-2">
+                <Filter
+                  size="sm"
+                  label={t("region")}
+                  layout="double"
+                  columns={regionColumns}
+                  value={region}
+                  onChange={setRegion}
+                />
+                <Filter
+                  size="sm"
+                  label={t("service")}
+                  options={serviceOptions}
+                  value={service}
+                  onChange={setService}
+                />
+              </div>
+              <div className="pc:flex hidden items-center">
+                <div className="flex items-center gap-3">
+                  <Filter
+                    size="md"
+                    label={t("region")}
+                    layout="double"
+                    columns={regionColumns}
+                    value={region}
+                    onChange={setRegion}
+                  />
+                  <Filter
+                    size="md"
+                    label={t("service")}
+                    options={serviceOptions}
+                    value={service}
+                    onChange={setService}
+                  />
+                </div>
+                <button
+                  type="button"
+                  onClick={resetFilters}
+                  className="text-16 text-gray-gray-300 ml-6.25 font-medium whitespace-nowrap"
+                >
+                  {t("reset")}
+                </button>
+              </div>
+
+              <div className="ml-auto">
+                <Sort
+                  size="sm"
+                  className="pc:hidden"
+                  options={sortOptions}
+                  value={sort}
+                  onChange={(value) => setSort(value as MoverListSort)}
+                />
+                <Sort
+                  size="md"
+                  className="pc:inline-flex hidden"
+                  options={sortOptions}
+                  value={sort}
+                  onChange={(value) => setSort(value as MoverListSort)}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* ── 본문: 목록 + (PC) 찜 사이드바 ── */}
+          <div className="tablet:mt-6 pc:mt-9.25 pc:gap-13.5 mt-3 flex items-start">
+            <div className="pc:w-205 pc:flex-none flex min-w-0 flex-1 flex-col">
+              {isPending && (
+                <p className="text-14 text-gray-gray-500 py-8 text-center">{t("loadingMovers")}</p>
+              )}
+
+              {isError && (
+                <p className="text-14 py-8 text-center text-red-500" role="alert">
+                  {t("loadFailed")}
+                  {error instanceof Error ? ` (${error.message})` : null}
+                </p>
+              )}
+
+              {!isPending && !isError && movers.length === 0 && (
+                <p className="text-14 text-gray-gray-500 py-8 text-center">{t("noResults")}</p>
+              )}
+
+              <ul className="pc:gap-5 flex flex-col gap-6">
+                {movers.map((mover) => {
+                  // 토글 직후 개수는 목록 refetch 전이라 로컬 override 사용
+                  const favoriteCount = getFavoriteCount(mover.id, mover.favoriteCount);
+                  return (
+                    <li key={mover.id}>
+                      <ResponsiveMoverCard
+                        mover={{ ...mover, favoriteCount }}
+                        isFavorited={favoritedIds.has(mover.id)}
+                        onFavoriteClick={
+                          isFavoritesLoading
+                            ? undefined
+                            : () => toggleFavorite(mover.id, favoriteCount)
+                        }
+                        onNavigate={() => router.push(`/movers/${mover.id}`)}
+                      />
+                    </li>
+                  );
+                })}
+              </ul>
+
+              {/* 뷰포트에 들어오면 fetchNextPage */}
+              <div ref={sentinelRef} className="h-1 w-full shrink-0" aria-hidden />
+
+              {isFetchingNextPage && (
+                <p className="text-14 text-gray-gray-500 py-4 text-center">{t("loadingMore")}</p>
+              )}
+            </div>
+
+            {/* PC + CUSTOMER만 — GET /favorites?limit=3 */}
+            {isCustomer && (
+              <aside className="pc:flex hidden w-81.75 shrink-0 flex-col gap-4">
+                <h2 className="text-20 text-black-black-450 font-semibold">
+                  {t("favoriteMovers")}
+                </h2>
+                {isSidebarPending && <p className="text-14 text-gray-gray-500">{t("loading")}</p>}
+                {isSidebarError && (
+                  <p className="text-14 text-red-500" role="alert">
+                    {t("favoriteLoadFailed")}
+                  </p>
+                )}
+                {!isSidebarPending && !isSidebarError && sidebarMovers.length === 0 && (
+                  <p className="text-14 text-gray-gray-500">{t("noFavorites")}</p>
+                )}
+                <ul className="flex flex-col gap-4">
+                  {sidebarMovers.map((mover) => {
+                    const favoriteCount = getFavoriteCount(mover.id, mover.favoriteCount);
+                    const navProps = getMoverCardNavProps(() => router.push(`/movers/${mover.id}`));
+                    return (
+                      <li key={mover.id}>
+                        <CardMover
+                          {...navProps}
+                          size="sm"
+                          className="cursor-pointer"
+                          categories={mover.categories}
+                          title={mover.title}
+                          nickName={mover.nickName}
+                          profileImage={mover.profileImage}
+                          rating={mover.rating}
+                          reviewCount={mover.reviewCount}
+                          career={mover.career}
+                          confirmedCount={mover.confirmedCount}
+                          favoriteCount={favoriteCount}
+                          isFavorited={favoritedIds.has(mover.id)}
+                          onFavoriteClick={
+                            isFavoritesLoading
+                              ? undefined
+                              : () => toggleFavorite(mover.id, favoriteCount)
+                          }
+                        />
+                      </li>
+                    );
+                  })}
+                </ul>
+              </aside>
+            )}
+          </div>
+        </main>
+      </div>
+
+      {/* 비회원 찜 가드 */}
+      <InfoRequiredModal
+        open={loginModalOpen}
+        onClose={() => setLoginModalOpen(false)}
+        title={t("loginRequired")}
+        message={t("loginToFavorite")}
+        actionLabel={t("goLogin")}
+        onAction={goToCustomerLogin}
+      />
+    </div>
+  );
+}
