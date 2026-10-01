@@ -106,9 +106,10 @@ export default function AddressSelectModal({
                 onClick={() => onSelect(result)}
               />
             ))}
-            <div ref={sentinelRef} className="h-px shrink-0" />
           </div>
         )}
+        {/* 결과가 전부 필터링돼 비어 있어도 다음 페이지를 이어서 부를 수 있게 조건 밖에 둔다 */}
+        <div ref={sentinelRef} className="h-px w-full shrink-0" />
       </div>
 
       <Button

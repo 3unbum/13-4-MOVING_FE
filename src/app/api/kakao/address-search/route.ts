@@ -124,9 +124,11 @@ export async function GET(request: NextRequest) {
     const roadNames = [
       ...new Set(places.map((p) => p.road_address_name).filter((n): n is string => !!n)),
     ];
-    const documents = (
-      await Promise.all(roadNames.map((n) => fetchKakao(KAKAO_ADDRESS_SEARCH_URL, n, 1, 1)))
-    ).flatMap((r) => r.documents);
+    // 후보 하나의 조회가 실패해도 나머지 후보는 살린다
+    const lookups = await Promise.allSettled(
+      roadNames.map((n) => fetchKakao(KAKAO_ADDRESS_SEARCH_URL, n, 1, 1))
+    );
+    const documents = lookups.flatMap((r) => (r.status === "fulfilled" ? r.value.documents : []));
     return { documents, hasMore: !meta.is_end };
   };
 
