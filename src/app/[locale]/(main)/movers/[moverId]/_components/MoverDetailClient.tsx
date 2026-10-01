@@ -1,0 +1,441 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import Image from "next/image";
+// useParams는 locale과 무관한 동적 세그먼트(moverId)를 읽으므로 next/navigation 그대로 씁니다
+import { useParams } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
+import moverDetailBannerLg from "@/assets/images/common/mover-detail-banner-lg.svg";
+import moverDetailBannerMd from "@/assets/images/common/mover-detail-banner-md.svg";
+import moverDetailBannerSm from "@/assets/images/common/mover-detail-banner-sm.svg";
+import Pagination from "@/components/common/Pagination";
+import ProgressBar from "@/components/common/ProgressBar";
+import Toast from "@/components/common/Toast";
+import InfoRequiredModal from "@/components/quote/InfoRequiredModal";
+import CardReview from "@/components/review/CardReview";
+import { moverQueryKeys } from "@/constants/query-keys/movers";
+import { useMoverDetail } from "@/hooks/useMoverDetail";
+import { myQuotesKeys } from "@/hooks/useMyQuotes";
+import { useShare } from "@/hooks/useShare";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { useToggleMoverFavorite } from "@/hooks/useToggleMoverFavorite";
+import { moverService, type MoverRatingDistribution } from "@/lib/services/mover-service";
+import { quotationRequestService } from "@/lib/services/quotation-request-service";
+import { ApiError } from "@/lib/utils/api-error";
+import { cn } from "@/lib/utils/cn";
+import { useAuth } from "@/providers/AuthProvider";
+import { MoverDetailDesktopCta, MoverDetailMobileStickyCta } from "./MoverDetailCta";
+import MoverDetailProfile, { MoverDetailAvatar } from "./MoverDetailProfile";
+import MoverDetailShare from "./MoverDetailShare";
+
+type ModalKind = "login" | "needQuote" | null;
+
+const TABLET_QUERY = "(min-width: 744px)";
+
+/**
+ * 기사님 상세 클라이언트 페이지.
+ * - 비회원: 찜·지정견적 → 로그인 모달
+ * - CUSTOMER + 활성 견적 없음 → InfoRequiredModal
+ * - CUSTOMER + 가능 → 지정 견적 API
+ * - 이미 지정(isTargeted) → CTA 비활성
+ */
+export default function MoverDetailClient() {
+  const t = useTranslations("mover");
+  const tQuote = useTranslations("quote");
+  const tCommon = useTranslations("common");
+  const params = useParams<{ moverId: string }>();
+  const moverId = Number(params.moverId);
+  const router = useRouter();
+  const queryClient = useQueryClient();
+  const { account, isAuthenticated } = useAuth();
+  const isCustomer = isAuthenticated && account?.role === "CUSTOMER";
+
+  const [modalKind, setModalKind] = useState<ModalKind>(null);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  // InfoRequiredModal 공통 기본은 md — 상세만 뷰포트에 맞춰 size 전달
+  const isTabletUp = useMediaQuery(TABLET_QUERY);
+  const infoModalSize = isTabletUp ? "md" : "sm";
+
+  const detailQuery = useMoverDetail(moverId);
+  const mover = detailQuery.data;
+
+  // 공유 문구·URL은 기사님마다 달라 상세 로드 후 훅에 넘김 (비로그인·로그인 UI 동일)
+  const {
+    copyLink,
+    shareToKakao,
+    shareToFacebook,
+    toast: shareToast,
+  } = useShare({
+    url: Number.isFinite(moverId) && moverId > 0 ? `/movers/${moverId}` : "/",
+    text: mover ? tQuote("shareText", { moverName: mover.nickName }) : t("shareTextFallback"),
+    buttonTitle: tQuote("shareButtonTitle"),
+  });
+
+  const { favoritedIds, isFavoritesLoading, toggleFavorite, getFavoriteCount } =
+    useToggleMoverFavorite({
+      onRequireLogin: () => setModalKind("login"),
+    });
+
+  // 활성 일반 견적 — 지정 요청 가드용 (CUSTOMER만)
+  const activeRequestQuery = useQuery({
+    queryKey: myQuotesKeys.activeRequestByAuth(account?.userId ?? null),
+    queryFn: () => quotationRequestService.getActive(),
+    enabled: isCustomer,
+  });
+
+  const targetMutation = useMutation({
+    mutationFn: async () => {
+      const active = activeRequestQuery.data;
+      if (!active) {
+        throw new ApiError(400, {
+          code: "NO_ACTIVE_REQUEST",
+          message: tQuote("targetedMessage"),
+        });
+      }
+      return quotationRequestService.createTargeted(active.id, moverId);
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: moverQueryKeys.detail(moverId) });
+      setToastMessage(t("targetedDone"));
+    },
+    onError: (error) => {
+      if (error instanceof ApiError && error.code === "ALREADY_TARGETED") {
+        void queryClient.invalidateQueries({ queryKey: moverQueryKeys.detail(moverId) });
+        setToastMessage(t("alreadyTargeted"));
+        return;
+      }
+      setToastMessage(error instanceof Error ? error.message : tCommon("requestFailed"));
+    },
+  });
+
+  useEffect(() => {
+    if (!toastMessage) {
+      return;
+    }
+    const timer = window.setTimeout(() => setToastMessage(null), 2000);
+    return () => window.clearTimeout(timer);
+  }, [toastMessage]);
+
+  if (!Number.isFinite(moverId) || moverId <= 0) {
+    return (
+      <p className="text-14 p-10 text-center text-red-200" role="alert">
+        {t("invalidMoverPath")}
+      </p>
+    );
+  }
+
+  if (detailQuery.isPending) {
+    return <p className="text-14 text-gray-gray-500 p-10 text-center">{t("loading")}</p>;
+  }
+
+  if (detailQuery.isError || !mover) {
+    return (
+      <p className="text-14 p-10 text-center text-red-200" role="alert">
+        {t("moverLoadFailed")}
+        {detailQuery.error instanceof Error ? ` (${detailQuery.error.message})` : null}
+      </p>
+    );
+  }
+
+  // 찜 목록 로드 전에는 상세 API의 isFavorited를 쓰고, 로드 후엔 Set 기준
+  const isFavorited = isCustomer
+    ? isFavoritesLoading
+      ? Boolean(mover.isFavorited)
+      : favoritedIds.has(mover.id)
+    : false;
+  const favoriteCount = getFavoriteCount(mover.id, mover.favoriteCount);
+  const isTargeted = Boolean(mover.isTargeted);
+  // disabled 쿼리의 isPending은 손님이 true라 CUSTOMER일 때만 묶음
+  const isRequestPending = (isCustomer && activeRequestQuery.isPending) || targetMutation.isPending;
+
+  const handleToggleFavorite = () => {
+    if (isFavoritesLoading) {
+      return;
+    }
+    toggleFavorite(mover.id, favoriteCount);
+  };
+
+  const handleRequestQuote = () => {
+    if (!isAuthenticated) {
+      setModalKind("login");
+      return;
+    }
+    if (!isCustomer) {
+      setToastMessage(t("customerOnly"));
+      return;
+    }
+    if (isTargeted || isRequestPending) {
+      return;
+    }
+    if (activeRequestQuery.isError) {
+      setToastMessage(t("activeRequestCheckFailed"));
+      return;
+    }
+    if (!activeRequestQuery.data) {
+      setModalKind("needQuote");
+      return;
+    }
+    targetMutation.mutate();
+  };
+
+  const closeModal = () => setModalKind(null);
+  const displayToast = shareToast ?? toastMessage;
+
+  return (
+    <div className="pc:pb-20 flex min-h-screen flex-col bg-white pb-27.5">
+      <div
+        className={cn(
+          "relative w-full overflow-hidden bg-orange-400",
+          "tablet:h-[157px] pc:h-[225px] h-30.5"
+        )}
+      >
+        <Image
+          src={moverDetailBannerSm}
+          alt=""
+          width={375}
+          height={122}
+          unoptimized
+          priority
+          className="tablet:hidden pointer-events-none absolute inset-0 size-full object-cover object-center"
+        />
+        <Image
+          src={moverDetailBannerMd}
+          alt=""
+          width={744}
+          height={157}
+          unoptimized
+          className="tablet:block pc:hidden pointer-events-none absolute inset-0 hidden size-full object-cover object-center"
+        />
+        <Image
+          src={moverDetailBannerLg}
+          alt=""
+          width={1920}
+          height={225}
+          unoptimized
+          className="pc:block pointer-events-none absolute inset-0 hidden size-full object-cover object-center"
+        />
+      </div>
+
+      <div className="tablet:px-18 pc:px-0 flex w-full flex-col items-center px-5">
+        {/* 내부는 피그마 고정폭. 창 크기 변화는 좌우 여백만. 리뷰 페이지와 동일 패턴 */}
+        <div className="tablet:max-w-[600px] pc:max-w-[1202px] pc:w-[1202px] w-full">
+          <MoverDetailAvatar image={mover.image} nickName={mover.nickName} />
+
+          <div
+            className={cn("pt-4", "tablet:pt-6", "pc:flex pc:items-start pc:gap-[116px] pc:pt-8")}
+          >
+            <div className="pc:w-[766px] pc:shrink-0 flex w-full min-w-0 flex-col gap-8">
+              <MoverDetailProfile
+                mover={mover}
+                favoriteCount={favoriteCount}
+                isFavorited={isFavorited}
+              />
+
+              <div className="pc:hidden border-line-100 border-t pt-8">
+                <MoverDetailShare
+                  size="xs"
+                  onCopyLink={copyLink}
+                  onShareKakao={shareToKakao}
+                  onShareFacebook={shareToFacebook}
+                />
+              </div>
+
+              {/* 피그마: 공유 아래 디바이더 → 리뷰 제목·분포·목록·페이지네이션 */}
+              <div className="border-line-100 pc:pt-10 border-t pt-8">
+                <MoverDetailReviews moverId={mover.id} />
+              </div>
+            </div>
+
+            <aside className="pc:flex hidden w-80 shrink-0 flex-col gap-17.5">
+              <MoverDetailDesktopCta
+                nickName={mover.nickName}
+                isFavorited={isFavorited}
+                isTargeted={isTargeted}
+                isRequestPending={isRequestPending}
+                onRequestQuote={handleRequestQuote}
+                onToggleFavorite={handleToggleFavorite}
+              />
+              <MoverDetailShare
+                size="md"
+                onCopyLink={copyLink}
+                onShareKakao={shareToKakao}
+                onShareFacebook={shareToFacebook}
+              />
+            </aside>
+          </div>
+        </div>
+      </div>
+
+      <MoverDetailMobileStickyCta
+        isFavorited={isFavorited}
+        isTargeted={isTargeted}
+        isRequestPending={isRequestPending}
+        onRequestQuote={handleRequestQuote}
+        onToggleFavorite={handleToggleFavorite}
+      />
+
+      <InfoRequiredModal
+        open={modalKind === "login"}
+        onClose={closeModal}
+        size={infoModalSize}
+        title={t("loginRequired")}
+        message={t("loginToUse")}
+        actionLabel={t("goLogin")}
+        onAction={() => {
+          closeModal();
+          router.push("/customer/login");
+        }}
+      />
+
+      <InfoRequiredModal
+        open={modalKind === "needQuote"}
+        onClose={closeModal}
+        size={infoModalSize}
+        title={tQuote("targetedTitle")}
+        message={tQuote("targetedMessage")}
+        actionLabel={tQuote("targetedAction")}
+        onAction={() => {
+          closeModal();
+          router.push("/customer/quotation-requests");
+        }}
+      />
+
+      {displayToast && <Toast message={displayToast} />}
+    </div>
+  );
+}
+
+const REVIEW_TAKE = 5;
+const KST_OFFSET_MS = 9 * 60 * 60 * 1000;
+
+/**
+ * "2024-08-26" — 기사님 상세의 리뷰 작성일.
+ *
+ * `date.ts`의 `formatWrittenDate`("2024. 08. 26")와 구분자가 다릅니다. 숫자·하이픈뿐이라
+ * 로케일과 무관해 그대로 둡니다. 표기를 통일할지는 피그마 대조가 필요합니다.
+ */
+function formatReviewCreatedAt(iso: string) {
+  const kst = new Date(new Date(iso).getTime() + KST_OFFSET_MS);
+  const year = kst.getUTCFullYear();
+  const month = String(kst.getUTCMonth() + 1).padStart(2, "0");
+  const day = String(kst.getUTCDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+/** CardReview는 마스킹된 작성자를 받는다. */
+function maskReviewWriter(name: string) {
+  const trimmed = name.trim();
+  if (!trimmed) return "****";
+  return `${trimmed.slice(0, 1)}****`;
+}
+
+function toProgressBarData(distribution: MoverRatingDistribution) {
+  return {
+    "1": distribution[1],
+    "2": distribution[2],
+    "3": distribution[3],
+    "4": distribution[4],
+    "5": distribution[5],
+    totalCount: distribution.totalCount,
+  };
+}
+
+function ReviewHeading() {
+  const tReview = useTranslations("review");
+  return (
+    <h2 className="text-16 tablet:text-20 text-black-black-400 font-semibold">
+      {tReview("title")}
+    </h2>
+  );
+}
+
+/** 상세 페이지 리뷰 영역. 마이페이지 공용 섹션과 분리해서 여기서만 다룬다. */
+function MoverDetailReviews({ moverId }: { moverId: number }) {
+  const tReview = useTranslations("review");
+  const [page, setPage] = useState(1);
+  // 피그마: 모바일 Card-list-review sm, 태블릿·PC lg
+  const isTabletUp = useMediaQuery(TABLET_QUERY);
+  const reviewCardSize = isTabletUp ? "lg" : "sm";
+
+  const listQuery = useQuery({
+    queryKey: moverQueryKeys.reviewList(moverId, page),
+    queryFn: () => moverService.getReviews(moverId, page, REVIEW_TAKE),
+    placeholderData: keepPreviousData,
+  });
+
+  const distributionQuery = useQuery({
+    queryKey: moverQueryKeys.reviewDistribution(moverId),
+    queryFn: () => moverService.getReviewDistribution(moverId),
+  });
+
+  if (listQuery.isPending && !listQuery.data) {
+    return (
+      <div className="flex w-full flex-col gap-4">
+        <ReviewHeading />
+        <div className="text-16 text-gray-gray-400 min-h-[200px] py-20 text-center" role="status">
+          {tReview("loading")}
+        </div>
+      </div>
+    );
+  }
+
+  // 분포 실패는 목록을 가리지 않는다. 목록 API만 에러일 때 전체 실패.
+  if (listQuery.isError) {
+    return (
+      <div className="flex w-full flex-col gap-4">
+        <ReviewHeading />
+        <p className="text-16 text-gray-gray-400 py-20 text-center">{tReview("loadFailed")}</p>
+      </div>
+    );
+  }
+
+  const items = listQuery.data?.data ?? [];
+  const totalPages = listQuery.data?.totalPages ?? 0;
+  const isEmpty = (listQuery.data?.totalCount ?? 0) === 0;
+  const distribution = distributionQuery.isError ? undefined : distributionQuery.data;
+
+  if (isEmpty) {
+    // 피그마 상세 empty는 이미지 없이 제목 + 안내 문구만 (1:8169 / 1:8766)
+    return (
+      <div className="flex w-full flex-col gap-4">
+        <ReviewHeading />
+        <div className="flex w-full flex-col py-6 text-center">
+          <p className="text-16 text-black-500 leading-7 font-semibold">{tReview("empty")}</p>
+          <p className="text-14 text-gray-gray-400 leading-7">{tReview("emptyHint")}</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex w-full flex-col">
+      <div className="flex flex-col gap-4">
+        <ReviewHeading />
+        {distribution ? <ProgressBar data={toProgressBarData(distribution)} hideTitle /> : null}
+
+        <ul className="divide-line-100 flex w-full flex-col divide-y">
+          {items.map((item) => (
+            <li key={item.id}>
+              <CardReview
+                size={reviewCardSize}
+                writer={maskReviewWriter(item.customerName)}
+                createdAt={formatReviewCreatedAt(item.createdAt)}
+                rating={item.rating}
+                content={item.comment}
+              />
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <Pagination
+        currentPage={page}
+        totalPages={totalPages}
+        onPageChange={setPage}
+        className="mt-8 justify-center"
+      />
+    </div>
+  );
+}

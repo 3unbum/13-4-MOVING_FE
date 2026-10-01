@@ -1,0 +1,321 @@
+"use client";
+
+import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "@/i18n/navigation";
+import { Controller, useForm, useWatch } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
+import Button from "@/components/common/Button";
+import InputTextArea from "@/components/common/InputTextarea";
+import InputTextField from "@/components/common/InputTextfield";
+import ProfileImageUpload from "@/components/common/ProfileImageUpload";
+import Toast from "@/components/common/Toast";
+import Chip from "@/components/filter/ChipRegion";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
+import FieldLabel from "@/components/profile/FieldLabel";
+import { REGION_OPTIONS, SERVICE_OPTIONS } from "@/constants/profile/options";
+import { makeMoverProfileSchema, type MoverProfileFormValues } from "@/lib/schemas/profile-schema";
+import { profileService } from "@/lib/services/profile-service";
+import type { MoverAccountResponse } from "@/lib/services/auth-service";
+import { ApiError } from "@/lib/utils/api-error";
+import { cn } from "@/lib/utils/cn";
+import { useAuth } from "@/providers/AuthProvider";
+
+const PC_QUERY = "(min-width: 1280px)";
+
+interface MoverProfileEditFormProps {
+  account: MoverAccountResponse;
+  // 성공적으로 저장되면 부모(MoverProfileEditPanel)의 계정 상태를 갱신 — 별도 재조회 없이
+  // 이 화면에서 받은 응답을 그대로 올려보낸다
+  onAccountUpdated: (account: MoverAccountResponse) => void;
+}
+
+// 피그마 "마이페이지_프로필 수정_기사님" 대응(#73). 필드 구성(별명/경력/한줄소개/상세설명/
+// 서비스/지역)이 등록 폼(MoverProfileForm, "프로필 등록_기사님")과 완전히 동일해서 같은
+// moverProfileSchema를 그대로 재사용한다 — hasProfile 게이트를 통과한 뒤에만 오는 화면이라
+// "비워서 지우기"는 지원하지 않고(등록 때와 동일하게 전부 상시 필수), 계정에 있는 값으로 프리필만 다르다.
+function accountToFormValues(account: MoverAccountResponse): MoverProfileFormValues {
+  return {
+    image: account.image ?? undefined,
+    nickName: account.nickName ?? "",
+    career: account.career ?? 0,
+    bio: account.bio ?? "",
+    description: account.description ?? "",
+    services: account.services,
+    regions: account.regions,
+  };
+}
+
+export default function MoverProfileEditForm({
+  account,
+  onAccountUpdated,
+}: MoverProfileEditFormProps) {
+  const t = useTranslations("profile");
+  const tService = useTranslations("service");
+  const tRegion = useTranslations("region");
+  const tCommon = useTranslations("common");
+  const router = useRouter();
+  const { refetch } = useAuth();
+  const [submitError, setSubmitError] = useState<string>();
+  // ProfileImageUpload가 서버 업로드 중일 때는 제출을 막아야 함 — onChange가 업로드 완료 후에만
+  // 호출되므로, 업로드 중 제출하면 새 이미지 URL이 반영되기 전에 폼이 전송될 수 있다
+  const [isImageUploading, setIsImageUploading] = useState(false);
+  // PC에서만 필드를 md 크기로 키움 (CustomerProfileEditForm과 동일 패턴)
+  const isPc = useMediaQuery(PC_QUERY);
+  const fieldSize = isPc ? "md" : "sm";
+
+  // account가 바뀔 때만 새로 계산 — 매 렌더마다 accountToFormValues를 새로 호출하면 매번 다른
+  // 객체 참조가 useForm의 values 옵션에 들어가게 된다 (MunChiho 리뷰, PR #135)
+  const formValues = useMemo(() => accountToFormValues(account), [account]);
+
+  const tValidation = useTranslations("validation");
+
+  // 매 렌더마다 새 스키마가 생기면 zodResolver도 교체돼 폼이 불필요하게 다시 만들어집니다
+
+  const schema = useMemo(() => makeMoverProfileSchema(tValidation), [tValidation]);
+
+  const {
+    control,
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors, isSubmitting, isDirty },
+  } = useForm<MoverProfileFormValues>({
+    resolver: zodResolver(schema),
+    // account가 나중에(부모의 재조회로) 바뀌면 RHF가 그 시점에 폼을 다시 리셋해준다 —
+    // defaultValues는 최초 렌더 시점 값으로 고정돼서 이 케이스엔 안 맞음 (CustomerProfileEditForm과 동일 패턴)
+    values: formValues,
+  });
+
+  // 실패 토스트가 다음 제출 전까지 계속 떠 있던 문제 — 일정 시간 뒤 자동으로 닫는다 (MunChiho 리뷰, PR #135)
+  useEffect(() => {
+    if (!submitError) return;
+    const timer = window.setTimeout(() => setSubmitError(undefined), 3000);
+    return () => window.clearTimeout(timer);
+  }, [submitError]);
+
+  // watch()는 리렌더마다 새 함수 참조를 반환해 React Compiler가 메모이제이션을 못 함(lint 경고) —
+  // useWatch는 구독 기반이라 이 문제가 없음
+  const selectedServices = useWatch({ control, name: "services" }) ?? [];
+  const selectedRegions = useWatch({ control, name: "regions" }) ?? [];
+
+  function toggle(field: "services" | "regions", value: string) {
+    const current = field === "services" ? selectedServices : selectedRegions;
+    const next = current.includes(value)
+      ? current.filter((item) => item !== value)
+      : [...current, value];
+    // setValue는 기본적으로 dirty 처리를 안 해줘서(shouldDirty 옵션 없으면) 칩만 바꾸고
+    // 텍스트 필드는 안 건드리면 isDirty가 그대로 false로 남아 수정하기 버튼이 안 풀리는 문제가 있었음
+    setValue(field, next, { shouldValidate: true, shouldDirty: true });
+  }
+
+  async function onSubmit(values: MoverProfileFormValues) {
+    setSubmitError(undefined);
+    try {
+      const updated = await profileService.updateMover(values);
+      onAccountUpdated(updated);
+      // 수정 자체는 끝났으니 refetch 실패를 수정 실패로 취급하지 않는다 — GNB가 못 갱신되더라도
+      // 계정 캐시는 다음 새로고침 때 맞춰진다. (#123, CustomerProfileEditForm과 동일 패턴)
+      await refetch().catch(() => {});
+      // 성공하면 토스트 대신 마이페이지로 돌아간다 — 수정 결과(별명/이미지 등)를 바로 그 화면에서
+      // 확인할 수 있어야 하니 (CustomerProfileEditForm도 성공 시 라우팅으로 마무리하는 동일 패턴)
+      router.push("/mover/mypage");
+    } catch (error) {
+      setSubmitError(error instanceof ApiError ? error.message : t("updateFailed"));
+    }
+  }
+
+  return (
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      // 실패 에러가 떠 있는 채로 아무 필드나 고치기 시작하면 바로 지운다 — 타이머가 아직 안 끝났어도
+      // 사용자가 이미 재시도를 시작했다는 신호라서 (coderabbitai 리뷰, PR #135)
+      onChange={() => {
+        if (submitError) setSubmitError(undefined);
+      }}
+      // 컨텐츠(그리드)-버튼 간격: 피그마 실측 모바일/태블릿 32px(gap-8), 데스크톱 48px(pc:gap-12,
+      // 기존값 유지) — #73 재확인(2026-09-17)
+      className="pc:gap-12 flex w-full flex-col gap-8"
+    >
+      <div className="pc:grid pc:grid-cols-2 pc:items-start pc:gap-x-30 pc:gap-y-8 flex flex-col gap-5">
+        <div className="pc:gap-8 flex flex-col gap-5">
+          <div className="flex flex-col gap-4">
+            <span className="text-16 text-black-black-400 pc:text-20 font-semibold">
+              {t("profileImage")}
+            </span>
+            <Controller
+              name="image"
+              control={control}
+              render={({ field }) => (
+                <ProfileImageUpload
+                  value={field.value}
+                  onChange={field.onChange}
+                  onUploadingChange={setIsImageUploading}
+                />
+              )}
+            />
+          </div>
+
+          {/* 프로필이미지-별명 사이 구분선은 데스크톱에만 있음(피그마 Desktop) — 태블릿/모바일은
+              바로 이어짐(피그마 Tablet/Mobile, 이 구분선 없이 20px 간격만 있음) */}
+          <div className="bg-line-100 pc:block hidden h-px w-full" />
+
+          <div className="flex flex-col gap-4">
+            <FieldLabel>{t("nickName")}</FieldLabel>
+            <InputTextField
+              label={t("nickName")}
+              placeholder={t("nickNamePlaceholder")}
+              size={fieldSize}
+              errorMessage={errors.nickName?.message}
+              {...register("nickName")}
+            />
+          </div>
+
+          <div className="bg-line-100 h-px w-full" />
+
+          <div className="flex flex-col gap-4">
+            <FieldLabel>{t("career")}</FieldLabel>
+            <InputTextField
+              label={t("career")}
+              type="text"
+              inputMode="numeric"
+              placeholder={t("careerPlaceholder")}
+              size={fieldSize}
+              errorMessage={errors.career?.message}
+              // inputMode="numeric"은 키패드 힌트일 뿐 실제 입력을 막지 않음 — "1년"처럼 문자가
+              // 섞이거나, "1e5"처럼 Number()가 그대로 통과시켜버리는(=100000, int().min(0) 우회) 값이
+              // 들어올 수 있어 입력 단계에서 숫자 이외 문자를 바로 제거해야 함 (등록 폼과 동일 컨벤션)
+              onInput={(e) => {
+                e.currentTarget.value = e.currentTarget.value.replace(/\D/g, "");
+              }}
+              {...register("career", {
+                setValueAs: (v) => {
+                  if (v == null || (typeof v === "string" && v.trim() === "")) {
+                    return undefined;
+                  }
+                  const number = Number(v);
+                  return Number.isNaN(number) ? undefined : number;
+                },
+              })}
+            />
+          </div>
+
+          <div className="bg-line-100 h-px w-full" />
+
+          <div className="flex flex-col gap-4">
+            <FieldLabel>{t("bio")}</FieldLabel>
+            <InputTextField
+              label={t("bio")}
+              placeholder={t("bioPlaceholder")}
+              size={fieldSize}
+              errorMessage={errors.bio?.message}
+              {...register("bio")}
+            />
+          </div>
+        </div>
+
+        {/* 데스크톱은 두 컬럼이 나란히 배치돼 구분선이 없지만(피그마 Desktop), 모바일/태블릿은 세로로
+            쌓이면서 한 줄 소개-상세 설명 사이에 구분선이 있음(피그마 Tablet/Mobile) — pc에서만 숨김 */}
+        <div className="pc:hidden bg-line-100 h-px w-full" />
+
+        <div className="pc:gap-8 flex flex-col gap-5">
+          <div className="flex flex-col gap-4">
+            <FieldLabel>{t("description")}</FieldLabel>
+            <InputTextArea
+              label={t("description")}
+              placeholder={t("descriptionPlaceholder")}
+              size={fieldSize}
+              errorMessage={errors.description?.message}
+              {...register("description")}
+            />
+          </div>
+
+          <div className="bg-line-100 h-px w-full" />
+
+          <div className="flex flex-col gap-4">
+            <FieldLabel>{t("moverServices")}</FieldLabel>
+            <div className="pc:gap-3 flex flex-wrap gap-1.5">
+              {SERVICE_OPTIONS.map((option) => {
+                const selected = selectedServices.includes(option.value);
+                return (
+                  <Chip
+                    key={option.value}
+                    size="sm"
+                    selected={selected}
+                    onClick={() => toggle("services", option.value)}
+                    className={cn("pc:px-5 pc:py-2.5 pc:text-18", !selected && "pc:font-normal")}
+                  >
+                    {tService(option.value)}
+                  </Chip>
+                );
+              })}
+            </div>
+            {errors.services && (
+              <p className="text-13 font-medium text-red-200">{errors.services.message}</p>
+            )}
+          </div>
+
+          <div className="bg-line-100 h-px w-full" />
+
+          <div className="flex flex-col gap-4">
+            <FieldLabel>{t("moverRegions")}</FieldLabel>
+            <div className="pc:gap-4 flex flex-wrap gap-2">
+              {REGION_OPTIONS.map((option) => {
+                const selected = selectedRegions.includes(option.value);
+                return (
+                  <Chip
+                    key={option.value}
+                    size="sm"
+                    selected={selected}
+                    onClick={() => toggle("regions", option.value)}
+                    className={cn("pc:px-5 pc:py-2.5 pc:text-18", !selected && "pc:font-normal")}
+                  >
+                    {tRegion(option.value)}
+                  </Chip>
+                );
+              })}
+            </div>
+            {errors.regions && (
+              <p className="text-13 font-medium text-red-200">{errors.regions.message}</p>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* 버튼 줄: 취소(240px)+수정하기(240px)+20px 간격, 오른쪽 정렬 — CustomerProfileEditForm과
+          동일 패턴. "취소"는 폼 리셋 대신 마이페이지로 이동시킨다 — ProfileImageUpload가 미리보기를
+          내부 state로만 들고 있어 value와 동기화되지 않기 때문에, 이미지를 올린 뒤 리셋하면 제출값은
+          이전 사진인데 화면엔 새 사진이 남는 불일치가 생김. 성공 시와 동일하게 이동으로 정리하는 게
+          더 단순하다 (MunChiho 리뷰, PR #135) */}
+      <div className="pc:w-125 pc:self-end w-full">
+        <div className="pc:flex-row pc:gap-5 flex w-full flex-col-reverse gap-2">
+          <div className="pc:w-60">
+            <Button
+              type="button"
+              variant="outlined"
+              size="sm"
+              className="pc:h-15 pc:rounded-2xl pc:text-18"
+              onClick={() => router.push("/mover/mypage")}
+            >
+              {tCommon("cancel")}
+            </Button>
+          </div>
+          <div className="pc:w-60">
+            <Button
+              type="submit"
+              size="sm"
+              className="pc:h-15 pc:rounded-2xl pc:text-18"
+              // 변경된 필드가 없으면 제출을 막는다 — isDirty는 values 옵션이 갱신될 때마다(=계정
+              // 재조회/저장 성공 시) 새 기준값과 비교해 자동으로 재계산된다 (PR #135 리뷰, singsangsong28)
+              disabled={isSubmitting || isImageUploading || !isDirty}
+            >
+              {isSubmitting ? t("submitting") : t("submit")}
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {submitError && <Toast message={submitError} />}
+    </form>
+  );
+}

@@ -1,0 +1,131 @@
+@import "tailwindcss";
+
+/*
+ * 사용법:
+ *  색상  -> bg-orange-400, text-black-500, border-line-200 처럼 Tailwind 유틸 그대로 사용
+ *  글자  -> text-{size} (font-size+line-height 세트) + font-{weight} 조합해서 사용
+ *          예) 버튼 라벨: className="text-14 font-semibold"
+ *  반응형 -> tablet:, pc: 프리픽스 사용 (모바일 375가 기본값, 접두사 없음)
+ */
+
+:root {
+  --background: #ffffff;
+  --foreground: #111111;
+}
+
+@theme {
+  /* Grayscale */
+  --color-gray-50: #ffffff;
+  --color-gray-100: #f5f5f5;
+  --color-gray-200: #e6e6e6;
+  --color-gray-300: #d9d9d9;
+  --color-gray-400: #b3b3b3;
+  --color-gray-500: #7a7a79;
+  --color-gray-gray-100: #d9d9d9;
+  --color-gray-gray-200: #c4c4c4;
+  --color-gray-gray-300: #ababab;
+  --color-gray-gray-400: #999999;
+  --color-gray-gray-500: #808080;
+
+  /* Black scale (warm dark neutrals) */
+  --color-black-100: #61605e;
+  --color-black-200: #474643;
+  --color-black-300: #302f2d;
+  --color-black-400: #1e1e1e;
+  --color-black-500: #111111;
+  --color-black-black-300: #373737;
+  --color-black-black-400: #262524;
+  /* 피그마 Black/Black-400 변수가 프레임마다 값이 다름(#262524 / #1f1f1f).
+     Card-list 견적 금액 계열이 #1f1f1f라 값 기준으로 별도 토큰 분리 */
+  --color-black-black-450: #1f1f1f;
+
+  /* Primary orange (brand) */
+  --color-orange-100: #feeeea;
+  --color-orange-200: #fed8d0;
+  --color-orange-300: #fd947f;
+  --color-orange-400: #f9502e;
+  --color-orange-500: #e04829;
+
+  /* Secondary red */
+  --color-red-100: #ffeef0;
+  --color-red-200: #ff4f64;
+  --color-yellow-100: #ffc149;
+  /* 카카오 브랜드 컬러 — 견적서 공유 버튼(피그마 button/share/kakao). 피그마 변수가 없는 고정값.
+     로그인 소셜 버튼은 배경이 SVG에 들어 있어(#fae300) 토큰을 쓰지 않습니다 */
+  --color-kakao-yellow: #fae100;
+
+  /* Background */
+  --color-background-100: #fcfcfc;
+  --color-background-200: #f7f7f7;
+  --color-background-300: #efefef;
+  --color-background-background-100: #fafafa;
+
+  /* Overlay — Card-list 반려/이사완료 카드를 덮는 딤 처리 */
+  --color-overlay-dim: rgba(4, 4, 4, 0.64);
+
+  /* 모달·토스트 패널 그림자 */
+  --shadow-modal: 4px 4px 5px 0px rgba(169, 169, 169, 0.2);
+  /* 주소 카드 그림자 */
+  --shadow-address-card: 2px 2px 5px 0px rgba(224, 224, 224, 0.2);
+
+  /* Line */
+  --color-line-100: #f2f2f2;
+  --color-line-200: var(--color-gray-200);
+
+  /* 브레이크포인트: Mobile 375 / Tablet 744 / pc 1280 */
+  --breakpoint-tablet: 744px;
+  --breakpoint-pc: 1280px;
+
+  /* Z-index */
+  --z-gnb: 1000;
+  --z-gnb-dropdown: 1010;
+  --z-sticky: 1050;
+  --z-modal: 1100;
+  --z-toast: 1200;
+  --z-filter-dropdown: 100;
+  --z-datepicker: 100;
+  --z-index-modal: var(--z-modal);
+  --z-index-toast: var(--z-toast);
+
+  /* 타이포그래피: font-size + line-height는 한 세트로 관리, font-weight는 text-*와 조합해서 각자 커스텀 */
+  --text-50: 50px;
+  --text-50--line-height: 42px;
+  --text-40: 40px;
+  --text-40--line-height: normal;
+  --text-32: 32px;
+  --text-32--line-height: 42px;
+  --text-28: 28px;
+  --text-28--line-height: 46px;
+  --text-24: 24px;
+  --text-24--line-height: 32px;
+  --text-20: 20px;
+  --text-20--line-height: 32px;
+  --text-18: 18px;
+  --text-18--line-height: 26px;
+  --text-16: 16px;
+  --text-16--line-height: 26px;
+  --text-14: 14px;
+  --text-14--line-height: 24px;
+  --text-13: 13px;
+  --text-13--line-height: 22px;
+  --text-12: 12px;
+  --text-12--line-height: 20px;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: "Pretendard Variable", ui-sans-serif, system-ui, sans-serif;
+}
+
+body {
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+}
+
+@layer base {
+  button:not(:disabled) {
+    cursor: pointer;
+  }
+}

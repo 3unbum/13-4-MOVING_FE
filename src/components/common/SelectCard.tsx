@@ -1,0 +1,105 @@
+"use client";
+
+import { useTranslations } from "next-intl";
+import checkIcon from "@/assets/icons/check.svg";
+import homeImg from "@/assets/images/common/이사유형_가정이사.png";
+import officeImg from "@/assets/images/common/이사유형_사무실이사.png";
+import smallImg from "@/assets/images/common/이사유형_소형이사.png";
+import { cn } from "@/lib/utils/cn";
+import Image, { type StaticImageData } from "next/image";
+import type { ButtonHTMLAttributes } from "react";
+
+export type SelectCardVariant = "SMALL" | "HOME" | "OFFICE";
+type SelectCardSize = "sm" | "md";
+
+interface SelectCardProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  variant: SelectCardVariant;
+  size?: SelectCardSize;
+  selected?: boolean;
+}
+
+/**
+ * BE ServiceType과 값 맞춤 (견적 요청 category로 그대로 전송).
+ *
+ * ⚠️ 표시용 한글은 `messages/*.json`의 `service` 네임스페이스로 옮겼습니다.
+ * 이 상수는 **번역을 못 쓰는 곳**(서버 컴포넌트·상수 파일)의 폴백으로만 남깁니다.
+ */
+export const SELECT_CARD_LABELS: Record<SelectCardVariant, string> = {
+  SMALL: "소형이사",
+  HOME: "가정이사",
+  OFFICE: "사무실이사",
+};
+
+export const SELECT_CARD_IMAGES: Record<SelectCardVariant, StaticImageData> = {
+  SMALL: smallImg,
+  HOME: homeImg,
+  OFFICE: officeImg,
+};
+
+export const SELECT_CARD_SUBTITLES: Record<SelectCardVariant, string> = {
+  SMALL: "원룸, 투룸, 20평대 미만",
+  HOME: "쓰리룸, 20평대 이상",
+  OFFICE: "사무실, 상업공간",
+};
+
+// 사용법: <SelectCard variant="SMALL" size="md" selected={selected} onClick={() => setSelected("SMALL")} />
+export default function SelectCard({
+  variant,
+  size = "sm",
+  selected = false,
+  className,
+  ...props
+}: SelectCardProps) {
+  const t = useTranslations("service");
+  const isMd = size === "md";
+
+  return (
+    <button
+      type="button"
+      aria-pressed={selected}
+      className={cn(
+        "relative flex h-55.5 w-full flex-1 items-start gap-2 rounded-2xl border-2 px-4 py-5 text-left",
+        isMd ? "flex-col items-end gap-4 pb-4" : "justify-end",
+        selected
+          ? "border-orange-400 bg-orange-100"
+          : "bg-background-200 hover:bg-background-300 border-transparent hover:border-gray-300",
+        className
+      )}
+      {...props}
+    >
+      <div
+        className={cn(
+          "flex min-w-0 flex-1 items-start gap-2",
+          isMd ? "w-full flex-none flex-row" : "flex-col"
+        )}
+      >
+        <span
+          className={cn(
+            "flex size-4.5 shrink-0 items-center justify-center rounded-full border",
+            selected ? "border-orange-400 bg-orange-400" : "border-line-200 bg-gray-50"
+          )}
+        >
+          {selected && <Image src={checkIcon} alt="" className="h-auto w-2" />}
+        </span>
+        <span className="flex flex-col items-start">
+          <span
+            className={cn("text-16 font-semibold", selected ? "text-orange-400" : "text-black-500")}
+          >
+            {t(variant)}
+          </span>
+          <span
+            className={cn(
+              "text-14 whitespace-nowrap",
+              selected ? "text-orange-400" : "text-gray-gray-500"
+            )}
+          >
+            {t(`desc${variant}`)}
+          </span>
+        </span>
+      </div>
+      <div className="relative size-30 shrink-0">
+        <Image src={SELECT_CARD_IMAGES[variant]} alt="" fill className="object-contain" />
+      </div>
+    </button>
+  );
+}

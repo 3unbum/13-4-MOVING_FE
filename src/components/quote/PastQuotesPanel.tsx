@@ -1,0 +1,287 @@
+"use client";
+
+import { useState } from "react";
+import { useLocale, useTranslations } from "next-intl";
+import { CardEstimateHistory } from "@/components/quote/CardEstimate";
+import { useFavoritedMovers } from "@/hooks/useFavoriteMover";
+import QuoteEmptyState from "@/components/quote/QuoteEmptyState";
+import Sort from "@/components/common/Sort";
+import { cn } from "@/lib/utils/cn";
+import { formatMovingDate, type DateLocale } from "@/lib/utils/date";
+import type { Estimate } from "@/lib/services/estimate-service";
+import type { QuotationRequest } from "@/lib/services/quotation-request-service";
+
+/** 요청 1건 + 거기 달린 견적들 = 화면의 블록 하나 */
+export interface PastQuoteBlock {
+  request: QuotationRequest;
+  estimates: Estimate[];
+}
+
+interface PastQuotesPanelProps {
+  blocks: PastQuoteBlock[];
+  onDetailClick?: (estimateId: number) => void;
+}
+
+/**
+ * 확정된 견적으로 볼 상태.
+ *
+ * 이사일이 지나면 배치(`expireRequests.job.ts`)가 확정 견적을 CONFIRMED → COMPLETED로
+ * 바꿉니다. CONFIRMED만 보면 이미 이사를 마친 건의 확정 견적을 놓칩니다.
+ */
+function isConfirmedEstimate(estimate: Estimate) {
+  return estimate.estimateStatus === "CONFIRMED" || estimate.estimateStatus === "COMPLETED";
+}
+
+const KST_OFFSET_MS = 9 * 60 * 60 * 1000;
+
+/**
+ * "24. 06. 24." — 요청 카드 우측 상단의 신청일 표기.
+ *
+ * ⚠️ 견적 상세의 "견적 요청일"(`date.ts`의 `formatRequestDate` → `24.08.26`)과
+ * 구분자가 다릅니다. **같은 의미의 날짜인데 피그마가 두 화면을 다르게 그립니다** —
+ * 받았던 견적 6개 프레임(`1:11657`·`1:11733` Desktop / `1:11359`·`1:11434` Tablet /
+ * `1:11510`·`1:11583` Mobile)이 전부 `24. 06. 24.`이고, 견적 상세 6개
+ * (`1:11818`·`1:11870` Desktop 외)가 전부 `24.08.26`입니다.
+ * 6개씩 일관되므로 시안 실수가 아니라 의도입니다. 공용 유틸로 합치면 한쪽이 틀어집니다.
+ *
+ * 숫자와 구분점뿐이라 로케일과 무관합니다.
+ */
+function formatShortDate(iso: string) {
+  const kst = new Date(new Date(iso).getTime() + KST_OFFSET_MS);
+  const yy = String(kst.getUTCFullYear()).slice(2);
+  const mm = String(kst.getUTCMonth() + 1).padStart(2, "0");
+  const dd = String(kst.getUTCDate()).padStart(2, "0");
+  return `${yy}. ${mm}. ${dd}.`;
+}
+
+/** 좌측 "견적 정보" 블록의 라벨+값 한 줄 */
+/**
+ * 좌측 "견적 정보" 블록의 라벨+값 한 줄.
+ *
+ * 라벨이 주황(`#f9502e`)인 게 견적 상세와 다릅니다 — 피그마 `1:11670` 계열.
+ * 값은 오른쪽 끝 정렬이고, 모바일만 14px입니다(`1:11519` h24 / `1:11668` h26).
+ */
+function InfoRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex items-start justify-between gap-4">
+      <span className="text-14 tablet:text-16 shrink-0 font-semibold text-orange-400">{label}</span>
+      <span className="text-14 text-black-500 tablet:text-16 text-right font-semibold">
+        {value}
+      </span>
+    </div>
+  );
+}
+
+/**
+ * 견적서 한 장 — size만 다른 두 벌을 CSS로 전환합니다 (JS 미디어쿼리는 첫 렌더에 깜빡임).
+ *
+ * 카드 자체가 상세 진입점입니다. `CardEstimateHistory`에는 버튼이 없어서(피그마 `1:11657`)
+ * 카드 전체를 클릭 영역으로 씁니다 — 피그마에 "견적 상세_확정 견적"과
+ * "견적 상세_확정하지 않은 견적" 화면이 따로 있는데, 둘 다 여기서만 도달할 수 있습니다.
+ */
+function EstimateRow({
+  estimate,
+  onClick,
+  isDimmed = false,
+  isFavorited,
+}: {
+  estimate: Estimate;
+  onClick: () => void;
+  /** 마감된 요청에서 확정되지 않은 견적 — 클릭을 막고 회색으로 덮습니다 (QA-12) */
+  isDimmed?: boolean;
+  /** 이 기사님을 찜했는지 — 견적 응답에 없어서 패널이 찜 목록과 대조해 넘깁니다 */
+  isFavorited: boolean;
+}) {
+  const t = useTranslations("quote");
+  const common = {
+    category: estimate.quotationRequest.category,
+    isTargeted: estimate.isTargeted,
+    // 카드 제목은 기사님 한 줄 소개입니다
+    title: estimate.mover.bio,
+    // REJECTED(반려)면 null — 카드가 "견적가 없음"으로 표기합니다
+    price: estimate.price,
+    isConfirmed: isConfirmedEstimate(estimate),
+    // 반려 견적이 "견적대기"로 보이면 아직 답을 기다리는 것처럼 읽힙니다 (QA-9)
+    isRejected: estimate.estimateStatus === "REJECTED",
+    nickName: estimate.mover.nickName,
+    profileImage: estimate.mover.image,
+    rating: estimate.mover.avgRating,
+    reviewCount: estimate.mover.reviewCount,
+    career: estimate.mover.career,
+    confirmedCount: estimate.mover.confirmedCount,
+    favoriteCount: estimate.mover.favoriteCount,
+    isFavorited,
+  };
+
+  return (
+    // 카드 안에 버튼이 없어 <button>으로 감싸도 중첩 문제가 없습니다.
+    // 기본 버튼 스타일(가운데 정렬 등)을 지우려고 text-left·w-full을 둡니다.
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={isDimmed}
+      aria-label={t("moverQuoteDetailLabel", { moverName: estimate.mover.nickName })}
+      className={cn(
+        "w-full text-left",
+        // 이미 다른 기사님으로 확정된 요청이라 선택지가 아닙니다 — 눌러도 할 게 없습니다
+        isDimmed ? "cursor-default opacity-40 grayscale" : "cursor-pointer"
+      )}
+    >
+      <div className="tablet:hidden">
+        <CardEstimateHistory size="sm" {...common} />
+      </div>
+      <div className="tablet:block hidden">
+        <CardEstimateHistory size="lg" {...common} />
+      </div>
+    </button>
+  );
+}
+
+/**
+ * 받았던 견적 탭 (피그마 1:11657 / 1:11434 / 1:11510).
+ *
+ * 대기 중인 견적과 달리 요청 1건이 블록 하나가 되고, 그 안에 견적 목록이 들어갑니다.
+ * PC·태블릿은 좌(견적 정보)/우(견적서 목록) 2단, 모바일은 세로 1단입니다.
+ */
+export default function PastQuotesPanel({ blocks, onDetailClick }: PastQuotesPanelProps) {
+  // 필터는 요청 블록마다 독립이라 id별로 들고 있습니다
+  const [filters, setFilters] = useState<Record<number, string>>({});
+  const t = useTranslations("quote");
+  const tCommon = useTranslations("common");
+  const tService = useTranslations("service");
+  const locale = useLocale() as DateLocale;
+
+  // 견적 응답에 `isFavorited`가 없어 찜 목록과 대조합니다 (1차 QA-4).
+  // `PendingQuotesPanel`과 같은 쿼리 캐시를 공유하므로 요청이 늘지 않습니다.
+  const { isFavorited } = useFavoritedMovers();
+
+  // 라벨이 번역이라 컴포넌트 안에서 만듭니다 (모듈 상수로 두면 `t`를 못 씁니다)
+  const filterOptions = [
+    { value: "all", label: t("filterAll") },
+    { value: "confirmed", label: t("filterConfirmed") },
+  ];
+
+  if (blocks.length === 0) {
+    return <QuoteEmptyState message={t("emptyPast")} />;
+  }
+
+  return (
+    // 모바일은 블록이 화면 전체 폭을 쓰고 8px 회색 바로 나뉩니다(피그마 `1:11550`).
+    // 태블릿·PC는 흰 카드입니다.
+    <div className="tablet:gap-8 tablet:px-9 tablet:py-8 pc:gap-10 pc:px-10 pc:py-10 flex flex-1 flex-col items-center gap-2 bg-gray-50 py-0">
+      {blocks.map(({ request, estimates: allEstimates }) => {
+        const filter = filters[request.id] ?? "all";
+        const filtered =
+          filter === "confirmed" ? allEstimates.filter(isConfirmedEstimate) : allEstimates;
+
+        // 마감된 요청 = 기사님이 확정됐거나(ASSIGNED) 이사가 끝난(COMPLETED) 건.
+        // 확정 견적이 결과라서 맨 위로 올리고, 나머지는 선택지가 아니라 덮습니다 (QA-11·QA-12)
+        const isClosed = request.quotationStatus !== "PENDING";
+        const estimates = isClosed
+          ? [...filtered].sort(
+              (a, b) => Number(isConfirmedEstimate(b)) - Number(isConfirmedEstimate(a))
+            )
+          : filtered;
+
+        return (
+          <section
+            key={request.id}
+            className={cn(
+              "flex w-full flex-col bg-white",
+              // 모바일: 전체 폭, 좌우 24 (`1:11516`)
+              "gap-8 px-6 py-8",
+              // 태블릿: 600 카드, 패딩 28 (`1:11365`)
+              "tablet:max-w-150 tablet:gap-8 tablet:rounded-[20px] tablet:px-7 tablet:py-8",
+              "tablet:shadow-[inset_0_0_0_0.5px_var(--color-line-100),2px_2px_10px_0_rgba(220,220,220,0.2)]",
+              // PC: 1120 카드, 패딩 40, 좌우 2단 (`1:11662`)
+              "pc:max-w-280 pc:flex-row pc:gap-15 pc:px-10 pc:py-11"
+            )}
+          >
+            {/* 좌측(모바일·태블릿은 상단) — 견적 정보 */}
+            <div className="pc:w-65 flex shrink-0 flex-col gap-10.5">
+              <div className="flex flex-col gap-5">
+                {/* 모바일은 제목이 가운데, 날짜는 목록 아래에 있습니다 (`1:11517`·`1:11537`) */}
+                <div className="tablet:flex-row tablet:items-baseline tablet:justify-between flex flex-col">
+                  <h3 className="text-16 text-black-black-450 tablet:text-20 tablet:text-left text-center font-semibold">
+                    {t("quoteInfo")}
+                  </h3>
+                  <span className="text-14 text-gray-gray-300 tablet:block hidden font-normal">
+                    {formatShortDate(request.createdAt)}
+                  </span>
+                </div>
+
+                {/* 모바일·태블릿만 행 사이에 구분선이 있습니다 (`1:11523`·`1:11532`) */}
+                <div className="tablet:gap-3 flex flex-col gap-2">
+                  <InfoRow label={t("moveType")} value={tService(request.category)} />
+                  <hr className="border-line-200 pc:hidden" />
+                  <InfoRow label={tCommon("from")} value={request.fromAddress} />
+                  <InfoRow label={tCommon("to")} value={request.toAddress} />
+                  <hr className="border-line-200 pc:hidden" />
+                  <InfoRow
+                    label={t("usageDate")}
+                    value={formatMovingDate(request.movingDate, locale)}
+                  />
+                </div>
+              </div>
+
+              <span className="text-14 text-gray-gray-300 tablet:hidden font-normal">
+                {formatShortDate(request.createdAt)}
+              </span>
+            </div>
+
+            {/* PC만 좌우를 가르는 세로 구분선 (피그마 `1:11684`).
+                피그마 Line은 폭 0이라 자리를 차지하지 않습니다 — border로 넣으면
+                1px이 우측 폭에서 빠지므로(660 → 659) 음수 마진으로 상쇄합니다. */}
+            <div className="border-line-200 pc:block -mr-px hidden shrink-0 border-l" />
+
+            {/* 우측(모바일·태블릿은 하단) — 견적서 목록 */}
+            <div className="flex min-w-0 flex-1 flex-col gap-5">
+              <div className="flex items-center gap-2">
+                <h3 className="text-16 text-black-black-450 tablet:text-20 font-semibold">
+                  {t("quoteList")}
+                </h3>
+                <span className="text-16 tablet:text-20 font-semibold text-orange-400">
+                  {allEstimates.length}
+                </span>
+              </div>
+
+              <div className="flex flex-col gap-5">
+                {/* 피그마 Dropdown — 모바일·태블릿 75×36(lg) / PC 160×50(xl) */}
+                <div className="pc:hidden">
+                  <Sort
+                    size="lg"
+                    label={t("statusFilter")}
+                    options={filterOptions}
+                    value={filter}
+                    onChange={(value) => setFilters((prev) => ({ ...prev, [request.id]: value }))}
+                  />
+                </div>
+                <div className="pc:block hidden">
+                  <Sort
+                    size="xl"
+                    label={t("statusFilter")}
+                    options={filterOptions}
+                    value={filter}
+                    onChange={(value) => setFilters((prev) => ({ ...prev, [request.id]: value }))}
+                  />
+                </div>
+
+                <div className="divide-line-100 flex flex-col divide-y">
+                  {estimates.map((estimate) => (
+                    <EstimateRow
+                      key={estimate.id}
+                      estimate={estimate}
+                      isDimmed={isClosed && !isConfirmedEstimate(estimate)}
+                      isFavorited={isFavorited(estimate.mover.id)}
+                      onClick={() => onDetailClick?.(estimate.id)}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+          </section>
+        );
+      })}
+    </div>
+  );
+}

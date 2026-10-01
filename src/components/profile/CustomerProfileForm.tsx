@@ -1,0 +1,174 @@
+"use client";
+
+import { useRouter } from "@/i18n/navigation";
+import { useMemo, useState } from "react";
+import { Controller, useForm, useWatch } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
+import Button from "@/components/common/Button";
+import ProfileImageUpload from "@/components/common/ProfileImageUpload";
+import Toast from "@/components/common/Toast";
+import Chip from "@/components/filter/ChipRegion";
+import { REGION_OPTIONS, SERVICE_OPTIONS } from "@/constants/profile/options";
+import {
+  makeCustomerProfileSchema,
+  type CustomerProfileFormValues,
+} from "@/lib/schemas/profile-schema";
+import { profileService } from "@/lib/services/profile-service";
+import { cn } from "@/lib/utils/cn";
+import { useAuth } from "@/providers/AuthProvider";
+
+// 피그마 "프로필 등록_일반유저" 대응 — image(선택) / services(다중) / region(단일).
+// region이 단일 선택인 건 BE customerProfileCreateSchema 계약 때문 — 칩 UI는 services와
+// 똑같이 생겼지만 region 쪽은 한 번에 하나만 켜지는 라디오처럼 동작한다.
+// 칩 크기는 피그마 그대로(모바일·태블릿 sm / 데스크탑엔 md 크기를 오버라이드) — filter/ChipRegion 재사용.
+// 간격: 피그마에서 [구분선-이미지-구분선-서비스-구분선-지역] 묶음은 20px(pc 32px) 리듬이고,
+// 그 묶음 전체와 버튼 사이는 별도로 32px(pc 56px) — 그래서 필드 묶음과 버튼을 감싸는 div를 분리함.
+export default function CustomerProfileForm() {
+  const t = useTranslations("profile");
+  const tService = useTranslations("service");
+  const tRegion = useTranslations("region");
+  const router = useRouter();
+  const { refetch } = useAuth();
+  const [submitError, setSubmitError] = useState<string | undefined>();
+  // ProfileImageUpload가 서버 업로드 중일 때는 제출을 막아야 함 — onChange가 업로드 완료 후에만
+  // 호출되므로, 업로드 중 제출하면 새 이미지 URL이 반영되기 전에 폼이 전송될 수 있다
+  const [isImageUploading, setIsImageUploading] = useState(false);
+
+  const tValidation = useTranslations("validation");
+
+  // 매 렌더마다 새 스키마가 생기면 zodResolver도 교체돼 폼이 불필요하게 다시 만들어집니다
+
+  const schema = useMemo(() => makeCustomerProfileSchema(tValidation), [tValidation]);
+
+  const {
+    control,
+    handleSubmit,
+    setValue,
+    formState: { errors, isSubmitting },
+  } = useForm<CustomerProfileFormValues>({
+    resolver: zodResolver(schema),
+    defaultValues: { image: undefined, region: undefined, services: [] },
+  });
+
+  // watch()는 리렌더마다 새 함수 참조를 반환해 React Compiler가 메모이제이션을 못 함(lint 경고) —
+  // useWatch는 구독 기반이라 이 문제가 없음 (은범님 리뷰 코멘트)
+  const selectedServices = useWatch({ control, name: "services" });
+  const selectedRegion = useWatch({ control, name: "region" });
+
+  function toggleService(value: string) {
+    const next = selectedServices.includes(value)
+      ? selectedServices.filter((service) => service !== value)
+      : [...selectedServices, value];
+    setValue("services", next, { shouldValidate: true });
+  }
+
+  async function onSubmit(values: CustomerProfileFormValues) {
+    setSubmitError(undefined);
+    try {
+      await profileService.registerCustomer(values);
+      // 등록 자체는 끝났으니 refetch 실패를 등록 실패로 취급하지 않는다 —
+      // 계정 캐시가 못 갱신되면 이후 새로고침 때 맞춰진다.
+      await refetch().catch(() => {});
+      router.push("/");
+    } catch {
+      setSubmitError(t("registerFailed"));
+    }
+  }
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)} className="pc:gap-14 flex w-full flex-col gap-8">
+      <div className="pc:gap-8 flex flex-col gap-5">
+        <div className="bg-line-100 h-px w-full" />
+
+        <div className="flex flex-col gap-4">
+          <span className="text-16 text-black-black-400 pc:text-20 font-semibold">
+            {t("profileImage")}
+          </span>
+          <Controller
+            name="image"
+            control={control}
+            render={({ field }) => (
+              <ProfileImageUpload
+                value={field.value}
+                onChange={field.onChange}
+                onUploadingChange={setIsImageUploading}
+              />
+            )}
+          />
+        </div>
+
+        <div className="bg-line-100 h-px w-full" />
+
+        <div className="flex flex-col gap-6">
+          <div className="pc:gap-1 flex flex-col gap-2">
+            <span className="text-16 text-black-black-400 pc:text-20 font-semibold">
+              {t("customerServices")}
+            </span>
+            <p className="text-12 text-black-100 pc:text-16">{t("customerServicesHint")}</p>
+          </div>
+          <div className="pc:gap-3 flex flex-wrap gap-3">
+            {SERVICE_OPTIONS.map((option) => {
+              const selected = selectedServices.includes(option.value);
+              return (
+                <Chip
+                  key={option.value}
+                  size="sm"
+                  selected={selected}
+                  onClick={() => toggleService(option.value)}
+                  className={cn("pc:px-5 pc:py-2.5 pc:text-18", !selected && "pc:font-normal")}
+                >
+                  {tService(option.value)}
+                </Chip>
+              );
+            })}
+          </div>
+          {errors.services && (
+            <p className="text-13 font-medium text-red-200">{errors.services.message}</p>
+          )}
+        </div>
+
+        <div className="bg-line-100 h-px w-full" />
+
+        <div className="flex flex-col gap-6">
+          <div className="pc:gap-1 flex flex-col gap-2">
+            <span className="text-16 text-black-black-400 pc:text-20 font-semibold">
+              {t("customerRegion")}
+            </span>
+            <p className="text-12 text-black-100 pc:text-16">{t("customerRegionHint")}</p>
+          </div>
+          <div className="pc:gap-3.5 flex flex-wrap gap-3">
+            {REGION_OPTIONS.map((option) => {
+              const selected = selectedRegion === option.value;
+              return (
+                <Chip
+                  key={option.value}
+                  size="sm"
+                  selected={selected}
+                  onClick={() => setValue("region", option.value, { shouldValidate: true })}
+                  className={cn("pc:px-5 pc:py-2.5 pc:text-18", !selected && "pc:font-normal")}
+                >
+                  {tRegion(option.value)}
+                </Chip>
+              );
+            })}
+          </div>
+          {errors.region && (
+            <p className="text-13 font-medium text-red-200">{errors.region.message}</p>
+          )}
+        </div>
+      </div>
+
+      <Button
+        type="submit"
+        size="sm"
+        className="pc:h-15 pc:gap-2 pc:rounded-2xl pc:text-18"
+        disabled={isSubmitting || isImageUploading}
+      >
+        {isSubmitting ? t("registering") : t("register")}
+      </Button>
+
+      {submitError && <Toast message={submitError} />}
+    </form>
+  );
+}

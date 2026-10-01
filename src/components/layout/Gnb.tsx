@@ -1,0 +1,504 @@
+"use client";
+
+import alarmLg from "@/assets/icons/alarm-lg.svg";
+import { useTranslations } from "next-intl";
+import alarmMd from "@/assets/icons/alarm-md.svg";
+import menuMd from "@/assets/icons/menu-md.svg";
+import profileLgDefault from "@/assets/icons/profile-lg-default.svg";
+import profileMdDefault from "@/assets/icons/profile-md-default.svg";
+import logoLg from "@/assets/images/common/logo-icon-text-lg.svg";
+import logoSm from "@/assets/images/common/logo-icon-text-sm.svg";
+import Button from "@/components/common/Button";
+import DropdownNotification, {
+  DropdownNotificationItem,
+  NotificationFooter,
+  TruckIcon,
+  type NotificationSummaryLine,
+  type NotificationTone,
+} from "@/components/layout/DropdownNotification";
+import DropdownProfile, { type DropdownProfileOption } from "@/components/layout/DropdownProfile";
+import GnbMenu from "@/components/layout/GnbMenu";
+import LocaleSwitcher from "@/components/layout/LocaleSwitcher";
+import { getGnbNavItems, LOGOUT_NAV, type GnbRole } from "@/constants/gnb/nav";
+import { getGnbProfileOptions } from "@/constants/gnb/profile";
+import { cn } from "@/lib/utils/cn";
+import { getGnbNavColorClass, isGnbNavActive } from "@/lib/utils/gnb-nav";
+import Image from "next/image";
+import { Link, usePathname } from "@/i18n/navigation";
+import { useRef, useState, type ReactNode } from "react";
+
+export interface GnbNotification {
+  id: string;
+  message: ReactNode;
+  description?: ReactNode;
+  timeLabel: string;
+  isRead?: boolean;
+  tone?: NotificationTone;
+}
+
+// 열린 패널은 하나만 — 알림과 프로필이 동시에 뜨지 않도록 union으로 관리
+type GnbPanel = "none" | "notification" | "profile";
+
+interface GnbProps {
+  isLoggedIn?: boolean;
+  /** 로그인 시 역할에 따라 메뉴 분기 (customer: 3메뉴, mover: 2메뉴) */
+  role?: GnbRole;
+  userName?: string;
+  /** /auth/me의 image — 없으면 기본 아이콘 */
+  profileImage?: string | null;
+  /** 알림 패널에 표시할 목록 — 비어 있으면 빈 안내만 노출 */
+  notifications?: GnbNotification[];
+  /** 종 아이콘 뱃지. 0이면 숨깁니다 */
+  unreadCount?: number;
+  /** 프로필 메뉴 항목 — 미지정 시 role별 기본값 */
+  profileOptions?: DropdownProfileOption[];
+  className?: string;
+  onLoginClick?: () => void;
+  onNotificationSelect?: (id: string) => void;
+  onReadAllNotifications?: () => void;
+  onDeleteAllNotifications?: () => void;
+  onDeleteNotification?: (id: string) => void;
+  /** 항목 메뉴의 읽음 처리. 이동은 하지 않습니다 */
+  onMarkNotificationRead?: (id: string) => void;
+  /** 기사님 패널 하단. 지역별 이사 유형 건수 */
+  requestSummary?: NotificationSummaryLine[];
+  onRequestSummarySelect?: (id: string) => void;
+  onProfileSelect?: (value: string) => void;
+  /** 목록이 4장 넘으면 바닥에서 다음 페이지를 붙입니다 */
+  hasMoreNotifications?: boolean;
+  isLoadingMoreNotifications?: boolean;
+  onLoadMoreNotifications?: () => void;
+}
+
+/**
+ * 공통 GNB — sm/md/lg는 tablet·pc 브레이크포인트로 대응
+ *
+ * @example
+ * <Gnb isLoggedIn role="customer" userName="김가나" notifications={items} />
+ * <Gnb isLoggedIn={false} onLoginClick={() => router.push("/customer/login")} />
+ */
+export default function Gnb({
+  isLoggedIn = false,
+  role = "customer",
+  userName = "",
+  profileImage = null,
+  notifications = [],
+  unreadCount = 0,
+  profileOptions,
+  className,
+  onLoginClick,
+  onNotificationSelect,
+  onReadAllNotifications,
+  onDeleteAllNotifications,
+  onDeleteNotification,
+  onMarkNotificationRead,
+  requestSummary,
+  onRequestSummarySelect,
+  onProfileSelect,
+  hasMoreNotifications = false,
+  isLoadingMoreNotifications = false,
+  onLoadMoreNotifications,
+}: GnbProps) {
+  const tNav = useTranslations("gnb.nav");
+  const t = useTranslations("gnb");
+  const tNotification = useTranslations("notification");
+  const tCommon = useTranslations("common");
+  const tAuth = useTranslations("auth");
+  const tMenu = useTranslations("gnb.menu_items");
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [openPanel, setOpenPanel] = useState<GnbPanel>("none");
+  const [unreadOnly, setUnreadOnly] = useState(false);
+  const pathname = usePathname();
+  // 트리거와 패널을 함께 감싸서, 아이콘 클릭이 "바깥 클릭"으로 잡혀 바로 닫히는 걸 막는다
+  const actionsRef = useRef<HTMLDivElement>(null);
+
+  const navItems = getGnbNavItems(isLoggedIn, role);
+  // DropdownProfile은 언어 선택에도 재사용되는 범용 컴포넌트라 번역을 모릅니다.
+  // 라벨은 여기서 만들어 넘깁니다 (상수의 label은 폴백).
+  const menuOptions = (profileOptions ?? getGnbProfileOptions(role)).map((option) => ({
+    ...option,
+    // profileOptions로 기본 목록 밖의 항목을 주입할 수 있어, 메시지가 없으면 넘어온 label을 씁니다
+    label: tMenu.has(option.value) ? tMenu(option.value) : option.label,
+  }));
+  const profileHeader = userName
+    ? tCommon(role === "mover" ? "moverName" : "customerName", { name: userName })
+    : undefined;
+
+  const togglePanel = (panel: Exclude<GnbPanel, "none">) => {
+    setOpenPanel((current) => {
+      const next = current === panel ? "none" : panel;
+      if (next !== "notification") setUnreadOnly(false);
+      return next;
+    });
+  };
+  const closePanel = () => {
+    setOpenPanel("none");
+    setUnreadOnly(false);
+  };
+
+  const hasNotifications = notifications.length > 0;
+  // 다 읽으면 칩이 사라져 필터도 끕니다. effect에서 setState 하지 않습니다.
+  const showUnreadOnly = unreadOnly && unreadCount > 0;
+  const visibleNotifications = showUnreadOnly
+    ? notifications.filter((notification) => notification.isRead === false)
+    : notifications;
+  // 목록이 비면 전체 읽음·삭제는 숨깁니다. 기사님은 오늘 새 요청만 남깁니다.
+  const showSummary = requestSummary !== undefined;
+  const notificationFooter = showSummary ? (
+    <NotificationFooter
+      summaryTitle={tNotification("todayRequests")}
+      summaryHint={tNotification("todayRequestsHint")}
+      summaryLines={requestSummary}
+      onSummarySelect={(id) => {
+        closePanel();
+        onRequestSummarySelect?.(id);
+      }}
+    />
+  ) : null;
+
+  const renderNotificationItems = () =>
+    visibleNotifications.map((notification) => (
+      <DropdownNotificationItem
+        key={notification.id}
+        message={notification.message}
+        description={notification.description}
+        timeLabel={notification.timeLabel}
+        tone={notification.tone}
+        unread={notification.isRead === false}
+        onMarkRead={
+          onMarkNotificationRead ? () => onMarkNotificationRead(notification.id) : undefined
+        }
+        onDelete={onDeleteNotification ? () => onDeleteNotification(notification.id) : undefined}
+        onClick={() => {
+          closePanel();
+          onNotificationSelect?.(notification.id);
+        }}
+      />
+    ));
+
+  const handleProfileSelect = (value: string) => {
+    closePanel();
+    onProfileSelect?.(value);
+  };
+
+  return (
+    <>
+      <header
+        className={cn(
+          "flex w-full items-center bg-gray-50",
+          "h-13.5 px-6 py-2.5",
+          "tablet:px-18",
+          "pc:h-22 pc:px-40 pc:py-6.5",
+          isLoggedIn
+            ? "pc:shadow-[inset_0_-1px_0_0_var(--color-line-100)]"
+            : "shadow-[inset_0_-1px_0_0_var(--color-line-100)]",
+          isLoggedIn ? "pc:justify-center" : "pc:justify-start pc:gap-20.5 justify-between",
+          className
+        )}
+      >
+        {isLoggedIn ? (
+          <div className="pc:h-22 flex w-full flex-1 items-center justify-between">
+            <div className="pc:h-full pc:gap-20 flex items-center">
+              <LogoLink iconOnlyOnMobile />
+              <nav className="pc:flex hidden h-full items-center gap-10" aria-label={t("mainMenu")}>
+                {navItems.map((item) => {
+                  const isActive = isGnbNavActive(pathname, item.href);
+                  return (
+                    <Link
+                      key={item.id}
+                      href={item.href}
+                      aria-current={isActive ? "page" : undefined}
+                      className={cn(
+                        "text-18 flex h-22 items-center justify-center py-4 font-bold",
+                        getGnbNavColorClass(isActive)
+                      )}
+                    >
+                      {tNav.has(item.id) ? tNav(item.id) : item.label}
+                    </Link>
+                  );
+                })}
+              </nav>
+            </div>
+
+            <div ref={actionsRef} className="pc:gap-8 relative flex items-center justify-end gap-6">
+              {/* 언어 선택 — 피그마에 없는 UI(다국어는 심화 요구사항).
+                  좁은 화면에서는 알림·프로필에 자리를 내주고 메뉴 안으로 들어갑니다. */}
+              <LocaleSwitcher size="md" className="tablet:block hidden" />
+
+              <button
+                type="button"
+                aria-label={
+                  unreadCount > 0
+                    ? tNotification("unread", { count: unreadCount })
+                    : t("notification")
+                }
+                aria-expanded={openPanel === "notification"}
+                onClick={() => togglePanel("notification")}
+                className="pc:size-9 relative size-6"
+              >
+                <Image src={alarmMd} alt="" width={24} height={24} className="pc:hidden size-6" />
+                <Image
+                  src={alarmLg}
+                  alt=""
+                  width={36}
+                  height={36}
+                  className="pc:block hidden size-9"
+                />
+                {unreadCount > 0 ? (
+                  <span className="absolute -top-0.5 -right-0.5 size-2 rounded-full bg-red-200" />
+                ) : null}
+              </button>
+
+              <button
+                type="button"
+                aria-label={t("profileMenu")}
+                aria-expanded={openPanel === "profile"}
+                onClick={() => togglePanel("profile")}
+                className="pc:hidden size-6"
+              >
+                <GnbProfileAvatar src={profileImage} size="sm" />
+              </button>
+
+              <button
+                type="button"
+                aria-label={t("profileMenu")}
+                aria-expanded={openPanel === "profile"}
+                onClick={() => togglePanel("profile")}
+                className="pc:flex hidden items-center gap-4"
+              >
+                <GnbProfileAvatar src={profileImage} size="lg" />
+                {userName ? (
+                  <span className="text-18 text-black-500 font-medium whitespace-nowrap">
+                    {userName}
+                  </span>
+                ) : null}
+              </button>
+
+              <button
+                type="button"
+                aria-label={t("openMenu")}
+                aria-expanded={isMenuOpen}
+                onClick={() => {
+                  closePanel();
+                  setIsMenuOpen(true);
+                }}
+                className="pc:hidden size-6"
+              >
+                <Image src={menuMd} alt="" width={24} height={24} className="size-6" />
+              </button>
+
+              {openPanel === "notification" ? (
+                <>
+                  <div className="pc:hidden tablet:right-9 tablet:mt-[15px] absolute top-full -right-1 z-[var(--z-gnb-dropdown)] mt-[9px]">
+                    <DropdownNotification
+                      size="sm"
+                      containerRef={actionsRef}
+                      onClose={closePanel}
+                      unreadCount={unreadCount}
+                      unreadOnly={unreadOnly}
+                      onUnreadOnlyChange={setUnreadOnly}
+                      onReadAll={hasNotifications ? onReadAllNotifications : undefined}
+                      onDeleteAll={hasNotifications ? onDeleteAllNotifications : undefined}
+                      hasMore={hasMoreNotifications}
+                      isLoadingMore={isLoadingMoreNotifications}
+                      onLoadMore={onLoadMoreNotifications}
+                      header={role === "mover" ? tNotification("moverTitle") : undefined}
+                      headerIcon={role === "mover" ? <TruckIcon /> : undefined}
+                      footer={notificationFooter}
+                    >
+                      {renderNotificationItems()}
+                    </DropdownNotification>
+                  </div>
+                  <div className="pc:block absolute top-full right-[101px] z-[var(--z-gnb-dropdown)] mt-6.5 hidden">
+                    <DropdownNotification
+                      size="md"
+                      containerRef={actionsRef}
+                      onClose={closePanel}
+                      unreadCount={unreadCount}
+                      unreadOnly={unreadOnly}
+                      onUnreadOnlyChange={setUnreadOnly}
+                      onReadAll={hasNotifications ? onReadAllNotifications : undefined}
+                      onDeleteAll={hasNotifications ? onDeleteAllNotifications : undefined}
+                      hasMore={hasMoreNotifications}
+                      isLoadingMore={isLoadingMoreNotifications}
+                      onLoadMore={onLoadMoreNotifications}
+                      header={role === "mover" ? tNotification("moverTitle") : undefined}
+                      headerIcon={role === "mover" ? <TruckIcon /> : undefined}
+                      footer={notificationFooter}
+                    >
+                      {renderNotificationItems()}
+                    </DropdownNotification>
+                  </div>
+                </>
+              ) : null}
+
+              {openPanel === "profile" ? (
+                <>
+                  <div className="pc:hidden tablet:-right-14 absolute top-full right-[-9.5px] z-[var(--z-gnb-dropdown)] mt-[13px]">
+                    <DropdownProfile
+                      size="sm"
+                      header={profileHeader}
+                      options={menuOptions}
+                      containerRef={actionsRef}
+                      onClose={closePanel}
+                      onChange={handleProfileSelect}
+                    />
+                  </div>
+                  <div className="pc:block absolute top-full -right-31 z-[var(--z-gnb-dropdown)] mt-4.5 hidden">
+                    <DropdownProfile
+                      size="md"
+                      header={profileHeader}
+                      options={menuOptions}
+                      containerRef={actionsRef}
+                      onClose={closePanel}
+                      onChange={handleProfileSelect}
+                    />
+                  </div>
+                </>
+              ) : null}
+            </div>
+          </div>
+        ) : (
+          <>
+            <LogoLink />
+
+            <nav className="pc:block relative hidden h-6.5 flex-1" aria-label={t("mainMenu")}>
+              {LOGOUT_NAV.map((item) => {
+                const isActive = isGnbNavActive(pathname, item.href);
+                return (
+                  <Link
+                    key={item.id}
+                    href={item.href}
+                    aria-current={isActive ? "page" : undefined}
+                    className={cn(
+                      "text-18 absolute top-1/2 left-0 w-20.5 -translate-y-1/2 text-center font-bold whitespace-nowrap",
+                      getGnbNavColorClass(isActive)
+                    )}
+                  >
+                    {tNav.has(item.id) ? tNav(item.id) : item.label}
+                  </Link>
+                );
+              })}
+            </nav>
+
+            {/* 비로그인 상태에서도 언어를 바꿀 수 있어야 합니다 —
+                랜딩·기사님 찾기는 로그인 없이 볼 수 있는 화면입니다. */}
+            <div className="pc:flex hidden shrink-0 items-center gap-6">
+              <LocaleSwitcher size="md" />
+              <div className="w-29">
+                <Button size="xs" onClick={onLoginClick}>
+                  {tAuth("login")}
+                </Button>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              aria-label={t("openMenu")}
+              aria-expanded={isMenuOpen}
+              onClick={() => setIsMenuOpen(true)}
+              className="pc:hidden size-6"
+            >
+              <Image src={menuMd} alt="" width={24} height={24} className="size-6" />
+            </button>
+          </>
+        )}
+      </header>
+
+      <GnbMenu
+        role={role}
+        items={isLoggedIn ? undefined : LOGOUT_NAV}
+        isOpen={isMenuOpen}
+        onClose={() => setIsMenuOpen(false)}
+        footer={
+          isLoggedIn ? undefined : (
+            <button
+              type="button"
+              onClick={() => {
+                setIsMenuOpen(false);
+                onLoginClick?.();
+              }}
+              className="text-16 text-black-500 flex w-full items-center overflow-hidden px-5 py-6 text-left font-medium"
+            >
+              {tAuth("login")}
+            </button>
+          )
+        }
+      />
+    </>
+  );
+}
+
+function GnbProfileAvatar({ src, size }: { src?: string | null; size: "sm" | "lg" }) {
+  const isLg = size === "lg";
+
+  if (src) {
+    return (
+      <span
+        className={cn(
+          "relative block shrink-0 overflow-hidden rounded-full",
+          isLg ? "size-9" : "size-6"
+        )}
+      >
+        <Image src={src} alt="" fill sizes={isLg ? "36px" : "24px"} className="object-cover" />
+      </span>
+    );
+  }
+
+  return (
+    <Image
+      src={isLg ? profileLgDefault : profileMdDefault}
+      alt=""
+      width={isLg ? 36 : 24}
+      height={isLg ? 36 : 24}
+      className={isLg ? "size-9" : "size-6"}
+    />
+  );
+}
+
+interface LogoLinkProps {
+  iconOnlyOnMobile?: boolean;
+}
+
+function LogoSm({ className }: { className?: string }) {
+  return (
+    <Image
+      src={logoSm}
+      alt=""
+      width={88}
+      height={34}
+      className={cn("h-8.5 w-22 max-w-none", className)}
+      priority
+    />
+  );
+}
+
+function LogoLink({ iconOnlyOnMobile = false }: LogoLinkProps) {
+  const t = useTranslations("gnb");
+  return (
+    <Link href="/" aria-label={t("home")} className="relative shrink-0">
+      {iconOnlyOnMobile ? (
+        <>
+          <span className="tablet:hidden block h-8.5 w-8 overflow-hidden">
+            <LogoSm />
+          </span>
+          <span className="tablet:block pc:hidden hidden">
+            <LogoSm />
+          </span>
+        </>
+      ) : (
+        <span className="pc:hidden block">
+          <LogoSm />
+        </span>
+      )}
+      <Image
+        src={logoLg}
+        alt=""
+        width={116}
+        height={44}
+        className="pc:block hidden h-11 w-29"
+        priority
+      />
+    </Link>
+  );
+}

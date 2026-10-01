@@ -1,0 +1,115 @@
+"use client";
+
+import { useId } from "react";
+import { useTranslations } from "next-intl";
+import { cn } from "@/lib/utils/cn";
+import Button from "@/components/common/Button";
+import CheckboxButton from "@/components/common/CheckboxButton";
+import Chip, { SERVICES, type ServiceCode } from "@/components/filter/ChipRegion";
+import Modal, { ModalHeader } from "@/components/common/Modal";
+
+interface FilterModalProps {
+  open: boolean;
+  onClose: () => void;
+  /**
+   * 기본은 바닥 시트입니다. 태블릿은 피그마에서 가운데 뜨기 때문에
+   * (`1:10385` x=185 y=330, 위아래 여백 동일) 호출부가 바꿀 수 있게 열어둡니다.
+   */
+  position?: "center" | "bottom";
+  /** 단일 선택용 — `moveTypes`를 넘기면 무시됩니다 */
+  moveType?: ServiceCode;
+  onMoveTypeChange: (value: ServiceCode) => void;
+  /**
+   * 중복 선택용. 넘기면 칩이 여러 개 켜집니다 (피그마 `1:10577`).
+   * 기존 호출부를 깨지 않으려고 단일 선택을 기본으로 두고 선택적으로 받습니다.
+   */
+  moveTypes?: ServiceCode[];
+  isTargetedOnly: boolean;
+  onTargetedOnlyChange: (value: boolean) => void;
+  isServiceAreaOnly: boolean;
+  onServiceAreaOnlyChange: (value: boolean) => void;
+  onApply: () => void;
+}
+
+// 모바일 필터 바텀시트 (이사 유형 / 지역·견적)
+export default function FilterModal({
+  open,
+  onClose,
+  position = "bottom",
+  moveType,
+  onMoveTypeChange,
+  moveTypes,
+  isTargetedOnly,
+  onTargetedOnlyChange,
+  isServiceAreaOnly,
+  onServiceAreaOnlyChange,
+  onApply,
+}: FilterModalProps) {
+  const t = useTranslations("filter");
+  const tService = useTranslations("service");
+  const titleId = useId();
+
+  return (
+    <Modal
+      open={open}
+      onClose={onClose}
+      position={position}
+      labelledBy={titleId}
+      className={cn(
+        "w-93.75 min-w-93.75 gap-8 px-6 pt-6 pb-8",
+        // 바닥에 붙을 때만 위쪽만 둥글게 — 가운데 뜨면 네 모서리를 다 돌립니다
+        position === "bottom" ? "rounded-t-[32px]" : "rounded-[32px]"
+      )}
+    >
+      <ModalHeader id={titleId} title={t("title")} size="sm" onClose={onClose} />
+
+      <div className="flex min-h-0 w-full flex-1 flex-col items-start gap-7 overflow-y-auto">
+        <div className="flex w-full flex-col items-start gap-2">
+          <p className="text-16 text-black-black-400 font-semibold">{t("moveType")}</p>
+          <div
+            className="flex flex-wrap items-center gap-3"
+            role="group"
+            aria-label={t("selectMoveType")}
+          >
+            {SERVICES.map((service) => (
+              <Chip
+                key={service}
+                size="sm"
+                selected={moveTypes ? moveTypes.includes(service) : moveType === service}
+                onClick={() => onMoveTypeChange(service)}
+              >
+                {tService(service)}
+              </Chip>
+            ))}
+          </div>
+        </div>
+
+        <div className="flex w-full flex-col items-start gap-2">
+          <p className="text-16 text-black-black-400 font-semibold">{t("regionAndQuote")}</p>
+          <div className="flex flex-col gap-3">
+            <label className="flex items-center">
+              <CheckboxButton
+                shape="square"
+                checked={isTargetedOnly}
+                onChange={(event) => onTargetedOnlyChange(event.target.checked)}
+              />
+              <span className="text-16 text-black-500 font-normal">{t("targetedOnly")}</span>
+            </label>
+            <label className="flex items-center">
+              <CheckboxButton
+                shape="square"
+                checked={isServiceAreaOnly}
+                onChange={(event) => onServiceAreaOnlyChange(event.target.checked)}
+              />
+              <span className="text-16 text-black-500 font-normal">{t("serviceRegionOnly")}</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <Button variant="solid" size="sm" className="shrink-0" onClick={onApply}>
+        {t("viewResults")}
+      </Button>
+    </Modal>
+  );
+}
