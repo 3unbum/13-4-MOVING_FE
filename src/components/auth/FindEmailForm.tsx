@@ -14,8 +14,10 @@ import AuthHeader from "@/components/auth/AuthHeader";
 import AuthSubmitButton from "@/components/auth/AuthSubmitButton";
 import FindEmailResult from "@/components/auth/FindEmailResult";
 import FormField from "@/components/auth/FormField";
+import type { OAuthProviderKey } from "@/constants/auth/oauth";
 import { makeFindEmailSchema, type FindEmailFormValues } from "@/lib/schemas/auth-schema";
 import { authService, type FindEmailAccount, type UserRole } from "@/lib/services/auth-service";
+import { buildOAuthAuthorizeUrl, createOAuthState } from "@/lib/utils/oauth";
 
 interface FindEmailFormProps {
   role: UserRole;
@@ -60,6 +62,12 @@ export default function FindEmailForm({ role }: FindEmailFormProps) {
   const handleRetry = () => {
     setAccounts(null);
     reset();
+  };
+
+  // SocialLoginSection과 같은 방식 — nonce는 렌더가 아니라 클릭 시점에 만든다
+  const startSocialLogin = (provider: OAuthProviderKey) => {
+    const state = createOAuthState(role);
+    window.location.assign(buildOAuthAuthorizeUrl(provider, state));
   };
 
   return (
@@ -122,6 +130,7 @@ export default function FindEmailForm({ role }: FindEmailFormProps) {
             onGoLogin={() => router.push(loginHref)}
             onGoSignup={() => router.push(signupHref)}
             onGoResetPassword={() => router.push(resetPasswordHref)}
+            onSocialLogin={startSocialLogin}
           />
         )}
       </div>
