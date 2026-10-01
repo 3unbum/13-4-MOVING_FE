@@ -127,6 +127,8 @@ export default function CustomerQuotationRequestsPage() {
         onSearchChange={departure.onSearchChange}
         onSearch={departure.onSearch}
         results={departure.results}
+        hasMore={departure.hasMore}
+        onLoadMore={departure.onLoadMore}
         selectedId={departure.selectedId}
         onSelect={departure.onSelect}
         onConfirm={departure.onConfirm}
@@ -140,6 +142,8 @@ export default function CustomerQuotationRequestsPage() {
         onSearchChange={arrival.onSearchChange}
         onSearch={arrival.onSearch}
         results={arrival.results}
+        hasMore={arrival.hasMore}
+        onLoadMore={arrival.onLoadMore}
         selectedId={arrival.selectedId}
         onSelect={arrival.onSelect}
         onConfirm={arrival.onConfirm}
