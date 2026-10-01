@@ -47,4 +47,9 @@ export default withSentryConfig(withNextIntl(nextConfig), {
   // 토큰을 CI·Vercel에 넣어야 해서 지금 범위를 넘습니다.
   // 업로드가 없으면 스택 트레이스가 난독화된 채로 보이지만, 에러 수집 자체는 됩니다.
   sourcemaps: { disable: true },
+
+  // 광고 차단기가 Sentry 도메인 요청을 막으면 에러가 아예 수집되지 않습니다.
+  // 이 경로로 우리 서버를 거쳐 보내면 차단을 우회합니다.
+  // ⚠️ `proxy.ts` 매처에서 제외해야 합니다 — i18n이 가로채면 404가 됩니다.
+  tunnelRoute: "/sentry-tunnel",
 });
