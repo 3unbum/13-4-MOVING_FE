@@ -317,6 +317,13 @@
       "passwordChangedTitle": "密码已修改"
     }
   },
+  "authError": {
+    "tooManyRequests": "请求过于频繁，请稍后再试。",
+    "invalidResetCode": "验证码不正确",
+    "resetCodeExpired": "验证码已过期，请重新获取",
+    "resetCodeAttemptsExceeded": "验证码错误次数过多已失效，请重新获取",
+    "invalidOrExpiredResetToken": "验证已过期，请重新获取验证码"
+  },
   "review": {
     "writeReview": "写评价",
     "ratingPrompt": "请选择评分",

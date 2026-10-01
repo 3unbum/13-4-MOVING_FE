@@ -317,6 +317,13 @@
       "passwordChangedTitle": "Your password has been changed"
     }
   },
+  "authError": {
+    "tooManyRequests": "Too many requests. Please try again later.",
+    "invalidResetCode": "The verification code is incorrect",
+    "resetCodeExpired": "The verification code has expired. Please request a new one",
+    "resetCodeAttemptsExceeded": "Too many incorrect attempts. Please request a new verification code",
+    "invalidOrExpiredResetToken": "Your verification has expired. Please request a new code"
+  },
   "review": {
     "writeReview": "Write a Review",
     "ratingPrompt": "Select a rating",

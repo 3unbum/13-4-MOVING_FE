@@ -317,6 +317,13 @@
       "passwordChangedTitle": "パスワードが変更されました"
     }
   },
+  "authError": {
+    "tooManyRequests": "リクエストが多すぎます。しばらくしてから再度お試しください。",
+    "invalidResetCode": "認証番号が正しくありません",
+    "resetCodeExpired": "認証番号の有効期限が切れました。認証番号を再度受け取ってください",
+    "resetCodeAttemptsExceeded": "認証番号を複数回間違えたため無効になりました。認証番号を再度受け取ってください",
+    "invalidOrExpiredResetToken": "認証の有効期限が切れました。認証番号を再度受け取ってください"
+  },
   "review": {
     "writeReview": "レビューを書く",
     "ratingPrompt": "評価を選択してください",
