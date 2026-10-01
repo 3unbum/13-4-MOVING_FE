@@ -1,6 +1,7 @@
 "use client";
 
 import EtcButton from "@/components/common/EtcButton";
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils/cn";
 
 type MoverDetailShareProps = {
@@ -20,6 +21,7 @@ export default function MoverDetailShare({
   onShareFacebook,
   className,
 }: MoverDetailShareProps) {
+  const t = useTranslations("quote");
   const isMd = size === "md";
 
   return (
@@ -30,7 +32,7 @@ export default function MoverDetailShare({
           isMd ? "text-20 leading-8" : "text-16 leading-8"
         )}
       >
-        나만 알기엔 아쉬운 기사님인가요?
+        {t("shareTitleMobile")}
       </p>
       <div className={cn("flex items-center", isMd ? "gap-4" : "gap-3")}>
         <EtcButton kind="clip" size={size} onClick={onCopyLink} />

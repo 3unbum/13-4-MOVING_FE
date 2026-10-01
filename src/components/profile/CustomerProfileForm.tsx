@@ -1,16 +1,17 @@
 "use client";
 
 import { useRouter } from "@/i18n/navigation";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
 import Button from "@/components/common/Button";
 import ProfileImageUpload from "@/components/common/ProfileImageUpload";
 import Toast from "@/components/common/Toast";
 import Chip from "@/components/filter/ChipRegion";
 import { REGION_OPTIONS, SERVICE_OPTIONS } from "@/constants/profile/options";
 import {
-  customerProfileSchema,
+  makeCustomerProfileSchema,
   type CustomerProfileFormValues,
 } from "@/lib/schemas/profile-schema";
 import { profileService } from "@/lib/services/profile-service";
@@ -24,6 +25,9 @@ import { useAuth } from "@/providers/AuthProvider";
 // 간격: 피그마에서 [구분선-이미지-구분선-서비스-구분선-지역] 묶음은 20px(pc 32px) 리듬이고,
 // 그 묶음 전체와 버튼 사이는 별도로 32px(pc 56px) — 그래서 필드 묶음과 버튼을 감싸는 div를 분리함.
 export default function CustomerProfileForm() {
+  const t = useTranslations("profile");
+  const tService = useTranslations("service");
+  const tRegion = useTranslations("region");
   const router = useRouter();
   const { refetch } = useAuth();
   const [submitError, setSubmitError] = useState<string | undefined>();
@@ -31,13 +35,19 @@ export default function CustomerProfileForm() {
   // 호출되므로, 업로드 중 제출하면 새 이미지 URL이 반영되기 전에 폼이 전송될 수 있다
   const [isImageUploading, setIsImageUploading] = useState(false);
 
+  const tValidation = useTranslations("validation");
+
+  // 매 렌더마다 새 스키마가 생기면 zodResolver도 교체돼 폼이 불필요하게 다시 만들어집니다
+
+  const schema = useMemo(() => makeCustomerProfileSchema(tValidation), [tValidation]);
+
   const {
     control,
     handleSubmit,
     setValue,
     formState: { errors, isSubmitting },
   } = useForm<CustomerProfileFormValues>({
-    resolver: zodResolver(customerProfileSchema),
+    resolver: zodResolver(schema),
     defaultValues: { image: undefined, region: undefined, services: [] },
   });
 
@@ -62,7 +72,7 @@ export default function CustomerProfileForm() {
       await refetch().catch(() => {});
       router.push("/");
     } catch {
-      setSubmitError("프로필 등록에 실패했어요. 잠시 후 다시 시도해주세요");
+      setSubmitError(t("registerFailed"));
     }
   }
 
@@ -73,7 +83,7 @@ export default function CustomerProfileForm() {
 
         <div className="flex flex-col gap-4">
           <span className="text-16 text-black-black-400 pc:text-20 font-semibold">
-            프로필 이미지
+            {t("profileImage")}
           </span>
           <Controller
             name="image"
@@ -93,11 +103,9 @@ export default function CustomerProfileForm() {
         <div className="flex flex-col gap-6">
           <div className="pc:gap-1 flex flex-col gap-2">
             <span className="text-16 text-black-black-400 pc:text-20 font-semibold">
-              이용 서비스
+              {t("customerServices")}
             </span>
-            <p className="text-12 text-black-100 pc:text-16">
-              이용 서비스는 중복 선택 가능하며, 언제든 수정 가능해요!
-            </p>
+            <p className="text-12 text-black-100 pc:text-16">{t("customerServicesHint")}</p>
           </div>
           <div className="pc:gap-3 flex flex-wrap gap-3">
             {SERVICE_OPTIONS.map((option) => {
@@ -110,7 +118,7 @@ export default function CustomerProfileForm() {
                   onClick={() => toggleService(option.value)}
                   className={cn("pc:px-5 pc:py-2.5 pc:text-18", !selected && "pc:font-normal")}
                 >
-                  {option.label}
+                  {tService(option.value)}
                 </Chip>
               );
             })}
@@ -125,11 +133,9 @@ export default function CustomerProfileForm() {
         <div className="flex flex-col gap-6">
           <div className="pc:gap-1 flex flex-col gap-2">
             <span className="text-16 text-black-black-400 pc:text-20 font-semibold">
-              내가 사는 지역
+              {t("customerRegion")}
             </span>
-            <p className="text-12 text-black-100 pc:text-16">
-              내가 사는 지역은 언제든 수정 가능해요!
-            </p>
+            <p className="text-12 text-black-100 pc:text-16">{t("customerRegionHint")}</p>
           </div>
           <div className="pc:gap-3.5 flex flex-wrap gap-3">
             {REGION_OPTIONS.map((option) => {
@@ -142,7 +148,7 @@ export default function CustomerProfileForm() {
                   onClick={() => setValue("region", option.value, { shouldValidate: true })}
                   className={cn("pc:px-5 pc:py-2.5 pc:text-18", !selected && "pc:font-normal")}
                 >
-                  {option.label}
+                  {tRegion(option.value)}
                 </Chip>
               );
             })}
@@ -159,7 +165,7 @@ export default function CustomerProfileForm() {
         className="pc:h-15 pc:gap-2 pc:rounded-2xl pc:text-18"
         disabled={isSubmitting || isImageUploading}
       >
-        {isSubmitting ? "등록 중..." : "시작하기"}
+        {isSubmitting ? t("registering") : t("register")}
       </Button>
 
       {submitError && <Toast message={submitError} />}

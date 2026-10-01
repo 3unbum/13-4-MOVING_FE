@@ -9,6 +9,10 @@ export interface GnbProfileOption {
   tone?: "default" | "muted";
 }
 
+/**
+ * ⚠️ `label`은 **번역을 못 쓰는 곳의 폴백**입니다. 화면 표기는
+ * `messages/*.json`의 `gnb.menu_items.{value}`를 씁니다 (DropdownProfile 참고).
+ */
 export const CUSTOMER_PROFILE_OPTIONS: GnbProfileOption[] = [
   { value: "edit", label: "프로필 관리" },
   { value: "favorite", label: "찜한 기사님" },

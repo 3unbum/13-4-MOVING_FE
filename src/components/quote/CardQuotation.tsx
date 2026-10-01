@@ -1,3 +1,5 @@
+"use client";
+
 import writingIcon from "@/assets/icons/writing-md.svg";
 import Button from "@/components/common/Button";
 import {
@@ -6,6 +8,7 @@ import {
   ElapsedTime,
   PriceFooter,
 } from "@/components/common/CardParts";
+import { useTranslations } from "next-intl";
 import CardRequest from "@/components/quote/CardRequest";
 import type { ServiceCode } from "@/components/filter/ChipRegion";
 import { cn } from "@/lib/utils/cn";
@@ -28,6 +31,8 @@ interface RequestBase {
 
 /** 견적 보내기 버튼 — 라벨 뒤에 writing 아이콘이 붙습니다 */
 function SendEstimateButton({ onClick }: { onClick?: () => void }) {
+  const t = useTranslations("quote");
+
   return (
     <Button
       variant="solid"
@@ -35,7 +40,7 @@ function SendEstimateButton({ onClick }: { onClick?: () => void }) {
       onClick={onClick}
       icon={<Image src={writingIcon} alt="" className="size-6 shrink-0" />}
     >
-      견적 보내기
+      {t("sendQuote")}
     </Button>
   );
 }
@@ -84,6 +89,8 @@ export function CardReceivedRequest({
 }: CardReceivedRequestProps) {
   const isLg = size === "lg";
 
+  const t = useTranslations("quote");
+
   // 반려는 지정 견적 요청에만 허용됩니다 — 일반 요청에서 누르면 BE가 403을 던집니다
   // (`estimate.service.ts` "지정된 견적 요청이 아닙니다"). 눌러도 안 되는 버튼은 안 보입니다.
   const canReject = rest.isTargeted === true;
@@ -91,7 +98,7 @@ export function CardReceivedRequest({
   // lg는 [반려하기][견적 보내기] 가로, sm은 [견적 보내기][반려하기] 세로 — 순서가 반대입니다
   const rejectButton = canReject ? (
     <Button variant="outlined" size="sm" onClick={onReject}>
-      반려하기
+      {t("reject")}
     </Button>
   ) : null;
   const sendButton = <SendEstimateButton onClick={onSendEstimate} />;
@@ -124,8 +131,10 @@ export function CardReceivedRequest({
 
 // 사용법: <CardRejectedRequest size="lg" category="SMALL" customerName="김인서" />
 export function CardRejectedRequest({ size = "sm", ...rest }: RequestBase) {
+  const t = useTranslations("quote");
+
   return (
-    <CardRequest size={size} overlay={<CardOverlay message="반려된 요청이에요" />} {...rest} />
+    <CardRequest size={size} overlay={<CardOverlay message={t("rejectedOverlay")} />} {...rest} />
   );
 }
 
@@ -145,6 +154,8 @@ export function CardCompleted({
   onDetailClick,
   ...rest
 }: CardCompletedProps) {
+  const t = useTranslations("quote");
+
   return (
     <CardRequest
       size={size}
@@ -152,7 +163,7 @@ export function CardCompleted({
       headerRight={<ConfirmedBadge visible={isConfirmed} />}
       footer={<PriceFooter price={price} size={size} />}
       overlay={
-        <CardOverlay message="이사 완료된 견적이에요">
+        <CardOverlay message={t("completedOverlay")}>
           {/* 오버레이 위에서는 흰 배경 대신 orange-100입니다 (피그마 1:13333) */}
           <Button
             variant="outlined"
@@ -160,7 +171,7 @@ export function CardCompleted({
             onClick={onDetailClick}
             className="bg-orange-100 not-disabled:hover:bg-orange-200"
           >
-            견적 상세보기
+            {t("viewQuoteDetail")}
           </Button>
         </CardOverlay>
       }

@@ -4,6 +4,7 @@ import { useRouter } from "@/i18n/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
 import Button from "@/components/common/Button";
 import FormField from "@/components/auth/FormField";
 import ProfileImageUpload from "@/components/common/ProfileImageUpload";
@@ -12,7 +13,7 @@ import Chip from "@/components/filter/ChipRegion";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { REGION_OPTIONS, SERVICE_OPTIONS } from "@/constants/profile/options";
 import {
-  customerProfileUpdateSchema,
+  makeCustomerProfileUpdateSchema,
   type CustomerProfileUpdateFormValues,
 } from "@/lib/schemas/profile-schema";
 import { profileService } from "@/lib/services/profile-service";
@@ -47,11 +48,14 @@ function accountToFormValues(account: CustomerAccountResponse): CustomerProfileU
 }
 
 export default function CustomerProfileEditForm({ initialAccount }: CustomerProfileEditFormProps) {
+  const t = useTranslations("profile");
+  const tService = useTranslations("service");
+  const tRegion = useTranslations("region");
+  const tCommon = useTranslations("common");
   const router = useRouter();
   const { refetch } = useAuth();
   const [account, setAccount] = useState<CustomerAccountResponse | null>(initialAccount);
   const [isLoadingAccount, setIsLoadingAccount] = useState(!initialAccount);
-  const [loadError, setLoadError] = useState<string>();
   const [submitError, setSubmitError] = useState<string>();
   const [isImageUploading, setIsImageUploading] = useState(false);
   // PC에서만 필드를 md 크기로 키움 (태블릿은 FormField 내부 CSS로 이미 처리됨)
@@ -73,9 +77,8 @@ export default function CustomerProfileEditForm({ initialAccount }: CustomerProf
         }
         setAccount(data);
       })
-      .catch(() => {
-        if (active) setLoadError("계정 정보를 불러오지 못했어요. 새로고침해 주세요");
-      })
+      // 실패해도 account가 비어 있으면 아래 `!account` 분기가 안내 문구를 띄웁니다
+      .catch(() => {})
       .finally(() => {
         if (active) setIsLoadingAccount(false);
       });
@@ -86,6 +89,12 @@ export default function CustomerProfileEditForm({ initialAccount }: CustomerProf
 
   const formValues = useMemo(() => (account ? accountToFormValues(account) : undefined), [account]);
 
+  const tValidation = useTranslations("validation");
+
+  // 매 렌더마다 새 스키마가 생기면 zodResolver도 교체돼 폼이 불필요하게 다시 만들어집니다
+
+  const schema = useMemo(() => makeCustomerProfileUpdateSchema(tValidation), [tValidation]);
+
   const {
     control,
     register,
@@ -93,7 +102,7 @@ export default function CustomerProfileEditForm({ initialAccount }: CustomerProf
     setValue,
     formState: { errors, isSubmitting },
   } = useForm<CustomerProfileUpdateFormValues>({
-    resolver: zodResolver(customerProfileUpdateSchema),
+    resolver: zodResolver(schema),
     // account가 나중에(비동기로) 채워져도 values를 쓰면 RHF가 그 시점에 폼을 다시 리셋해준다 —
     // defaultValues는 최초 렌더 시점 값으로 고정돼서 이 케이스엔 안 맞음
     values: formValues,
@@ -131,20 +140,16 @@ export default function CustomerProfileEditForm({ initialAccount }: CustomerProf
       });
       router.push("/");
     } catch (error) {
-      setSubmitError(
-        error instanceof ApiError
-          ? error.message
-          : "프로필 수정에 실패했어요. 잠시 후 다시 시도해주세요"
-      );
+      setSubmitError(error instanceof ApiError ? error.message : t("updateFailed"));
     }
   }
 
   if (isLoadingAccount) {
-    return <p className="text-14 text-black-100 pc:text-16">불러오는 중...</p>;
+    return <p className="text-14 text-black-100 pc:text-16">{tCommon("loading")}</p>;
   }
 
   if (!account) {
-    return <p className="text-14 pc:text-16 text-red-200">{loadError}</p>;
+    return <p className="text-14 pc:text-16 text-red-200">{t("accountLoadFailed")}</p>;
   }
 
   return (
@@ -161,10 +166,10 @@ export default function CustomerProfileEditForm({ initialAccount }: CustomerProf
           <div className="pc:gap-8 flex flex-col gap-5">
             <FormField
               id="name"
-              label="이름"
+              label={t("name")}
               type="text"
               size={fieldSize}
-              placeholder="이름을 입력해 주세요"
+              placeholder={t("namePlaceholder")}
               autoComplete="name"
               errorMessage={errors.name?.message}
               {...register("name")}
@@ -174,7 +179,7 @@ export default function CustomerProfileEditForm({ initialAccount }: CustomerProf
                 계정 조회 값을 읽기 전용으로만 보여준다 */}
             <FormField
               id="email"
-              label="이메일"
+              label={t("email")}
               type="email"
               size={fieldSize}
               value={account.email}
@@ -184,10 +189,10 @@ export default function CustomerProfileEditForm({ initialAccount }: CustomerProf
 
             <FormField
               id="phoneNumber"
-              label="전화번호"
+              label={t("phone")}
               type="tel"
               size={fieldSize}
-              placeholder="하이픈(-) 없이 숫자만 입력해 주세요"
+              placeholder={t("phonePlaceholder")}
               autoComplete="tel"
               errorMessage={errors.phoneNumber?.message}
               {...register("phoneNumber")}
@@ -197,27 +202,25 @@ export default function CustomerProfileEditForm({ initialAccount }: CustomerProf
 
             <FormField
               id="currentPassword"
-              label="현재 비밀번호"
+              label={t("currentPassword")}
               type="password"
               size={fieldSize}
-              placeholder="현재 비밀번호를 입력해주세요"
+              placeholder={t("currentPasswordPlaceholder")}
               autoComplete="current-password"
               errorMessage={errors.currentPassword?.message}
               {...register("currentPassword")}
             />
             {/* 무엇을 바꾸든 현재 비밀번호가 항상 필요하다는 걸 안내 */}
-            <p className="text-12 text-black-100 pc:text-16">
-              무엇을 바꾸든 본인 확인을 위해 현재 비밀번호를 매번 입력해야 해요
-            </p>
+            <p className="text-12 text-black-100 pc:text-16">{t("currentPasswordNotice")}</p>
 
             <hr className="border-line-100" />
 
             <FormField
               id="newPassword"
-              label="새 비밀번호"
+              label={t("newPassword")}
               type="password"
               size={fieldSize}
-              placeholder="새 비밀번호를 입력해주세요"
+              placeholder={t("newPasswordPlaceholder")}
               autoComplete="new-password"
               errorMessage={errors.newPassword?.message}
               {...register("newPassword")}
@@ -225,10 +228,10 @@ export default function CustomerProfileEditForm({ initialAccount }: CustomerProf
 
             <FormField
               id="newPasswordConfirm"
-              label="새 비밀번호 확인"
+              label={t("newPasswordConfirm")}
               type="password"
               size={fieldSize}
-              placeholder="새 비밀번호를 다시 한번 입력해주세요"
+              placeholder={t("newPasswordConfirmPlaceholder")}
               autoComplete="new-password"
               errorMessage={errors.newPasswordConfirm?.message}
               {...register("newPasswordConfirm")}
@@ -243,7 +246,7 @@ export default function CustomerProfileEditForm({ initialAccount }: CustomerProf
           <div className="pc:gap-8 flex flex-col gap-5">
             <div className="flex flex-col gap-4">
               <span className="text-16 text-black-black-400 pc:text-20 font-semibold">
-                프로필 이미지
+                {t("profileImage")}
               </span>
               <Controller
                 name="image"
@@ -263,11 +266,9 @@ export default function CustomerProfileEditForm({ initialAccount }: CustomerProf
             <div className="flex flex-col gap-8">
               <div className="pc:gap-1 flex flex-col gap-2">
                 <span className="text-16 text-black-black-400 pc:text-20 font-semibold">
-                  이용 서비스
+                  {t("customerServices")}
                 </span>
-                <p className="text-12 text-black-100 pc:text-16">
-                  이용 서비스는 중복 선택 가능하며, 언제든 수정 가능해요!
-                </p>
+                <p className="text-12 text-black-100 pc:text-16">{t("customerServicesHint")}</p>
               </div>
               <div className="pc:gap-3 flex flex-wrap gap-2">
                 {SERVICE_OPTIONS.map((option) => {
@@ -280,7 +281,7 @@ export default function CustomerProfileEditForm({ initialAccount }: CustomerProf
                       onClick={() => toggleService(option.value)}
                       className={cn("pc:px-5 pc:py-2.5 pc:text-18", !selected && "pc:font-normal")}
                     >
-                      {option.label}
+                      {tService(option.value)}
                     </Chip>
                   );
                 })}
@@ -295,11 +296,9 @@ export default function CustomerProfileEditForm({ initialAccount }: CustomerProf
             <div className="flex flex-col gap-8">
               <div className="flex flex-col gap-2">
                 <span className="text-16 text-black-black-400 pc:text-20 font-semibold">
-                  내가 사는 지역
+                  {t("customerRegion")}
                 </span>
-                <p className="text-12 text-black-100 pc:text-16">
-                  내가 사는 지역은 언제든 수정 가능해요!
-                </p>
+                <p className="text-12 text-black-100 pc:text-16">{t("customerRegionHint")}</p>
               </div>
               <div className="pc:gap-4 flex flex-wrap gap-2">
                 {REGION_OPTIONS.map((option) => {
@@ -312,7 +311,7 @@ export default function CustomerProfileEditForm({ initialAccount }: CustomerProf
                       onClick={() => setValue("region", option.value, { shouldValidate: true })}
                       className={cn("pc:px-5 pc:py-2.5 pc:text-18", !selected && "pc:font-normal")}
                     >
-                      {option.label}
+                      {tRegion(option.value)}
                     </Chip>
                   );
                 })}
@@ -343,7 +342,7 @@ export default function CustomerProfileEditForm({ initialAccount }: CustomerProf
                 else router.replace("/");
               }}
             >
-              취소
+              {tCommon("cancel")}
             </Button>
           </div>
           <div className="pc:w-60">
@@ -353,7 +352,7 @@ export default function CustomerProfileEditForm({ initialAccount }: CustomerProf
               className="pc:h-15 pc:rounded-2xl pc:text-18"
               disabled={isSubmitting || isImageUploading}
             >
-              {isSubmitting ? "수정 중..." : "수정하기"}
+              {isSubmitting ? t("submitting") : t("submit")}
             </Button>
           </div>
         </div>

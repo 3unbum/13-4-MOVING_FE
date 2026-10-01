@@ -1,3 +1,6 @@
+"use client";
+
+import { useTranslations } from "next-intl";
 import { CardPendingHistory } from "@/components/quote/CardEstimate";
 import { useFavoritedMovers } from "@/hooks/useFavoriteMover";
 import QuoteEmptyState from "@/components/quote/QuoteEmptyState";
@@ -72,20 +75,21 @@ export default function PendingQuotesPanel({
   // 견적 응답에 `isFavorited`가 없어 찜 목록과 대조합니다 (1차 QA-4).
   // 훅은 조건부 렌더링보다 위에서 불러야 합니다 — 아래 early return이 여럿입니다.
   const { isFavorited } = useFavoritedMovers();
+  const t = useTranslations("quote");
 
   // 확정을 마친 요청이 있는 상태. 이사가 끝나기 전까지는 새 요청을 할 수 없으므로
   // ("한 번에 하나의 이사 정보만 활성" — BE가 ACTIVE_REQUEST_EXISTS로 막습니다)
   // 요청 CTA 대신 확정한 견적을 어디서 볼 수 있는지 알려줍니다.
   if (!request && hasConfirmedRequest) {
-    return <QuoteEmptyState message={"견적을 확정했어요.\n'받았던 견적'에서 확인할 수 있어요!"} />;
+    return <QuoteEmptyState message={t("emptyConfirmed")} />;
   }
 
   // 요청 자체가 없으면 SubHeader에 채울 값이 없어 통째로 숨깁니다 (피그마에 없는 화면 — 9/11 회의록 기준)
   if (!request) {
     return (
       <QuoteEmptyState
-        message={"아직 견적 요청이 없어요.\n지금 바로 견적을 요청해보세요!"}
-        action={{ label: "견적 요청하러 가기", href: "/customer/quotation-requests" }}
+        message={t("emptyNoRequest")}
+        action={{ label: t("emptyNoRequestAction"), href: "/customer/quotation-requests" }}
       />
     );
   }
@@ -122,10 +126,7 @@ export default function PendingQuotesPanel({
 
       {estimates.length === 0 ? (
         // 유일하게 피그마에 있는 빈 상태 (510:40203 / 510:40174 / 510:40230)
-        <QuoteEmptyState
-          showIllustration
-          message={"기사님들이 열심히 확인 중이에요\n곧 견적이 도착할 거예요!"}
-        />
+        <QuoteEmptyState showIllustration message={t("emptyWaiting")} />
       ) : (
         <div className="bg-background-background-100 tablet:px-18 tablet:pt-10.5 pc:px-10 pc:pt-19.5 flex flex-1 justify-center px-6 pt-8.75 pb-20">
           {/* 상단 여백은 피그마 실측(모바일 35 / 태블릿 42 / PC 78).

@@ -1,4 +1,5 @@
 import logoMark from "@/assets/icons/logo-mark-sm.svg";
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils/cn";
 import Image from "next/image";
 import type { HTMLAttributes } from "react";
@@ -35,6 +36,7 @@ export default function MoverName({
   textClassName,
   ...props
 }: MoverNameProps) {
+  const suffix = useTranslations("common")("moverSuffix");
   return (
     <div
       className={cn("flex gap-1", stacked ? "flex-col items-start" : "items-center", className)}
@@ -55,7 +57,7 @@ export default function MoverName({
         )}
       >
         <span>{nickName}</span>
-        <span>기사님</span>
+        {suffix && <span>{suffix}</span>}
       </span>
     </div>
   );

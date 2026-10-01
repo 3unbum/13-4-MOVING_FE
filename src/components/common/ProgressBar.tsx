@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import { Rating } from "next-flex-rating";
 import starActive from "@/assets/icons/star-sm-active.svg";
 import starDefault from "@/assets/icons/star-sm-default.svg";
@@ -25,6 +26,8 @@ export default function ProgressBar({
   /** 상세처럼 제목을 밖에 둘 때 true. 기본은 안에 「리뷰」를 그린다. */
   hideTitle?: boolean;
 }) {
+  const t = useTranslations("common");
+  const tReview = useTranslations("review");
   const average = data.totalCount
     ? RATINGS.reduce<number>((sum, rating) => sum + Number(rating) * data[rating], 0) /
       data.totalCount
@@ -34,7 +37,9 @@ export default function ProgressBar({
   return (
     <div className="tablet:gap-4 flex w-full flex-col gap-2">
       {hideTitle ? null : (
-        <h2 className="text-16 tablet:text-20 text-black-black-400 font-semibold">리뷰</h2>
+        <h2 className="text-16 tablet:text-20 text-black-black-400 font-semibold">
+          {tReview("title")}
+        </h2>
       )}
       <div className="tablet:flex-row tablet:items-start tablet:justify-between flex flex-col gap-4">
         <div className="flex items-center gap-4.5">
@@ -50,7 +55,7 @@ export default function ProgressBar({
               />
             </div>
             <p className="text-14 text-gray-gray-500 leading-4.5 font-normal">
-              {data.totalCount}개의 리뷰
+              {t("reviewCount", { count: data.totalCount })}
             </p>
           </div>
         </div>
@@ -68,7 +73,7 @@ export default function ProgressBar({
                     isMajority ? "font-bold" : "font-medium"
                   )}
                 >
-                  {rating}점
+                  {t("ratingPoint", { rating })}
                 </span>
                 <div className="bg-background-300 h-2 w-45 rounded-[15px]">
                   <div

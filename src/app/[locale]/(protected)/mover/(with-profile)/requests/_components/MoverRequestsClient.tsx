@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 import Loading from "@/app/[locale]/loading";
 import emptyCharacter from "@/assets/images/common/empty-review.png";
@@ -20,7 +21,7 @@ import { useMoverRequestAction, useMoverRequests } from "@/hooks/useMoverRequest
 import type { MoverRequest } from "@/lib/services/mover-request-service";
 import { ApiError } from "@/lib/utils/api-error";
 import { shortenAddress } from "@/lib/utils/address";
-import { formatMovingDate } from "@/lib/utils/date";
+import { formatMovingDate, type DateLocale } from "@/lib/utils/date";
 
 const TABLET_QUERY = "(min-width: 744px)";
 const PC_QUERY = "(min-width: 1280px)";
@@ -76,6 +77,9 @@ function EmptyState({ message }: { message: string }) {
  * 내용 폭은 PC 1200 / 태블릿 600 / 모바일 327이고, 카드는 PC만 2열입니다.
  */
 export default function MoverRequestsClient() {
+  const locale = useLocale() as DateLocale;
+  const t = useTranslations("moverPage");
+  const tCommon = useTranslations("common");
   const isTabletUp = useMediaQuery(TABLET_QUERY);
   const isPc = useMediaQuery(PC_QUERY);
 
@@ -116,11 +120,7 @@ export default function MoverRequestsClient() {
   // BE가 이유를 담아 보냅니다("이 견적 요청에 이미 일반 견적이 5건 도착했습니다" 등).
   // 뭉뚱그리면 상한 초과인지 일시 장애인지 구분이 안 돼 다시 눌러보게 됩니다.
   const { sendEstimate, reject } = useMoverRequestAction((error) =>
-    showToast(
-      error instanceof ApiError && error.message
-        ? error.message
-        : "처리에 실패했어요. 잠시 후 다시 시도해 주세요."
-    )
+    showToast(error instanceof ApiError && error.message ? error.message : t("actionFailed"))
   );
 
   const headerSize = isPc ? "lg" : isTabletUp ? "md" : "sm";
@@ -158,7 +158,7 @@ export default function MoverRequestsClient() {
     // 오면 방금 연 모달이 닫히므로, 제출 당시 액션이 그대로일 때만 정리합니다.
     const onSuccess = () => {
       setAction((current) => (current === action ? null : current));
-      showToast(variant === "send" ? "견적을 보냈어요." : "요청을 반려했어요.");
+      showToast(variant === "send" ? t("quoteSent") : t("requestRejected"));
     };
 
     // 검증은 trim 기준인데 원본을 보내면 앞뒤 공백까지 200자를 넘겨 BE가 400을 던집니다
@@ -180,7 +180,7 @@ export default function MoverRequestsClient() {
           (텍스트 x=368 = 360+8). 공용 Header의 `px-92`는 1920에서만 맞는 고정값이라
           같은 결과를 max-w로 냅니다 — 다른 페이지에 영향을 주지 않도록 여기서만 덮습니다 */}
       <Header size={headerSize} className="pc:px-0">
-        <span className="pc:mx-auto pc:block pc:w-full pc:max-w-300 pc:px-2">받은 요청</span>
+        <span className="pc:mx-auto pc:block pc:w-full pc:max-w-300 pc:px-2">{t("received")}</span>
       </Header>
 
       <div className="tablet:px-18 pc:px-10 flex flex-1 flex-col items-center px-6">
@@ -201,17 +201,13 @@ export default function MoverRequestsClient() {
               공용 Sort가 피그마(32)보다 8px 높아 그만큼 뺀 값입니다. */}
           <div className="tablet:mt-5 pc:mt-8 mt-4 flex flex-1 flex-col">
             {error ? (
-              <Message>요청을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.</Message>
+              <Message>{t("requestLoadFailed")}</Message>
             ) : isPending ? (
               <Loading />
             ) : requests.length === 0 ? (
-              // 피그마 empty 문구는 "아직 받은 요청이 없어요!" 하나뿐이라, 검색·필터로
+              // 피그마 empty 문구는 t("noRequests") 하나뿐이라, 검색·필터로
               // 걸러져 0건인 경우는 원인을 알 수 있게 문구만 바꿔 같은 화면을 씁니다
-              <EmptyState
-                message={
-                  hasActiveFilter ? "조건에 맞는 요청이 없어요!" : "아직 받은 요청이 없어요!"
-                }
-              />
+              <EmptyState message={hasActiveFilter ? t("noFilteredRequests") : t("noRequests")} />
             ) : (
               <>
                 <MoverRequestList
@@ -221,7 +217,9 @@ export default function MoverRequestsClient() {
                 />
                 <div ref={sentinelRef} aria-hidden className="h-px" />
                 {isFetchingNextPage && (
-                  <p className="text-14 text-gray-gray-400 py-6 text-center">불러오는 중...</p>
+                  <p className="text-14 text-gray-gray-400 py-6 text-center">
+                    {tCommon("loading")}
+                  </p>
                 )}
               </>
             )}
@@ -270,7 +268,7 @@ export default function MoverRequestsClient() {
           customerName={action.request.userName}
           fromAddress={shortenAddress(action.request.fromAddress)}
           toAddress={shortenAddress(action.request.toAddress)}
-          movingDate={formatMovingDate(action.request.movingDate)}
+          movingDate={formatMovingDate(action.request.movingDate, locale)}
           price={price}
           onPriceChange={setPrice}
           comment={comment}

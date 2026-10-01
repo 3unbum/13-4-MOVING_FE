@@ -1,4 +1,5 @@
 import starActive from "@/assets/icons/star-sm-active.svg";
+import { useTranslations } from "next-intl";
 import starDefault from "@/assets/icons/star-sm-default.svg";
 import { cn } from "@/lib/utils/cn";
 import Image from "next/image";
@@ -20,13 +21,14 @@ interface RatingStarsProps {
  * 사용법 : <RatingStars rating={5} />
  */
 export default function RatingStars({ rating, className }: RatingStarsProps) {
+  const t = useTranslations("common");
   const filled = Math.round(rating);
 
   return (
     <div
       className={cn("flex items-start", className)}
       role="img"
-      aria-label={`별점 ${rating}점 (5점 만점)`}
+      aria-label={t("ratingLabel", { rating })}
     >
       {Array.from({ length: MAX_RATING }, (_, i) => (
         <Image

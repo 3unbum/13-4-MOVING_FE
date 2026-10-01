@@ -1,4 +1,4 @@
-import { getLocale } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { redirect } from "@/i18n/navigation";
 import { requireRole } from "@/lib/auth/guards";
 import MoverProfileForm from "@/components/profile/MoverProfileForm";
@@ -11,6 +11,7 @@ import MoverProfileForm from "@/components/profile/MoverProfileForm";
 // 타이틀/구분선/폼이 전부 같은 24px(pc 48px) 리듬 — 그래서 중첩 wrapper 없이 셋 다 이 카드의
 // 바로 아래 자식으로 평탄하게 둠(따로 감싸면 그 안에서 별도 gap이 생겨 리듬이 깨짐)
 export default async function MoverProfileRegisterPage() {
+  const t = await getTranslations("moverPage");
   const account = await requireRole("MOVER", "/mover/login");
   if (account?.hasProfile) redirect({ href: "/mover/requests", locale: await getLocale() });
 
@@ -19,10 +20,10 @@ export default async function MoverProfileRegisterPage() {
       <div className="pc:w-300 pc:gap-12 pc:rounded-4xl pc:bg-gray-50 pc:px-10 pc:pt-8 pc:pb-10 flex w-81.75 flex-col gap-6">
         <div className="flex flex-col gap-4">
           <h1 className="text-18 text-black-black-450 pc:text-32 pc:font-semibold font-bold">
-            기사님 프로필 등록
+            {t("registerMoverProfile")}
           </h1>
           <p className="text-12 pc:text-20 pc:text-[#525252] text-[#6b6b6b]">
-            추가 정보를 입력하여 회원가입을 완료해주세요.
+            {t("registerSubtitle")}
           </p>
         </div>
         <div className="bg-line-100 h-px w-full" />

@@ -1,9 +1,10 @@
 "use client";
 
 import { CardReceivedRequest } from "@/components/quote/CardQuotation";
+import { useLocale } from "next-intl";
 import type { MoverRequest } from "@/lib/services/mover-request-service";
 import { shortenAddress } from "@/lib/utils/address";
-import { formatElapsedTime, formatMovingDate } from "@/lib/utils/date";
+import { formatElapsedTime, formatMovingDate, type DateLocale } from "@/lib/utils/date";
 
 interface MoverRequestListProps {
   requests: MoverRequest[];
@@ -21,14 +22,15 @@ function RequestCard({
   onSendEstimate?: () => void;
   onReject?: () => void;
 }) {
+  const locale = useLocale() as DateLocale;
   const common = {
     category: request.category,
     isTargeted: request.isTargeted,
     customerName: request.userName,
     from: shortenAddress(request.fromAddress),
     to: shortenAddress(request.toAddress),
-    movingDate: formatMovingDate(request.movingDate),
-    elapsedTime: formatElapsedTime(request.createdAt),
+    movingDate: formatMovingDate(request.movingDate, locale),
+    elapsedTime: formatElapsedTime(request.createdAt, locale),
     onSendEstimate,
     onReject,
   };

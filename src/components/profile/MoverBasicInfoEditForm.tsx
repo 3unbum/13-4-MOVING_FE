@@ -4,13 +4,14 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
 import Button from "@/components/common/Button";
 import InputTextField from "@/components/common/InputTextfield";
 import Toast from "@/components/common/Toast";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import FieldLabel from "@/components/profile/FieldLabel";
 import {
-  moverBasicInfoUpdateSchema,
+  makeMoverBasicInfoUpdateSchema,
   type MoverBasicInfoUpdateFormValues,
 } from "@/lib/schemas/profile-schema";
 import { profileService } from "@/lib/services/profile-service";
@@ -42,6 +43,8 @@ export default function MoverBasicInfoEditForm({
   account,
   onAccountUpdated,
 }: MoverBasicInfoEditFormProps) {
+  const t = useTranslations("profile");
+  const tCommon = useTranslations("common");
   const router = useRouter();
   const { refetch } = useAuth();
   const [submitError, setSubmitError] = useState<string>();
@@ -53,13 +56,19 @@ export default function MoverBasicInfoEditForm({
   // 객체 참조가 useForm의 values 옵션에 들어가게 된다 (MunChiho 리뷰, PR #135)
   const formValues = useMemo(() => accountToFormValues(account), [account]);
 
+  const tValidation = useTranslations("validation");
+
+  // 매 렌더마다 새 스키마가 생기면 zodResolver도 교체돼 폼이 불필요하게 다시 만들어집니다
+
+  const schema = useMemo(() => makeMoverBasicInfoUpdateSchema(tValidation), [tValidation]);
+
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors, isSubmitting, isDirty },
   } = useForm<MoverBasicInfoUpdateFormValues>({
-    resolver: zodResolver(moverBasicInfoUpdateSchema),
+    resolver: zodResolver(schema),
     // account가 나중에(부모의 재조회로) 바뀌면 RHF가 그 시점에 폼을 다시 리셋해준다 — 비밀번호
     // 필드는 accountToFormValues가 항상 빈 문자열을 돌려주므로 제출 성공 후 자동으로 비워진다.
     values: formValues,
@@ -91,11 +100,7 @@ export default function MoverBasicInfoEditForm({
       // (HoneyLatlll 리뷰, PR #135)
       router.push("/mover/mypage");
     } catch (error) {
-      setSubmitError(
-        error instanceof ApiError
-          ? error.message
-          : "기본정보 수정에 실패했어요. 잠시 후 다시 시도해주세요"
-      );
+      setSubmitError(error instanceof ApiError ? error.message : t("basicInfoUpdateFailed"));
     }
   }
 
@@ -114,11 +119,11 @@ export default function MoverBasicInfoEditForm({
       <div className="pc:grid pc:grid-cols-2 pc:items-start pc:gap-x-30 pc:gap-y-8 flex flex-col gap-5">
         <div className="pc:gap-8 flex flex-col gap-5">
           <div className="flex flex-col gap-4">
-            <FieldLabel>이름</FieldLabel>
+            <FieldLabel>{t("name")}</FieldLabel>
             <InputTextField
-              label="이름"
+              label={t("name")}
               type="text"
-              placeholder="이름을 입력해 주세요"
+              placeholder={t("namePlaceholder")}
               size={fieldSize}
               autoComplete="name"
               errorMessage={errors.name?.message}
@@ -131,9 +136,9 @@ export default function MoverBasicInfoEditForm({
           {/* 이메일은 BE moverProfileUpdateSchema에 필드 자체가 없어 이 화면에서 수정 불가 —
               계정 조회 값을 읽기 전용으로만 보여준다 (CustomerProfileEditForm과 동일 패턴) */}
           <div className="flex flex-col gap-4">
-            <FieldLabel required={false}>이메일</FieldLabel>
+            <FieldLabel required={false}>{t("email")}</FieldLabel>
             <InputTextField
-              label="이메일"
+              label={t("email")}
               type="email"
               size={fieldSize}
               value={account.email}
@@ -143,12 +148,12 @@ export default function MoverBasicInfoEditForm({
           </div>
 
           <div className="flex flex-col gap-4">
-            <FieldLabel>전화번호</FieldLabel>
+            <FieldLabel>{t("phone")}</FieldLabel>
             <InputTextField
-              label="전화번호"
+              label={t("phone")}
               type="tel"
               inputMode="numeric"
-              placeholder="하이픈(-) 없이 숫자만 입력해 주세요"
+              placeholder={t("phonePlaceholder")}
               size={fieldSize}
               autoComplete="tel"
               errorMessage={errors.phoneNumber?.message}
@@ -166,15 +171,13 @@ export default function MoverBasicInfoEditForm({
 
         <div className="pc:gap-8 flex flex-col gap-5">
           <div className="flex flex-col gap-4">
-            <FieldLabel>현재 비밀번호</FieldLabel>
+            <FieldLabel>{t("currentPassword")}</FieldLabel>
             {/* 무엇을 바꾸든 현재 비밀번호가 항상 필요하다는 걸 안내 */}
-            <p className="text-12 text-black-100 pc:text-16">
-              무엇을 바꾸든 본인 확인을 위해 현재 비밀번호를 매번 입력해야 해요
-            </p>
+            <p className="text-12 text-black-100 pc:text-16">{t("currentPasswordNotice")}</p>
             <InputTextField
-              label="현재 비밀번호"
+              label={t("currentPassword")}
               type="password"
-              placeholder="현재 비밀번호를 입력해주세요"
+              placeholder={t("currentPasswordPlaceholder")}
               size={fieldSize}
               autoComplete="current-password"
               errorMessage={errors.currentPassword?.message}
@@ -185,11 +188,11 @@ export default function MoverBasicInfoEditForm({
           <div className="bg-line-100 h-px w-full" />
 
           <div className="flex flex-col gap-4">
-            <FieldLabel required={false}>새 비밀번호</FieldLabel>
+            <FieldLabel required={false}>{t("newPassword")}</FieldLabel>
             <InputTextField
-              label="새 비밀번호"
+              label={t("newPassword")}
               type="password"
-              placeholder="새 비밀번호를 입력해주세요"
+              placeholder={t("newPasswordPlaceholder")}
               size={fieldSize}
               autoComplete="new-password"
               errorMessage={errors.newPassword?.message}
@@ -198,11 +201,11 @@ export default function MoverBasicInfoEditForm({
           </div>
 
           <div className="flex flex-col gap-4">
-            <FieldLabel required={false}>새 비밀번호 확인</FieldLabel>
+            <FieldLabel required={false}>{t("newPasswordConfirm")}</FieldLabel>
             <InputTextField
-              label="새 비밀번호 확인"
+              label={t("newPasswordConfirm")}
               type="password"
-              placeholder="새 비밀번호를 다시 한번 입력해주세요"
+              placeholder={t("newPasswordConfirmPlaceholder")}
               size={fieldSize}
               autoComplete="new-password"
               errorMessage={errors.newPasswordConfirm?.message}
@@ -222,7 +225,7 @@ export default function MoverBasicInfoEditForm({
               className="pc:h-15 pc:rounded-2xl pc:text-18"
               onClick={() => reset(accountToFormValues(account))}
             >
-              취소
+              {tCommon("cancel")}
             </Button>
           </div>
           <div className="pc:w-60">
@@ -234,7 +237,7 @@ export default function MoverBasicInfoEditForm({
               // 재조회/저장 성공 시) 새 기준값과 비교해 자동으로 재계산된다 (PR #135 리뷰, singsangsong28)
               disabled={isSubmitting || !isDirty}
             >
-              {isSubmitting ? "수정 중..." : "수정하기"}
+              {isSubmitting ? t("submitting") : t("submit")}
             </Button>
           </div>
         </div>
