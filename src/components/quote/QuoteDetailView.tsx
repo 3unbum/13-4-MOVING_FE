@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import Button from "@/components/common/Button";
 import EtcButton from "@/components/common/EtcButton";
-import { ConfirmedBadge, PendingBadge } from "@/components/common/CardParts";
+import { ConfirmedBadge, FavoriteCount, PendingBadge } from "@/components/common/CardParts";
 import Header from "@/components/common/Header";
 import ProfileAvatar from "@/components/common/ProfileAvatar";
 import MoverMeta from "@/components/mover/MoverMeta";
@@ -17,7 +17,6 @@ import { formatPrice, formatRequestDate, formatUsageDate, type DateLocale } from
 import type { Estimate } from "@/lib/services/estimate-service";
 import type { QuotationRequest } from "@/lib/services/quotation-request-service";
 // 카드용 빨간 하트가 아니라 검은 하트입니다 (피그마 견적 상세 기준)
-import likeBlack from "@/assets/icons/like-md-active.svg";
 import logoMark from "@/assets/icons/logo-mark-sm.svg";
 
 interface QuoteDetailViewProps {
@@ -202,14 +201,16 @@ export default function QuoteDetailView({
                   size={isTabletUp ? "xl" : "sm"}
                   textClassName="text-black-black-300 font-semibold"
                 />
-                {/* 피그마는 숫자가 먼저, 하트가 뒤 + 검은 하트라 CardParts의
-                      FavoriteCount(하트→숫자, 빨간 하트)를 그대로 쓸 수 없습니다 */}
-                <div className="flex shrink-0 items-center gap-1">
-                  <span className="text-14 tablet:text-18 text-gray-gray-500 font-medium">
-                    {mover.favoriteCount}
-                  </span>
-                  <Image src={likeBlack} alt="" className="size-6" />
-                </div>
+                {/* 피그마는 숫자가 먼저라 `countFirst`를 씁니다.
+                    예전에는 검은 하트를 조건 없이 그려서, 찜하지 않은 기사님도
+                    채워진 하트로 보였습니다. */}
+                <FavoriteCount
+                  count={mover.favoriteCount}
+                  isFavorited={isFavorited}
+                  countFirst
+                  countClassName="text-14 tablet:text-18 text-gray-gray-500 font-medium"
+                  className="shrink-0"
+                />
               </div>
               <MoverMeta
                 rating={mover.avgRating}
