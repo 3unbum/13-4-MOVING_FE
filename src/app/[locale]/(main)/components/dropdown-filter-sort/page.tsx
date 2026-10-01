@@ -313,7 +313,6 @@ export default function DropdownFilterSortPreviewPage() {
                   <p className="text-13 font-medium text-gray-500">size=md</p>
                   <DropdownNotification size="md" header="알림" closeOnOutsideClick={false}>
                     <DropdownNotificationItem
-                      size="md"
                       message={
                         <>
                           김코드 기사님의 <span className="text-orange-400">소형이사 견적</span>이
@@ -323,7 +322,6 @@ export default function DropdownFilterSortPreviewPage() {
                       timeLabel="2시간 전"
                     />
                     <DropdownNotificationItem
-                      size="md"
                       message={
                         <>
                           김코드 기사님의 견적이 <span className="text-orange-400">확정</span>
@@ -333,7 +331,6 @@ export default function DropdownFilterSortPreviewPage() {
                       timeLabel="3시간 전"
                     />
                     <DropdownNotificationItem
-                      size="md"
                       message={
                         <>
                           내일은{" "}
@@ -352,7 +349,6 @@ export default function DropdownFilterSortPreviewPage() {
                   <p className="text-13 font-medium text-gray-500">size=sm</p>
                   <DropdownNotification size="sm" header="알림" closeOnOutsideClick={false}>
                     <DropdownNotificationItem
-                      size="sm"
                       message={
                         <>
                           김코드 기사님의 <span className="text-orange-400">소형이사 견적</span>이
@@ -362,7 +358,6 @@ export default function DropdownFilterSortPreviewPage() {
                       timeLabel="2시간 전"
                     />
                     <DropdownNotificationItem
-                      size="sm"
                       message={
                         <>
                           김코드 기사님의 견적이 <span className="text-orange-400">확정</span>
@@ -372,7 +367,6 @@ export default function DropdownFilterSortPreviewPage() {
                       timeLabel="3시간 전"
                     />
                     <DropdownNotificationItem
-                      size="sm"
                       message={
                         <>
                           내일은{" "}

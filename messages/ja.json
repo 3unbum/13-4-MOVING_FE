@@ -93,6 +93,41 @@
       "mypage": "マイページ"
     }
   },
+  "notification": {
+    "moverTitle": "業者のお知らせ",
+    "readAll": "すべて既読",
+    "readAllDescription": "すべての通知を既読にします。",
+    "deleteAll": "すべて削除",
+    "deleteAllDescription": "すべての通知を削除します。",
+    "delete": "削除する",
+    "markRead": "既読にする",
+    "read": "既読",
+    "unreadStatus": "未読",
+    "unreadPill": "未読の通知 {count}",
+    "readAllConfirm": "すべての通知を既読にしますか？",
+    "deleteAllConfirm": "すべての通知を削除しますか？削除した通知は元に戻せません。",
+    "unread": "通知、未読{count}件",
+    "emptyTitle": "新しい通知はありません",
+    "emptyDescription": "今確認する通知はありません。",
+    "todayRequests": "今日の新しい依頼",
+    "todayRequestsHint": "対応地域・サービス基準で今日来たリスト",
+    "summaryCount": "{count}件",
+    "meta": "{left} · {right}",
+    "newRequest": "{name} 様が指定見積もり依頼を送りました。",
+    "newEstimate": "{name}さんの<em>{category}の見積もり</em>が届きました。",
+    "estimateConfirmedCustomer": "{name}さんの見積もりが<em>確定</em>しました。",
+    "estimateConfirmedMover": "見積もりが<em>確定</em>しました。",
+    "movingDayBefore": "明日は<em>{from}</em> → <dest>{to}</dest>の引っ越し予定日です。",
+    "movingDay": "今日は<em>{from}</em> → <dest>{to}</dest>の引っ越し予定日です。"
+  },
+  "gnbPreview": {
+    "loggedOut": "未ログイン",
+    "customer": "一般ユーザー",
+    "mover": "業者",
+    "empty": "通知なし",
+    "moverEmpty": "業者・通知なし",
+    "hint": "ベルを押して通知を確認してください。言語を変えると通知の文も一緒に変わります。"
+  },
   "service": {
     "SMALL": "小規模引っ越し",
     "HOME": "家庭の引っ越し",
