@@ -11,6 +11,10 @@ import logoSm from "@/assets/images/common/logo-icon-text-sm.svg";
 import Button from "@/components/common/Button";
 import DropdownNotification, {
   DropdownNotificationItem,
+  NotificationFooter,
+  TruckIcon,
+  type NotificationSummaryLine,
+  type NotificationTone,
 } from "@/components/layout/DropdownNotification";
 import DropdownProfile, { type DropdownProfileOption } from "@/components/layout/DropdownProfile";
 import GnbMenu from "@/components/layout/GnbMenu";
@@ -26,7 +30,10 @@ import { useRef, useState, type ReactNode } from "react";
 export interface GnbNotification {
   id: string;
   message: ReactNode;
+  description?: ReactNode;
   timeLabel: string;
+  isRead?: boolean;
+  tone?: NotificationTone;
 }
 
 // 열린 패널은 하나만 — 알림과 프로필이 동시에 뜨지 않도록 union으로 관리
@@ -39,14 +46,28 @@ interface GnbProps {
   userName?: string;
   /** /auth/me의 image — 없으면 기본 아이콘 */
   profileImage?: string | null;
-  /** 알림 패널에 표시할 목록 — 비어 있으면 헤더만 노출 */
+  /** 알림 패널에 표시할 목록 — 비어 있으면 빈 안내만 노출 */
   notifications?: GnbNotification[];
+  /** 종 아이콘 뱃지. 0이면 숨깁니다 */
+  unreadCount?: number;
   /** 프로필 메뉴 항목 — 미지정 시 role별 기본값 */
   profileOptions?: DropdownProfileOption[];
   className?: string;
   onLoginClick?: () => void;
   onNotificationSelect?: (id: string) => void;
+  onReadAllNotifications?: () => void;
+  onDeleteAllNotifications?: () => void;
+  onDeleteNotification?: (id: string) => void;
+  /** 항목 메뉴의 읽음 처리. 이동은 하지 않습니다 */
+  onMarkNotificationRead?: (id: string) => void;
+  /** 기사님 패널 하단. 지역별 이사 유형 건수 */
+  requestSummary?: NotificationSummaryLine[];
+  onRequestSummarySelect?: (id: string) => void;
   onProfileSelect?: (value: string) => void;
+  /** 목록이 4장 넘으면 바닥에서 다음 페이지를 붙입니다 */
+  hasMoreNotifications?: boolean;
+  isLoadingMoreNotifications?: boolean;
+  onLoadMoreNotifications?: () => void;
 }
 
 /**
@@ -62,19 +83,31 @@ export default function Gnb({
   userName = "",
   profileImage = null,
   notifications = [],
+  unreadCount = 0,
   profileOptions,
   className,
   onLoginClick,
   onNotificationSelect,
+  onReadAllNotifications,
+  onDeleteAllNotifications,
+  onDeleteNotification,
+  onMarkNotificationRead,
+  requestSummary,
+  onRequestSummarySelect,
   onProfileSelect,
+  hasMoreNotifications = false,
+  isLoadingMoreNotifications = false,
+  onLoadMoreNotifications,
 }: GnbProps) {
   const tNav = useTranslations("gnb.nav");
   const t = useTranslations("gnb");
+  const tNotification = useTranslations("notification");
   const tCommon = useTranslations("common");
   const tAuth = useTranslations("auth");
   const tMenu = useTranslations("gnb.menu_items");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [openPanel, setOpenPanel] = useState<GnbPanel>("none");
+  const [unreadOnly, setUnreadOnly] = useState(false);
   const pathname = usePathname();
   // 트리거와 패널을 함께 감싸서, 아이콘 클릭이 "바깥 클릭"으로 잡혀 바로 닫히는 걸 막는다
   const actionsRef = useRef<HTMLDivElement>(null);
@@ -92,17 +125,50 @@ export default function Gnb({
     : undefined;
 
   const togglePanel = (panel: Exclude<GnbPanel, "none">) => {
-    setOpenPanel((current) => (current === panel ? "none" : panel));
+    setOpenPanel((current) => {
+      const next = current === panel ? "none" : panel;
+      if (next !== "notification") setUnreadOnly(false);
+      return next;
+    });
   };
-  const closePanel = () => setOpenPanel("none");
+  const closePanel = () => {
+    setOpenPanel("none");
+    setUnreadOnly(false);
+  };
 
-  const renderNotificationItems = (size: "sm" | "md") =>
-    notifications.map((notification) => (
+  const hasNotifications = notifications.length > 0;
+  // 다 읽으면 칩이 사라져 필터도 끕니다. effect에서 setState 하지 않습니다.
+  const showUnreadOnly = unreadOnly && unreadCount > 0;
+  const visibleNotifications = showUnreadOnly
+    ? notifications.filter((notification) => notification.isRead === false)
+    : notifications;
+  // 목록이 비면 전체 읽음·삭제는 숨깁니다. 기사님은 오늘 새 요청만 남깁니다.
+  const showSummary = requestSummary !== undefined;
+  const notificationFooter = showSummary ? (
+    <NotificationFooter
+      summaryTitle={tNotification("todayRequests")}
+      summaryHint={tNotification("todayRequestsHint")}
+      summaryLines={requestSummary}
+      onSummarySelect={(id) => {
+        closePanel();
+        onRequestSummarySelect?.(id);
+      }}
+    />
+  ) : null;
+
+  const renderNotificationItems = () =>
+    visibleNotifications.map((notification) => (
       <DropdownNotificationItem
         key={notification.id}
-        size={size}
         message={notification.message}
+        description={notification.description}
         timeLabel={notification.timeLabel}
+        tone={notification.tone}
+        unread={notification.isRead === false}
+        onMarkRead={
+          onMarkNotificationRead ? () => onMarkNotificationRead(notification.id) : undefined
+        }
+        onDelete={onDeleteNotification ? () => onDeleteNotification(notification.id) : undefined}
         onClick={() => {
           closePanel();
           onNotificationSelect?.(notification.id);
@@ -161,10 +227,14 @@ export default function Gnb({
 
               <button
                 type="button"
-                aria-label={t("notification")}
+                aria-label={
+                  unreadCount > 0
+                    ? tNotification("unread", { count: unreadCount })
+                    : t("notification")
+                }
                 aria-expanded={openPanel === "notification"}
                 onClick={() => togglePanel("notification")}
-                className="pc:size-9 size-6"
+                className="pc:size-9 relative size-6"
               >
                 <Image src={alarmMd} alt="" width={24} height={24} className="pc:hidden size-6" />
                 <Image
@@ -174,6 +244,9 @@ export default function Gnb({
                   height={36}
                   className="pc:block hidden size-9"
                 />
+                {unreadCount > 0 ? (
+                  <span className="absolute -top-0.5 -right-0.5 size-2 rounded-full bg-red-200" />
+                ) : null}
               </button>
 
               <button
@@ -217,13 +290,43 @@ export default function Gnb({
               {openPanel === "notification" ? (
                 <>
                   <div className="pc:hidden tablet:right-9 tablet:mt-[15px] absolute top-full -right-1 z-[var(--z-gnb-dropdown)] mt-[9px]">
-                    <DropdownNotification size="sm" containerRef={actionsRef} onClose={closePanel}>
-                      {renderNotificationItems("sm")}
+                    <DropdownNotification
+                      size="sm"
+                      containerRef={actionsRef}
+                      onClose={closePanel}
+                      unreadCount={unreadCount}
+                      unreadOnly={unreadOnly}
+                      onUnreadOnlyChange={setUnreadOnly}
+                      onReadAll={hasNotifications ? onReadAllNotifications : undefined}
+                      onDeleteAll={hasNotifications ? onDeleteAllNotifications : undefined}
+                      hasMore={hasMoreNotifications}
+                      isLoadingMore={isLoadingMoreNotifications}
+                      onLoadMore={onLoadMoreNotifications}
+                      header={role === "mover" ? tNotification("moverTitle") : undefined}
+                      headerIcon={role === "mover" ? <TruckIcon /> : undefined}
+                      footer={notificationFooter}
+                    >
+                      {renderNotificationItems()}
                     </DropdownNotification>
                   </div>
                   <div className="pc:block absolute top-full right-[101px] z-[var(--z-gnb-dropdown)] mt-6.5 hidden">
-                    <DropdownNotification size="md" containerRef={actionsRef} onClose={closePanel}>
-                      {renderNotificationItems("md")}
+                    <DropdownNotification
+                      size="md"
+                      containerRef={actionsRef}
+                      onClose={closePanel}
+                      unreadCount={unreadCount}
+                      unreadOnly={unreadOnly}
+                      onUnreadOnlyChange={setUnreadOnly}
+                      onReadAll={hasNotifications ? onReadAllNotifications : undefined}
+                      onDeleteAll={hasNotifications ? onDeleteAllNotifications : undefined}
+                      hasMore={hasMoreNotifications}
+                      isLoadingMore={isLoadingMoreNotifications}
+                      onLoadMore={onLoadMoreNotifications}
+                      header={role === "mover" ? tNotification("moverTitle") : undefined}
+                      headerIcon={role === "mover" ? <TruckIcon /> : undefined}
+                      footer={notificationFooter}
+                    >
+                      {renderNotificationItems()}
                     </DropdownNotification>
                   </div>
                 </>

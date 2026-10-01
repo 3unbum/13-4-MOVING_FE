@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, type RefObject } from "react";
 
 /**
  * 목록 하단 sentinel이 보이면 onLoadMore 호출.
@@ -10,7 +10,11 @@ import { useEffect, useRef } from "react";
  */
 export function useInfiniteScrollTrigger(
   onLoadMore: () => void,
-  { enabled, isLoading }: { enabled: boolean; isLoading: boolean }
+  {
+    enabled,
+    isLoading,
+    root,
+  }: { enabled: boolean; isLoading: boolean; root?: RefObject<Element | null> }
 ) {
   const sentinelRef = useRef<HTMLDivElement>(null);
   // 렌더마다 새 함수여도 observer는 재구독하지 않고, 콜백만 최신으로 유지
@@ -33,12 +37,12 @@ export function useInfiniteScrollTrigger(
           onLoadMoreRef.current();
         }
       },
-      { rootMargin: "160px" }
+      { root: root?.current ?? null, rootMargin: "160px" }
     );
 
     observer.observe(node);
     return () => observer.disconnect();
-  }, [enabled, isLoading]);
+  }, [enabled, isLoading, root]);
 
   return sentinelRef;
 }

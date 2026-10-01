@@ -93,6 +93,41 @@
       "mypage": "My Page"
     }
   },
+  "notification": {
+    "moverTitle": "Mover alerts",
+    "readAll": "Mark all read",
+    "readAllDescription": "Mark every alert as read.",
+    "deleteAll": "Delete all",
+    "deleteAllDescription": "Delete every alert.",
+    "delete": "Delete",
+    "markRead": "Mark as read",
+    "read": "Read",
+    "unreadStatus": "Unread",
+    "unreadPill": "Unread alerts {count}",
+    "readAllConfirm": "Mark every alert as read?",
+    "deleteAllConfirm": "Delete every alert? This can't be undone.",
+    "unread": "Notifications, {count} unread",
+    "emptyTitle": "No new alerts",
+    "emptyDescription": "There's nothing to check right now.",
+    "todayRequests": "New requests today",
+    "todayRequestsHint": "Today's list for your regions and services",
+    "summaryCount": "{count}",
+    "meta": "{left} · {right}",
+    "newRequest": "A customer requested a new moving quote.",
+    "newEstimate": "A <em>{category} quote</em> from {name} arrived.",
+    "estimateConfirmedCustomer": "{name}'s quote was <em>confirmed</em>.",
+    "estimateConfirmedMover": "The quote was <em>confirmed</em>.",
+    "movingDayBefore": "Tomorrow is the move from <em>{from}</em> → <dest>{to}</dest>.",
+    "movingDay": "Today is the move from <em>{from}</em> → <dest>{to}</dest>."
+  },
+  "gnbPreview": {
+    "loggedOut": "Logged out",
+    "customer": "Customer",
+    "mover": "Mover",
+    "empty": "No alerts",
+    "moverEmpty": "Mover, no alerts",
+    "hint": "Open the bell to check alerts. Switch the language and the alert copy changes with it."
+  },
   "service": {
     "SMALL": "Small move",
     "HOME": "Home move",

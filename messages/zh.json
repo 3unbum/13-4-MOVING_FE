@@ -93,6 +93,41 @@
       "mypage": "我的页面"
     }
   },
+  "notification": {
+    "moverTitle": "师傅通知",
+    "readAll": "全部标为已读",
+    "readAllDescription": "把所有通知标为已读。",
+    "deleteAll": "全部删除",
+    "deleteAllDescription": "删除所有通知。",
+    "delete": "删除",
+    "markRead": "标为已读",
+    "read": "已读",
+    "unreadStatus": "未读",
+    "unreadPill": "未读通知 {count}",
+    "readAllConfirm": "要将所有通知标为已读吗？",
+    "deleteAllConfirm": "要删除所有通知吗？删除后无法恢复。",
+    "unread": "通知，未读 {count} 条",
+    "emptyTitle": "没有新通知",
+    "emptyDescription": "现在没有需要查看的通知。",
+    "todayRequests": "今天的新请求",
+    "todayRequestsHint": "按我的地区和搬家类型，今天新上来的列表",
+    "summaryCount": "{count}条",
+    "meta": "{left} · {right}",
+    "newRequest": "客户请求了新的搬家报价。",
+    "newEstimate": "{name}的<em>{category}报价</em>到了。",
+    "estimateConfirmedCustomer": "{name}的报价已<em>确认</em>。",
+    "estimateConfirmedMover": "报价已<em>确认</em>。",
+    "movingDayBefore": "明天是从<em>{from}</em> → <dest>{to}</dest>的搬家日。",
+    "movingDay": "今天是从<em>{from}</em> → <dest>{to}</dest>的搬家日。"
+  },
+  "gnbPreview": {
+    "loggedOut": "未登录",
+    "customer": "普通用户",
+    "mover": "师傅",
+    "empty": "没有通知",
+    "moverEmpty": "师傅，没有通知",
+    "hint": "点铃铛查看通知。切换语言后，通知文案会一起变化。"
+  },
   "service": {
     "SMALL": "小型搬家",
     "HOME": "家庭搬家",
