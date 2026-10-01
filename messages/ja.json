@@ -305,17 +305,19 @@
       "title": "パスワード再設定",
       "requestCode": "認証番号を受け取る",
       "guideNotice": "登録済みのメールアドレスの場合、認証番号が送信されます",
-      "guideSocialRich": "メールアドレスで登録したアカウントのみ対象です。SNSアカウントで登録した場合は<link>IDを探す</link>で登録方法をご確認ください",
+      "guideSocialRich": "メールアドレスで登録したアカウントのみ対象です。ソーシャルアカウントで登録した場合は<link>ソーシャルログイン</link>をご利用ください",
       "sentTo": "{email}に認証番号を送信しました",
       "changeEmail": "メールアドレスを再入力",
       "codeLabel": "認証番号",
       "codePlaceholder": "認証番号6桁を入力してください",
       "remainingTimeLabel": "残り時間",
       "expired": "認証番号の有効期限が切れました",
-      "resend": "再送信",
-      "resendAvailableAfter": "{time}後に再送信できます",
+      "resend": "認証番号を再送信",
+      "resendAvailableAfter": "{time}後に認証番号を再送信できます",
       "submitNewPassword": "パスワードを変更",
-      "passwordChangedTitle": "パスワードが変更されました"
+      "passwordChangedTitle": "パスワードが変更されました",
+      "failed": "リクエストの処理中に問題が発生しました。しばらくしてから再度お試しください。",
+      "mailHelp": "メールが届きませんか？迷惑メールフォルダを確認するか、メールアドレスを確認してから再度受け取ってください。"
     }
   },
   "authError": {

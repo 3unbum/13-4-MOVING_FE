@@ -305,17 +305,19 @@
       "title": "Reset password",
       "requestCode": "Get verification code",
       "guideNotice": "If this email is registered, a verification code will be sent",
-      "guideSocialRich": "Only applies to email sign-ups. If you signed up with a social account, check your sign-up method with <link>Find email</link>",
+      "guideSocialRich": "This applies only to accounts registered with email. If you signed up with a social account, please use <link>social login</link>",
       "sentTo": "We sent a verification code to {email}",
       "changeEmail": "Enter a different email",
       "codeLabel": "Verification code",
       "codePlaceholder": "Enter the 6-digit verification code",
       "remainingTimeLabel": "Time remaining",
       "expired": "The verification code has expired",
-      "resend": "Resend",
-      "resendAvailableAfter": "You can resend in {time}",
+      "resend": "Resend code",
+      "resendAvailableAfter": "You can resend the code in {time}",
       "submitNewPassword": "Change password",
-      "passwordChangedTitle": "Your password has been changed"
+      "passwordChangedTitle": "Your password has been changed",
+      "failed": "Something went wrong. Please try again later.",
+      "mailHelp": "Didn't get the email? Check your spam folder, or double-check your email address and request a new code."
     }
   },
   "authError": {

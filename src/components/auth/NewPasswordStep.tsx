@@ -1,30 +1,43 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
-import { type ChangeEvent, type SubmitEvent, useState } from "react";
+import { useMemo } from "react";
+import { useForm } from "react-hook-form";
 import AuthSubmitButton from "@/components/auth/AuthSubmitButton";
 import FormField from "@/components/auth/FormField";
+import { makeNewPasswordSchema, type NewPasswordFormValues } from "@/lib/schemas/auth-schema";
 
 interface NewPasswordStepProps {
-  errorMessage?: string;
-  onSubmit: (password: string, passwordConfirm: string) => void;
+  // 실패하면 화면에 보여줄 문구를 돌려준다 (성공이면 undefined)
+  onSubmit: (newPassword: string) => Promise<string | undefined>;
 }
 
-// 표시 전용 — 입력값만 내부 useState, 제출 시 최종 값을 그대로 onSubmit으로 올려보낸다.
 // 회원가입 페이지의 비밀번호 필드와 동일한 모양(onCopy/onCut 방지 포함).
-export default function NewPasswordStep({ errorMessage, onSubmit }: NewPasswordStepProps) {
+export default function NewPasswordStep({ onSubmit }: NewPasswordStepProps) {
   const t = useTranslations("auth");
   const tp = useTranslations("profile");
-  const [password, setPassword] = useState("");
-  const [passwordConfirm, setPasswordConfirm] = useState("");
+  const tValidation = useTranslations("validation");
+  const schema = useMemo(() => makeNewPasswordSchema(tValidation), [tValidation]);
 
-  const handleSubmit = (event: SubmitEvent) => {
-    event.preventDefault();
-    onSubmit(password, passwordConfirm);
+  const {
+    register,
+    handleSubmit,
+    setError,
+    formState: { errors, isSubmitting, isValid },
+  } = useForm<NewPasswordFormValues>({ resolver: zodResolver(schema), mode: "onChange" });
+
+  const submit = async (values: NewPasswordFormValues) => {
+    const errorMessage = await onSubmit(values.newPassword);
+    if (errorMessage) setError("root", { message: errorMessage });
   };
 
   return (
-    <form onSubmit={handleSubmit} className="tablet:gap-8 flex w-full flex-col gap-6" noValidate>
+    <form
+      onSubmit={handleSubmit(submit)}
+      className="tablet:gap-8 flex w-full flex-col gap-6"
+      noValidate
+    >
       <div className="tablet:gap-6 flex flex-col gap-4">
         <FormField
           id="newPassword"
@@ -32,10 +45,10 @@ export default function NewPasswordStep({ errorMessage, onSubmit }: NewPasswordS
           type="password"
           placeholder={tp("newPasswordPlaceholder")}
           autoComplete="new-password"
-          value={password}
-          onChange={(event: ChangeEvent<HTMLInputElement>) => setPassword(event.target.value)}
+          errorMessage={errors.newPassword?.message}
           onCopy={(event) => event.preventDefault()}
           onCut={(event) => event.preventDefault()}
+          {...register("newPassword", { deps: ["newPasswordConfirm"] })}
         />
         <FormField
           id="newPasswordConfirm"
@@ -43,17 +56,14 @@ export default function NewPasswordStep({ errorMessage, onSubmit }: NewPasswordS
           type="password"
           placeholder={tp("newPasswordConfirmPlaceholder")}
           autoComplete="new-password"
-          value={passwordConfirm}
-          onChange={(event: ChangeEvent<HTMLInputElement>) =>
-            setPasswordConfirm(event.target.value)
-          }
+          errorMessage={errors.newPasswordConfirm?.message}
           onCopy={(event) => event.preventDefault()}
           onCut={(event) => event.preventDefault()}
+          {...register("newPasswordConfirm")}
         />
       </div>
 
-      {/* TODO(logic): react-hook-form + zod(비밀번호 일치 등) 연결 전까지는 항상 활성화 */}
-      <AuthSubmitButton disabled={false} errorMessage={errorMessage}>
+      <AuthSubmitButton disabled={isSubmitting || !isValid} errorMessage={errors.root?.message}>
         {t("resetPassword.submitNewPassword")}
       </AuthSubmitButton>
     </form>

@@ -305,17 +305,19 @@
       "title": "重置密码",
       "requestCode": "获取验证码",
       "guideNotice": "如果该邮箱已注册，验证码将会发送",
-      "guideSocialRich": "仅适用于邮箱注册账号。如果您使用社交账号注册，请通过<link>查找账号</link>确认注册方式",
+      "guideSocialRich": "仅适用于通过邮箱注册的账号，如通过社交账号注册，请使用<link>社交登录</link>",
       "sentTo": "验证码已发送至{email}",
       "changeEmail": "重新输入邮箱",
       "codeLabel": "验证码",
       "codePlaceholder": "请输入6位验证码",
       "remainingTimeLabel": "剩余时间",
       "expired": "验证码已过期",
-      "resend": "重新发送",
-      "resendAvailableAfter": "{time}后可重新发送",
+      "resend": "重新发送验证码",
+      "resendAvailableAfter": "{time}后可重新发送验证码",
       "submitNewPassword": "修改密码",
-      "passwordChangedTitle": "密码已修改"
+      "passwordChangedTitle": "密码已修改",
+      "failed": "处理请求时出现问题，请稍后再试。",
+      "mailHelp": "没有收到邮件？请检查垃圾邮件箱，或确认邮箱地址后重新获取。"
     }
   },
   "authError": {

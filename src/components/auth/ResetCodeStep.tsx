@@ -1,9 +1,13 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
-import { type ChangeEvent, type SubmitEvent, useState } from "react";
+import { useMemo, useState } from "react";
+import { useForm } from "react-hook-form";
 import AuthSubmitButton from "@/components/auth/AuthSubmitButton";
 import FormField from "@/components/auth/FormField";
+import Button from "@/components/common/Button";
+import { makeResetCodeSchema, type ResetCodeFormValues } from "@/lib/schemas/auth-schema";
 import { cn } from "@/lib/utils/cn";
 import { formatCountdown } from "@/lib/utils/format-duration";
 
@@ -14,35 +18,62 @@ interface ResetCodeStepProps {
   remainingSeconds: number;
   // 재발송 제한까지 남은 시간(초). 0보다 크면 재발송 버튼 비활성화.
   resendRemainingSeconds: number;
-  errorMessage?: string;
   onBack: () => void;
-  onResend: () => void;
-  onSubmit: (code: string) => void;
+  // 아래 두 핸들러는 실패하면 화면에 보여줄 문구를 돌려준다 (성공이면 undefined).
+  // 재발송에 성공하면 부모가 key를 바꿔 이 컴포넌트를 새로 마운트하므로 입력값도 함께 비워진다.
+  onResend: () => Promise<string | undefined>;
+  onSubmit: (code: string) => Promise<string | undefined>;
 }
 
-// 표시 전용 — 인증번호 입력값만 내부 useState, 나머지(이메일·타이머·에러)는 전부 props.
 export default function ResetCodeStep({
   email,
   remainingSeconds,
   resendRemainingSeconds,
-  errorMessage,
   onBack,
   onResend,
   onSubmit,
 }: ResetCodeStepProps) {
   const t = useTranslations("auth");
   const tCommon = useTranslations("common");
-  const [code, setCode] = useState("");
+  const tValidation = useTranslations("validation");
+  const schema = useMemo(() => makeResetCodeSchema(tValidation), [tValidation]);
+  // 응답 전에 재발송을 여러 번 누르면 바로 429에 걸리므로 요청 중에는 막는다
+  const [isResending, setIsResending] = useState(false);
   const isExpired = remainingSeconds <= 0;
-  const isResendDisabled = resendRemainingSeconds > 0;
+  const isResendDisabled = isResending || resendRemainingSeconds > 0;
+  const resendLabel =
+    resendRemainingSeconds > 0
+      ? t("resetPassword.resendAvailableAfter", { time: formatCountdown(resendRemainingSeconds) })
+      : t("resetPassword.resend");
 
-  const handleSubmit = (event: SubmitEvent) => {
-    event.preventDefault();
-    onSubmit(code);
+  const {
+    register,
+    handleSubmit,
+    setError,
+    formState: { errors, isSubmitting, isValid },
+  } = useForm<ResetCodeFormValues>({ resolver: zodResolver(schema), mode: "onChange" });
+
+  const submit = async (values: ResetCodeFormValues) => {
+    const errorMessage = await onSubmit(values.code);
+    if (errorMessage) setError("code", { message: errorMessage });
+  };
+
+  const handleResend = async () => {
+    setIsResending(true);
+    try {
+      const errorMessage = await onResend();
+      if (errorMessage) setError("root", { message: errorMessage });
+    } finally {
+      setIsResending(false);
+    }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="tablet:gap-8 flex w-full flex-col gap-6" noValidate>
+    <form
+      onSubmit={handleSubmit(submit)}
+      className="tablet:gap-8 flex w-full flex-col gap-6"
+      noValidate
+    >
       <div className="flex flex-col gap-2">
         <p className="text-14 tablet:text-16 text-black-300">
           {t("resetPassword.sentTo", { email })}
@@ -62,11 +93,11 @@ export default function ResetCodeStep({
           label={t("resetPassword.codeLabel")}
           type="text"
           inputMode="numeric"
+          autoComplete="one-time-code"
           maxLength={6}
           placeholder={t("resetPassword.codePlaceholder")}
-          value={code}
-          onChange={(event: ChangeEvent<HTMLInputElement>) => setCode(event.target.value)}
-          errorMessage={errorMessage}
+          errorMessage={errors.code?.message}
+          {...register("code")}
         />
         {/* 인증번호를 틀려도 남은 시간은 계속 보여야 해서 FormField의 에러 슬롯과 분리해 항상 렌더 */}
         <p
@@ -81,20 +112,35 @@ export default function ResetCodeStep({
         </p>
       </div>
 
-      <button
-        type="button"
-        onClick={onResend}
-        disabled={isResendDisabled}
-        className="text-14 tablet:text-16 self-start font-semibold text-orange-400 underline disabled:cursor-not-allowed disabled:text-gray-400 disabled:no-underline"
-      >
-        {isResendDisabled
-          ? t("resetPassword.resendAvailableAfter", {
-              time: formatCountdown(resendRemainingSeconds),
-            })
-          : t("resetPassword.resend")}
-      </button>
+      <div className="flex flex-col gap-2">
+        {/* 미가입 이메일(오타 포함)에도 BE는 같은 응답을 줘서 메일이 안 온 이유를 알려줄 수 없다 —
+            에러를 보기 전에 스스로 확인할 수 있게 항상 안내한다 */}
+        <p className="text-13 tablet:text-14 rounded-lg bg-orange-100 px-3 py-2 font-medium text-orange-400">
+          {t("resetPassword.mailHelp")}
+        </p>
+        {isExpired ? (
+          // 만료·5회 오류면 이 인증번호로는 진행할 수 없어 재발송이 유일한 다음 행동 — 버튼으로 강조
+          <Button variant="outlined" size="sm" onClick={handleResend} disabled={isResendDisabled}>
+            {resendLabel}
+          </Button>
+        ) : (
+          <button
+            type="button"
+            onClick={handleResend}
+            disabled={isResendDisabled}
+            className="text-14 tablet:text-16 self-start font-semibold text-orange-400 underline disabled:cursor-not-allowed disabled:text-gray-400 disabled:no-underline"
+          >
+            {resendLabel}
+          </button>
+        )}
+      </div>
 
-      <AuthSubmitButton disabled={isExpired}>{tCommon("confirm")}</AuthSubmitButton>
+      <AuthSubmitButton
+        disabled={isSubmitting || !isValid || isExpired}
+        errorMessage={errors.root?.message}
+      >
+        {tCommon("confirm")}
+      </AuthSubmitButton>
     </form>
   );
 }
