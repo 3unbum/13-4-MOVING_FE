@@ -7,6 +7,7 @@ import { useMemo } from "react";
 import { useForm } from "react-hook-form";
 import AuthSubmitButton from "@/components/auth/AuthSubmitButton";
 import FormField from "@/components/auth/FormField";
+import { findDailyLimitHours } from "@/lib/auth/rate-limit";
 import { makeResetEmailSchema, type ResetEmailFormValues } from "@/lib/schemas/auth-schema";
 import type { UserRole } from "@/lib/services/auth-service";
 import { formatCountdown } from "@/lib/utils/format-duration";
@@ -37,6 +38,7 @@ export default function ResetEmailStep({
   const schema = useMemo(() => makeResetEmailSchema(tValidation), [tValidation]);
   const loginHref = role === "CUSTOMER" ? "/customer/login" : "/mover/login";
   const isLocked = lockRemainingSeconds > 0;
+  const dailyLimitHours = findDailyLimitHours(lockRemainingSeconds);
 
   const {
     register,
@@ -87,7 +89,9 @@ export default function ResetEmailStep({
         disabled={isSubmitting || !isValid || isLocked}
         errorMessage={
           isLocked
-            ? t("retryAfter", { time: formatCountdown(lockRemainingSeconds) })
+            ? dailyLimitHours !== null
+              ? t("resetPassword.dailyLimitReached", { hours: dailyLimitHours })
+              : t("retryAfter", { time: formatCountdown(lockRemainingSeconds) })
             : (errors.root?.message ?? noticeMessage)
         }
       >

@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import AuthSubmitButton from "@/components/auth/AuthSubmitButton";
 import FormField from "@/components/auth/FormField";
 import Button from "@/components/common/Button";
+import { findDailyLimitHours } from "@/lib/auth/rate-limit";
 import { makeResetCodeSchema, type ResetCodeFormValues } from "@/lib/schemas/auth-schema";
 import { cn } from "@/lib/utils/cn";
 import { formatCountdown } from "@/lib/utils/format-duration";
@@ -41,10 +42,15 @@ export default function ResetCodeStep({
   const [isResending, setIsResending] = useState(false);
   const isExpired = remainingSeconds <= 0;
   const isResendDisabled = isResending || resendRemainingSeconds > 0;
+  const dailyLimitHours = findDailyLimitHours(resendRemainingSeconds);
   const resendLabel =
-    resendRemainingSeconds > 0
-      ? t("resetPassword.resendAvailableAfter", { time: formatCountdown(resendRemainingSeconds) })
-      : t("resetPassword.resend");
+    dailyLimitHours !== null
+      ? t("resetPassword.dailyLimitReached", { hours: dailyLimitHours })
+      : resendRemainingSeconds > 0
+        ? t("resetPassword.resendAvailableAfter", {
+            time: formatCountdown(resendRemainingSeconds),
+          })
+        : t("resetPassword.resend");
 
   const {
     register,

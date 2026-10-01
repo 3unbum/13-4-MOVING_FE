@@ -317,7 +317,8 @@
       "submitNewPassword": "Change password",
       "passwordChangedToast": "Your password has been changed. Redirecting to the login page shortly.",
       "failed": "Something went wrong. Please try again later.",
-      "mailHelp": "Didn't get the email? Check your spam folder, or double-check your email address and request a new code."
+      "mailHelp": "Didn't get the email? Check your spam folder, or double-check your email address and request a new code.",
+      "dailyLimitReached": "You've used all of today's requests. Please try again in about {hours, plural, one {# hour} other {# hours}}."
     }
   },
   "authError": {

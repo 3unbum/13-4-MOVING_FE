@@ -317,7 +317,8 @@
       "submitNewPassword": "修改密码",
       "passwordChangedToast": "密码已修改，即将跳转到登录页面。",
       "failed": "处理请求时出现问题，请稍后再试。",
-      "mailHelp": "没有收到邮件？请检查垃圾邮件箱，或确认邮箱地址后重新获取。"
+      "mailHelp": "没有收到邮件？请检查垃圾邮件箱，或确认邮箱地址后重新获取。",
+      "dailyLimitReached": "今天的请求次数已用完，请约{hours}小时后再试。"
     }
   },
   "authError": {
