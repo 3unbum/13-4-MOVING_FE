@@ -181,6 +181,8 @@
     "nameRequired": "Please enter your name",
     "phoneRequired": "Please enter your phone number",
     "phoneInvalid": "Invalid phone number format",
+    "resetCodeRequired": "Please enter the verification code",
+    "resetCodeInvalid": "Please enter the 6-digit verification code",
     "nickNameRequired": "Please enter a nickname",
     "careerRequired": "Please enter your years of experience",
     "careerMin": "Experience must be 0 or more",

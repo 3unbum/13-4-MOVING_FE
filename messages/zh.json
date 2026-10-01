@@ -181,6 +181,8 @@
     "nameRequired": "请输入姓名",
     "phoneRequired": "请输入电话号码",
     "phoneInvalid": "电话号码格式不正确",
+    "resetCodeRequired": "请输入验证码",
+    "resetCodeInvalid": "请输入6位数字验证码",
     "nickNameRequired": "请输入昵称",
     "careerRequired": "请输入从业年限",
     "careerMin": "从业年限需为0以上",

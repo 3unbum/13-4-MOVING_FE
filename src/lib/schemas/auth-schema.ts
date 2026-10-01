@@ -1,5 +1,10 @@
 import { z } from "zod";
-import { EMAIL_PATTERN, PASSWORD_PATTERN, PHONE_PATTERN } from "@/constants/auth/validation";
+import {
+  EMAIL_PATTERN,
+  PASSWORD_PATTERN,
+  PHONE_PATTERN,
+  RESET_CODE_PATTERN,
+} from "@/constants/auth/validation";
 
 /**
  * 검증 메시지 번역 함수 — `useTranslations("validation")`의 반환값을 그대로 받습니다.
@@ -15,9 +20,16 @@ import { EMAIL_PATTERN, PASSWORD_PATTERN, PHONE_PATTERN } from "@/constants/auth
  */
 export type ValidationTranslator = (key: string) => string;
 
+const makeEmailField = (t: ValidationTranslator) =>
+  z.string().min(1, t("emailRequired")).regex(EMAIL_PATTERN, t("emailInvalid"));
+
+// 새 비밀번호를 정하는 폼(회원가입·비밀번호 재설정)이 같은 규칙을 쓰도록 공유
+const makeNewPasswordField = (t: ValidationTranslator) =>
+  z.string().min(1, t("passwordRequired")).regex(PASSWORD_PATTERN, t("passwordPattern"));
+
 export const makeLoginSchema = (t: ValidationTranslator) =>
   z.object({
-    email: z.string().min(1, t("emailRequired")).regex(EMAIL_PATTERN, t("emailInvalid")),
+    email: makeEmailField(t),
     // BE 로그인 API 계약과 동일하게 min(1)만 검사
     password: z.string().min(1, t("passwordRequired")),
   });
@@ -38,12 +50,9 @@ export const makeSignupSchema = (t: ValidationTranslator) =>
   z
     .object({
       name: z.string().min(1, t("nameRequired")),
-      email: z.string().min(1, t("emailRequired")).regex(EMAIL_PATTERN, t("emailInvalid")),
+      email: makeEmailField(t),
       phoneNumber: makePhoneNumberField(t),
-      password: z
-        .string()
-        .min(1, t("passwordRequired"))
-        .regex(PASSWORD_PATTERN, t("passwordPattern")),
+      password: makeNewPasswordField(t),
       passwordConfirm: z.string().min(1, t("passwordConfirmRequired")),
     })
     .refine((data) => data.password === data.passwordConfirm, {
@@ -52,3 +61,42 @@ export const makeSignupSchema = (t: ValidationTranslator) =>
     });
 
 export type SignupFormValues = z.infer<ReturnType<typeof makeSignupSchema>>;
+
+export const makeFindEmailSchema = (t: ValidationTranslator) =>
+  z.object({
+    // BE도 앞뒤 공백을 제거한 뒤 비교하므로 공백만 입력한 경우를 미리 막는다
+    name: z.string().trim().min(1, t("nameRequired")),
+    phoneNumber: makePhoneNumberField(t),
+  });
+
+export type FindEmailFormValues = z.infer<ReturnType<typeof makeFindEmailSchema>>;
+
+export const makeResetEmailSchema = (t: ValidationTranslator) =>
+  z.object({
+    email: makeEmailField(t),
+  });
+
+export type ResetEmailFormValues = z.infer<ReturnType<typeof makeResetEmailSchema>>;
+
+export const makeResetCodeSchema = (t: ValidationTranslator) =>
+  z.object({
+    code: z
+      .string()
+      .min(1, t("resetCodeRequired"))
+      .regex(RESET_CODE_PATTERN, t("resetCodeInvalid")),
+  });
+
+export type ResetCodeFormValues = z.infer<ReturnType<typeof makeResetCodeSchema>>;
+
+export const makeNewPasswordSchema = (t: ValidationTranslator) =>
+  z
+    .object({
+      newPassword: makeNewPasswordField(t),
+      newPasswordConfirm: z.string().min(1, t("passwordConfirmRequired")),
+    })
+    .refine((data) => data.newPassword === data.newPasswordConfirm, {
+      message: t("passwordMismatch"),
+      path: ["newPasswordConfirm"],
+    });
+
+export type NewPasswordFormValues = z.infer<ReturnType<typeof makeNewPasswordSchema>>;

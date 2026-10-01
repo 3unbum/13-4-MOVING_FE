@@ -181,6 +181,8 @@
     "nameRequired": "お名前を入力してください",
     "phoneRequired": "電話番号を入力してください",
     "phoneInvalid": "電話番号の形式が正しくありません",
+    "resetCodeRequired": "認証番号を入力してください",
+    "resetCodeInvalid": "6桁の認証番号を入力してください",
     "nickNameRequired": "ニックネームを入力してください",
     "careerRequired": "経歴を入力してください",
     "careerMin": "経歴は0以上で入力してください",

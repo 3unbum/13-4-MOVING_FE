@@ -181,6 +181,8 @@
     "nameRequired": "이름을 입력해 주세요",
     "phoneRequired": "전화번호를 입력해 주세요",
     "phoneInvalid": "올바른 전화번호 형식이 아닙니다",
+    "resetCodeRequired": "인증번호를 입력해 주세요",
+    "resetCodeInvalid": "인증번호 6자리 숫자를 입력해 주세요",
     "nickNameRequired": "별명을 입력해 주세요",
     "careerRequired": "경력을 입력해 주세요",
     "careerMin": "경력은 0 이상이어야 합니다",
