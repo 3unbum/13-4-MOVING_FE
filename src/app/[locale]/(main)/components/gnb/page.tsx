@@ -69,7 +69,12 @@ const MOVER_ITEMS: NotificationItem[] = [
     estimateId: null,
     quotationRequestId: 21,
     type: "NEW_REQUEST",
-    payload: { category: "SMALL", fromRegion: "GYEONGGI", movingDate: "2026-10-04" },
+    payload: {
+      customerName: "김가나",
+      category: "SMALL",
+      fromRegion: "GYEONGGI",
+      movingDate: "2026-10-04",
+    },
   },
   {
     id: 2,

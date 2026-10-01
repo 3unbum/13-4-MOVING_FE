@@ -113,7 +113,7 @@
     "todayRequestsHint": "対応地域・サービス基準で今日来たリスト",
     "summaryCount": "{count}件",
     "meta": "{left} · {right}",
-    "newRequest": "お客様が新しい引っ越し見積もりを依頼しました。",
+    "newRequest": "{name} 様が指定見積もり依頼を送りました。",
     "newEstimate": "{name}さんの<em>{category}の見積もり</em>が届きました。",
     "estimateConfirmedCustomer": "{name}さんの見積もりが<em>確定</em>しました。",
     "estimateConfirmedMover": "見積もりが<em>確定</em>しました。",

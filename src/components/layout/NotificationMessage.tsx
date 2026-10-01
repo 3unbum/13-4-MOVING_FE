@@ -45,7 +45,7 @@ export default function NotificationMessage({ item, role }: NotificationCopyProp
 
   switch (item.type) {
     case "NEW_REQUEST":
-      return t("newRequest");
+      return t("newRequest", { name: item.payload.customerName });
     case "NEW_ESTIMATE":
       return t.rich("newEstimate", {
         name: item.payload.moverNickName,

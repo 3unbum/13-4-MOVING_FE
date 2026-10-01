@@ -113,7 +113,7 @@
     "todayRequestsHint": "내 지역/이사유형 기준 오늘 올라온 리스트",
     "summaryCount": "{count}건",
     "meta": "{left} · {right}",
-    "newRequest": "고객님이 새로운 이사 견적을 요청했어요.",
+    "newRequest": "{name} 고객님이 지정 견적 요청을 보냈어요.",
     "newEstimate": "{name} 기사님의 <em>{category} 견적</em>이 도착했어요.",
     "estimateConfirmedCustomer": "{name} 기사님의 견적이 <em>확정</em>되었어요.",
     "estimateConfirmedMover": "이사 견적이 <em>확정</em>되었어요.",

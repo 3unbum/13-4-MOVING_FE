@@ -113,7 +113,7 @@
     "todayRequestsHint": "按我的地区和搬家类型，今天新上来的列表",
     "summaryCount": "{count}条",
     "meta": "{left} · {right}",
-    "newRequest": "客户请求了新的搬家报价。",
+    "newRequest": "{name} 客户向您发送了指定报价请求。",
     "newEstimate": "{name}的<em>{category}报价</em>到了。",
     "estimateConfirmedCustomer": "{name}的报价已<em>确认</em>。",
     "estimateConfirmedMover": "报价已<em>确认</em>。",

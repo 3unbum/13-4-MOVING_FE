@@ -113,7 +113,7 @@
     "todayRequestsHint": "Today's list for your regions and services",
     "summaryCount": "{count}",
     "meta": "{left} · {right}",
-    "newRequest": "A customer requested a new moving quote.",
+    "newRequest": "{name} sent you a designated quote request.",
     "newEstimate": "A <em>{category} quote</em> from {name} arrived.",
     "estimateConfirmedCustomer": "{name}'s quote was <em>confirmed</em>.",
     "estimateConfirmedMover": "The quote was <em>confirmed</em>.",

@@ -17,6 +17,7 @@ interface NotificationBase {
 }
 
 export interface NewRequestPayload {
+  customerName: string;
   category: ServiceCode;
   fromRegion: RegionCode;
   movingDate: string;
