@@ -298,7 +298,8 @@
       "localHint": "이메일로 가입한 계정입니다",
       "socialHint": "{provider}로 가입한 계정입니다",
       "findPassword": "비밀번호 찾기",
-      "retry": "다시 찾기"
+      "retry": "다시 찾기",
+      "failed": "아이디 찾기 중 문제가 발생했어요. 잠시 후 다시 시도해 주세요."
     },
     "resetPassword": {
       "title": "비밀번호 재설정",

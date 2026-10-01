@@ -298,7 +298,8 @@
       "localHint": "This account signed up with email",
       "socialHint": "This account signed up with {provider}",
       "findPassword": "Find password",
-      "retry": "Search again"
+      "retry": "Search again",
+      "failed": "Something went wrong while finding your ID. Please try again later."
     },
     "resetPassword": {
       "title": "Reset password",

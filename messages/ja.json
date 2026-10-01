@@ -298,7 +298,8 @@
       "localHint": "メールアドレスで登録したアカウントです",
       "socialHint": "{provider}で登録したアカウントです",
       "findPassword": "パスワードを探す",
-      "retry": "もう一度探す"
+      "retry": "もう一度探す",
+      "failed": "IDの検索中に問題が発生しました。しばらくしてから再度お試しください。"
     },
     "resetPassword": {
       "title": "パスワード再設定",

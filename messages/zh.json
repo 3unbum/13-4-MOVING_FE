@@ -298,7 +298,8 @@
       "localHint": "该账号使用邮箱注册",
       "socialHint": "该账号使用{provider}注册",
       "findPassword": "查找密码",
-      "retry": "重新查找"
+      "retry": "重新查找",
+      "failed": "查找账号时出现问题，请稍后再试。"
     },
     "resetPassword": {
       "title": "重置密码",
