@@ -1,6 +1,9 @@
+"use client";
+
 import MoveTypeChip from "@/components/filter/ChipMoveType";
 import type { ServiceCode } from "@/components/filter/ChipRegion";
 import MovingInfo from "@/components/quote/MovingInfo";
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils/cn";
 import type { HTMLAttributes, ReactNode } from "react";
 
@@ -52,6 +55,7 @@ export default function CardRequest({
   className,
   ...props
 }: CardRequestProps) {
+  const honorific = useTranslations("quote")("customerHonorific");
   const isLg = size === "lg";
 
   return (
@@ -84,7 +88,8 @@ export default function CardRequest({
           {/* 이름이 길면 이름만 잘리고 "고객님"은 남습니다 */}
           <p className="text-20 text-black-300 flex w-full min-w-0 items-center gap-2 font-semibold">
             <span className="min-w-0 truncate">{customerName}</span>
-            <span className="shrink-0">고객님</span>
+            {/* 영어에는 대응하는 경칭이 없어 빈 문자열입니다 */}
+            {honorific && <span className="shrink-0">{honorific}</span>}
           </p>
           <hr className="h-0 w-full border-0 shadow-[0_0_0_0.5px_var(--color-line-100)]" />
         </div>

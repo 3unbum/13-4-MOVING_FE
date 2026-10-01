@@ -115,7 +115,7 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-pretendard), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Pretendard Variable", ui-sans-serif, system-ui, sans-serif;
 }
 
 body {

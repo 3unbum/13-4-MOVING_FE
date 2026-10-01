@@ -1,12 +1,8 @@
 "use client";
 
-import {
-  SELECT_CARD_IMAGES,
-  SELECT_CARD_LABELS,
-  SELECT_CARD_SUBTITLES,
-  type SelectCardVariant,
-} from "@/components/common/SelectCard";
+import { SELECT_CARD_IMAGES, type SelectCardVariant } from "@/components/common/SelectCard";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { useTranslations } from "next-intl";
 import { motion, useTransform, type MotionValue } from "motion/react";
 import Image from "next/image";
 
@@ -53,6 +49,7 @@ const CENTER_SIZE = { width: 245, height: 261, image: 160, labelFont: 20, subtit
 // depth(-1 뒤 ~ 1 앞)로 위치·투명도·앞뒤 쌓임 순서·기울기(rotateY)를 파생시켜 입체감을 낸다.
 // 크기는 모바일=scale(내용물까지 통째로 같이 커짐), 태블릿/PC=박스와 내용물(이미지/폰트) 각각 지정된 px로 보간.
 export default function MoveTypeSlideCard({ variant, angle, offsetDeg }: MoveTypeSlideCardProps) {
+  const t = useTranslations("service");
   const isTabletUp = useMediaQuery(TABLET_QUERY);
   const isPcUp = useMediaQuery(PC_QUERY);
 
@@ -98,7 +95,7 @@ export default function MoveTypeSlideCard({ variant, angle, offsetDeg }: MoveTyp
 
   return (
     <motion.div
-      className="absolute top-0 left-1/2 flex w-32 flex-col items-center gap-2 rounded-2xl border-2 px-3 py-4 text-center"
+      className="absolute top-0 left-1/2 flex w-32 flex-col items-center justify-center gap-2 rounded-2xl border-2 px-3 py-4 text-center"
       style={{
         x,
         y,
@@ -109,7 +106,11 @@ export default function MoveTypeSlideCard({ variant, angle, offsetDeg }: MoveTyp
         borderColor,
         backgroundColor,
         width: isTabletUp ? width : MOBILE_WIDTH,
-        height: isTabletUp ? height : "auto",
+        // 높이는 고정이 아니라 최소값입니다. 한국어·일본어·중국어 설명은 한 줄이라
+        // 피그마 값(203·261px) 그대로지만, 영어 "Studio or 2-room, under 20 pyeong"은
+        // 두 줄이 되어 고정 높이에서는 카드 밖으로 14px까지 삐져나왔습니다.
+        minHeight: isTabletUp ? height : undefined,
+        height: isTabletUp ? undefined : "auto",
         scale: isTabletUp ? 1 : scale,
       }}
     >
@@ -117,13 +118,14 @@ export default function MoveTypeSlideCard({ variant, angle, offsetDeg }: MoveTyp
         <Image src={SELECT_CARD_IMAGES[variant]} alt="" fill className="object-contain" />
       </motion.div>
       <motion.span style={{ color: labelColor, fontSize: labelFontSize }} className="font-bold">
-        {SELECT_CARD_LABELS[variant]}
+        {t(variant)}
       </motion.span>
       <motion.span
         style={{ fontSize: subtitleFontSize }}
-        className="text-gray-gray-500 whitespace-nowrap"
+        // 영어 설명("Studio or 2-room, under 20 pyeong")은 모바일 카드 폭 128px을 넘어 줄바꿈이 필요합니다
+        className="text-gray-gray-500 w-full text-center whitespace-normal"
       >
-        {SELECT_CARD_SUBTITLES[variant]}
+        {t(`desc${variant}`)}
       </motion.span>
     </motion.div>
   );

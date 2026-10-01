@@ -1,6 +1,8 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
+import { useMemo } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useForm } from "react-hook-form";
 import truckLg from "@/assets/images/common/truck_lg.png";
@@ -14,7 +16,7 @@ import SocialLoginSection from "@/components/auth/SocialLoginSection";
 import { useCountdown } from "@/hooks/useCountdown";
 import { findRetryAfterSeconds } from "@/lib/auth/rate-limit";
 import { authService } from "@/lib/services/auth-service";
-import { loginSchema, type LoginFormValues } from "@/lib/schemas/auth-schema";
+import { makeLoginSchema, type LoginFormValues } from "@/lib/schemas/auth-schema";
 import { ApiError } from "@/lib/utils/api-error";
 import { formatCountdown } from "@/lib/utils/format-duration";
 import { useAuth } from "@/providers/AuthProvider";
@@ -24,12 +26,18 @@ export default function MoverLoginPage() {
   const { refetch } = useAuth();
   const { remainingSeconds, start: startLockout } = useCountdown();
   const isLocked = remainingSeconds > 0;
+  const t = useTranslations("auth");
+  const tp = useTranslations("profile");
+  const tValidation = useTranslations("validation");
+  // 매 렌더마다 새 스키마가 생기면 zodResolver도 교체돼 폼이 불필요하게 다시 만들어집니다
+  const schema = useMemo(() => makeLoginSchema(tValidation), [tValidation]);
+
   const {
     register,
     handleSubmit,
     setError,
     formState: { errors, isSubmitting, isValid },
-  } = useForm<LoginFormValues>({ resolver: zodResolver(loginSchema), mode: "onChange" });
+  } = useForm<LoginFormValues>({ resolver: zodResolver(schema), mode: "onChange" });
 
   const onSubmit = async (values: LoginFormValues) => {
     try {
@@ -45,7 +53,7 @@ export default function MoverLoginPage() {
         startLockout(retryAfterSeconds);
         return;
       }
-      const message = error instanceof ApiError ? error.message : "로그인 중 문제가 발생했습니다.";
+      const message = error instanceof ApiError ? error.message : t("loginFailed");
       setError("root", { message });
     }
   };
@@ -57,7 +65,7 @@ export default function MoverLoginPage() {
       mascotTabletPositionClassName="-bottom-17 left-125.75"
       mascotPcPositionClassName="-bottom-13 left-170"
     >
-      <AuthHeader prompt="일반 유저라면?" href="/customer/login" linkText="일반 유저 전용 페이지" />
+      <AuthHeader prompt={t("ifCustomer")} href="/customer/login" linkText={t("customerPage")} />
 
       <div className="flex w-full flex-col gap-12">
         <div className="tablet:gap-6 flex w-full flex-col gap-4">
@@ -69,18 +77,18 @@ export default function MoverLoginPage() {
             <div className="tablet:gap-8 flex flex-col gap-4">
               <FormField
                 id="email"
-                label="이메일"
+                label={tp("email")}
                 type="email"
-                placeholder="이메일을 입력해 주세요"
+                placeholder={tp("emailPlaceholder")}
                 autoComplete="email"
                 errorMessage={errors.email?.message}
                 {...register("email")}
               />
               <FormField
                 id="password"
-                label="비밀번호"
+                label={tp("password")}
                 type="password"
-                placeholder="비밀번호를 입력해 주세요"
+                placeholder={tp("passwordPlaceholder")}
                 autoComplete="current-password"
                 errorMessage={errors.password?.message}
                 {...register("password")}
@@ -91,22 +99,22 @@ export default function MoverLoginPage() {
               disabled={isSubmitting || !isValid || isLocked}
               errorMessage={
                 isLocked
-                  ? `${formatCountdown(remainingSeconds)} 후 다시 시도해주세요.`
+                  ? t("retryAfter", { time: formatCountdown(remainingSeconds) })
                   : errors.root?.message
               }
             >
-              로그인
+              {t("loginTitle")}
             </AuthSubmitButton>
           </form>
 
           <AuthSwitchLink
-            prompt="아직 무빙 회원이 아니신가요?"
+            prompt={t("notMemberYet")}
             href="/mover/signup"
-            linkText="이메일로 회원가입하기"
+            linkText={t("signupWithEmail")}
           />
         </div>
 
-        <SocialLoginSection actionLabel="로그인" role="MOVER" />
+        <SocialLoginSection action="login" role="MOVER" />
       </div>
     </AuthCard>
   );

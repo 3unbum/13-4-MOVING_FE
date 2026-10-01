@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { requireProfile, requireRole } from "@/lib/auth/guards";
 import CustomerProfileEditForm from "@/components/profile/CustomerProfileEditForm";
 
@@ -11,6 +12,7 @@ import CustomerProfileEditForm from "@/components/profile/CustomerProfileEditFor
 // account(requireRole 조회 결과)를 그대로 폼 초기값으로 넘김 — /profiles/customer GET과 /auth/me
 // 응답 타입이 동일(CustomerAccountResponse)해서 이 페이지에서 별도로 다시 조회하지 않는다.
 export default async function CustomerProfileEditPage() {
+  const t = await getTranslations("moverPage");
   const account = await requireRole("CUSTOMER", "/customer/login");
   await requireProfile(account, "/customer/profile-register");
 
@@ -18,7 +20,7 @@ export default async function CustomerProfileEditPage() {
     <div className="pc:items-center pc:px-0 pc:py-15 flex w-full justify-center px-4 pt-4 pb-10">
       <div className="pc:w-300 pc:gap-10 pc:rounded-4xl pc:bg-gray-50 pc:px-10 pc:pt-8 pc:pb-10 flex w-81.75 flex-col gap-8">
         <h1 className="text-18 text-black-black-400 pc:text-32 pc:font-semibold pc:leading-11.5 font-bold">
-          프로필 수정
+          {t("editProfileTitle")}
         </h1>
         <CustomerProfileEditForm initialAccount={account?.role === "CUSTOMER" ? account : null} />
       </div>

@@ -1,4 +1,7 @@
+"use client";
+
 import arrowRight from "@/assets/icons/arrow-right-long.svg";
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils/cn";
 import Image from "next/image";
 import type { HTMLAttributes } from "react";
@@ -72,6 +75,8 @@ export default function MovingInfo({
   className,
   ...props
 }: MovingInfoProps) {
+  const t = useTranslations("quote");
+  const tCommon = useTranslations("common");
   const isLg = size === "lg";
   const isModal = variant === "modal";
   const item = { variant, isLg };
@@ -104,13 +109,13 @@ export default function MovingInfo({
           isModal && isLg ? "min-w-0 flex-1" : isLg ? "min-w-50.25" : "w-full min-w-0"
         )}
       >
-        <InfoItem label="출발지" value={from} {...item} />
-        <Image src={arrowRight} alt="에서" className="h-5.75 w-4.5 shrink-0" />
-        <InfoItem label="도착지" value={to} {...item} />
+        <InfoItem label={tCommon("from")} value={from} {...item} />
+        <Image src={arrowRight} alt={t("arrowAlt")} className="h-5.75 w-4.5 shrink-0" />
+        <InfoItem label={tCommon("to")} value={to} {...item} />
       </div>
       {/* sm은 세로 배치라 부모 폭을 직접 제한해야 잘립니다 */}
       <div className={cn("flex min-w-0", isLg ? "shrink-0" : "w-full")}>
-        <InfoItem label="이사일" value={movingDate} {...item} />
+        <InfoItem label={tCommon("movingDate")} value={movingDate} {...item} />
       </div>
     </div>
   );

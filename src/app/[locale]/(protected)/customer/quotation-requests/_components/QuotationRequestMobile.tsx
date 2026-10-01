@@ -1,5 +1,6 @@
 "use client";
 import Button from "@/components/common/Button";
+import { useTranslations } from "next-intl";
 import SelectCard from "@/components/common/SelectCard";
 import DatePicker from "@/components/common/DatePicker";
 import InputTextField from "@/components/common/InputTextfield";
@@ -9,21 +10,6 @@ import { useEffect, useRef, useState } from "react";
 import StepProgressBar from "./StepProgressBar";
 
 const TOTAL_STEPS = 3;
-
-const STEP_TEXT = {
-  1: {
-    title: "이사 유형을 선택해주세요",
-    subtitle: "견적을 요청하면 최대 5개의 견적을 받을 수 있어요 :)",
-  },
-  2: {
-    title: "이사 예정일을 선택해주세요",
-    subtitle: "견적을 요청하면 최대 5개의 견적을 받을 수 있어요 :)",
-  },
-  3: {
-    title: "이사 지역을 선택해주세요",
-    subtitle: "견적을 요청하면 최대 5개의 견적을 받을 수 있어요 :)",
-  },
-} as const;
 
 interface QuotationRequestMobileProps {
   selected: (typeof MOVE_TYPES)[number];
@@ -48,6 +34,8 @@ export default function QuotationRequestMobile({
   isSubmitting,
   onSubmit,
 }: QuotationRequestMobileProps) {
+  const t = useTranslations("request");
+  const tCommon = useTranslations("common");
   const [step, setStep] = useState(1);
   const departureDetailRef = useRef<HTMLInputElement>(null);
   const arrivalDetailRef = useRef<HTMLInputElement>(null);
@@ -71,10 +59,8 @@ export default function QuotationRequestMobile({
       <header className="flex flex-col gap-2">
         <StepProgressBar totalSteps={TOTAL_STEPS} currentStep={step} />
         <article className="flex flex-col items-center">
-          <p className="text-20 text-black-500 font-bold">{STEP_TEXT[step as 1 | 2 | 3].title}</p>
-          <p className="text-14 text-gray-gray-400 font-normal">
-            {STEP_TEXT[step as 1 | 2 | 3].subtitle}
-          </p>
+          <p className="text-20 text-black-500 font-bold">{t(`step${step}Title`)}</p>
+          <p className="text-14 text-gray-gray-400 font-normal">{t("stepSubtitle")}</p>
         </article>
       </header>
       <main>
@@ -99,14 +85,14 @@ export default function QuotationRequestMobile({
         {step === 3 && (
           <section className="mt-6 mb-65 flex flex-col gap-6">
             <div>
-              <p className="text-16 text-black-black-400 mb-3 font-medium">출발지</p>
+              <p className="text-16 text-black-black-400 mb-3 font-medium">{tCommon("from")}</p>
               <Button
                 variant="outlined"
                 size="sm"
                 className="justify-start px-6 py-4"
                 onClick={departure.open}
               >
-                {departure.value?.roadAddress ?? "출발지 선택하기"}
+                {departure.value?.roadAddress ?? t("selectFrom")}
               </Button>
               {departure.value && (
                 <button
@@ -114,7 +100,7 @@ export default function QuotationRequestMobile({
                   onClick={departure.open}
                   className="text-12 text-black-100 mt-2 block w-full text-right font-medium underline"
                 >
-                  수정하기
+                  {t("edit")}
                 </button>
               )}
               {departure.value && (
@@ -124,19 +110,19 @@ export default function QuotationRequestMobile({
                   className="mt-3"
                   value={departure.detail}
                   onChange={(event) => departure.onDetailChange(event.target.value)}
-                  placeholder="상세 주소를 입력하세요 (동·호수 등)"
+                  placeholder={t("detailAddressPlaceholder")}
                 />
               )}
             </div>
             <div>
-              <p className="text-16 text-black-black-400 mb-3 font-medium">도착지</p>
+              <p className="text-16 text-black-black-400 mb-3 font-medium">{tCommon("to")}</p>
               <Button
                 variant="outlined"
                 size="sm"
                 className="justify-start px-6 py-4"
                 onClick={arrival.open}
               >
-                {arrival.value?.roadAddress ?? "도착지 선택하기"}
+                {arrival.value?.roadAddress ?? t("selectTo")}
               </Button>
               {arrival.value && (
                 <button
@@ -144,7 +130,7 @@ export default function QuotationRequestMobile({
                   onClick={arrival.open}
                   className="text-12 text-black-100 mt-2 block w-full text-right font-medium underline"
                 >
-                  수정하기
+                  {t("edit")}
                 </button>
               )}
               {arrival.value && (
@@ -154,7 +140,7 @@ export default function QuotationRequestMobile({
                   className="mt-3"
                   value={arrival.detail}
                   onChange={(event) => arrival.onDetailChange(event.target.value)}
-                  placeholder="상세 주소를 입력하세요 (동·호수 등)"
+                  placeholder={t("detailAddressPlaceholder")}
                 />
               )}
             </div>
@@ -167,7 +153,7 @@ export default function QuotationRequestMobile({
         >
           {step > 1 && (
             <Button variant="outlined" className="px-6 py-4" onClick={goPrev}>
-              이전
+              {t("prev")}
             </Button>
           )}
           <Button
@@ -175,7 +161,7 @@ export default function QuotationRequestMobile({
             onClick={isLastStep ? onSubmit : goNext}
             disabled={isNextDisabled}
           >
-            {isLastStep ? "견적 요청하기" : "다음"}
+            {isLastStep ? t("submit") : t("next")}
           </Button>
         </div>
       </footer>

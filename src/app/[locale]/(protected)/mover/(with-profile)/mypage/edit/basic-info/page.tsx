@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { requireRole } from "@/lib/auth/guards";
 import MoverBasicInfoEditPanel from "@/components/profile/MoverBasicInfoEditPanel";
 
@@ -5,6 +6,7 @@ import MoverBasicInfoEditPanel from "@/components/profile/MoverBasicInfoEditPane
 // 형제 라우트로 분리 — 두 화면이 탭이 아니라 마이페이지(PR #132)의 서로 다른 버튼("기본 정보
 // 수정")에서 각각 진입하는 독립 화면이기 때문 (경위는 ../page.tsx 주석 참고).
 export default async function MoverBasicInfoEditPage() {
+  const t = await getTranslations("moverPage");
   const account = await requireRole("MOVER", "/mover/login");
 
   return (
@@ -14,7 +16,7 @@ export default async function MoverBasicInfoEditPage() {
           mb-1(4px)로 비대칭분을 보정한다 */}
       <div className="pc:w-300 pc:gap-10 pc:rounded-4xl pc:bg-gray-50 pc:px-10 pc:pt-8 pc:pb-10 flex w-81.75 flex-col gap-4">
         <h1 className="text-18 text-black-black-450 pc:text-32 pc:font-semibold font-bold">
-          기본정보 수정
+          {t("editBasicInfoTitle")}
         </h1>
         <div className="bg-line-100 pc:mb-0 mb-1 h-px w-full" />
         <MoverBasicInfoEditPanel initialAccount={account?.role === "MOVER" ? account : null} />

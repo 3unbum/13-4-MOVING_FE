@@ -1,9 +1,11 @@
+import { getTranslations } from "next-intl/server";
 import type { Metadata } from "next";
 import type { MoverDetail } from "@/lib/services/mover-service";
 import MoverDetailClient from "./_components/MoverDetailClient";
 
 type PageProps = {
-  params: Promise<{ moverId: string }>;
+  // `[locale]` 하위 라우트라 locale도 params로 들어옵니다 — 메타데이터 번역에 필요합니다
+  params: Promise<{ locale: string; moverId: string }>;
 };
 
 const BACKEND_ORIGIN = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
@@ -28,18 +30,19 @@ async function fetchMoverForMeta(moverId: number): Promise<MoverDetail | null> {
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { moverId: rawId } = await params;
+  const { locale, moverId: rawId } = await params;
+  const t = await getTranslations({ locale, namespace: "page" });
   const moverId = Number(rawId);
   if (!Number.isFinite(moverId) || moverId <= 0) {
-    return { title: "기사님 상세 | 무빙" };
+    return { title: t("moverDetailMeta") };
   }
 
   const mover = await fetchMoverForMeta(moverId);
   if (!mover) {
-    return { title: "기사님 상세 | 무빙" };
+    return { title: t("moverDetailMeta") };
   }
 
-  const title = `${mover.nickName} 기사님 | 무빙`;
+  const title = t("moverMetaTitle", { name: mover.nickName });
   const description = mover.bio || mover.description;
   const images = mover.image ? [{ url: mover.image }] : undefined;
 

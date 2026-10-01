@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils/cn";
+import { useTranslations } from "next-intl";
 import type { ButtonHTMLAttributes } from "react";
 import AddressChip from "@/components/address/ChipAddress";
 
@@ -22,6 +23,7 @@ export default function AddressCard({
   className,
   ...props
 }: AddressCardProps) {
+  const t = useTranslations("common");
   const isMd = size === "md";
 
   return (
@@ -40,13 +42,13 @@ export default function AddressCard({
       </p>
       <div className="flex w-full flex-col items-start gap-4">
         <div className="flex w-full items-center gap-2">
-          <AddressChip size={isMd ? "md" : "sm"}>도로명</AddressChip>
+          <AddressChip size={isMd ? "md" : "sm"}>{t("roadAddress")}</AddressChip>
           <p className={cn("text-black-black-400 min-w-0 flex-1", isMd ? "text-16" : "text-14")}>
             {roadAddress}
           </p>
         </div>
         <div className="flex w-full items-center gap-2">
-          <AddressChip size={isMd ? "md" : "sm"}>지번</AddressChip>
+          <AddressChip size={isMd ? "md" : "sm"}>{t("lotAddress")}</AddressChip>
           <p className={cn("text-black-black-400 min-w-0 flex-1", isMd ? "text-16" : "text-14")}>
             {lotAddress}
           </p>

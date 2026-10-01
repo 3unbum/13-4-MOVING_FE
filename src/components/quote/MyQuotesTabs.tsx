@@ -2,6 +2,7 @@
 
 import { useRouter } from "@/i18n/navigation";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import Tab from "@/components/common/Tab";
 import TabList from "@/components/common/TabList";
 import PastQuotesPanel from "@/components/quote/PastQuotesPanel";
@@ -12,9 +13,11 @@ type QuoteTab = "pending" | "past";
 
 /** 조회 실패 시 — 카드 대신 이유를 보여줍니다 */
 function QuoteError() {
+  const t = useTranslations("quote");
+
   return (
     <div className="bg-background-background-100 text-14 text-gray-gray-400 flex flex-1 items-center justify-center px-6 py-20">
-      견적을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.
+      {t("loadFailed")}
     </div>
   );
 }
@@ -38,6 +41,7 @@ interface MyQuotesTabsProps {
 export default function MyQuotesTabs({ initialTab }: MyQuotesTabsProps) {
   const router = useRouter();
   const [tab, setTab] = useState<QuoteTab>(initialTab);
+  const t = useTranslations("quote");
 
   const pending = usePendingQuotes();
   const past = usePastQuotes();
@@ -65,14 +69,14 @@ export default function MyQuotesTabs({ initialTab }: MyQuotesTabsProps) {
           TabList 기본 py-2.5가 54를 75로 키우고, PC는 Tab의 pc:py-4만으로 67에 그칩니다.
           공통 컴포넌트는 건드리지 않고 여기서만 보정합니다.
           TODO: 데일리 스크럼 공유 — 다른 탭 사용처에도 같은 차이가 납니다. */}
-      <TabList aria-label="내 견적 관리 탭" className="pc:h-20 py-0">
+      <TabList aria-label={t("tabsLabel")} className="pc:h-20 py-0">
         <Tab
           id="tab-pending"
           controls="panel-pending"
           active={tab === "pending"}
           onClick={() => changeTab("pending")}
         >
-          대기 중인 견적
+          {t("tabPending")}
         </Tab>
         <Tab
           id="tab-past"
@@ -80,7 +84,7 @@ export default function MyQuotesTabs({ initialTab }: MyQuotesTabsProps) {
           active={tab === "past"}
           onClick={() => changeTab("past")}
         >
-          받았던 견적
+          {t("tabPast")}
         </Tab>
       </TabList>
 

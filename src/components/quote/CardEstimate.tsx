@@ -1,3 +1,6 @@
+"use client";
+
+import { useTranslations } from "next-intl";
 import Button from "@/components/common/Button";
 import {
   ConfirmedBadge,
@@ -256,6 +259,7 @@ export function CardPendingHistory({
   favoriteCount,
   ...props
 }: CardPendingHistoryProps) {
+  const t = useTranslations("quote");
   const isLg = size === "lg";
   const mover = {
     nickName,
@@ -323,19 +327,19 @@ export function CardPendingHistory({
         {isLg ? (
           <>
             <Button variant="outlined" size="sm" onClick={onDetailClick}>
-              상세보기
+              {t("viewDetail")}
             </Button>
             <Button variant="solid" size="sm" onClick={onConfirmClick}>
-              견적 확정하기
+              {t("confirmQuote")}
             </Button>
           </>
         ) : (
           <>
             <Button variant="solid" size="sm" onClick={onConfirmClick}>
-              견적 확정하기
+              {t("confirmQuote")}
             </Button>
             <Button variant="outlined" size="sm" onClick={onDetailClick}>
-              상세보기
+              {t("viewDetail")}
             </Button>
           </>
         )}

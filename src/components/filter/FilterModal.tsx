@@ -1,10 +1,11 @@
 "use client";
 
 import { useId } from "react";
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils/cn";
 import Button from "@/components/common/Button";
 import CheckboxButton from "@/components/common/CheckboxButton";
-import Chip, { SERVICES, SERVICE_LABELS, type ServiceCode } from "@/components/filter/ChipRegion";
+import Chip, { SERVICES, type ServiceCode } from "@/components/filter/ChipRegion";
 import Modal, { ModalHeader } from "@/components/common/Modal";
 
 interface FilterModalProps {
@@ -44,6 +45,8 @@ export default function FilterModal({
   onServiceAreaOnlyChange,
   onApply,
 }: FilterModalProps) {
+  const t = useTranslations("filter");
+  const tService = useTranslations("service");
   const titleId = useId();
 
   return (
@@ -58,15 +61,15 @@ export default function FilterModal({
         position === "bottom" ? "rounded-t-[32px]" : "rounded-[32px]"
       )}
     >
-      <ModalHeader id={titleId} title="필터" size="sm" onClose={onClose} />
+      <ModalHeader id={titleId} title={t("title")} size="sm" onClose={onClose} />
 
       <div className="flex min-h-0 w-full flex-1 flex-col items-start gap-7 overflow-y-auto">
         <div className="flex w-full flex-col items-start gap-2">
-          <p className="text-16 text-black-black-400 font-semibold">이사 유형</p>
+          <p className="text-16 text-black-black-400 font-semibold">{t("moveType")}</p>
           <div
             className="flex flex-wrap items-center gap-3"
             role="group"
-            aria-label="이사 유형 선택"
+            aria-label={t("selectMoveType")}
           >
             {SERVICES.map((service) => (
               <Chip
@@ -75,14 +78,14 @@ export default function FilterModal({
                 selected={moveTypes ? moveTypes.includes(service) : moveType === service}
                 onClick={() => onMoveTypeChange(service)}
               >
-                {SERVICE_LABELS[service]}
+                {tService(service)}
               </Chip>
             ))}
           </div>
         </div>
 
         <div className="flex w-full flex-col items-start gap-2">
-          <p className="text-16 text-black-black-400 font-semibold">지역 및 견적</p>
+          <p className="text-16 text-black-black-400 font-semibold">{t("regionAndQuote")}</p>
           <div className="flex flex-col gap-3">
             <label className="flex items-center">
               <CheckboxButton
@@ -90,7 +93,7 @@ export default function FilterModal({
                 checked={isTargetedOnly}
                 onChange={(event) => onTargetedOnlyChange(event.target.checked)}
               />
-              <span className="text-16 text-black-500 font-normal">지정 견적 요청</span>
+              <span className="text-16 text-black-500 font-normal">{t("targetedOnly")}</span>
             </label>
             <label className="flex items-center">
               <CheckboxButton
@@ -98,14 +101,14 @@ export default function FilterModal({
                 checked={isServiceAreaOnly}
                 onChange={(event) => onServiceAreaOnlyChange(event.target.checked)}
               />
-              <span className="text-16 text-black-500 font-normal">서비스 가능 지역</span>
+              <span className="text-16 text-black-500 font-normal">{t("serviceRegionOnly")}</span>
             </label>
           </div>
         </div>
       </div>
 
       <Button variant="solid" size="sm" className="shrink-0" onClick={onApply}>
-        조회하기
+        {t("viewResults")}
       </Button>
     </Modal>
   );

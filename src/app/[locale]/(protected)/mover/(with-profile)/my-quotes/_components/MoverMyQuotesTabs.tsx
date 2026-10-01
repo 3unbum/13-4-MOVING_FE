@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { useState } from "react";
 import emptyCharacter from "@/assets/images/common/empty-review.png";
@@ -41,9 +42,10 @@ function EmptyState({ message }: { message: string }) {
 }
 
 function QuoteError() {
+  const t = useTranslations("moverPage");
   return (
     <div className="text-14 text-gray-gray-400 tablet:text-16 flex flex-1 items-center justify-center px-6 py-20">
-      견적을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.
+      {t("estimateLoadFailed")}
     </div>
   );
 }
@@ -67,6 +69,9 @@ interface MoverMyQuotesTabsProps {
  * 일반 유저의 "내 견적 관리"(페이지 8)와 이름이 같지만 다른 페이지입니다.
  */
 export default function MoverMyQuotesTabs({ initialTab }: MoverMyQuotesTabsProps) {
+  const t = useTranslations("moverPage");
+  const tQuote = useTranslations("quote");
+  const tCommon = useTranslations("common");
   const router = useRouter();
   const [tab, setTab] = useState<QuoteTab>(initialTab);
 
@@ -88,21 +93,20 @@ export default function MoverMyQuotesTabs({ initialTab }: MoverMyQuotesTabsProps
   const openDetail = (estimateId: number) => router.push(`/mover/my-quotes/${estimateId}`);
 
   const panel = tab === "confirmed" ? confirmed : rejected;
-  const emptyMessage =
-    tab === "confirmed" ? "아직 확정된 견적이 없어요!" : "아직 반려한 견적이 없어요!";
+  const emptyMessage = tab === "confirmed" ? t("noConfirmed") : t("noRejected");
 
   return (
     <div className="flex min-h-dvh flex-col bg-gray-50">
       {/* 피그마 tab 컴포넌트(1:992)는 sm·md 54 / lg 80이고 패딩이 없습니다.
           TabList 기본 py-2.5가 54를 75로 키웁니다 — 공통 컴포넌트는 두고 여기서 보정합니다. */}
-      <TabList aria-label="내 견적 관리 탭" className="pc:h-20 py-0">
+      <TabList aria-label={tQuote("tabsLabel")} className="pc:h-20 py-0">
         <Tab
           id="tab-confirmed"
           controls="panel-confirmed"
           active={tab === "confirmed"}
           onClick={() => changeTab("confirmed")}
         >
-          보낸 견적 조회
+          {t("sentQuotes")}
         </Tab>
         <Tab
           id="tab-rejected"
@@ -110,7 +114,7 @@ export default function MoverMyQuotesTabs({ initialTab }: MoverMyQuotesTabsProps
           active={tab === "rejected"}
           onClick={() => changeTab("rejected")}
         >
-          반려 요청
+          {t("rejectedRequests")}
         </Tab>
       </TabList>
 
@@ -135,7 +139,7 @@ export default function MoverMyQuotesTabs({ initialTab }: MoverMyQuotesTabsProps
             <>
               <MoverEstimateList estimates={panel.estimates} onDetailClick={openDetail} />
 
-              {/* 피그마 목록에는 페이지네이션도 "더 보기"도 없습니다(시안이 4~6건 기준).
+              {/* 피그마 목록에는 페이지네이션도 t("loadMore")도 없습니다(시안이 4~6건 기준).
                   실제로는 55건인 계정이 있어 12건 뒤가 보이지 않아 넣었습니다.
                   공용 `Pagination`은 `totalPages`가 필요한데 BE가 커서만 주고
                   총 개수를 안 줘서 쓸 수 없습니다. */}
@@ -148,7 +152,7 @@ export default function MoverMyQuotesTabs({ initialTab }: MoverMyQuotesTabsProps
                     disabled={panel.isFetchingNextPage}
                     onClick={panel.fetchNextPage}
                   >
-                    {panel.isFetchingNextPage ? "불러오는 중..." : "더 보기"}
+                    {panel.isFetchingNextPage ? tCommon("loading") : t("loadMore")}
                   </Button>
                 </div>
               )}

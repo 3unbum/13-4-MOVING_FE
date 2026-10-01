@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import logoMark from "@/assets/icons/logo-mark-sm.svg";
 import Header from "@/components/common/Header";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
@@ -29,6 +30,7 @@ interface MoverQuoteDetailClientProps {
  * 그래서 화면에서 소유권을 따로 확인하지 않습니다.
  */
 export default function MoverQuoteDetailClient({ estimateId }: MoverQuoteDetailClientProps) {
+  const t = useTranslations("moverPage");
   const isTabletUp = useMediaQuery(TABLET_QUERY);
   const isPc = useMediaQuery(PC_QUERY);
   const { data: estimate, isPending, error } = useMoverEstimate(estimateId);
@@ -39,7 +41,9 @@ export default function MoverQuoteDetailClient({ estimateId }: MoverQuoteDetailC
     <div className="flex min-h-dvh flex-col bg-gray-50">
       {/* 받은 요청과 같은 이유로 PC만 콘텐츠 폭에 맞춥니다 (공용 Header의 px-92는 1920 고정값) */}
       <Header size={headerSize} className="pc:px-0">
-        <span className="pc:mx-auto pc:block pc:w-full pc:max-w-300 pc:px-2">견적 상세</span>
+        <span className="pc:mx-auto pc:block pc:w-full pc:max-w-300 pc:px-2">
+          {t("quoteDetail")}
+        </span>
       </Header>
 
       {/* 히어로 — 주황 배경에 무빙 로고 마크가 흐리게 흩어집니다
@@ -62,7 +66,7 @@ export default function MoverQuoteDetailClient({ estimateId }: MoverQuoteDetailC
       </div>
 
       {error ? (
-        <Message>견적을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.</Message>
+        <Message>{t("estimateLoadFailed")}</Message>
       ) : isPending ? (
         <div className="flex flex-1" aria-busy="true" />
       ) : (

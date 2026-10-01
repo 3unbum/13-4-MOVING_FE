@@ -2,6 +2,7 @@
 
 import { cn } from "@/lib/utils/cn";
 import { useId } from "react";
+import { useLocale, useTranslations } from "next-intl";
 import Button from "@/components/common/Button";
 import type { ServiceCode } from "@/components/filter/ChipRegion";
 import MoveTypeChip from "@/components/filter/ChipMoveType";
@@ -9,6 +10,7 @@ import InputTextArea from "@/components/common/InputTextarea";
 import InputTextField from "@/components/common/InputTextfield";
 import Modal, { ModalHeader } from "@/components/common/Modal";
 import MovingInfo from "@/components/quote/MovingInfo";
+import { formatPrice, type DateLocale } from "@/lib/utils/date";
 
 type QuoteActionVariant = "send" | "reject";
 type QuoteActionSize = "sm" | "md";
@@ -42,11 +44,6 @@ interface QuoteActionModalProps {
   onSubmit: () => void;
 }
 
-const TITLE: Record<QuoteActionVariant, string> = {
-  send: "견적 보내기",
-  reject: "반려요청",
-};
-
 /**
  * BE `estimate.schema.ts`와 같은 값입니다 — 여기가 느슨하면 서버가 400을 던지고
  * 사용자는 이유를 모른 채 실패합니다. 진짜 방어선은 BE이고 여기는 미리 알려주는 쪽입니다.
@@ -61,11 +58,6 @@ const MAX_PRICE = 100_000_000;
 const MAX_PRICE_LENGTH = String(MAX_PRICE).length;
 const MIN_COMMENT = 10;
 const MAX_COMMENT = 200;
-
-/** 10자 미만은 입력 중일 수 있어 조용히 두고, 상한을 넘겼을 때만 문구를 띄웁니다 */
-function commentError(value: string) {
-  return value.trim().length > MAX_COMMENT ? `${MAX_COMMENT}자 이내로 입력해 주세요` : undefined;
-}
 
 // 견적 보내기 / 반려요청 모달
 export default function QuoteActionModal({
@@ -93,6 +85,15 @@ export default function QuoteActionModal({
   const isMd = size === "md";
   const resolvedPosition = position ?? (isMd ? "center" : "bottom");
   const isSend = variant === "send";
+  const t = useTranslations("quote");
+  const locale = useLocale() as DateLocale;
+
+  const title = isSend ? t("sendQuote") : t("rejectRequest");
+  const honorific = t("customerHonorific");
+
+  /** 10자 미만은 입력 중일 수 있어 조용히 두고, 상한을 넘겼을 때만 문구를 띄웁니다 */
+  const commentError = (value: string) =>
+    value.trim().length > MAX_COMMENT ? t("commentTooLong", { max: MAX_COMMENT }) : undefined;
   // 입력은 숫자만 남기므로 빈 문자열이면 NaN이 아니라 0이 됩니다
   const priceValue = Number(price.trim() || 0);
   const hasPrice = price.trim().length > 0;
@@ -120,7 +121,7 @@ export default function QuoteActionModal({
         resolvedPosition === "bottom" ? "rounded-t-[32px]" : "rounded-[32px]"
       )}
     >
-      <ModalHeader id={titleId} title={TITLE[variant]} size={size} onClose={onClose} />
+      <ModalHeader id={titleId} title={title} size={size} onClose={onClose} />
 
       {/* 본문·상단블록 gap은 variant와 무관하게 size로만 갈립니다
           (피그마 PC 32/20 · 모바일 20/16 — 견적·반려 4개 노드 모두 동일) */}
@@ -139,7 +140,8 @@ export default function QuoteActionModal({
           {/* 이름과 "고객님" 사이 8 — 카드(`CardRequest`)와 같은 값입니다 */}
           <p className="text-20 text-black-300 flex w-full min-w-0 items-center gap-2 font-semibold">
             <span className="min-w-0 truncate">{customerName}</span>
-            <span className="shrink-0">고객님</span>
+            {/* 영어에는 대응하는 경칭이 없어 빈 문자열입니다 — 빈 span이 gap을 벌리지 않도록 막습니다 */}
+            {honorific && <span className="shrink-0">{honorific}</span>}
           </p>
 
           <MovingInfo
@@ -158,7 +160,7 @@ export default function QuoteActionModal({
           {isSend ? (
             <>
               <p className={cn("text-black-300 font-semibold", isMd ? "text-18" : "text-16")}>
-                견적가를 입력해 주세요
+                {t("pricePrompt")}
               </p>
               <InputTextField
                 type="text"
@@ -166,7 +168,7 @@ export default function QuoteActionModal({
                 size={isMd ? "md" : "sm"}
                 // 피그마는 높이 54 + 폰트 18인데 컴포넌트 md는 높이 64라, 높이만 덮습니다
                 className={isMd ? "[&>div]:h-[54px]" : undefined}
-                placeholder="견적가 입력"
+                placeholder={t("pricePlaceholder")}
                 value={price}
                 // 숫자만 남기고 자릿수도 자릅니다 — 붙여넣기로 한 번에 들어오는 것도 막습니다
                 onChange={(event) =>
@@ -174,18 +176,18 @@ export default function QuoteActionModal({
                 }
                 errorMessage={
                   isPriceTooLow
-                    ? `최소 ${MIN_PRICE.toLocaleString("ko-KR")}원 이상 입력해 주세요`
+                    ? t("priceMin", { price: formatPrice(MIN_PRICE, locale) })
                     : isPriceTooHigh
-                      ? `${MAX_PRICE.toLocaleString("ko-KR")}원 이하로 입력해 주세요`
+                      ? t("priceMax", { price: formatPrice(MAX_PRICE, locale) })
                       : undefined
                 }
               />
               <p className={cn("text-black-300 font-semibold", isMd ? "text-18" : "text-16")}>
-                코멘트를 입력해 주세요
+                {t("commentPrompt")}
               </p>
               <InputTextArea
                 size={isMd ? "md" : "sm"}
-                placeholder="최소 10자 이상 입력해주세요"
+                placeholder={t("commentPlaceholder")}
                 value={comment}
                 onChange={(event) => onCommentChange?.(event.target.value)}
                 errorMessage={commentError(comment)}
@@ -194,11 +196,11 @@ export default function QuoteActionModal({
           ) : (
             <>
               <p className={cn("text-black-300 font-semibold", isMd ? "text-20" : "text-16")}>
-                반려 사유를 입력해 주세요
+                {t("rejectReasonPrompt")}
               </p>
               <InputTextArea
                 size={isMd ? "md" : "sm"}
-                placeholder="최소 10자 이상 입력해주세요"
+                placeholder={t("commentPlaceholder")}
                 value={reason}
                 onChange={(event) => onReasonChange?.(event.target.value)}
                 errorMessage={commentError(reason)}
@@ -215,7 +217,7 @@ export default function QuoteActionModal({
         disabled={!isValid || isSubmitting}
         onClick={onSubmit}
       >
-        {isSend ? "견적 보내기" : "반려하기"}
+        {isSend ? t("sendQuote") : t("reject")}
       </Button>
     </Modal>
   );

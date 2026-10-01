@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
 // useParams는 locale과 무관한 동적 세그먼트(moverId)를 읽으므로 next/navigation 그대로 씁니다
@@ -41,6 +42,9 @@ const TABLET_QUERY = "(min-width: 744px)";
  * - 이미 지정(isTargeted) → CTA 비활성
  */
 export default function MoverDetailClient() {
+  const t = useTranslations("mover");
+  const tQuote = useTranslations("quote");
+  const tCommon = useTranslations("common");
   const params = useParams<{ moverId: string }>();
   const moverId = Number(params.moverId);
   const router = useRouter();
@@ -65,10 +69,8 @@ export default function MoverDetailClient() {
     toast: shareToast,
   } = useShare({
     url: Number.isFinite(moverId) && moverId > 0 ? `/movers/${moverId}` : "/",
-    text: mover
-      ? `이사를 준비하시나요? ${mover.nickName} 기사님을 추천합니다. 무빙에서 확인해 보세요!`
-      : "이사를 준비하시나요? 무빙에서 확인해 보세요!",
-    buttonTitle: "기사님 정보 보러가기",
+    text: mover ? tQuote("shareText", { moverName: mover.nickName }) : t("shareTextFallback"),
+    buttonTitle: tQuote("shareButtonTitle"),
   });
 
   const { favoritedIds, isFavoritesLoading, toggleFavorite, getFavoriteCount } =
@@ -89,22 +91,22 @@ export default function MoverDetailClient() {
       if (!active) {
         throw new ApiError(400, {
           code: "NO_ACTIVE_REQUEST",
-          message: "일반 견적 요청을 먼저 진행해 주세요.",
+          message: tQuote("targetedMessage"),
         });
       }
       return quotationRequestService.createTargeted(active.id, moverId);
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: moverQueryKeys.detail(moverId) });
-      setToastMessage("지정 견적 요청이 완료되었어요");
+      setToastMessage(t("targetedDone"));
     },
     onError: (error) => {
       if (error instanceof ApiError && error.code === "ALREADY_TARGETED") {
         void queryClient.invalidateQueries({ queryKey: moverQueryKeys.detail(moverId) });
-        setToastMessage("이미 지정 견적을 요청한 기사님이에요");
+        setToastMessage(t("alreadyTargeted"));
         return;
       }
-      setToastMessage(error instanceof Error ? error.message : "요청에 실패했습니다");
+      setToastMessage(error instanceof Error ? error.message : tCommon("requestFailed"));
     },
   });
 
@@ -119,19 +121,19 @@ export default function MoverDetailClient() {
   if (!Number.isFinite(moverId) || moverId <= 0) {
     return (
       <p className="text-14 p-10 text-center text-red-200" role="alert">
-        잘못된 기사님 주소입니다.
+        {t("invalidMoverPath")}
       </p>
     );
   }
 
   if (detailQuery.isPending) {
-    return <p className="text-14 text-gray-gray-500 p-10 text-center">불러오는 중…</p>;
+    return <p className="text-14 text-gray-gray-500 p-10 text-center">{t("loading")}</p>;
   }
 
   if (detailQuery.isError || !mover) {
     return (
       <p className="text-14 p-10 text-center text-red-200" role="alert">
-        기사님 정보를 불러오지 못했습니다.
+        {t("moverLoadFailed")}
         {detailQuery.error instanceof Error ? ` (${detailQuery.error.message})` : null}
       </p>
     );
@@ -161,14 +163,14 @@ export default function MoverDetailClient() {
       return;
     }
     if (!isCustomer) {
-      setToastMessage("일반 유저만 지정 견적을 요청할 수 있어요");
+      setToastMessage(t("customerOnly"));
       return;
     }
     if (isTargeted || isRequestPending) {
       return;
     }
     if (activeRequestQuery.isError) {
-      setToastMessage("활성 견적 정보를 확인하지 못했습니다. 다시 시도해 주세요.");
+      setToastMessage(t("activeRequestCheckFailed"));
       return;
     }
     if (!activeRequestQuery.data) {
@@ -278,9 +280,9 @@ export default function MoverDetailClient() {
         open={modalKind === "login"}
         onClose={closeModal}
         size={infoModalSize}
-        title="로그인이 필요합니다"
-        message="로그인 후 이용할 수 있어요."
-        actionLabel="로그인하기"
+        title={t("loginRequired")}
+        message={t("loginToUse")}
+        actionLabel={t("goLogin")}
         onAction={() => {
           closeModal();
           router.push("/customer/login");
@@ -291,9 +293,9 @@ export default function MoverDetailClient() {
         open={modalKind === "needQuote"}
         onClose={closeModal}
         size={infoModalSize}
-        title="지정 견적 요청하기"
-        message="일반 견적 요청을 먼저 진행해 주세요."
-        actionLabel="일반 견적 요청 하기"
+        title={tQuote("targetedTitle")}
+        message={tQuote("targetedMessage")}
+        actionLabel={tQuote("targetedAction")}
         onAction={() => {
           closeModal();
           router.push("/customer/quotation-requests");
@@ -308,6 +310,12 @@ export default function MoverDetailClient() {
 const REVIEW_TAKE = 5;
 const KST_OFFSET_MS = 9 * 60 * 60 * 1000;
 
+/**
+ * "2024-08-26" — 기사님 상세의 리뷰 작성일.
+ *
+ * `date.ts`의 `formatWrittenDate`("2024. 08. 26")와 구분자가 다릅니다. 숫자·하이픈뿐이라
+ * 로케일과 무관해 그대로 둡니다. 표기를 통일할지는 피그마 대조가 필요합니다.
+ */
 function formatReviewCreatedAt(iso: string) {
   const kst = new Date(new Date(iso).getTime() + KST_OFFSET_MS);
   const year = kst.getUTCFullYear();
@@ -335,11 +343,17 @@ function toProgressBarData(distribution: MoverRatingDistribution) {
 }
 
 function ReviewHeading() {
-  return <h2 className="text-16 tablet:text-20 text-black-black-400 font-semibold">리뷰</h2>;
+  const tReview = useTranslations("review");
+  return (
+    <h2 className="text-16 tablet:text-20 text-black-black-400 font-semibold">
+      {tReview("title")}
+    </h2>
+  );
 }
 
 /** 상세 페이지 리뷰 영역. 마이페이지 공용 섹션과 분리해서 여기서만 다룬다. */
 function MoverDetailReviews({ moverId }: { moverId: number }) {
+  const tReview = useTranslations("review");
   const [page, setPage] = useState(1);
   // 피그마: 모바일 Card-list-review sm, 태블릿·PC lg
   const isTabletUp = useMediaQuery(TABLET_QUERY);
@@ -361,7 +375,7 @@ function MoverDetailReviews({ moverId }: { moverId: number }) {
       <div className="flex w-full flex-col gap-4">
         <ReviewHeading />
         <div className="text-16 text-gray-gray-400 min-h-[200px] py-20 text-center" role="status">
-          리뷰를 불러오는 중이에요.
+          {tReview("loading")}
         </div>
       </div>
     );
@@ -372,9 +386,7 @@ function MoverDetailReviews({ moverId }: { moverId: number }) {
     return (
       <div className="flex w-full flex-col gap-4">
         <ReviewHeading />
-        <p className="text-16 text-gray-gray-400 py-20 text-center">
-          리뷰를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.
-        </p>
+        <p className="text-16 text-gray-gray-400 py-20 text-center">{tReview("loadFailed")}</p>
       </div>
     );
   }
@@ -390,10 +402,8 @@ function MoverDetailReviews({ moverId }: { moverId: number }) {
       <div className="flex w-full flex-col gap-4">
         <ReviewHeading />
         <div className="flex w-full flex-col py-6 text-center">
-          <p className="text-16 text-black-500 leading-7 font-semibold">
-            아직 등록된 리뷰가 없어요!
-          </p>
-          <p className="text-14 text-gray-gray-400 leading-7">가장 먼저 리뷰를 등록해보세요</p>
+          <p className="text-16 text-black-500 leading-7 font-semibold">{tReview("empty")}</p>
+          <p className="text-14 text-gray-gray-400 leading-7">{tReview("emptyHint")}</p>
         </div>
       </div>
     );

@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import writingMd from "@/assets/icons/writing-md.svg";
 import writingMdGray from "@/assets/icons/writing-md-gray.svg";
@@ -21,6 +22,7 @@ const MOVER_BASIC_INFO_EDIT_DESTINATION = "/mover/mypage/edit/basic-info";
 // ProfileHeader(모바일/태블릿 버튼 행)와 MoverMyPageContent(PC 우측 컬럼)가 함께 쓴다.
 
 export function EditBasicInfoButton() {
+  const t = useTranslations("moverPage");
   const router = useRouter();
 
   return (
@@ -31,13 +33,14 @@ export function EditBasicInfoButton() {
       onClick={() => router.push(MOVER_BASIC_INFO_EDIT_DESTINATION)}
       className={cn(RESPONSIVE_CTA_SIZE, "border-gray-gray-200 text-gray-gray-300")}
     >
-      기본 정보 수정
+      {t("editBasicInfo")}
     </Button>
   );
 }
 
 // Button은 <button>만 지원해 Link 대신 router.push로 이동시킨다
 export function EditMoverProfileButton() {
+  const t = useTranslations("moverPage");
   const router = useRouter();
 
   return (
@@ -48,7 +51,7 @@ export function EditMoverProfileButton() {
       onClick={() => router.push(MOVER_PROFILE_EDIT_DESTINATION)}
       className={RESPONSIVE_CTA_SIZE}
     >
-      내 프로필 수정
+      {t("editProfile")}
     </Button>
   );
 }

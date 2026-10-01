@@ -1,6 +1,8 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { formatMovingDate, formatWrittenDate, type DateLocale } from "@/lib/utils/date";
+import { useLocale, useTranslations } from "next-intl";
 import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-query";
 import Pagination from "@/components/common/Pagination";
 import Tab from "@/components/common/Tab";
@@ -23,37 +25,22 @@ import ReviewsEmptyFallback from "./_components/ReviewsEmptyFallback";
 type ReviewTab = "writable" | "written";
 
 const TAKE = 4;
-const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
-const KST_OFFSET_MS = 9 * 60 * 60 * 1000;
 const TABLET_QUERY = "(min-width: 744px)";
 const PC_QUERY = "(min-width: 1280px)";
-
-const TABS: { id: ReviewTab; label: string; panelId: string }[] = [
-  { id: "writable", label: "작성 가능한 리뷰", panelId: "panel-writable" },
-  { id: "written", label: "내가 작성한 리뷰", panelId: "panel-written" },
-];
-
-function toKst(iso: string) {
-  return new Date(new Date(iso).getTime() + KST_OFFSET_MS);
-}
-
-function formatMovingDate(iso: string, withWeekday: boolean) {
-  const kst = toKst(iso);
-  const date = `${kst.getUTCFullYear()}년 ${String(kst.getUTCMonth() + 1).padStart(2, "0")}월 ${String(kst.getUTCDate()).padStart(2, "0")}일`;
-  if (!withWeekday) return date;
-  return `${date} (${WEEKDAYS[kst.getUTCDay()]})`;
-}
-
-function formatCreatedAt(iso: string) {
-  const kst = toKst(iso);
-  return `${kst.getUTCFullYear()}. ${String(kst.getUTCMonth() + 1).padStart(2, "0")}. ${String(kst.getUTCDate()).padStart(2, "0")}`;
-}
 
 function toServiceCode(category: string): ServiceCode {
   return category in SERVICE_LABELS ? (category as ServiceCode) : "SMALL";
 }
 
 export default function CustomerReviewsPage() {
+  const t = useTranslations("review");
+  const locale = useLocale() as DateLocale;
+
+  const tabs: { id: ReviewTab; labelKey: "tabWritable" | "tabWritten"; panelId: string }[] = [
+    { id: "writable", labelKey: "tabWritable", panelId: "panel-writable" },
+    { id: "written", labelKey: "tabWritten", panelId: "panel-written" },
+  ];
+
   const queryClient = useQueryClient();
   const isTabletUp = useMediaQuery(TABLET_QUERY);
   const isPc = useMediaQuery(PC_QUERY);
@@ -175,15 +162,13 @@ export default function CustomerReviewsPage() {
       setPageByTab((current) => ({ ...current, writable: 1 }));
       setCursorByTab((current) => ({ ...current, writable: { 1: undefined } }));
       await refreshAfterWriteSuccess();
-      showToast("리뷰가 등록되었어요");
+      showToast(t("submitted"));
     } catch (error) {
       if (controller.signal.aborted || (error instanceof Error && error.name === "AbortError")) {
         await refreshActiveReviewQueries();
         return;
       }
-      showToast(
-        error instanceof ApiError ? error.message : "리뷰 등록에 실패했어요. 다시 시도해 주세요."
-      );
+      showToast(error instanceof ApiError ? error.message : t("submitFailed"));
     } finally {
       if (submitAbortRef.current === controller) {
         submitAbortRef.current = null;
@@ -194,8 +179,8 @@ export default function CustomerReviewsPage() {
 
   return (
     <div className="bg-background-background-100 pc:min-h-[calc(100dvh-88px)] flex min-h-[calc(100dvh-54px)] flex-1 flex-col">
-      <TabList aria-label="이사 리뷰 탭">
-        {TABS.map((item) => (
+      <TabList aria-label={t("tabsLabel")}>
+        {tabs.map((item) => (
           <Tab
             key={item.id}
             id={`tab-${item.id}`}
@@ -203,7 +188,7 @@ export default function CustomerReviewsPage() {
             active={tab === item.id}
             onClick={() => setTab(item.id)}
           >
-            {item.label}
+            {t(item.labelKey)}
           </Tab>
         ))}
       </TabList>
@@ -222,15 +207,11 @@ export default function CustomerReviewsPage() {
         )}
       >
         {isError ? (
-          <p className="text-16 text-gray-gray-400 py-20 text-center">
-            리뷰를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.
-          </p>
+          <p className="text-16 text-gray-gray-400 py-20 text-center">{t("loadFailed")}</p>
         ) : isPending && !data ? null : isEmpty ? (
           <ReviewsEmptyFallback
-            message={
-              tab === "writable" ? "작성 가능한 리뷰가 없어요!" : "아직 등록된 리뷰가 없어요!"
-            }
-            actionLabel={tab === "written" ? "리뷰 작성하러 가기" : undefined}
+            message={tab === "writable" ? t("emptyWritable") : t("empty")}
+            actionLabel={tab === "written" ? t("goWrite") : undefined}
             onAction={tab === "written" ? () => setTab("writable") : undefined}
           />
         ) : (
@@ -253,7 +234,7 @@ export default function CustomerReviewsPage() {
                         profileImage={item.mover.image}
                         from={item.moving.fromAddress}
                         to={item.moving.toAddress}
-                        movingDate={formatMovingDate(item.moving.movingDate, true)}
+                        movingDate={formatMovingDate(item.moving.movingDate, locale)}
                         onWriteClick={() => {
                           setSelected(item);
                           setRating(0);
@@ -271,10 +252,14 @@ export default function CustomerReviewsPage() {
                         profileImage={item.mover.image}
                         from={item.moving.fromAddress}
                         to={item.moving.toAddress}
-                        movingDate={formatMovingDate(item.moving.movingDate, writtenSize === "lg")}
+                        movingDate={formatMovingDate(
+                          item.moving.movingDate,
+                          locale,
+                          writtenSize === "lg"
+                        )}
                         rating={item.rating}
                         content={item.comment}
-                        createdAt={formatCreatedAt(item.createdAt)}
+                        createdAt={formatWrittenDate(item.createdAt)}
                       />
                     </li>
                   ))}
@@ -306,7 +291,7 @@ export default function CustomerReviewsPage() {
           moverProfileImage={selected.mover.image}
           fromAddress={selected.moving.fromAddress}
           toAddress={selected.moving.toAddress}
-          movingDate={formatMovingDate(selected.moving.movingDate, true)}
+          movingDate={formatMovingDate(selected.moving.movingDate, locale)}
           rating={rating}
           onRatingChange={setRating}
           review={comment}

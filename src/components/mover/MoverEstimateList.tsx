@@ -6,8 +6,9 @@ import {
   CardRejectedRequest,
 } from "@/components/quote/CardQuotation";
 import type { MoverEstimate } from "@/lib/services/mover-estimate-service";
+import { useLocale } from "next-intl";
 import { shortenAddress } from "@/lib/utils/address";
-import { formatMovingDate } from "@/lib/utils/date";
+import { formatMovingDate, type DateLocale } from "@/lib/utils/date";
 
 interface MoverEstimateListProps {
   estimates: MoverEstimate[];
@@ -22,6 +23,7 @@ function EstimateCard({
   estimate: MoverEstimate;
   onDetailClick?: () => void;
 }) {
+  const locale = useLocale() as DateLocale;
   const { quotationRequest: request } = estimate;
 
   const common = {
@@ -30,7 +32,7 @@ function EstimateCard({
     customerName: request.userName,
     from: shortenAddress(request.fromAddress),
     to: shortenAddress(request.toAddress),
-    movingDate: formatMovingDate(request.movingDate),
+    movingDate: formatMovingDate(request.movingDate, locale),
   };
 
   // 반려는 금액이 없고(BE가 null), 나머지는 항상 있습니다
