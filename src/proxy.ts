@@ -61,5 +61,8 @@ export const config = {
   // api·정적 파일 제외 — `/api/kakao/address-search` 에 rewrites가 걸리면 안 됩니다.
   // i18n rewrite가 모든 페이지에 필요하므로 매처를 전체로 넓히고,
   // 인증 체크 대상은 위 `isProtected` 에서 가립니다.
-  matcher: "/((?!api|trpc|_next|_vercel|.*\\..*).*)",
+  //
+  // `sentry-tunnel`도 제외합니다. Sentry가 광고 차단기를 우회하려고 만드는
+  // 라우트인데(next.config.ts의 `tunnelRoute`), i18n이 locale로 해석하면 404가 납니다.
+  matcher: "/((?!api|trpc|_next|_vercel|sentry-tunnel|.*\\..*).*)",
 };
