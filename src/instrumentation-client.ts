@@ -7,19 +7,16 @@
  * DSN이 없으면 초기화하지 않습니다. 로컬 개발에는 값이 없으니 자동으로 꺼집니다.
  */
 import * as Sentry from "@sentry/nextjs";
+import { sentryBaseOptions } from "@/lib/sentry-options";
 
 const dsn = process.env.NEXT_PUBLIC_SENTRY_DSN;
 
 if (dsn) {
   Sentry.init({
     dsn,
-    environment: process.env.NODE_ENV,
+    ...sentryBaseOptions,
 
-    // 무료 플랜은 월 5,000 이벤트입니다. 성능 추적은 모든 페이지 이동을 기록해
-    // 할당량을 금방 소진하므로 끄고, 에러만 수집합니다.
-    tracesSampleRate: 0,
-
-    // Session Replay도 같은 이유로 켜지 않습니다.
+    // Session Replay는 쿼터를 빠르게 쓰므로 켜지 않습니다.
     replaysSessionSampleRate: 0,
     replaysOnErrorSampleRate: 0,
   });

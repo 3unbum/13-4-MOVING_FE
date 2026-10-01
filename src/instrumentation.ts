@@ -7,21 +7,15 @@
  * DSN이 없으면 초기화하지 않습니다. 로컬 개발에는 값이 없으니 자동으로 꺼집니다.
  */
 import * as Sentry from "@sentry/nextjs";
+import { sentryBaseOptions } from "@/lib/sentry-options";
 
 export async function register() {
   const dsn = process.env.NEXT_PUBLIC_SENTRY_DSN;
   if (!dsn) return;
 
-  // 공통 옵션 — 무료 플랜(월 5,000 이벤트)을 아끼려고 에러만 수집합니다.
-  const options = {
-    dsn,
-    environment: process.env.NODE_ENV,
-    tracesSampleRate: 0,
-  };
-
   // 런타임마다 번들이 달라 조건부로 초기화합니다.
   if (process.env.NEXT_RUNTIME === "nodejs" || process.env.NEXT_RUNTIME === "edge") {
-    Sentry.init(options);
+    Sentry.init({ dsn, ...sentryBaseOptions });
   }
 }
 
