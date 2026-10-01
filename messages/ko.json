@@ -288,7 +288,32 @@
     "invalidAccessRetry": "잘못된 접근이에요. 로그인을 다시 시도해 주세요.",
     "accountLoadFailed": "계정 정보를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.",
     "backToHome": "홈으로 돌아가기",
-    "processingLogin": "로그인 처리 중이에요..."
+    "processingLogin": "로그인 처리 중이에요...",
+    "findEmail": {
+      "title": "아이디 찾기",
+      "notFoundTitle": "일치하는 계정이 없습니다",
+      "resultTitle": "가입된 계정을 찾았어요",
+      "localHint": "이메일로 가입한 계정입니다",
+      "socialHint": "{provider}로 가입한 계정입니다",
+      "findPassword": "비밀번호 찾기",
+      "retry": "다시 찾기"
+    },
+    "resetPassword": {
+      "title": "비밀번호 재설정",
+      "requestCode": "인증번호 받기",
+      "guideNotice": "가입된 이메일이라면 인증번호가 발송됩니다",
+      "guideSocialRich": "이메일로 가입한 계정만 해당되며, 소셜 가입 계정은 <link>아이디 찾기</link>로 가입 경로를 확인하세요",
+      "sentTo": "{email}로 인증번호를 보냈어요",
+      "changeEmail": "이메일 다시 입력",
+      "codeLabel": "인증번호",
+      "codePlaceholder": "인증번호 6자리를 입력해 주세요",
+      "remainingTimeLabel": "남은 시간",
+      "expired": "인증번호가 만료되었습니다",
+      "resend": "재발송",
+      "resendAvailableAfter": "{time} 후 재발송할 수 있어요",
+      "submitNewPassword": "비밀번호 변경",
+      "passwordChangedTitle": "비밀번호가 변경되었습니다"
+    }
   },
   "review": {
     "writeReview": "리뷰 쓰기",

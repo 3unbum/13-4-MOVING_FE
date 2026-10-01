@@ -288,7 +288,32 @@
     "invalidAccessRetry": "不正なアクセスです。もう一度ログインしてください。",
     "accountLoadFailed": "アカウント情報を読み込めませんでした。しばらくしてからもう一度お試しください。",
     "backToHome": "ホームに戻る",
-    "processingLogin": "ログイン処理中です..."
+    "processingLogin": "ログイン処理中です...",
+    "findEmail": {
+      "title": "IDを探す",
+      "notFoundTitle": "一致するアカウントがありません",
+      "resultTitle": "この情報で登録されたアカウントが見つかりました",
+      "localHint": "メールアドレスで登録したアカウントです",
+      "socialHint": "{provider}で登録したアカウントです",
+      "findPassword": "パスワードを探す",
+      "retry": "もう一度探す"
+    },
+    "resetPassword": {
+      "title": "パスワード再設定",
+      "requestCode": "認証番号を受け取る",
+      "guideNotice": "登録済みのメールアドレスの場合、認証番号が送信されます",
+      "guideSocialRich": "メールアドレスで登録したアカウントのみ対象です。SNSアカウントで登録した場合は<link>IDを探す</link>で登録方法をご確認ください",
+      "sentTo": "{email}に認証番号を送信しました",
+      "changeEmail": "メールアドレスを再入力",
+      "codeLabel": "認証番号",
+      "codePlaceholder": "認証番号6桁を入力してください",
+      "remainingTimeLabel": "残り時間",
+      "expired": "認証番号の有効期限が切れました",
+      "resend": "再送信",
+      "resendAvailableAfter": "{time}後に再送信できます",
+      "submitNewPassword": "パスワードを変更",
+      "passwordChangedTitle": "パスワードが変更されました"
+    }
   },
   "review": {
     "writeReview": "レビューを書く",

@@ -288,7 +288,32 @@
     "invalidAccessRetry": "Invalid access. Please try logging in again.",
     "accountLoadFailed": "Couldn't load your account. Please try again in a moment.",
     "backToHome": "Back to home",
-    "processingLogin": "Logging you in..."
+    "processingLogin": "Logging you in...",
+    "findEmail": {
+      "title": "Find email",
+      "notFoundTitle": "No matching account found",
+      "resultTitle": "We found accounts signed up with this info",
+      "localHint": "This account signed up with email",
+      "socialHint": "This account signed up with {provider}",
+      "findPassword": "Find password",
+      "retry": "Search again"
+    },
+    "resetPassword": {
+      "title": "Reset password",
+      "requestCode": "Get verification code",
+      "guideNotice": "If this email is registered, a verification code will be sent",
+      "guideSocialRich": "Only applies to email sign-ups. If you signed up with a social account, check your sign-up method with <link>Find email</link>",
+      "sentTo": "We sent a verification code to {email}",
+      "changeEmail": "Enter a different email",
+      "codeLabel": "Verification code",
+      "codePlaceholder": "Enter the 6-digit verification code",
+      "remainingTimeLabel": "Time remaining",
+      "expired": "The verification code has expired",
+      "resend": "Resend",
+      "resendAvailableAfter": "You can resend in {time}",
+      "submitNewPassword": "Change password",
+      "passwordChangedTitle": "Your password has been changed"
+    }
   },
   "review": {
     "writeReview": "Write a Review",
