@@ -53,7 +53,7 @@ function MoverBox({
   bordered?: boolean;
   /** 견적내역 lg만 로고 없이 이름을 씁니다 */
   showLogo?: boolean;
-  /** 견적내역 lg만 빈 하트입니다 */
+  /** 찜한 기사님이면 채워진 하트를 보여줍니다 */
   favoriteFilled?: boolean;
   /**
    * 이름·간격이 카드마다 다릅니다.
@@ -91,10 +91,12 @@ function MoverBox({
             size={isLg && !compact ? "lg" : "sm"}
             showLogo={showLogo}
           />
+          {/* 숫자 색은 찜 여부가 아니라 카드 사이즈가 정합니다 (lg만 검정 — 피그마 `1:12824`).
+              예전에는 `favoriteFilled` 가 `!isLg` 였던 탓에 두 기준이 우연히 맞아떨어졌습니다. */}
           <FavoriteCount
             count={favoriteCount}
             isFavorited={favoriteFilled}
-            countClassName={favoriteFilled ? "text-gray-gray-500" : "text-black-500"}
+            countClassName={isLg ? "text-black-500" : "text-gray-gray-500"}
           />
         </div>
         <MoverMeta
@@ -129,6 +131,12 @@ interface CardEstimateHistoryProps extends HTMLAttributes<HTMLElement>, MoverInf
   isConfirmed?: boolean;
   /** 기사님이 반려한 견적 — "견적대기" 대신 "반려됨"으로 표시합니다 (QA-9) */
   isRejected?: boolean;
+  /**
+   * 이 기사님을 찜했는지. 기본값을 `false`로 두면 찜한 기사님이 빈 하트로 보이지만,
+   * 반대로 두면 안 찜한 기사님이 전부 채워져 보입니다 (1차 QA-4).
+   * 견적 응답에 `isFavorited`가 없어 호출부가 찜 목록과 대조해 넘깁니다.
+   */
+  isFavorited?: boolean;
 }
 
 /**
@@ -145,6 +153,7 @@ export function CardEstimateHistory({
   price,
   isConfirmed = false,
   isRejected = false,
+  isFavorited = false,
   className,
   nickName,
   profileImage,
@@ -200,8 +209,10 @@ export function CardEstimateHistory({
               {isLg && <StatusBadge isConfirmed={isConfirmed} isRejected={isRejected} />}
             </div>
 
-            {/* lg만 로고 없이 text-16 + 빈 하트입니다 (피그마 1:12824) */}
-            <MoverBox size={size} showLogo={!isLg} favoriteFilled={!isLg} {...mover} />
+            {/* lg만 로고 없이 text-16입니다 (피그마 1:12824).
+                하트 채움은 찜 여부로 정합니다 — 예전에는 `!isLg` 였던 탓에
+                lg는 찜해도 빈 하트, sm은 안 찜해도 채워진 하트였습니다. */}
+            <MoverBox size={size} showLogo={!isLg} favoriteFilled={isFavorited} {...mover} />
           </div>
         </div>
 
