@@ -10,9 +10,9 @@ import truckMd from "@/assets/images/common/truck_md.png";
 import AuthCard from "@/components/auth/AuthCard";
 import AuthHeader from "@/components/auth/AuthHeader";
 import AuthSubmitButton from "@/components/auth/AuthSubmitButton";
-import FindEmailResult, { type FindEmailAccount } from "@/components/auth/FindEmailResult";
+import FindEmailResult from "@/components/auth/FindEmailResult";
 import FormField from "@/components/auth/FormField";
-import type { UserRole } from "@/lib/services/auth-service";
+import type { FindEmailAccount, UserRole } from "@/lib/services/auth-service";
 
 interface FindEmailFormProps {
   role: UserRole;

@@ -2,13 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import Button from "@/components/common/Button";
-
-export type FindEmailProvider = "LOCAL" | "GOOGLE" | "KAKAO" | "NAVER";
-
-export interface FindEmailAccount {
-  email: string;
-  provider: FindEmailProvider;
-}
+import type { FindEmailAccount, FindEmailProvider } from "@/lib/services/auth-service";
 
 interface FindEmailResultProps {
   accounts: FindEmailAccount[];
