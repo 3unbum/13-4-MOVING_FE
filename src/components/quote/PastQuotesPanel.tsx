@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { CardEstimateHistory } from "@/components/quote/CardEstimate";
+import { useFavoritedMovers } from "@/hooks/useFavoriteMover";
 import QuoteEmptyState from "@/components/quote/QuoteEmptyState";
 import Sort from "@/components/common/Sort";
 import { cn } from "@/lib/utils/cn";
@@ -82,11 +83,14 @@ function EstimateRow({
   estimate,
   onClick,
   isDimmed = false,
+  isFavorited,
 }: {
   estimate: Estimate;
   onClick: () => void;
   /** 마감된 요청에서 확정되지 않은 견적 — 클릭을 막고 회색으로 덮습니다 (QA-12) */
   isDimmed?: boolean;
+  /** 이 기사님을 찜했는지 — 견적 응답에 없어서 패널이 찜 목록과 대조해 넘깁니다 */
+  isFavorited: boolean;
 }) {
   const t = useTranslations("quote");
   const common = {
@@ -106,6 +110,7 @@ function EstimateRow({
     career: estimate.mover.career,
     confirmedCount: estimate.mover.confirmedCount,
     favoriteCount: estimate.mover.favoriteCount,
+    isFavorited,
   };
 
   return (
@@ -145,6 +150,10 @@ export default function PastQuotesPanel({ blocks, onDetailClick }: PastQuotesPan
   const tCommon = useTranslations("common");
   const tService = useTranslations("service");
   const locale = useLocale() as DateLocale;
+
+  // 견적 응답에 `isFavorited`가 없어 찜 목록과 대조합니다 (1차 QA-4).
+  // `PendingQuotesPanel`과 같은 쿼리 캐시를 공유하므로 요청이 늘지 않습니다.
+  const { isFavorited } = useFavoritedMovers();
 
   // 라벨이 번역이라 컴포넌트 안에서 만듭니다 (모듈 상수로 두면 `t`를 못 씁니다)
   const filterOptions = [
@@ -263,6 +272,7 @@ export default function PastQuotesPanel({ blocks, onDetailClick }: PastQuotesPan
                       key={estimate.id}
                       estimate={estimate}
                       isDimmed={isClosed && !isConfirmedEstimate(estimate)}
+                      isFavorited={isFavorited(estimate.mover.id)}
                       onClick={() => onDetailClick?.(estimate.id)}
                     />
                   ))}
