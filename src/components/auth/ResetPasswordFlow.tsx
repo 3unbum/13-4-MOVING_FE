@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import avatarLg from "@/assets/images/common/avatartion_lg.png";
 import avatarMd from "@/assets/images/common/avatartion_md.png";
 import truckLg from "@/assets/images/common/truck_lg.png";
@@ -10,9 +10,9 @@ import truckMd from "@/assets/images/common/truck_md.png";
 import AuthCard from "@/components/auth/AuthCard";
 import AuthHeader from "@/components/auth/AuthHeader";
 import NewPasswordStep from "@/components/auth/NewPasswordStep";
-import PasswordChangedModal from "@/components/auth/PasswordChangedModal";
 import ResetCodeStep from "@/components/auth/ResetCodeStep";
 import ResetEmailStep from "@/components/auth/ResetEmailStep";
+import Toast from "@/components/common/Toast";
 import { AUTH_ERROR_CODES } from "@/constants/auth/error-codes";
 import { useCountdown } from "@/hooks/useCountdown";
 import { findAuthErrorMessageKey } from "@/lib/auth/auth-error-message";
@@ -27,6 +27,8 @@ type ResetStep = "email" | "code" | "newPassword";
 // 429 응답의 retryAfterSeconds로 타이머를 다시 시작한다.
 const CODE_EXPIRY_SECONDS = 5 * 60;
 const RESEND_COOLDOWN_SECONDS = 60;
+// 변경 완료 토스트를 읽을 시간을 준 뒤 로그인 페이지로 보낸다 (자동 로그인은 없음)
+const REDIRECT_DELAY_MS = 2500;
 
 interface ResetPasswordFlowProps {
   role: UserRole;
@@ -53,6 +55,14 @@ export default function ResetPasswordFlow({ role }: ResetPasswordFlowProps) {
   // email 단계에서 발송 요청이 429에 걸렸을 때의 잠금 — 재발송 쿨다운과 따로 둬야
   // 오타를 고치러 돌아온 사용자가 다른 이메일로 바로 보낼 수 있다
   const { remainingSeconds: sendLockRemainingSeconds, start: startSendLock } = useCountdown();
+  const redirectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // 기다리는 사이 사용자가 다른 페이지로 나가면, 뒤늦게 로그인 페이지로 끌려가지 않게 취소한다
+  useEffect(() => {
+    return () => {
+      if (redirectTimerRef.current) clearTimeout(redirectTimerRef.current);
+    };
+  }, []);
 
   const otherRoleHref = isCustomer ? "/mover/reset-password" : "/customer/reset-password";
   const loginHref = isCustomer ? "/customer/login" : "/mover/login";
@@ -139,13 +149,9 @@ export default function ResetPasswordFlow({ role }: ResetPasswordFlowProps) {
       return toErrorMessage(error);
     }
     setIsPasswordChanged(true);
+    // replace — 뒤로 가기로 이미 끝난(토큰을 쓴) 재설정 화면에 돌아오지 않게 한다
+    redirectTimerRef.current = setTimeout(() => router.replace(loginHref), REDIRECT_DELAY_MS);
     return undefined;
-  };
-
-  // 변경 완료 모달의 모든 닫기 경로(확인/X/ESC/바깥 클릭)가 여기로 모여 로그인 페이지로 보낸다.
-  const handleConfirmChanged = () => {
-    setIsPasswordChanged(false);
-    router.replace(loginHref);
   };
 
   return (
@@ -189,11 +195,19 @@ export default function ResetPasswordFlow({ role }: ResetPasswordFlowProps) {
               onSubmit={handleCodeSubmit}
             />
           )}
-          {step === "newPassword" && <NewPasswordStep onSubmit={handlePasswordSubmit} />}
+          {step === "newPassword" && (
+            <NewPasswordStep isCompleted={isPasswordChanged} onSubmit={handlePasswordSubmit} />
+          )}
         </div>
       </AuthCard>
 
-      <PasswordChangedModal open={isPasswordChanged} onConfirm={handleConfirmChanged} />
+      {isPasswordChanged && (
+        // 공통 Toast는 GNB 아래(상단)에 뜨는데, 폼 제출 직후엔 시선이 하단 버튼 쪽에 있어 아래로 내린다
+        <Toast
+          message={t("resetPassword.passwordChangedToast")}
+          className="pc:top-auto tablet:bottom-16 top-auto bottom-10"
+        />
+      )}
     </>
   );
 }

@@ -315,7 +315,7 @@
       "resend": "認証番号を再送信",
       "resendAvailableAfter": "{time}後に認証番号を再送信できます",
       "submitNewPassword": "パスワードを変更",
-      "passwordChangedTitle": "パスワードが変更されました",
+      "passwordChangedToast": "パスワードが変更されました。まもなくログインページに移動します。",
       "failed": "リクエストの処理中に問題が発生しました。しばらくしてから再度お試しください。",
       "mailHelp": "メールが届きませんか？迷惑メールフォルダを確認するか、メールアドレスを確認してから再度受け取ってください。"
     }

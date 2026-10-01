@@ -315,7 +315,7 @@
       "resend": "Resend code",
       "resendAvailableAfter": "You can resend the code in {time}",
       "submitNewPassword": "Change password",
-      "passwordChangedTitle": "Your password has been changed",
+      "passwordChangedToast": "Your password has been changed. Redirecting to the login page shortly.",
       "failed": "Something went wrong. Please try again later.",
       "mailHelp": "Didn't get the email? Check your spam folder, or double-check your email address and request a new code."
     }
