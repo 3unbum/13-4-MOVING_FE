@@ -7,8 +7,8 @@
  * DSN이 없으면 초기화하지 않습니다. 로컬 개발에는 값이 없으니 자동으로 꺼집니다.
  */
 import * as Sentry from "@sentry/nextjs";
-// ⚠️ `@/` 별칭을 쓰면 안 됩니다. `instrumentation*.ts` 는 Next의 특수 진입점이라
-// tsconfig의 `paths` 가 적용되기 전에 번들됩니다 (Vercel 빌드에서 module-not-found).
+// `instrumentation*.ts` 는 Next의 특수 진입점이라 일반 소스와 번들 경로가 달라,
+// 경로 별칭 대신 상대경로로 둡니다.
 import { sentryBaseOptions } from "./sentry-options";
 
 const dsn = process.env.NEXT_PUBLIC_SENTRY_DSN;
