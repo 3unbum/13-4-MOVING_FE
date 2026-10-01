@@ -12,17 +12,26 @@
  * 굳이 다국어로 하려면 메시지 JSON을 직접 번들에 넣어야 해서 비용 대비 이득이 없습니다.
  */
 
+import { useEffect } from "react";
+import * as Sentry from "@sentry/nextjs";
 import logo from "@/assets/images/common/logo-icon-text-lg.svg";
 import errorIcon from "@/assets/images/common/profile-icon-md.png";
 import Image from "next/image";
 import "pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css";
 
 export default function GlobalError({
+  error,
   reset,
 }: {
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  // 루트 레이아웃까지 죽은 상황이라 Next의 기본 에러 리포팅이 닿지 않습니다.
+  // 여기서 직접 보내지 않으면 Sentry에 아무것도 남지 않습니다.
+  useEffect(() => {
+    Sentry.captureException(error);
+  }, [error]);
+
   return (
     <html lang="ko" className="h-full antialiased">
       <body className="flex min-h-full flex-col">

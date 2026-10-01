@@ -1,5 +1,7 @@
 import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
+// v11부터 `withSentryConfig`는 메인이 아니라 `/config` 서브패스에 있습니다.
+import { withSentryConfig } from "@sentry/nextjs/config";
 
 // JSDoc 주석 대신 실제 타입을 붙입니다 — withNextIntl()에 넘기려면
 // 추론이 아니라 NextConfig로 확정돼 있어야 합니다.
@@ -35,4 +37,14 @@ const nextConfig: NextConfig = {
 // rewrites 등 위 설정은 그대로 유지된 채 i18n 처리만 얹힙니다.
 const withNextIntl = createNextIntlPlugin();
 
-export default withNextIntl(nextConfig);
+// Sentry가 가장 바깥입니다 — 빌드 산출물에 소스맵을 붙이는 단계라
+// i18n 플러그인이 적용된 최종 설정을 받아야 합니다.
+export default withSentryConfig(withNextIntl(nextConfig), {
+  // 빌드 로그를 조용하게 둡니다(CI 출력이 길어지는 걸 막습니다).
+  silent: true,
+
+  // 소스맵 업로드는 하지 않습니다. 조직/프로젝트 슬러그와 인증 토큰이 필요한데,
+  // 토큰을 CI·Vercel에 넣어야 해서 지금 범위를 넘습니다.
+  // 업로드가 없으면 스택 트레이스가 난독화된 채로 보이지만, 에러 수집 자체는 됩니다.
+  sourcemaps: { disable: true },
+});
