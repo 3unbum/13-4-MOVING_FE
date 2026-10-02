@@ -254,6 +254,42 @@
     "closedTag": "종료",
     "notice": "이사 완료 후 14일이 지나면 채팅이 종료돼요.\n연락처·계좌번호 같은 개인정보는 신중하게 공유해 주세요."
   },
+  "authError": {
+    "accessTokenExpired": "로그인이 만료되었습니다. 다시 로그인해 주세요",
+    "accessTokenInvalid": "로그인 정보가 올바르지 않습니다. 다시 로그인해 주세요",
+    "activeRequestExists": "이미 진행 중인 견적 요청이 있습니다",
+    "alreadyEstimated": "이미 이 요청에 견적을 보내셨습니다",
+    "alreadyFavorited": "이미 찜한 기사님입니다",
+    "alreadyTargeted": "이미 지정한 기사님입니다",
+    "concurrentRequestConflict": "요청이 몰려 처리하지 못했습니다. 잠시 후 다시 시도해 주세요",
+    "emailAlreadyExists": "이미 가입된 이메일입니다",
+    "estimateAlreadyProcessed": "이미 처리된 견적입니다",
+    "estimateLimitExceeded": "이 견적 요청에 받을 수 있는 견적이 모두 도착했습니다",
+    "forbidden": "접근 권한이 없습니다",
+    "internalError": "일시적인 오류가 발생했습니다. 잠시 후 다시 시도해 주세요",
+    "invalidCredentials": "이메일 또는 비밀번호가 일치하지 않습니다",
+    "invalidOauthCode": "소셜 로그인 인증이 만료되었습니다. 다시 시도해 주세요",
+    "invalidOrExpiredResetToken": "인증 시간이 만료되었습니다. 인증번호를 다시 받아 주세요",
+    "invalidOrExpiredSignupToken": "인증 정보가 만료되었습니다. 처음부터 다시 시도해 주세요",
+    "invalidResetCode": "인증번호가 일치하지 않습니다",
+    "noActiveRequest": "이미 기사님이 확정되었거나 종료된 견적 요청입니다",
+    "notFound": "요청하신 정보를 찾을 수 없습니다",
+    "notServiceRegion": "서비스 가능 지역이 아닙니다",
+    "oauthEmailRequired": "이메일 정보가 필요합니다. 소셜 계정 설정에서 이메일 제공에 동의한 뒤 다시 시도해 주세요",
+    "oauthProviderError": "소셜 로그인 처리 중 오류가 발생했습니다. 다시 시도해 주세요",
+    "profileAlreadyExists": "이미 등록된 프로필입니다",
+    "profileRequired": "프로필 등록이 필요합니다",
+    "providerAccountAlreadyLinked": "이미 가입된 계정입니다",
+    "refreshTokenExpired": "로그인이 만료되었습니다. 다시 로그인해 주세요",
+    "refreshTokenInvalid": "이미 로그아웃되었거나 유효하지 않은 로그인 정보입니다",
+    "resetCodeAttemptsExceeded": "인증번호를 여러 번 틀려 무효가 되었습니다. 인증번호를 다시 받아 주세요",
+    "resetCodeExpired": "인증번호가 만료되었습니다. 인증번호를 다시 받아 주세요",
+    "reviewAlreadyConfirmed": "이미 작성한 리뷰입니다",
+    "targetLimitExceeded": "지정 견적 요청은 최대 3명까지 가능합니다",
+    "tooManyRequests": "요청이 너무 많아요. 잠시 후 다시 시도해 주세요.",
+    "unauthorized": "로그인이 필요합니다",
+    "validationError": "입력하신 내용을 다시 확인해 주세요"
+  },
   "region": {
     "SEOUL": "서울",
     "GYEONGGI": "경기",
@@ -381,13 +417,6 @@
       "mailHelp": "메일이 오지 않나요? 스팸함을 확인하거나, 이메일 주소를 확인한 뒤 다시 받아 보세요.",
       "dailyLimitReached": "오늘 요청 가능한 횟수를 모두 사용했어요. 약 {hours}시간 후 다시 시도해 주세요."
     }
-  },
-  "authError": {
-    "tooManyRequests": "요청이 너무 많아요. 잠시 후 다시 시도해 주세요.",
-    "invalidResetCode": "인증번호가 일치하지 않습니다",
-    "resetCodeExpired": "인증번호가 만료되었습니다. 인증번호를 다시 받아 주세요",
-    "resetCodeAttemptsExceeded": "인증번호를 여러 번 틀려 무효가 되었습니다. 인증번호를 다시 받아 주세요",
-    "invalidOrExpiredResetToken": "인증 시간이 만료되었습니다. 인증번호를 다시 받아 주세요"
   },
   "review": {
     "writeReview": "리뷰 쓰기",

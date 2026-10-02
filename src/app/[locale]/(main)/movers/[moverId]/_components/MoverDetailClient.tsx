@@ -24,6 +24,7 @@ import { useToggleMoverFavorite } from "@/hooks/useToggleMoverFavorite";
 import { moverService, type MoverRatingDistribution } from "@/lib/services/mover-service";
 import { quotationRequestService } from "@/lib/services/quotation-request-service";
 import { ApiError } from "@/lib/utils/api-error";
+import { toAuthErrorDetail, toAuthErrorMessage } from "@/lib/auth/auth-error-message";
 import { cn } from "@/lib/utils/cn";
 import { useAuth } from "@/providers/AuthProvider";
 import { MoverDetailDesktopCta, MoverDetailMobileStickyCta } from "./MoverDetailCta";
@@ -43,6 +44,7 @@ const TABLET_QUERY = "(min-width: 744px)";
  */
 export default function MoverDetailClient() {
   const t = useTranslations("mover");
+  const tAuthError = useTranslations("authError");
   const tQuote = useTranslations("quote");
   const tCommon = useTranslations("common");
   const params = useParams<{ moverId: string }>();
@@ -106,7 +108,7 @@ export default function MoverDetailClient() {
         setToastMessage(t("alreadyTargeted"));
         return;
       }
-      setToastMessage(error instanceof Error ? error.message : tCommon("requestFailed"));
+      setToastMessage(toAuthErrorMessage(error, tAuthError, tCommon("requestFailed")));
     },
   });
 
@@ -131,10 +133,11 @@ export default function MoverDetailClient() {
   }
 
   if (detailQuery.isError || !mover) {
+    const errorDetail = toAuthErrorDetail(detailQuery.error, tAuthError);
     return (
       <p className="text-14 p-10 text-center text-red-200" role="alert">
         {t("moverLoadFailed")}
-        {detailQuery.error instanceof Error ? ` (${detailQuery.error.message})` : null}
+        {errorDetail ? ` (${errorDetail})` : null}
       </p>
     );
   }

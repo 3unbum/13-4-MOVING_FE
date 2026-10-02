@@ -18,7 +18,7 @@ import {
   reviewService,
   type WritableReviewItem,
 } from "@/lib/services/review-service";
-import { ApiError } from "@/lib/utils/api-error";
+import { toAuthErrorMessage } from "@/lib/auth/auth-error-message";
 import { cn } from "@/lib/utils/cn";
 import ReviewsEmptyFallback from "./_components/ReviewsEmptyFallback";
 
@@ -34,6 +34,7 @@ function toServiceCode(category: string): ServiceCode {
 
 export default function CustomerReviewsPage() {
   const t = useTranslations("review");
+  const tAuthError = useTranslations("authError");
   const locale = useLocale() as DateLocale;
 
   const tabs: { id: ReviewTab; labelKey: "tabWritable" | "tabWritten"; panelId: string }[] = [
@@ -168,7 +169,7 @@ export default function CustomerReviewsPage() {
         await refreshActiveReviewQueries();
         return;
       }
-      showToast(error instanceof ApiError ? error.message : t("submitFailed"));
+      showToast(toAuthErrorMessage(error, tAuthError, t("submitFailed")));
     } finally {
       if (submitAbortRef.current === controller) {
         submitAbortRef.current = null;
