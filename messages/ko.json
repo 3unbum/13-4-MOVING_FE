@@ -216,6 +216,8 @@
     "nameRequired": "이름을 입력해 주세요",
     "phoneRequired": "전화번호를 입력해 주세요",
     "phoneInvalid": "올바른 전화번호 형식이 아닙니다",
+    "resetCodeRequired": "인증번호를 입력해 주세요",
+    "resetCodeInvalid": "인증번호 6자리 숫자를 입력해 주세요",
     "nickNameRequired": "별명을 입력해 주세요",
     "careerRequired": "경력을 입력해 주세요",
     "careerMin": "경력은 0 이상이어야 합니다",
@@ -323,7 +325,43 @@
     "invalidAccessRetry": "잘못된 접근이에요. 로그인을 다시 시도해 주세요.",
     "accountLoadFailed": "계정 정보를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.",
     "backToHome": "홈으로 돌아가기",
-    "processingLogin": "로그인 처리 중이에요..."
+    "processingLogin": "로그인 처리 중이에요...",
+    "findEmail": {
+      "title": "아이디 찾기",
+      "notFoundTitle": "일치하는 계정이 없습니다",
+      "resultTitle": "가입된 계정을 찾았어요",
+      "localHint": "이메일로 가입한 계정입니다",
+      "socialHint": "{provider}로 가입한 계정입니다",
+      "findPassword": "비밀번호 찾기",
+      "retry": "다시 찾기",
+      "failed": "아이디 찾기 중 문제가 발생했어요. 잠시 후 다시 시도해 주세요."
+    },
+    "resetPassword": {
+      "title": "비밀번호 재설정",
+      "requestCode": "인증번호 받기",
+      "guideNotice": "가입된 이메일이라면 인증번호가 발송됩니다",
+      "guideSocialRich": "이메일로 가입한 계정만 해당되며, 소셜로 가입한 경우 <link>소셜 로그인</link>을 이용해 주세요",
+      "sentTo": "{email}로 인증번호를 보냈어요",
+      "changeEmail": "이메일 다시 입력",
+      "codeLabel": "인증번호",
+      "codePlaceholder": "인증번호 6자리를 입력해 주세요",
+      "remainingTimeLabel": "남은 시간",
+      "expired": "인증번호가 만료되었습니다",
+      "resend": "인증번호 재발송",
+      "resendAvailableAfter": "{time} 후 인증번호를 재발송할 수 있어요",
+      "submitNewPassword": "비밀번호 변경",
+      "passwordChangedToast": "비밀번호가 변경되었어요. 잠시 후 로그인 페이지로 이동합니다.",
+      "failed": "요청 처리 중 문제가 발생했어요. 잠시 후 다시 시도해 주세요.",
+      "mailHelp": "메일이 오지 않나요? 스팸함을 확인하거나, 이메일 주소를 확인한 뒤 다시 받아 보세요.",
+      "dailyLimitReached": "오늘 요청 가능한 횟수를 모두 사용했어요. 약 {hours}시간 후 다시 시도해 주세요."
+    }
+  },
+  "authError": {
+    "tooManyRequests": "요청이 너무 많아요. 잠시 후 다시 시도해 주세요.",
+    "invalidResetCode": "인증번호가 일치하지 않습니다",
+    "resetCodeExpired": "인증번호가 만료되었습니다. 인증번호를 다시 받아 주세요",
+    "resetCodeAttemptsExceeded": "인증번호를 여러 번 틀려 무효가 되었습니다. 인증번호를 다시 받아 주세요",
+    "invalidOrExpiredResetToken": "인증 시간이 만료되었습니다. 인증번호를 다시 받아 주세요"
   },
   "review": {
     "writeReview": "리뷰 쓰기",

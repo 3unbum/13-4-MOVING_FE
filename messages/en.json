@@ -216,6 +216,8 @@
     "nameRequired": "Please enter your name",
     "phoneRequired": "Please enter your phone number",
     "phoneInvalid": "Invalid phone number format",
+    "resetCodeRequired": "Please enter the verification code",
+    "resetCodeInvalid": "Please enter the 6-digit verification code",
     "nickNameRequired": "Please enter a nickname",
     "careerRequired": "Please enter your years of experience",
     "careerMin": "Experience must be 0 or more",
@@ -323,7 +325,43 @@
     "invalidAccessRetry": "Invalid access. Please try logging in again.",
     "accountLoadFailed": "Couldn't load your account. Please try again in a moment.",
     "backToHome": "Back to home",
-    "processingLogin": "Logging you in..."
+    "processingLogin": "Logging you in...",
+    "findEmail": {
+      "title": "Find email",
+      "notFoundTitle": "No matching account found",
+      "resultTitle": "We found accounts signed up with this info",
+      "localHint": "This account signed up with email",
+      "socialHint": "This account signed up with {provider}",
+      "findPassword": "Find password",
+      "retry": "Search again",
+      "failed": "Something went wrong while finding your ID. Please try again later."
+    },
+    "resetPassword": {
+      "title": "Reset password",
+      "requestCode": "Get verification code",
+      "guideNotice": "If this email is registered, a verification code will be sent",
+      "guideSocialRich": "This applies only to accounts registered with email. If you signed up with a social account, please use <link>social login</link>",
+      "sentTo": "We sent a verification code to {email}",
+      "changeEmail": "Enter a different email",
+      "codeLabel": "Verification code",
+      "codePlaceholder": "Enter the 6-digit verification code",
+      "remainingTimeLabel": "Time remaining",
+      "expired": "The verification code has expired",
+      "resend": "Resend code",
+      "resendAvailableAfter": "You can resend the code in {time}",
+      "submitNewPassword": "Change password",
+      "passwordChangedToast": "Your password has been changed. Redirecting to the login page shortly.",
+      "failed": "Something went wrong. Please try again later.",
+      "mailHelp": "Didn't get the email? Check your spam folder, or double-check your email address and request a new code.",
+      "dailyLimitReached": "You've used all of today's requests. Please try again in about {hours, plural, one {# hour} other {# hours}}."
+    }
+  },
+  "authError": {
+    "tooManyRequests": "Too many requests. Please try again later.",
+    "invalidResetCode": "The verification code is incorrect",
+    "resetCodeExpired": "The verification code has expired. Please request a new one",
+    "resetCodeAttemptsExceeded": "Too many incorrect attempts. Please request a new verification code",
+    "invalidOrExpiredResetToken": "Your verification has expired. Please request a new code"
   },
   "review": {
     "writeReview": "Write a Review",

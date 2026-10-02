@@ -11,6 +11,7 @@ import AuthCard from "@/components/auth/AuthCard";
 import AuthHeader from "@/components/auth/AuthHeader";
 import AuthSubmitButton from "@/components/auth/AuthSubmitButton";
 import AuthSwitchLink from "@/components/auth/AuthSwitchLink";
+import FindAccountLinks from "@/components/auth/FindAccountLinks";
 import FormField from "@/components/auth/FormField";
 import ProfileRegisterModal from "@/components/auth/ProfileRegisterModal";
 import SocialLoginSection from "@/components/auth/SocialLoginSection";
@@ -118,6 +119,8 @@ export default function CustomerLoginPage() {
                 {t("loginTitle")}
               </AuthSubmitButton>
             </form>
+
+            <FindAccountLinks role="CUSTOMER" />
 
             <AuthSwitchLink
               prompt={t("notMemberYet")}

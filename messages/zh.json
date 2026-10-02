@@ -216,6 +216,8 @@
     "nameRequired": "请输入姓名",
     "phoneRequired": "请输入电话号码",
     "phoneInvalid": "电话号码格式不正确",
+    "resetCodeRequired": "请输入验证码",
+    "resetCodeInvalid": "请输入6位数字验证码",
     "nickNameRequired": "请输入昵称",
     "careerRequired": "请输入从业年限",
     "careerMin": "从业年限需为0以上",
@@ -323,7 +325,43 @@
     "invalidAccessRetry": "访问无效，请重新登录。",
     "accountLoadFailed": "无法加载账户信息，请稍后重试。",
     "backToHome": "返回首页",
-    "processingLogin": "正在处理登录..."
+    "processingLogin": "正在处理登录...",
+    "findEmail": {
+      "title": "查找账号",
+      "notFoundTitle": "没有找到匹配的账号",
+      "resultTitle": "已找到使用该信息注册的账号",
+      "localHint": "该账号使用邮箱注册",
+      "socialHint": "该账号使用{provider}注册",
+      "findPassword": "查找密码",
+      "retry": "重新查找",
+      "failed": "查找账号时出现问题，请稍后再试。"
+    },
+    "resetPassword": {
+      "title": "重置密码",
+      "requestCode": "获取验证码",
+      "guideNotice": "如果该邮箱已注册，验证码将会发送",
+      "guideSocialRich": "仅适用于通过邮箱注册的账号，如通过社交账号注册，请使用<link>社交登录</link>",
+      "sentTo": "验证码已发送至{email}",
+      "changeEmail": "重新输入邮箱",
+      "codeLabel": "验证码",
+      "codePlaceholder": "请输入6位验证码",
+      "remainingTimeLabel": "剩余时间",
+      "expired": "验证码已过期",
+      "resend": "重新发送验证码",
+      "resendAvailableAfter": "{time}后可重新发送验证码",
+      "submitNewPassword": "修改密码",
+      "passwordChangedToast": "密码已修改，即将跳转到登录页面。",
+      "failed": "处理请求时出现问题，请稍后再试。",
+      "mailHelp": "没有收到邮件？请检查垃圾邮件箱，或确认邮箱地址后重新获取。",
+      "dailyLimitReached": "今天的请求次数已用完，请约{hours}小时后再试。"
+    }
+  },
+  "authError": {
+    "tooManyRequests": "请求过于频繁，请稍后再试。",
+    "invalidResetCode": "验证码不正确",
+    "resetCodeExpired": "验证码已过期，请重新获取",
+    "resetCodeAttemptsExceeded": "验证码错误次数过多已失效，请重新获取",
+    "invalidOrExpiredResetToken": "验证已过期，请重新获取验证码"
   },
   "review": {
     "writeReview": "写评价",
