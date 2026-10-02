@@ -39,8 +39,11 @@ function splitLocale(pathname: string): { prefix: string; rest: string } {
  */
 export function proxy(request: NextRequest) {
   const { prefix, rest } = splitLocale(request.nextUrl.pathname);
+  // find-email·reset-password는 로그인 전(비로그인) 사용자가 쓰는 페이지라 login·signup과
+  // 같은 취급 — 안 넣으면 세션 쿠키가 없는 요청이 전부 로그인 페이지로 튕긴다.
   const isProtected =
-    /^\/customer\/(?!login|signup)/.test(rest) || /^\/mover\/(?!login|signup)/.test(rest);
+    /^\/customer\/(?!login|signup|find-email|reset-password)/.test(rest) ||
+    /^\/mover\/(?!login|signup|find-email|reset-password)/.test(rest);
 
   if (isProtected) {
     const hasSession = request.cookies.has("accessToken") || request.cookies.has("refreshToken");

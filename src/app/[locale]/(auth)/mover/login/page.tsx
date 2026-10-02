@@ -11,6 +11,7 @@ import AuthCard from "@/components/auth/AuthCard";
 import AuthHeader from "@/components/auth/AuthHeader";
 import AuthSubmitButton from "@/components/auth/AuthSubmitButton";
 import AuthSwitchLink from "@/components/auth/AuthSwitchLink";
+import FindAccountLinks from "@/components/auth/FindAccountLinks";
 import FormField from "@/components/auth/FormField";
 import SocialLoginSection from "@/components/auth/SocialLoginSection";
 import { useCountdown } from "@/hooks/useCountdown";
@@ -106,6 +107,8 @@ export default function MoverLoginPage() {
               {t("loginTitle")}
             </AuthSubmitButton>
           </form>
+
+          <FindAccountLinks role="MOVER" />
 
           <AuthSwitchLink
             prompt={t("notMemberYet")}

@@ -216,6 +216,8 @@
     "nameRequired": "お名前を入力してください",
     "phoneRequired": "電話番号を入力してください",
     "phoneInvalid": "電話番号の形式が正しくありません",
+    "resetCodeRequired": "認証番号を入力してください",
+    "resetCodeInvalid": "6桁の認証番号を入力してください",
     "nickNameRequired": "ニックネームを入力してください",
     "careerRequired": "経歴を入力してください",
     "careerMin": "経歴は0以上で入力してください",
@@ -225,6 +227,7 @@
     "customerServicesRequired": "利用サービスを1つ以上選択してください",
     "moverServicesRequired": "提供サービスを1つ以上選択してください",
     "moverRegionsRequired": "対応可能地域を1つ以上選択してください",
+    "careerMax": "経歴は60年を超えることはできません",
     "currentPasswordRequired": "現在のパスワードを入力してください"
   },
   "region": {
@@ -325,7 +328,43 @@
     "invalidAccessRetry": "不正なアクセスです。もう一度ログインしてください。",
     "accountLoadFailed": "アカウント情報を読み込めませんでした。しばらくしてからもう一度お試しください。",
     "backToHome": "ホームに戻る",
-    "processingLogin": "ログイン処理中です..."
+    "processingLogin": "ログイン処理中です...",
+    "findEmail": {
+      "title": "IDを探す",
+      "notFoundTitle": "一致するアカウントがありません",
+      "resultTitle": "この情報で登録されたアカウントが見つかりました",
+      "localHint": "メールアドレスで登録したアカウントです",
+      "socialHint": "{provider}で登録したアカウントです",
+      "findPassword": "パスワードを探す",
+      "retry": "もう一度探す",
+      "failed": "IDの検索中に問題が発生しました。しばらくしてから再度お試しください。"
+    },
+    "resetPassword": {
+      "title": "パスワード再設定",
+      "requestCode": "認証番号を受け取る",
+      "guideNotice": "登録済みのメールアドレスの場合、認証番号が送信されます",
+      "guideSocialRich": "メールアドレスで登録したアカウントのみ対象です。ソーシャルアカウントで登録した場合は<link>ソーシャルログイン</link>をご利用ください",
+      "sentTo": "{email}に認証番号を送信しました",
+      "changeEmail": "メールアドレスを再入力",
+      "codeLabel": "認証番号",
+      "codePlaceholder": "認証番号6桁を入力してください",
+      "remainingTimeLabel": "残り時間",
+      "expired": "認証番号の有効期限が切れました",
+      "resend": "認証番号を再送信",
+      "resendAvailableAfter": "{time}後に認証番号を再送信できます",
+      "submitNewPassword": "パスワードを変更",
+      "passwordChangedToast": "パスワードが変更されました。まもなくログインページに移動します。",
+      "failed": "リクエストの処理中に問題が発生しました。しばらくしてから再度お試しください。",
+      "mailHelp": "メールが届きませんか？迷惑メールフォルダを確認するか、メールアドレスを確認してから再度受け取ってください。",
+      "dailyLimitReached": "本日のリクエスト回数をすべて使用しました。約{hours}時間後に再度お試しください。"
+    }
+  },
+  "authError": {
+    "tooManyRequests": "リクエストが多すぎます。しばらくしてから再度お試しください。",
+    "invalidResetCode": "認証番号が正しくありません",
+    "resetCodeExpired": "認証番号の有効期限が切れました。認証番号を再度受け取ってください",
+    "resetCodeAttemptsExceeded": "認証番号を複数回間違えたため無効になりました。認証番号を再度受け取ってください",
+    "invalidOrExpiredResetToken": "認証の有効期限が切れました。認証番号を再度受け取ってください"
   },
   "review": {
     "writeReview": "レビューを書く",

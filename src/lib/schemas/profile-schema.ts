@@ -24,7 +24,8 @@ export const makeMoverProfileSchema = (t: ValidationTranslator) =>
     career: z
       .number({ message: t("careerRequired") })
       .int()
-      .min(0, t("careerMin")),
+      .min(0, t("careerMin"))
+      .max(60, t("careerMax")),
     bio: z.string().trim().min(1, t("bioRequired")),
     description: z.string().trim().min(1, t("descriptionRequired")),
     services: z.array(z.enum(serviceValues)).min(1, t("moverServicesRequired")),
