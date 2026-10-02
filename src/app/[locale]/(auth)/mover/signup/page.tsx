@@ -46,7 +46,7 @@ export default function MoverSignupPage() {
       router.replace("/mover/profile-register");
     } catch (error) {
       if (error instanceof ApiError && error.code === "EMAIL_ALREADY_EXISTS") {
-        setError("email", { message: tAuthError("EMAIL_ALREADY_EXISTS") });
+        setError("email", { message: tAuthError("emailAlreadyExists") });
         return;
       }
       const message = toAuthErrorMessage(error, tAuthError, t("signupFailed"));
