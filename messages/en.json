@@ -52,7 +52,7 @@
     "ratingPoint": "{rating}",
     "moverSuffix": "",
     "customerSuffix": "",
-    "careerRich": "<value>{years} yrs</value><label>experience</label>",
+    "careerRich": "<value>{years} yrs</value><label>exp</label>",
     "confirmedRich": "<value>{count}</value><label>confirmed</label>",
     "selectMover": "Select {name}",
     "copySuccess": "Link copied!",

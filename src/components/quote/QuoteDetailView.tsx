@@ -323,6 +323,9 @@ export default function QuoteDetailView({
               kind="like"
               size="sm"
               active={isFavorited}
+              /* 찜한 하트는 빨강입니다. 안 넘기면 `activeColor` 기본값이 "black"이라
+                 PC(위쪽 `FavoriteCount`)와 색이 달라집니다. */
+              activeColor="red"
               onClick={onToggleFavorite}
               disabled={isTogglingFavorite}
             />
