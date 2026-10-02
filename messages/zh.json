@@ -226,7 +226,8 @@
     "regionRequired": "请选择您居住的地区",
     "customerServicesRequired": "请至少选择一项服务",
     "moverServicesRequired": "请至少选择一项提供的服务",
-    "moverRegionsRequired": "请至少选择一个服务地区"
+    "moverRegionsRequired": "请至少选择一个服务地区",
+    "careerMax": "从业年限不能超过60年"
   },
   "region": {
     "SEOUL": "首尔",

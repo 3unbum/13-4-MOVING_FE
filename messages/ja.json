@@ -226,7 +226,8 @@
     "regionRequired": "お住まいの地域を選択してください",
     "customerServicesRequired": "利用サービスを1つ以上選択してください",
     "moverServicesRequired": "提供サービスを1つ以上選択してください",
-    "moverRegionsRequired": "対応可能地域を1つ以上選択してください"
+    "moverRegionsRequired": "対応可能地域を1つ以上選択してください",
+    "careerMax": "経歴は60年を超えることはできません"
   },
   "region": {
     "SEOUL": "ソウル",

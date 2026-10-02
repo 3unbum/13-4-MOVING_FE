@@ -226,7 +226,8 @@
     "regionRequired": "내가 사는 지역을 선택해 주세요",
     "customerServicesRequired": "이용 서비스를 1개 이상 선택해 주세요",
     "moverServicesRequired": "제공 서비스를 1개 이상 선택해 주세요",
-    "moverRegionsRequired": "서비스 가능 지역을 1개 이상 선택해 주세요"
+    "moverRegionsRequired": "서비스 가능 지역을 1개 이상 선택해 주세요",
+    "careerMax": "경력은 60년을 넘을 수 없습니다"
   },
   "region": {
     "SEOUL": "서울",

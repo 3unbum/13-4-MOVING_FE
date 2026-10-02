@@ -226,7 +226,8 @@
     "regionRequired": "Please select where you live",
     "customerServicesRequired": "Please select at least one service",
     "moverServicesRequired": "Please select at least one service you provide",
-    "moverRegionsRequired": "Please select at least one service area"
+    "moverRegionsRequired": "Please select at least one service area",
+    "careerMax": "Experience cannot exceed 60 years"
   },
   "region": {
     "SEOUL": "Seoul",
