@@ -11,7 +11,7 @@ import CardMover from "@/components/mover/CardMover";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { favoriteQueryKeys } from "@/constants/query-keys/favorites";
 import { favoriteService } from "@/lib/services/favorite-service";
-import { ApiError } from "@/lib/utils/api-error";
+import { toAuthErrorMessage } from "@/lib/auth/auth-error-message";
 import { cn } from "@/lib/utils/cn";
 import { toServiceCode } from "@/lib/utils/mover-list-mapper";
 import FavoritesEmptyFallback from "./_components/FavoritesEmptyFallback";
@@ -21,6 +21,7 @@ const PC_QUERY = "(min-width: 1280px)";
 
 export default function CustomerFavoritesPage() {
   const t = useTranslations("page");
+  const tAuthError = useTranslations("authError");
   const tMover = useTranslations("mover");
   const tCommon = useTranslations("common");
   const router = useRouter();
@@ -69,7 +70,7 @@ export default function CustomerFavoritesPage() {
       );
     },
     onError: (error) => {
-      showToast(error instanceof ApiError ? error.message : tCommon("favoriteRemoveFailed"));
+      showToast(toAuthErrorMessage(error, tAuthError, tCommon("favoriteRemoveFailed")));
     },
   });
 

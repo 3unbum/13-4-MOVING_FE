@@ -229,6 +229,42 @@
     "moverRegionsRequired": "Please select at least one service area",
     "careerMax": "Experience cannot exceed 60 years"
   },
+  "authError": {
+    "accessTokenExpired": "Your session has expired. Please log in again.",
+    "accessTokenInvalid": "Your login information is invalid. Please log in again.",
+    "activeRequestExists": "You already have an active quote request.",
+    "alreadyEstimated": "You have already sent a quote for this request.",
+    "alreadyFavorited": "You have already saved this mover.",
+    "alreadyTargeted": "You have already requested a quote from this mover.",
+    "concurrentRequestConflict": "We couldn't process your request due to high traffic. Please try again in a moment.",
+    "emailAlreadyExists": "This email is already registered.",
+    "estimateAlreadyProcessed": "This quote has already been processed.",
+    "estimateLimitExceeded": "This request has already received the maximum number of quotes.",
+    "forbidden": "You don't have permission to access this.",
+    "internalError": "Something went wrong. Please try again in a moment.",
+    "invalidCredentials": "The email or password is incorrect.",
+    "invalidOauthCode": "Social login verification expired. Please try again.",
+    "invalidOrExpiredResetToken": "Your verification has expired. Please request a new code",
+    "invalidOrExpiredSignupToken": "Your verification expired. Please start over.",
+    "invalidResetCode": "The verification code is incorrect",
+    "noActiveRequest": "This request has already been confirmed or closed.",
+    "notFound": "We couldn't find what you were looking for.",
+    "notServiceRegion": "This is outside your service area.",
+    "oauthEmailRequired": "An email address is required. Please allow email sharing in your social account settings and try again.",
+    "oauthProviderError": "Something went wrong during social login. Please try again.",
+    "profileAlreadyExists": "Your profile is already set up.",
+    "profileRequired": "Please set up your profile first.",
+    "providerAccountAlreadyLinked": "This account is already registered.",
+    "refreshTokenExpired": "Your session has expired. Please log in again.",
+    "refreshTokenInvalid": "You have been logged out, or your login is no longer valid.",
+    "resetCodeAttemptsExceeded": "Too many incorrect attempts. Please request a new verification code",
+    "resetCodeExpired": "The verification code has expired. Please request a new one",
+    "reviewAlreadyConfirmed": "You have already written this review.",
+    "targetLimitExceeded": "You can request targeted quotes from up to 3 movers.",
+    "tooManyRequests": "Too many requests. Please try again later.",
+    "unauthorized": "Login required.",
+    "validationError": "Please check the information you entered."
+  },
   "region": {
     "SEOUL": "Seoul",
     "GYEONGGI": "Gyeonggi",
@@ -356,13 +392,6 @@
       "mailHelp": "Didn't get the email? Check your spam folder, or double-check your email address and request a new code.",
       "dailyLimitReached": "You've used all of today's requests. Please try again in about {hours, plural, one {# hour} other {# hours}}."
     }
-  },
-  "authError": {
-    "tooManyRequests": "Too many requests. Please try again later.",
-    "invalidResetCode": "The verification code is incorrect",
-    "resetCodeExpired": "The verification code has expired. Please request a new one",
-    "resetCodeAttemptsExceeded": "Too many incorrect attempts. Please request a new verification code",
-    "invalidOrExpiredResetToken": "Your verification has expired. Please request a new code"
   },
   "review": {
     "writeReview": "Write a Review",

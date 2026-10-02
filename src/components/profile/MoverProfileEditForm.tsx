@@ -17,7 +17,7 @@ import { REGION_OPTIONS, SERVICE_OPTIONS } from "@/constants/profile/options";
 import { makeMoverProfileSchema, type MoverProfileFormValues } from "@/lib/schemas/profile-schema";
 import { profileService } from "@/lib/services/profile-service";
 import type { MoverAccountResponse } from "@/lib/services/auth-service";
-import { ApiError } from "@/lib/utils/api-error";
+import { toAuthErrorMessage } from "@/lib/auth/auth-error-message";
 import { cn } from "@/lib/utils/cn";
 import { useAuth } from "@/providers/AuthProvider";
 
@@ -51,6 +51,7 @@ export default function MoverProfileEditForm({
   onAccountUpdated,
 }: MoverProfileEditFormProps) {
   const t = useTranslations("profile");
+  const tAuthError = useTranslations("authError");
   const tService = useTranslations("service");
   const tRegion = useTranslations("region");
   const tCommon = useTranslations("common");
@@ -121,7 +122,7 @@ export default function MoverProfileEditForm({
       // 확인할 수 있어야 하니 (CustomerProfileEditForm도 성공 시 라우팅으로 마무리하는 동일 패턴)
       router.push("/mover/mypage");
     } catch (error) {
-      setSubmitError(error instanceof ApiError ? error.message : t("updateFailed"));
+      setSubmitError(toAuthErrorMessage(error, tAuthError, t("updateFailed")));
     }
   }
 
