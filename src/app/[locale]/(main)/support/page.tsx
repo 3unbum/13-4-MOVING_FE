@@ -6,6 +6,9 @@ import Footer from "@/app/[locale]/(main)/_components/Footer";
 /** FAQ 키는 `q1`/`a1` 처럼 번호로 짝지어 둡니다. 늘릴 때 이 숫자만 바꾸면 됩니다. */
 const FAQ_COUNT = 10;
 
+/** 개인정보 처리방침(`privacy.s9Contact`)에도 같은 주소가 적혀 있습니다. 바꿀 때 함께 고치세요. */
+const SUPPORT_EMAIL = "letsmoving.help@gmail.com";
+
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("support");
   return {
@@ -55,12 +58,15 @@ export default async function SupportPage() {
           <p className="text-14 tablet:text-16 text-gray-gray-500 font-normal">
             {t("contactBody")}
           </p>
-          {/* 문의 폼 대신 메일로 받습니다 — 접수 테이블·API 가 필요해져서 범위에서 뺐습니다. */}
+          {/* 문의 폼 대신 메일로 받습니다 — 접수 테이블·API 가 필요해져서 범위에서 뺐습니다.
+              버튼이 아니라 **주소를 그대로 노출**합니다. 버튼만 있으면 어디로 가는지 알 수 없고,
+              메일 앱이 없는 환경에서는 눌러도 아무 일이 없으며, 복사해서 웹메일로 보낼 수도
+              없습니다. 주소가 보이면 클릭·복사·확인이 전부 됩니다. */}
           <a
-            href="mailto:support@letsmoving.site"
-            className="text-14 tablet:text-16 mt-1 rounded-2xl bg-orange-300 px-6 py-3 font-semibold text-gray-50 hover:brightness-95"
+            href={`mailto:${SUPPORT_EMAIL}`}
+            className="text-16 tablet:text-18 mt-1 font-semibold break-all text-orange-300 underline-offset-4 hover:underline"
           >
-            {t("contactButton")}
+            {SUPPORT_EMAIL}
           </a>
         </section>
       </main>

@@ -567,7 +567,6 @@
     "faqTitle": "Frequently asked questions",
     "contactTitle": "Didn't find what you need?",
     "contactBody": "Email us and we'll get back to you.",
-    "contactButton": "Contact by email",
     "q1": "How do I request a quote?",
     "a1": "After logging in, go to \"Request a quote\" and enter your moving type, moving date, and pickup and drop-off addresses. Once submitted, movers who match your criteria will send you quotes.",
     "q2": "Can I have more than one request at a time?",
@@ -637,7 +636,7 @@
     "s8Item3": "Access to personal data is limited to the minimum number of people.",
     "s9Title": "9. Privacy officer",
     "s9Body": "For questions, complaints, or remedies related to the processing of personal data, please contact us below.",
-    "s9Contact": "Email: support@letsmoving.site",
+    "s9Contact": "Email: ",
     "s10Title": "10. Changes to this policy",
     "s10Body": "If this policy changes, we will announce it within the service at least 7 days before the effective date.",
     "disclaimer": "This service is a portfolio project built during the Codeit Sprint program. It is not a real moving brokerage service, and any information entered is used for learning purposes only."

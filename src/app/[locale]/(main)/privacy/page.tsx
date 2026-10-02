@@ -19,6 +19,9 @@ const SECTIONS = [
   { n: 10, body: true, items: 0 },
 ] as const;
 
+/** 고객센터 페이지에도 같은 주소가 있습니다. 바꿀 때 함께 고치세요. */
+const SUPPORT_EMAIL = "letsmoving.help@gmail.com";
+
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("privacy");
   return {
@@ -65,10 +68,18 @@ export default async function PrivacyPage() {
                 </ul>
               )}
 
-              {/* 9번(보호책임자)만 연락처 줄이 따로 붙습니다. */}
+              {/* 9번(보호책임자)만 연락처 줄이 따로 붙습니다.
+                  주소는 `mailto:` 링크로 둡니다 — 법적 고지라 눈으로도 읽히고
+                  클릭으로 바로 메일을 열 수도 있어야 합니다. */}
               {n === 9 && (
                 <p className="text-14 tablet:text-16 text-black-black-400 mt-2 font-medium">
                   {t("s9Contact")}
+                  <a
+                    href={`mailto:${SUPPORT_EMAIL}`}
+                    className="break-all text-orange-300 underline-offset-4 hover:underline"
+                  >
+                    {SUPPORT_EMAIL}
+                  </a>
                 </p>
               )}
             </section>
