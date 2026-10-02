@@ -228,6 +228,42 @@
     "moverServicesRequired": "提供サービスを1つ以上選択してください",
     "moverRegionsRequired": "対応可能地域を1つ以上選択してください"
   },
+  "authError": {
+    "accessTokenExpired": "ログインの有効期限が切れました。もう一度ログインしてください。",
+    "accessTokenInvalid": "ログイン情報が正しくありません。もう一度ログインしてください。",
+    "activeRequestExists": "すでに進行中の見積もりリクエストがあります。",
+    "alreadyEstimated": "すでにこのリクエストに見積もりを送信しています。",
+    "alreadyFavorited": "すでにお気に入りに追加した業者です。",
+    "alreadyTargeted": "すでに指名した業者です。",
+    "concurrentRequestConflict": "リクエストが集中して処理できませんでした。しばらくしてからもう一度お試しください。",
+    "emailAlreadyExists": "すでに登録されているメールアドレスです。",
+    "estimateAlreadyProcessed": "すでに処理された見積もりです。",
+    "estimateLimitExceeded": "この見積もりリクエストで受け取れる見積もりがすべて届いています。",
+    "forbidden": "アクセス権限がありません。",
+    "internalError": "一時的なエラーが発生しました。しばらくしてからもう一度お試しください。",
+    "invalidCredentials": "メールアドレスまたはパスワードが一致しません。",
+    "invalidOauthCode": "ソーシャルログインの認証が期限切れです。もう一度お試しください。",
+    "invalidOrExpiredResetToken": "認証の有効期限が切れました。認証番号を再度受け取ってください",
+    "invalidOrExpiredSignupToken": "認証情報の有効期限が切れました。最初からやり直してください。",
+    "invalidResetCode": "認証番号が正しくありません",
+    "noActiveRequest": "すでに業者が確定したか、終了した見積もりリクエストです。",
+    "notFound": "リクエストされた情報が見つかりません。",
+    "notServiceRegion": "サービス対応地域ではありません。",
+    "oauthEmailRequired": "メールアドレスが必要です。ソーシャルアカウントの設定でメールの提供に同意してから、もう一度お試しください。",
+    "oauthProviderError": "ソーシャルログインの処理中にエラーが発生しました。もう一度お試しください。",
+    "profileAlreadyExists": "すでに登録されているプロフィールです。",
+    "profileRequired": "プロフィールの登録が必要です。",
+    "providerAccountAlreadyLinked": "すでに登録されているアカウントです。",
+    "refreshTokenExpired": "ログインの有効期限が切れました。もう一度ログインしてください。",
+    "refreshTokenInvalid": "すでにログアウトされたか、無効なログイン情報です。",
+    "resetCodeAttemptsExceeded": "認証番号を複数回間違えたため無効になりました。認証番号を再度受け取ってください",
+    "resetCodeExpired": "認証番号の有効期限が切れました。認証番号を再度受け取ってください",
+    "reviewAlreadyConfirmed": "すでに作成したレビューです。",
+    "targetLimitExceeded": "指名見積もりリクエストは最大3名まで可能です。",
+    "tooManyRequests": "リクエストが多すぎます。しばらくしてから再度お試しください。",
+    "unauthorized": "ログインが必要です。",
+    "validationError": "入力内容をもう一度ご確認ください。"
+  },
   "region": {
     "SEOUL": "ソウル",
     "GYEONGGI": "京畿",
@@ -355,13 +391,6 @@
       "mailHelp": "メールが届きませんか？迷惑メールフォルダを確認するか、メールアドレスを確認してから再度受け取ってください。",
       "dailyLimitReached": "本日のリクエスト回数をすべて使用しました。約{hours}時間後に再度お試しください。"
     }
-  },
-  "authError": {
-    "tooManyRequests": "リクエストが多すぎます。しばらくしてから再度お試しください。",
-    "invalidResetCode": "認証番号が正しくありません",
-    "resetCodeExpired": "認証番号の有効期限が切れました。認証番号を再度受け取ってください",
-    "resetCodeAttemptsExceeded": "認証番号を複数回間違えたため無効になりました。認証番号を再度受け取ってください",
-    "invalidOrExpiredResetToken": "認証の有効期限が切れました。認証番号を再度受け取ってください"
   },
   "review": {
     "writeReview": "レビューを書く",

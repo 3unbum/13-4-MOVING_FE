@@ -22,6 +22,7 @@ import { toMoverListRegionParam, toMoverListServiceParam } from "@/lib/utils/mov
 import type { MoverListUrlFilters } from "@/lib/utils/mover-list-url-filters";
 import { mapFavoriteCardToCard, mapMoverListItemToCard } from "@/lib/utils/mover-list-mapper";
 import { cn } from "@/lib/utils/cn";
+import { toAuthErrorDetail } from "@/lib/auth/auth-error-message";
 import { useAuth } from "@/providers/AuthProvider";
 
 type MoverCardViewModel = ReturnType<typeof mapMoverListItemToCard>;
@@ -94,6 +95,7 @@ export default function MoversPageClient({ initialFilters }: MoversPageClientPro
   const tRegion = useTranslations("region");
   const tService = useTranslations("service");
   const tFilter = useTranslations("filter");
+  const tAuthError = useTranslations("authError");
 
   // 상수는 value(코드)만 쓰고 표시 라벨은 여기서 번역합니다 — label은 폴백으로만 남습니다
   const serviceOptions = SERVICE_OPTIONS.map((option) => ({
@@ -148,6 +150,7 @@ export default function MoversPageClient({ initialFilters }: MoversPageClientPro
 
   const { data, isPending, isError, error, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useMoversInfinite(listFilters);
+  const errorDetail = toAuthErrorDetail(error, tAuthError);
 
   // infinite query pages → 카드용 flat 배열
   const movers = useMemo(
@@ -284,7 +287,7 @@ export default function MoversPageClient({ initialFilters }: MoversPageClientPro
               {isError && (
                 <p className="text-14 py-8 text-center text-red-500" role="alert">
                   {t("loadFailed")}
-                  {error instanceof Error ? ` (${error.message})` : null}
+                  {errorDetail ? ` (${errorDetail})` : null}
                 </p>
               )}
 

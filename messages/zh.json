@@ -228,6 +228,42 @@
     "moverServicesRequired": "请至少选择一项提供的服务",
     "moverRegionsRequired": "请至少选择一个服务地区"
   },
+  "authError": {
+    "accessTokenExpired": "登录已过期，请重新登录。",
+    "accessTokenInvalid": "登录信息无效，请重新登录。",
+    "activeRequestExists": "您已有正在进行的报价申请。",
+    "alreadyEstimated": "您已针对该申请发送报价。",
+    "alreadyFavorited": "您已收藏该师傅。",
+    "alreadyTargeted": "您已指定该师傅。",
+    "concurrentRequestConflict": "请求过于集中，暂时无法处理。请稍后重试。",
+    "emailAlreadyExists": "该邮箱已注册。",
+    "estimateAlreadyProcessed": "该报价已处理。",
+    "estimateLimitExceeded": "该报价申请已收到可接收的全部报价。",
+    "forbidden": "您没有访问权限。",
+    "internalError": "发生临时错误，请稍后重试。",
+    "invalidCredentials": "邮箱或密码不正确。",
+    "invalidOauthCode": "社交登录验证已过期，请重试。",
+    "invalidOrExpiredResetToken": "验证已过期，请重新获取验证码",
+    "invalidOrExpiredSignupToken": "验证信息已过期，请重新开始。",
+    "invalidResetCode": "验证码不正确",
+    "noActiveRequest": "该报价申请已确定师傅或已结束。",
+    "notFound": "找不到您请求的信息。",
+    "notServiceRegion": "不在服务区域内。",
+    "oauthEmailRequired": "需要邮箱信息。请在社交账号设置中同意提供邮箱后重试。",
+    "oauthProviderError": "社交登录处理时发生错误，请重试。",
+    "profileAlreadyExists": "个人资料已登记。",
+    "profileRequired": "请先完成个人资料登记。",
+    "providerAccountAlreadyLinked": "该账号已注册。",
+    "refreshTokenExpired": "登录已过期，请重新登录。",
+    "refreshTokenInvalid": "您已登出，或登录信息已失效。",
+    "resetCodeAttemptsExceeded": "验证码错误次数过多已失效，请重新获取",
+    "resetCodeExpired": "验证码已过期，请重新获取",
+    "reviewAlreadyConfirmed": "您已撰写该评价。",
+    "targetLimitExceeded": "指定报价申请最多可选择 3 位师傅。",
+    "tooManyRequests": "请求过于频繁，请稍后再试。",
+    "unauthorized": "需要登录。",
+    "validationError": "请重新确认您输入的内容。"
+  },
   "region": {
     "SEOUL": "首尔",
     "GYEONGGI": "京畿",
@@ -355,13 +391,6 @@
       "mailHelp": "没有收到邮件？请检查垃圾邮件箱，或确认邮箱地址后重新获取。",
       "dailyLimitReached": "今天的请求次数已用完，请约{hours}小时后再试。"
     }
-  },
-  "authError": {
-    "tooManyRequests": "请求过于频繁，请稍后再试。",
-    "invalidResetCode": "验证码不正确",
-    "resetCodeExpired": "验证码已过期，请重新获取",
-    "resetCodeAttemptsExceeded": "验证码错误次数过多已失效，请重新获取",
-    "invalidOrExpiredResetToken": "验证已过期，请重新获取验证码"
   },
   "review": {
     "writeReview": "写评价",

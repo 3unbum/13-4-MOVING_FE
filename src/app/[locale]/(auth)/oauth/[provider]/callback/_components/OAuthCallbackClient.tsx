@@ -7,7 +7,7 @@ import ProfileRegisterModal from "@/components/auth/ProfileRegisterModal";
 import type { OAuthProviderKey } from "@/constants/auth/oauth";
 import { authService, type UserRole } from "@/lib/services/auth-service";
 import { consumeOAuthState, getOAuthRedirectUri, isOAuthProviderKey } from "@/lib/utils/oauth";
-import { ApiError } from "@/lib/utils/api-error";
+import { toAuthErrorMessage } from "@/lib/auth/auth-error-message";
 import { useAuth } from "@/providers/AuthProvider";
 import OAuthPhoneModal from "./OAuthPhoneModal";
 
@@ -45,6 +45,7 @@ function checkAccess({
 
 export default function OAuthCallbackClient(props: OAuthCallbackClientProps) {
   const t = useTranslations("auth");
+  const tAuthError = useTranslations("authError");
   const access = checkAccess(props);
   const router = useRouter();
   const { refetch } = useAuth();
@@ -112,11 +113,7 @@ export default function OAuthCallbackClient(props: OAuthCallbackClientProps) {
         }
         await finishAuth(role, result.hasProfile);
       } catch (error) {
-        if (error instanceof ApiError) {
-          setErrorText(error.message);
-        } else {
-          setErrorKey("oauthFailed");
-        }
+        setErrorText(toAuthErrorMessage(error, tAuthError, t("oauthFailed")));
         setStatus("error");
       }
     })();
