@@ -16,12 +16,14 @@ import SocialLoginSection from "@/components/auth/SocialLoginSection";
 import { authService } from "@/lib/services/auth-service";
 import { makeSignupSchema, type SignupFormValues } from "@/lib/schemas/auth-schema";
 import { ApiError } from "@/lib/utils/api-error";
+import { toAuthErrorMessage } from "@/lib/auth/auth-error-message";
 import { useAuth } from "@/providers/AuthProvider";
 
 export default function MoverSignupPage() {
   const router = useRouter();
   const { refetch } = useAuth();
   const t = useTranslations("auth");
+  const tAuthError = useTranslations("authError");
   const tp = useTranslations("profile");
   const tValidation = useTranslations("validation");
   // 매 렌더마다 새 스키마가 생기면 zodResolver도 교체돼 폼이 불필요하게 다시 만들어집니다
@@ -44,10 +46,10 @@ export default function MoverSignupPage() {
       router.replace("/mover/profile-register");
     } catch (error) {
       if (error instanceof ApiError && error.code === "EMAIL_ALREADY_EXISTS") {
-        setError("email", { message: error.message });
+        setError("email", { message: tAuthError("emailAlreadyExists") });
         return;
       }
-      const message = error instanceof ApiError ? error.message : t("signupFailed");
+      const message = toAuthErrorMessage(error, tAuthError, t("signupFailed"));
       setError("root", { message });
     }
   };

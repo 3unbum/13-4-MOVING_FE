@@ -6,7 +6,7 @@ import Toast from "@/components/common/Toast";
 import { SERVICES as MOVE_TYPES } from "@/components/filter/ChipRegion";
 import { useAddressSearch } from "@/hooks/useAddressSearch";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
-import { ApiError } from "@/lib/utils/api-error";
+import { toAuthErrorMessage } from "@/lib/auth/auth-error-message";
 import { quotationRequestService } from "@/lib/services/quotation-request-service";
 import { useAuth } from "@/providers/AuthProvider";
 import { useRouter } from "@/i18n/navigation";
@@ -27,6 +27,7 @@ function formatDate(date: Date) {
 
 export default function CustomerQuotationRequestsPage() {
   const t = useTranslations("request");
+  const tAuthError = useTranslations("authError");
   const router = useRouter();
   const { account, isLoading: isAuthLoading } = useAuth();
   // 하드 게이트 아님(리다이렉트 X) — 페이지는 그대로 렌더하고 모달만 얹는다.
@@ -71,7 +72,7 @@ export default function CustomerQuotationRequestsPage() {
       });
       router.push("/customer/my-quotes");
     } catch (error) {
-      setErrorMessage(error instanceof ApiError ? error.message : t("submitFailed"));
+      setErrorMessage(toAuthErrorMessage(error, tAuthError, t("submitFailed")));
       setTimeout(() => setErrorMessage(null), 3000);
     } finally {
       setIsSubmitting(false);

@@ -82,6 +82,38 @@ export interface OAuthSignupPayload {
   phoneNumber: string;
 }
 
+export interface FindEmailPayload {
+  role: UserRole;
+  name: string;
+  phoneNumber: string;
+}
+
+export type FindEmailProvider = "LOCAL" | "GOOGLE" | "KAKAO" | "NAVER";
+
+export interface FindEmailAccount {
+  /** BE가 마스킹해서 내려준다 (예: ab***@naver.com) */
+  email: string;
+  provider: FindEmailProvider;
+}
+
+/** 일치하는 계정이 없어도 404가 아니라 빈 배열로 온다. LOCAL·소셜 계정이 함께 있으면 여러 건. */
+export interface FindEmailResponse {
+  accounts: FindEmailAccount[];
+}
+
+export interface PasswordResetCodePayload {
+  role: UserRole;
+  email: string;
+}
+
+export interface VerifyPasswordResetCodePayload extends PasswordResetCodePayload {
+  code: string;
+}
+
+export interface ResetPasswordPayload {
+  newPassword: string;
+}
+
 export const authService = {
   /** 호출 전에 role을 몰라도 되는 유일한 계정 조회 — BE가 accessToken의 role로 분기해준다. */
   getMyAccount: () => cookieFetch<AccountResponse>("/auth/me"),
@@ -109,6 +141,33 @@ export const authService = {
 
   oauthSignup: (payload: OAuthSignupPayload) =>
     cookieFetch<AuthResult>("/auth/oauth/signup", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    }),
+
+  findEmail: (payload: FindEmailPayload) =>
+    cookieFetch<FindEmailResponse>("/auth/find-email", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    }),
+
+  /** 가입 여부를 숨기려고 미가입·소셜 계정이어도 항상 204 — 성공 응답만으로 발송 여부를 알 수 없다. */
+  sendPasswordResetCode: (payload: PasswordResetCodePayload) =>
+    cookieFetch<void>("/auth/password-reset/code", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    }),
+
+  /** 성공하면 재설정 토큰이 응답 바디가 아니라 httpOnly 쿠키로 온다 — FE는 값을 들고 있지 않는다. */
+  verifyPasswordResetCode: (payload: VerifyPasswordResetCodePayload) =>
+    cookieFetch<void>("/auth/password-reset/verify", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    }),
+
+  /** verify에서 받은 재설정 토큰을 쿠키로 인증한다. 자동 로그인은 없어 성공 후 로그인 페이지로 보내야 한다. */
+  resetPassword: (payload: ResetPasswordPayload) =>
+    cookieFetch<void>("/auth/password-reset", {
       method: "POST",
       body: JSON.stringify(payload),
     }),
