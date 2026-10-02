@@ -9,7 +9,7 @@ import { useOutsideClose } from "@/hooks/useOutsideClose";
 import Image from "next/image";
 import { Children, useId, useRef, useState, type ReactNode, type RefObject } from "react";
 
-export type NotificationTone = "quote" | "request" | "confirmed" | "moving";
+export type NotificationTone = "quote" | "request" | "confirmed" | "moving" | "chat";
 
 export interface DropdownNotificationProps {
   header?: ReactNode;
@@ -440,6 +440,7 @@ function ToneIcon({ tone }: { tone: NotificationTone }) {
     request: "bg-[#e7f0ff] text-[#3b82f6]",
     confirmed: "bg-[#e5f8ec] text-[#22a35a]",
     moving: "bg-[#f3e8ff] text-[#8b5cf6]",
+    chat: "bg-orange-200 text-orange-400",
   } as const;
 
   return (
@@ -450,6 +451,7 @@ function ToneIcon({ tone }: { tone: NotificationTone }) {
       {tone === "request" ? <PersonIcon /> : null}
       {tone === "confirmed" ? <CheckIcon /> : null}
       {tone === "moving" ? <CalendarIcon /> : null}
+      {tone === "chat" ? <ChatIcon /> : null}
     </span>
   );
 }
@@ -510,6 +512,14 @@ function PersonIcon() {
     <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
       <circle cx="12" cy="8" r="3.2" />
       <path d="M5 19.5c1-3.2 3.4-4.8 7-4.8s6 1.6 7 4.8H5Z" />
+    </svg>
+  );
+}
+
+function ChatIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+      <path d="M12 3C6.9 3 3 6.6 3 11c0 2.2 1 4.2 2.7 5.6L5 21l4.2-2.1c.9.2 1.8.3 2.8.3 5.1 0 9-3.6 9-8.1S17.1 3 12 3Z" />
     </svg>
   );
 }

@@ -6,7 +6,12 @@ import { cookieFetch } from "@/lib/utils/api-client";
  * 전날·당일은 payload가 같고 type만 다릅니다.
  */
 export type NotificationType =
-  "NEW_REQUEST" | "NEW_ESTIMATE" | "ESTIMATE_CONFIRMED" | "MOVING_DAY_BEFORE" | "MOVING_DAY";
+  | "NEW_REQUEST"
+  | "NEW_ESTIMATE"
+  | "ESTIMATE_CONFIRMED"
+  | "MOVING_DAY_BEFORE"
+  | "MOVING_DAY"
+  | "NEW_CHAT_MESSAGE";
 
 interface NotificationBase {
   id: number;
@@ -14,6 +19,8 @@ interface NotificationBase {
   createdAt: string;
   estimateId: number | null;
   quotationRequestId: number | null;
+  /** 채팅 알림일 때만. 컴포넌트 쇼케이스의 예시 데이터는 생략합니다 */
+  chatRoomId?: number | null;
 }
 
 export interface NewRequestPayload {
@@ -45,12 +52,19 @@ export interface MovingDayPayload {
   movingDate: string;
 }
 
+/** 받는 사람 기준 상대방 이름 — 메시지 내용은 알림에 싣지 않습니다 */
+export interface ChatMessagePayload {
+  roomId: number;
+  senderName: string;
+}
+
 export type NotificationItem =
   | (NotificationBase & { type: "NEW_REQUEST"; payload: NewRequestPayload })
   | (NotificationBase & { type: "NEW_ESTIMATE"; payload: NewEstimatePayload })
   | (NotificationBase & { type: "ESTIMATE_CONFIRMED"; payload: EstimateConfirmedPayload })
   | (NotificationBase & { type: "MOVING_DAY_BEFORE"; payload: MovingDayPayload })
-  | (NotificationBase & { type: "MOVING_DAY"; payload: MovingDayPayload });
+  | (NotificationBase & { type: "MOVING_DAY"; payload: MovingDayPayload })
+  | (NotificationBase & { type: "NEW_CHAT_MESSAGE"; payload: ChatMessagePayload });
 
 export interface NotificationListResult {
   items: NotificationItem[];
