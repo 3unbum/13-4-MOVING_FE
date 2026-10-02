@@ -7,7 +7,7 @@ import Footer from "@/app/[locale]/(main)/_components/Footer";
  * 여기에 `body` 유무와 항목 수만 적어두면 본문은 그대로 돌려 씁니다.
  */
 const SECTIONS = [
-  { n: 1, body: true, items: 6 },
+  { n: 1, body: true, items: 7 },
   { n: 2, body: false, items: 5 },
   { n: 3, body: true, items: 4 },
   { n: 4, body: true, items: 2 },
