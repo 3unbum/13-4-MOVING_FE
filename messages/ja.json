@@ -118,7 +118,8 @@
     "estimateConfirmedCustomer": "{name}さんの見積もりが<em>確定</em>しました。",
     "estimateConfirmedMover": "見積もりが<em>確定</em>しました。",
     "movingDayBefore": "明日は<em>{from}</em> → <dest>{to}</dest>の引っ越し予定日です。",
-    "movingDay": "今日は<em>{from}</em> → <dest>{to}</dest>の引っ越し予定日です。"
+    "movingDay": "今日は<em>{from}</em> → <dest>{to}</dest>の引っ越し予定日です。",
+    "newChatMessage": "{name}さんから<em>メッセージ</em>が届きました。"
   },
   "gnbPreview": {
     "loggedOut": "未ログイン",
@@ -228,6 +229,30 @@
     "moverServicesRequired": "提供サービスを1つ以上選択してください",
     "moverRegionsRequired": "対応可能地域を1つ以上選択してください",
     "careerMax": "経歴は60年を超えることはできません"
+  },
+  "chat": {
+    "title": "チャット",
+    "open": "チャットを開く",
+    "close": "チャットを閉じる",
+    "back": "戻る",
+    "loadFailed": "チャットを読み込めませんでした。",
+    "emptyRooms": "見積もりを確定すると、業者とチャットできます。",
+    "noMessages": "まだメッセージはありません",
+    "emptyMessages": "最初のメッセージを送ってみましょう。",
+    "inputPlaceholder": "メッセージを入力",
+    "send": "送信",
+    "sendFailed": "メッセージを送信できませんでした。",
+    "read": "既読",
+    "olderMessages": "以前のメッセージを表示",
+    "unread": "未読メッセージ{count}件",
+    "photo": "写真",
+    "addImage": "写真を送る",
+    "imageTypeInvalid": "送れる写真は JPG・PNG・WEBP 形式のみです。",
+    "imageTooLarge": "写真は{size}MB以下のみ送れます。",
+    "openWithUnread": "チャットを開く、未読メッセージ{count}件",
+    "closed": "引っ越し完了から14日が過ぎたため、メッセージを送信できません。",
+    "closedTag": "終了",
+    "notice": "引っ越し完了から14日が過ぎるとチャットは終了します。\n電話番号や口座番号などの個人情報の共有にはご注意ください。"
   },
   "region": {
     "SEOUL": "ソウル",

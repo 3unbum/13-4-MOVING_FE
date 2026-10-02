@@ -5,6 +5,7 @@ import "@/app/globals.css";
 import "pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css";
 import Providers from "./providers";
 import GlobalGnb from "@/components/layout/GlobalGnb";
+import ChatWidget from "@/components/chat/ChatWidget";
 
 export const metadata: Metadata = {
   title: "Moving",
@@ -36,6 +37,7 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[lo
           <Providers>
             <GlobalGnb />
             {children}
+            <ChatWidget />
           </Providers>
         </NextIntlClientProvider>
       </body>

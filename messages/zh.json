@@ -118,7 +118,8 @@
     "estimateConfirmedCustomer": "{name}的报价已<em>确认</em>。",
     "estimateConfirmedMover": "报价已<em>确认</em>。",
     "movingDayBefore": "明天是从<em>{from}</em> → <dest>{to}</dest>的搬家日。",
-    "movingDay": "今天是从<em>{from}</em> → <dest>{to}</dest>的搬家日。"
+    "movingDay": "今天是从<em>{from}</em> → <dest>{to}</dest>的搬家日。",
+    "newChatMessage": "{name}给您发来了<em>消息</em>。"
   },
   "gnbPreview": {
     "loggedOut": "未登录",
@@ -228,6 +229,30 @@
     "moverServicesRequired": "请至少选择一项提供的服务",
     "moverRegionsRequired": "请至少选择一个服务地区",
     "careerMax": "从业年限不能超过60年"
+  },
+  "chat": {
+    "title": "聊天",
+    "open": "打开聊天",
+    "close": "关闭聊天",
+    "back": "返回",
+    "loadFailed": "无法加载聊天。",
+    "emptyRooms": "确认报价后，即可与搬家师傅聊天。",
+    "noMessages": "还没有消息",
+    "emptyMessages": "发送第一条消息吧。",
+    "inputPlaceholder": "请输入消息",
+    "send": "发送",
+    "sendFailed": "消息发送失败。",
+    "read": "已读",
+    "olderMessages": "查看更早的消息",
+    "unread": "{count}条未读消息",
+    "photo": "照片",
+    "addImage": "发送照片",
+    "imageTypeInvalid": "只能发送 JPG、PNG、WEBP 格式的照片。",
+    "imageTooLarge": "照片大小不能超过{size}MB。",
+    "openWithUnread": "打开聊天，{count}条未读消息",
+    "closed": "搬家完成已超过14天，无法再发送消息。",
+    "closedTag": "已结束",
+    "notice": "搬家完成14天后聊天将自动关闭。\n分享电话号码、银行账号等个人信息时请谨慎。"
   },
   "region": {
     "SEOUL": "首尔",
