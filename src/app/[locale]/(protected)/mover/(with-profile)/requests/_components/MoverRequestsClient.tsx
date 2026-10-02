@@ -118,8 +118,9 @@ export default function MoverRequestsClient() {
     setTimeout(() => setToast(null), 3000);
   };
 
-  // BE가 이유를 담아 보냅니다("이 견적 요청에 이미 일반 견적이 5건 도착했습니다" 등).
-  // 뭉뚱그리면 상한 초과인지 일시 장애인지 구분이 안 돼 다시 눌러보게 됩니다.
+  // 에러 코드별 문구를 띄웁니다(상한 초과·이미 보냄 등). 뭉뚱그리면 상한 초과인지
+  // 일시 장애인지 구분이 안 돼 다시 눌러보게 됩니다.
+  // 번역이 없는 코드만 `actionFailed`로 떨어집니다.
   const { sendEstimate, reject } = useMoverRequestAction((error) =>
     showToast(toAuthErrorMessage(error, tAuthError, t("actionFailed")))
   );

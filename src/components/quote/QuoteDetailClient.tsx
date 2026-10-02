@@ -31,7 +31,8 @@ export default function QuoteDetailClient({ estimateId }: QuoteDetailClientProps
   const tAuthError = useTranslations("authError");
 
   // 확정 실패를 알려줍니다. 안 띄우면 버튼만 다시 활성화돼 아무 일도 안 일어난 것처럼 보입니다.
-  // BE 메시지("이미 처리된 견적입니다" 등)가 그대로 사용자용이라 있으면 그대로 씁니다.
+  // 에러 코드를 현재 언어 문구로 바꿔 띄우고(ESTIMATE_ALREADY_PROCESSED 등),
+  // 번역이 없는 코드만 `confirmFailed`로 떨어집니다.
   const confirm = useConfirmEstimate(estimateId, request?.id, (confirmError) => {
     setToast(toAuthErrorMessage(confirmError, tAuthError, t("confirmFailed")));
   });

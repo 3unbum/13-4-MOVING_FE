@@ -51,7 +51,8 @@ export default function OAuthCallbackClient(props: OAuthCallbackClientProps) {
   const { refetch } = useAuth();
   // 렌더링 시점에 판정 가능한 값이라 effect의 setState 대신 lazy initial state로 반영한다.
   const [status, setStatus] = useState<Status>(access.ok ? "exchanging" : "error");
-  // 자체 문구는 번역 키로, BE가 내려준 메시지는 원문 그대로 — 렌더에서 갈라 씁니다
+  // errorKey는 접근 차단 등 화면 자체의 사유(번역 키), errorText는 API 에러를 현재 언어로
+  // 바꾼 완성된 문구입니다. 렌더에서 errorText를 먼저 씁니다.
   const [errorKey, setErrorKey] = useState<string | null>(access.ok ? null : access.reasonKey);
   const [errorText, setErrorText] = useState<string | null>(null);
   const [resolvedRole, setResolvedRole] = useState<UserRole | null>(null);
