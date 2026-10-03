@@ -528,7 +528,10 @@
     "profileModalTitle": "プロフィールを登録しますか？",
     "profileModalBody": "見積もり依頼はプロフィール登録後にご利用いただけます。",
     "no": "いいえ",
-    "yes": "はい"
+    "yes": "はい",
+    "activeModalTitle": "すでに進行中のリクエストがあります",
+    "activeModalBody": "見積もり依頼は同時に1件のみ可能です。\nマイ見積もりでご確認ください。",
+    "activeModalConfirm": "マイ見積もりへ"
   },
   "moverPage": {
     "received": "受信した依頼",

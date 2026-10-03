@@ -528,7 +528,10 @@
     "profileModalTitle": "要注册个人资料吗？",
     "profileModalBody": "注册个人资料后才能申请报价。",
     "no": "否",
-    "yes": "是"
+    "yes": "是",
+    "activeModalTitle": "您已有正在进行的申请",
+    "activeModalBody": "同一时间只能有一个报价申请。请在我的报价中查看。",
+    "activeModalConfirm": "前往我的报价"
   },
   "moverPage": {
     "received": "收到的申请",
