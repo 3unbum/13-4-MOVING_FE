@@ -238,6 +238,7 @@
     "back": "Go back",
     "loadFailed": "Couldn't load your chats.",
     "emptyRooms": "Once you confirm a quote, you can chat with your mover.",
+    "emptyRoomsMover": "You can chat with the customer once your estimate is confirmed.",
     "noMessages": "No messages yet",
     "emptyMessages": "Send the first message.",
     "inputPlaceholder": "Type a message",
