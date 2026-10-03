@@ -7,6 +7,7 @@ import profileDefault from "@/assets/icons/profile-lg-default.svg";
 import { useChatRooms } from "@/hooks/useChat";
 import type { ChatRoomItem } from "@/lib/services/chat-service";
 import { formatElapsedTime, type DateLocale } from "@/lib/utils/date";
+import { useAuth } from "@/providers/AuthProvider";
 
 interface ChatRoomListProps {
   onSelect: (room: ChatRoomItem) => void;
@@ -28,6 +29,7 @@ export default function ChatRoomList({ onSelect }: ChatRoomListProps) {
   const t = useTranslations("chat");
   const tCommon = useTranslations("common");
   const locale = useLocale() as DateLocale;
+  const { account } = useAuth();
   const { rooms, isPending, isError, hasNextPage, isFetchingNextPage, fetchNextPage } =
     useChatRooms(true);
 
@@ -42,7 +44,11 @@ export default function ChatRoomList({ onSelect }: ChatRoomListProps) {
     );
   }
   if (rooms.length === 0) {
-    return <p className="text-14 p-6 text-center text-gray-500">{t("emptyRooms")}</p>;
+    return (
+      <p className="text-14 p-6 text-center text-gray-500">
+        {t(account?.role === "MOVER" ? "emptyRoomsMover" : "emptyRooms")}
+      </p>
+    );
   }
 
   return (
