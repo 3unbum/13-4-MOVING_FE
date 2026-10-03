@@ -113,6 +113,7 @@ export default function GlobalGnb() {
       isLoadingMoreNotifications={isLoadingMore}
       onLoadMoreNotifications={loadMore}
       requestSummary={requestSummary}
+      summarySeenScope={account?.role === "MOVER" ? String(account.userId) : null}
       onLoginClick={() => router.push(GNB_LOGIN_PATH)}
       onNotificationSelect={openNotification}
       onMarkNotificationRead={(id) => {
