@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useForm } from "react-hook-form";
 import truckLg from "@/assets/images/common/truck_lg.png";
@@ -14,6 +14,7 @@ import AuthSwitchLink from "@/components/auth/AuthSwitchLink";
 import FindAccountLinks from "@/components/auth/FindAccountLinks";
 import FormField from "@/components/auth/FormField";
 import SocialLoginSection from "@/components/auth/SocialLoginSection";
+import TurnstileField, { TURNSTILE_SITE_KEY } from "@/components/auth/TurnstileField";
 import { useCountdown } from "@/hooks/useCountdown";
 import { findRetryAfterSeconds } from "@/lib/auth/rate-limit";
 import { toAuthErrorMessage } from "@/lib/auth/auth-error-message";
@@ -25,6 +26,9 @@ import { useAuth } from "@/providers/AuthProvider";
 export default function MoverLoginPage() {
   const router = useRouter();
   const { refetch } = useAuth();
+  // 봇 검증 — 키가 없으면(로컬) 위젯도 토큰 요구도 없다
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [turnstileResetKey, setTurnstileResetKey] = useState(0);
   const { remainingSeconds, start: startLockout } = useCountdown();
   const isLocked = remainingSeconds > 0;
   const t = useTranslations("auth");
@@ -43,11 +47,18 @@ export default function MoverLoginPage() {
 
   const onSubmit = async (values: LoginFormValues) => {
     try {
-      const result = await authService.login({ role: "MOVER", ...values });
+      const result = await authService.login({
+        role: "MOVER",
+        ...values,
+        turnstileToken: turnstileToken ?? undefined,
+      });
       await refetch();
       // 기사님은 프로필 등록 하드 게이트라 customer처럼 스킵 가능한 모달 없이 바로 보낸다.
       router.replace(result.hasProfile ? "/mover/requests" : "/mover/profile-register");
     } catch (error) {
+      // 토큰은 1회용이라 성공·실패와 상관없이 쓰고 나면 새로 받아야 한다
+      setTurnstileToken(null);
+      setTurnstileResetKey((key) => key + 1);
       // rate limit 초과는 일반 로그인 실패와 별개로, 남은 시간을 보여주며 재시도 자체를 막는다.
       // retryAfterSeconds가 없거나 이상하면 카운트다운 없이 일반 에러 메시지로만 처리한다.
       const retryAfterSeconds = findRetryAfterSeconds(error);
@@ -97,8 +108,15 @@ export default function MoverLoginPage() {
               />
             </div>
 
+            <TurnstileField onToken={setTurnstileToken} resetKey={turnstileResetKey} />
+
             <AuthSubmitButton
-              disabled={isSubmitting || !isValid || isLocked}
+              disabled={
+                isSubmitting ||
+                !isValid ||
+                isLocked ||
+                (Boolean(TURNSTILE_SITE_KEY) && !turnstileToken)
+              }
               errorMessage={
                 isLocked
                   ? t("retryAfter", { time: formatCountdown(remainingSeconds) })

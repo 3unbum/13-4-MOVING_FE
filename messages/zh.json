@@ -288,6 +288,7 @@
     "reviewAlreadyConfirmed": "您已撰写该评价。",
     "targetLimitExceeded": "指定报价申请最多可选择 3 位师傅。",
     "tooManyRequests": "请求过于频繁，请稍后再试。",
+    "botCheckFailed": "机器人验证失败，请重试。",
     "unauthorized": "需要登录。",
     "validationError": "请重新确认您输入的内容。"
   },

@@ -288,6 +288,7 @@
     "reviewAlreadyConfirmed": "すでに作成したレビューです。",
     "targetLimitExceeded": "指名見積もりリクエストは最大3名まで可能です。",
     "tooManyRequests": "リクエストが多すぎます。しばらくしてから再度お試しください。",
+    "botCheckFailed": "ボット検証に失敗しました。もう一度お試しください。",
     "unauthorized": "ログインが必要です。",
     "validationError": "入力内容をもう一度ご確認ください。"
   },

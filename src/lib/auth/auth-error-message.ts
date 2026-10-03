@@ -52,6 +52,7 @@ const MESSAGE_KEY_BY_CODE: Record<AuthErrorCode, string> = {
   [AUTH_ERROR_CODES.NOT_FOUND]: "notFound",
   [AUTH_ERROR_CODES.INTERNAL_ERROR]: "internalError",
   [AUTH_ERROR_CODES.TOO_MANY_REQUESTS]: "tooManyRequests",
+  [AUTH_ERROR_CODES.BOT_CHECK_FAILED]: "botCheckFailed",
   [AUTH_ERROR_CODES.CONCURRENT_REQUEST_CONFLICT]: "concurrentRequestConflict",
 };
 
