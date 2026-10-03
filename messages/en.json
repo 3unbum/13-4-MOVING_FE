@@ -528,7 +528,10 @@
     "profileModalTitle": "Register your profile?",
     "profileModalBody": "You need a profile to request quotes.",
     "no": "No",
-    "yes": "Yes"
+    "yes": "Yes",
+    "activeModalTitle": "You already have an active request",
+    "activeModalBody": "Only one quote request can be active at a time. Check it in My Quotes.",
+    "activeModalConfirm": "Go to My Quotes"
   },
   "moverPage": {
     "received": "Received Requests",

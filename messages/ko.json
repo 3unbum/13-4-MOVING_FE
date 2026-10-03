@@ -528,7 +528,10 @@
     "profileModalTitle": "프로필을 등록하시겠어요?",
     "profileModalBody": "견적 요청은 프로필 등록 후에 이용할 수 있어요.",
     "no": "아니오",
-    "yes": "예"
+    "yes": "예",
+    "activeModalTitle": "이미 진행 중인 견적 요청이 있어요",
+    "activeModalBody": "견적 요청은 한 번에 하나만 가능해요.\n내 견적에서 확인해보세요.",
+    "activeModalConfirm": "내 견적 보러가기"
   },
   "moverPage": {
     "received": "받은 요청",
