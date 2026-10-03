@@ -165,7 +165,8 @@ export default function ChatRoomView({ roomId, onUnavailable }: ChatRoomViewProp
       </p>
     );
   } else if (messages.length === 0) {
-    body = <p className="text-14 p-6 text-center text-gray-500">{t("emptyMessages")}</p>;
+    // flex-1로 남는 공간을 채워 입력창이 처음부터 맨 아래에 고정되게 한다
+    body = <p className="text-14 flex-1 p-6 text-center text-gray-500">{t("emptyMessages")}</p>;
   } else {
     // API가 최신순이라 column-reverse로 그리면 최신이 맨 아래에 놓이고 스크롤도 아래에서 시작한다.
     // DOM 마지막 항목이 화면 맨 위가 되므로 "이전 메시지" 버튼을 마지막에 둔다.
