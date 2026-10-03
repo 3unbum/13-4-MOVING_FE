@@ -83,7 +83,8 @@
       "customer-my-quotes": "My quotes",
       "mover-requests": "Requests",
       "mover-my-quotes": "My quotes",
-      "guest-movers": "Find movers"
+      "guest-movers": "Find movers",
+      "support": "Help Center"
     },
     "menu_items": {
       "edit": "Manage Profile",
@@ -555,7 +556,6 @@
     "partialRemoveFailed": "Only some were removed. Please try again in a moment.",
     "favoriteListLoadFailed": "Couldn't load your saved movers. Please try again in a moment.",
     "noFavoritesYet": "No saved movers yet!",
-    "footer_support": "Help Center",
     "footer_privacy": "Privacy Policy",
     "footer_copyright": "© 2026 Moving. A Codeit Sprint team project"
   },

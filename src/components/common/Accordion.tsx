@@ -37,7 +37,11 @@ export default function Accordion({ question, children, className }: AccordionPr
           className="size-6 shrink-0 transition-transform group-open:rotate-180"
         />
       </summary>
-      <div className="text-14 tablet:text-16 text-gray-gray-500 pb-5 leading-relaxed font-normal">
+      {/* 답변에 배경을 깔아 질문과 구분합니다(송현규님 리뷰).
+          `summary` 와 색이 같으면 어디까지가 답변인지 눈에 안 들어옵니다.
+          배경색은 고객센터의 문의 박스와 같은 `background-100` 을 씁니다 —
+          `gray-200` 은 `line-200` 과 같은 값이라 구분선용이라 배경으로는 진합니다. */}
+      <div className="bg-background-100 text-14 tablet:text-16 text-gray-gray-500 mb-5 rounded-lg p-4 leading-relaxed font-normal">
         {children}
       </div>
     </details>

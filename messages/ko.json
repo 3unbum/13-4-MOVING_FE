@@ -83,7 +83,8 @@
       "customer-my-quotes": "내 견적 관리",
       "mover-requests": "받은 요청",
       "mover-my-quotes": "내 견적 관리",
-      "guest-movers": "기사님 찾기"
+      "guest-movers": "기사님 찾기",
+      "support": "고객센터"
     },
     "menu_items": {
       "edit": "프로필 관리",
@@ -555,7 +556,6 @@
     "partialRemoveFailed": "일부만 해제됐어요. 잠시 후 다시 시도해 주세요.",
     "favoriteListLoadFailed": "찜 목록을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.",
     "noFavoritesYet": "찜한 기사님이 없어요!",
-    "footer_support": "고객센터",
     "footer_privacy": "개인정보 처리방침",
     "footer_copyright": "© 2026 Moving. 코드잇 스프린트 팀 프로젝트"
   },

@@ -362,7 +362,13 @@ export default function Gnb({
           <>
             <LogoLink />
 
-            <nav className="pc:block relative hidden h-6.5 flex-1" aria-label={t("mainMenu")}>
+            {/* 예전에는 항목이 "기사님 찾기" 하나뿐이라 `absolute left-0`로 고정했는데,
+                고객센터가 추가되면서 두 항목이 같은 자리에 겹쳤습니다.
+                로그인 상태 메뉴와 같은 flex + gap 방식으로 맞춥니다. */}
+            <nav
+              className="pc:flex hidden h-6.5 flex-1 items-center gap-10"
+              aria-label={t("mainMenu")}
+            >
               {LOGOUT_NAV.map((item) => {
                 const isActive = isGnbNavActive(pathname, item.href);
                 return (
@@ -371,7 +377,7 @@ export default function Gnb({
                     href={item.href}
                     aria-current={isActive ? "page" : undefined}
                     className={cn(
-                      "text-18 absolute top-1/2 left-0 w-20.5 -translate-y-1/2 text-center font-bold whitespace-nowrap",
+                      "text-18 text-center font-bold whitespace-nowrap",
                       getGnbNavColorClass(isActive)
                     )}
                   >

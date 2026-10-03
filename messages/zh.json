@@ -83,7 +83,8 @@
       "customer-my-quotes": "我的报价管理",
       "mover-requests": "收到的请求",
       "mover-my-quotes": "我的报价管理",
-      "guest-movers": "寻找师傅"
+      "guest-movers": "寻找师傅",
+      "support": "帮助中心"
     },
     "menu_items": {
       "edit": "个人资料管理",
@@ -555,7 +556,6 @@
     "partialRemoveFailed": "只取消了部分收藏，请稍后重试。",
     "favoriteListLoadFailed": "无法加载收藏列表，请稍后重试。",
     "noFavoritesYet": "还没有收藏的师傅！",
-    "footer_support": "帮助中心",
     "footer_privacy": "隐私政策",
     "footer_copyright": "© 2026 Moving. Codeit Sprint 团队项目"
   },

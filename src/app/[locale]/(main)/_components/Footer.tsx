@@ -38,16 +38,9 @@ export default async function Footer() {
       </div>
 
       <div className="bg-black-black-400 tablet:gap-3 tablet:py-8 flex flex-col items-center gap-2 px-6 py-6">
-        <nav className="flex items-center gap-4">
-          <Link
-            href="/support"
-            className="text-13 tablet:text-14 text-gray-gray-200 font-medium hover:text-gray-50"
-          >
-            {t("footer_support")}
-          </Link>
-          <span aria-hidden className="text-gray-gray-400">
-            ·
-          </span>
+        {/* 고객센터는 GNB 로 옮겼습니다(송현규님 리뷰) — 자주 쓰는 메뉴라
+            푸터보다 눈에 띄는 곳이 맞습니다. 푸터에는 개인정보 처리방침만 둡니다. */}
+        <nav>
           <Link
             href="/privacy"
             className="text-13 tablet:text-14 text-gray-gray-200 font-medium hover:text-gray-50"

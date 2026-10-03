@@ -83,7 +83,8 @@
       "customer-my-quotes": "見積もり管理",
       "mover-requests": "受信した依頼",
       "mover-my-quotes": "見積もり管理",
-      "guest-movers": "業者を探す"
+      "guest-movers": "業者を探す",
+      "support": "ヘルプセンター"
     },
     "menu_items": {
       "edit": "プロフィール管理",
@@ -555,7 +556,6 @@
     "partialRemoveFailed": "一部のみ解除されました。しばらくしてからもう一度お試しください。",
     "favoriteListLoadFailed": "お気に入りリストを読み込めませんでした。しばらくしてからもう一度お試しください。",
     "noFavoritesYet": "お気に入りの業者がありません！",
-    "footer_support": "ヘルプセンター",
     "footer_privacy": "プライバシーポリシー",
     "footer_copyright": "© 2026 Moving. Codeit Sprint チームプロジェクト"
   },
