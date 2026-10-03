@@ -228,7 +228,8 @@
     "customerServicesRequired": "请至少选择一项服务",
     "moverServicesRequired": "请至少选择一项提供的服务",
     "moverRegionsRequired": "请至少选择一个服务地区",
-    "careerMax": "从业年限不能超过60年"
+    "careerMax": "从业年限不能超过60年",
+    "currentPasswordRequired": "请输入当前密码"
   },
   "chat": {
     "title": "聊天",
@@ -349,7 +350,8 @@
     "passwordPlaceholder": "请输入密码",
     "passwordConfirm": "确认密码",
     "passwordConfirmPlaceholder": "请再次输入密码",
-    "emailPlaceholder": "请输入邮箱"
+    "emailPlaceholder": "请输入邮箱",
+    "currentPasswordNotice": "无论修改什么内容，都需要每次输入当前密码以验证身份"
   },
   "auth": {
     "snsSignup": "使用社交账号快速注册",

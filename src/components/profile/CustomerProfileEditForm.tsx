@@ -130,11 +130,10 @@ export default function CustomerProfileEditForm({ initialAccount }: CustomerProf
         image: values.image,
         region: values.region,
         services: values.services,
-        // 비밀번호는 새 비밀번호를 입력했을 때만 실어 보낸다 — 빈 문자열을 보내면 BE 검증(정규식)에 걸림
-        ...(values.newPassword && {
-          currentPassword: values.currentPassword,
-          newPassword: values.newPassword,
-        }),
+        // currentPassword는 항상 같이 보낸다(계정 정보 수정 시 항상 재확인 필요).
+        // newPassword는 실제로 바꿀 때만 실어 보낸다 — 빈 문자열을 보내면 BE 검증(정규식)에 걸림
+        currentPassword: values.currentPassword,
+        ...(values.newPassword && { newPassword: values.newPassword }),
       });
       // refetch 실패는 제출 실패로 취급하지 않되, 로그는 남긴다
       await refetch().catch((error) => {
@@ -212,6 +211,8 @@ export default function CustomerProfileEditForm({ initialAccount }: CustomerProf
               errorMessage={errors.currentPassword?.message}
               {...register("currentPassword")}
             />
+            {/* 무엇을 바꾸든 현재 비밀번호가 항상 필요하다는 걸 안내 */}
+            <p className="text-12 text-black-100 pc:text-16">{t("currentPasswordNotice")}</p>
 
             <hr className="border-line-100" />
 

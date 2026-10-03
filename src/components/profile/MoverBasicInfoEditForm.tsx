@@ -88,11 +88,10 @@ export default function MoverBasicInfoEditForm({
       const updated = await profileService.updateMover({
         name: values.name,
         phoneNumber: values.phoneNumber,
-        // 비밀번호는 새 비밀번호를 입력했을 때만 실어 보낸다 — 빈 문자열을 보내면 BE 검증(정규식)에 걸림
-        ...(values.newPassword && {
-          currentPassword: values.currentPassword,
-          newPassword: values.newPassword,
-        }),
+        // currentPassword는 항상 같이 보낸다(계정 정보 수정 시 항상 재확인 필요).
+        // newPassword는 실제로 바꿀 때만 실어 보낸다 — 빈 문자열을 보내면 BE 검증(정규식)에 걸림
+        currentPassword: values.currentPassword,
+        ...(values.newPassword && { newPassword: values.newPassword }),
       });
       onAccountUpdated(updated);
       // 수정 자체는 끝났으니 refetch 실패를 수정 실패로 취급하지 않는다 — GNB가 못 갱신되더라도
@@ -173,7 +172,9 @@ export default function MoverBasicInfoEditForm({
 
         <div className="pc:gap-8 flex flex-col gap-5">
           <div className="flex flex-col gap-4">
-            <FieldLabel required={false}>{t("currentPassword")}</FieldLabel>
+            <FieldLabel>{t("currentPassword")}</FieldLabel>
+            {/* 무엇을 바꾸든 현재 비밀번호가 항상 필요하다는 걸 안내 */}
+            <p className="text-12 text-black-100 pc:text-16">{t("currentPasswordNotice")}</p>
             <InputTextField
               label={t("currentPassword")}
               type="password"

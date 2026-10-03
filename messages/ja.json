@@ -228,7 +228,8 @@
     "customerServicesRequired": "利用サービスを1つ以上選択してください",
     "moverServicesRequired": "提供サービスを1つ以上選択してください",
     "moverRegionsRequired": "対応可能地域を1つ以上選択してください",
-    "careerMax": "経歴は60年を超えることはできません"
+    "careerMax": "経歴は60年を超えることはできません",
+    "currentPasswordRequired": "現在のパスワードを入力してください"
   },
   "chat": {
     "title": "チャット",
@@ -349,7 +350,8 @@
     "passwordPlaceholder": "パスワードを入力してください",
     "passwordConfirm": "パスワード（確認）",
     "passwordConfirmPlaceholder": "パスワードをもう一度入力してください",
-    "emailPlaceholder": "メールアドレスを入力してください"
+    "emailPlaceholder": "メールアドレスを入力してください",
+    "currentPasswordNotice": "何を変更する場合でも、本人確認のため毎回現在のパスワードを入力する必要があります"
   },
   "auth": {
     "snsSignup": "SNSアカウントで簡単登録",

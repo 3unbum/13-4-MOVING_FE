@@ -228,7 +228,8 @@
     "customerServicesRequired": "이용 서비스를 1개 이상 선택해 주세요",
     "moverServicesRequired": "제공 서비스를 1개 이상 선택해 주세요",
     "moverRegionsRequired": "서비스 가능 지역을 1개 이상 선택해 주세요",
-    "careerMax": "경력은 60년을 넘을 수 없습니다"
+    "careerMax": "경력은 60년을 넘을 수 없습니다",
+    "currentPasswordRequired": "현재 비밀번호를 입력해 주세요"
   },
   "chat": {
     "title": "채팅",
@@ -349,7 +350,8 @@
     "passwordPlaceholder": "비밀번호를 입력해 주세요",
     "passwordConfirm": "비밀번호 확인",
     "passwordConfirmPlaceholder": "비밀번호를 다시 한번 입력해 주세요",
-    "emailPlaceholder": "이메일을 입력해 주세요"
+    "emailPlaceholder": "이메일을 입력해 주세요",
+    "currentPasswordNotice": "무엇을 바꾸든 본인 확인을 위해 현재 비밀번호를 매번 입력해야 해요"
   },
   "auth": {
     "snsSignup": "SNS 계정으로 간편 가입하기",

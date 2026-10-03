@@ -228,7 +228,8 @@
     "customerServicesRequired": "Please select at least one service",
     "moverServicesRequired": "Please select at least one service you provide",
     "moverRegionsRequired": "Please select at least one service area",
-    "careerMax": "Experience cannot exceed 60 years"
+    "careerMax": "Experience cannot exceed 60 years",
+    "currentPasswordRequired": "Please enter your current password"
   },
   "chat": {
     "title": "Chat",
@@ -349,7 +350,8 @@
     "passwordPlaceholder": "Enter your password",
     "passwordConfirm": "Confirm Password",
     "passwordConfirmPlaceholder": "Re-enter your password",
-    "emailPlaceholder": "Enter your email"
+    "emailPlaceholder": "Enter your email",
+    "currentPasswordNotice": "You'll need to enter your current password every time, no matter what you change, to verify it's you"
   },
   "auth": {
     "snsSignup": "Quick sign-up with social account",
