@@ -288,6 +288,7 @@
     "reviewAlreadyConfirmed": "You have already written this review.",
     "targetLimitExceeded": "You can request targeted quotes from up to 3 movers.",
     "tooManyRequests": "Too many requests. Please try again later.",
+    "botCheckFailed": "Bot verification failed. Please try again.",
     "unauthorized": "Login required.",
     "validationError": "Please check the information you entered."
   },
