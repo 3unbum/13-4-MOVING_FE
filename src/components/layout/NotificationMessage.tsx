@@ -31,6 +31,8 @@ export function notificationTone(type: NotificationType): NotificationTone {
       return "moving";
     case "NEW_ESTIMATE":
       return "quote";
+    case "NEW_CHAT_MESSAGE":
+      return "chat";
   }
 }
 
@@ -56,6 +58,8 @@ export default function NotificationMessage({ item, role }: NotificationCopyProp
       return role === "MOVER"
         ? t.rich("estimateConfirmedMover", { em })
         : t.rich("estimateConfirmedCustomer", { name: item.payload.moverNickName, em });
+    case "NEW_CHAT_MESSAGE":
+      return t.rich("newChatMessage", { name: item.payload.senderName, em });
     case "MOVING_DAY_BEFORE":
       return t.rich("movingDayBefore", {
         from: place(item.payload.fromRegion, item.payload.fromAddress),

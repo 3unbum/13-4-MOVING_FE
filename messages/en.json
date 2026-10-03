@@ -118,7 +118,8 @@
     "estimateConfirmedCustomer": "{name}'s quote was <em>confirmed</em>.",
     "estimateConfirmedMover": "The quote was <em>confirmed</em>.",
     "movingDayBefore": "Tomorrow is the move from <em>{from}</em> → <dest>{to}</dest>.",
-    "movingDay": "Today is the move from <em>{from}</em> → <dest>{to}</dest>."
+    "movingDay": "Today is the move from <em>{from}</em> → <dest>{to}</dest>.",
+    "newChatMessage": "{name} sent you a <em>message</em>."
   },
   "gnbPreview": {
     "loggedOut": "Logged out",
@@ -228,6 +229,30 @@
     "moverServicesRequired": "Please select at least one service you provide",
     "moverRegionsRequired": "Please select at least one service area",
     "careerMax": "Experience cannot exceed 60 years"
+  },
+  "chat": {
+    "title": "Chat",
+    "open": "Open chat",
+    "close": "Close chat",
+    "back": "Go back",
+    "loadFailed": "Couldn't load your chats.",
+    "emptyRooms": "Once you confirm a quote, you can chat with your mover.",
+    "noMessages": "No messages yet",
+    "emptyMessages": "Send the first message.",
+    "inputPlaceholder": "Type a message",
+    "send": "Send",
+    "sendFailed": "Couldn't send your message.",
+    "read": "Read",
+    "olderMessages": "Show earlier messages",
+    "unread": "{count, plural, one {# unread message} other {# unread messages}}",
+    "photo": "Photo",
+    "addImage": "Send a photo",
+    "imageTypeInvalid": "Only JPG, PNG, or WEBP photos can be sent.",
+    "imageTooLarge": "Photos must be {size}MB or smaller.",
+    "openWithUnread": "{count, plural, one {Open chat, # unread message} other {Open chat, # unread messages}}",
+    "closed": "Messages can no longer be sent because 14 days have passed since your move was completed.",
+    "closedTag": "Closed",
+    "notice": "Chats close 14 days after your move is completed.\nPlease be careful when sharing personal information such as phone numbers or bank accounts."
   },
   "authError": {
     "accessTokenExpired": "Your session has expired. Please log in again.",

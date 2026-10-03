@@ -14,6 +14,7 @@ import {
   isGnbProfilePathAction,
 } from "@/constants/gnb/profile";
 import { groupRequestSummary, useNotifications } from "@/hooks/useNotifications";
+import { openChatRoom } from "@/lib/utils/chat-open";
 import { notificationHref } from "@/lib/utils/notification-href";
 import { formatElapsedTime, type DateLocale } from "@/lib/utils/date";
 import { useAuth } from "@/providers/AuthProvider";
@@ -68,8 +69,13 @@ export default function GlobalGnb() {
     const item = items.find((notification) => String(notification.id) === id);
     if (!item || !account) return;
 
+    // 채팅 알림은 페이지 이동이 아니라 채팅 창을 그 방으로 엽니다.
     // 읽음 API를 기다리면 패널만 닫히고 화면은 그대로인 것처럼 보입니다.
-    router.push(notificationHref(item, account.role));
+    if (item.type === "NEW_CHAT_MESSAGE") {
+      openChatRoom({ roomId: item.payload.roomId, name: item.payload.senderName });
+    } else {
+      router.push(notificationHref(item, account.role));
+    }
 
     if (!item.isRead) {
       markRead.mutate(item.id, {

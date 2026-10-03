@@ -118,7 +118,8 @@
     "estimateConfirmedCustomer": "{name} 기사님의 견적이 <em>확정</em>되었어요.",
     "estimateConfirmedMover": "이사 견적이 <em>확정</em>되었어요.",
     "movingDayBefore": "내일은 <em>{from}</em> → <dest>{to}</dest> 이사 예정일이에요.",
-    "movingDay": "오늘은 <em>{from}</em> → <dest>{to}</dest> 이사 예정일이에요."
+    "movingDay": "오늘은 <em>{from}</em> → <dest>{to}</dest> 이사 예정일이에요.",
+    "newChatMessage": "{name}님이 <em>메시지</em>를 보냈어요."
   },
   "gnbPreview": {
     "loggedOut": "비로그인",
@@ -228,6 +229,30 @@
     "moverServicesRequired": "제공 서비스를 1개 이상 선택해 주세요",
     "moverRegionsRequired": "서비스 가능 지역을 1개 이상 선택해 주세요",
     "careerMax": "경력은 60년을 넘을 수 없습니다"
+  },
+  "chat": {
+    "title": "채팅",
+    "open": "채팅 열기",
+    "close": "채팅 닫기",
+    "back": "뒤로 가기",
+    "loadFailed": "채팅을 불러오지 못했어요.",
+    "emptyRooms": "견적을 확정하면 기사님과 채팅할 수 있어요.",
+    "noMessages": "아직 대화가 없어요",
+    "emptyMessages": "첫 메시지를 보내보세요.",
+    "inputPlaceholder": "메시지를 입력하세요",
+    "send": "보내기",
+    "sendFailed": "메시지를 보내지 못했어요.",
+    "read": "읽음",
+    "olderMessages": "이전 메시지 더 보기",
+    "unread": "읽지 않은 메시지 {count}개",
+    "photo": "사진",
+    "addImage": "사진 보내기",
+    "imageTypeInvalid": "JPG, PNG, WEBP 형식의 사진만 보낼 수 있어요.",
+    "imageTooLarge": "사진은 {size}MB 이하만 보낼 수 있어요.",
+    "openWithUnread": "채팅 열기, 읽지 않은 메시지 {count}개",
+    "closed": "이사 완료 후 14일이 지나 더 이상 메시지를 보낼 수 없어요.",
+    "closedTag": "종료",
+    "notice": "이사 완료 후 14일이 지나면 채팅이 종료돼요.\n연락처·계좌번호 같은 개인정보는 신중하게 공유해 주세요."
   },
   "authError": {
     "accessTokenExpired": "로그인이 만료되었습니다. 다시 로그인해 주세요",
