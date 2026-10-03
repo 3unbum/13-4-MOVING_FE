@@ -23,11 +23,11 @@ export default function ActiveRequestModal({ open, onConfirm }: ActiveRequestMod
     >
       <p
         id="active-request-modal-title"
-        className="text-32 text-black-300 w-full text-center font-bold"
+        className="tablet:text-32 text-24 text-black-300 w-full text-center font-bold"
       >
         {t("activeModalTitle")}
       </p>
-      <p className="text-24 text-gray-gray-400 w-full text-center font-semibold whitespace-pre-line">
+      <p className="tablet:text-24 text-20 text-gray-gray-400 w-full text-center font-semibold whitespace-pre-line">
         {t("activeModalBody")}
       </p>
       <div className="flex w-full gap-3 p-4">
