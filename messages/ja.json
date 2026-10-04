@@ -238,6 +238,7 @@
     "back": "戻る",
     "loadFailed": "チャットを読み込めませんでした。",
     "emptyRooms": "見積もりを確定すると、業者とチャットできます。",
+    "emptyRoomsMover": "見積もりが確定すると、お客様とチャットできます。",
     "noMessages": "まだメッセージはありません",
     "emptyMessages": "最初のメッセージを送ってみましょう。",
     "inputPlaceholder": "メッセージを入力",

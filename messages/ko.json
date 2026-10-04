@@ -238,6 +238,7 @@
     "back": "뒤로 가기",
     "loadFailed": "채팅을 불러오지 못했어요.",
     "emptyRooms": "견적을 확정하면 기사님과 채팅할 수 있어요.",
+    "emptyRoomsMover": "견적이 확정되면 고객님과 채팅할 수 있어요.",
     "noMessages": "아직 대화가 없어요",
     "emptyMessages": "첫 메시지를 보내보세요.",
     "inputPlaceholder": "메시지를 입력하세요",

@@ -238,6 +238,7 @@
     "back": "返回",
     "loadFailed": "无法加载聊天。",
     "emptyRooms": "确认报价后，即可与搬家师傅聊天。",
+    "emptyRoomsMover": "报价确定后即可与客户聊天。",
     "noMessages": "还没有消息",
     "emptyMessages": "发送第一条消息吧。",
     "inputPlaceholder": "请输入消息",
