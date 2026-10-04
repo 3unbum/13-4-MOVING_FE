@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useTranslations } from "next-intl";
+import type { MouseEvent } from "react";
 import arrowUpIcon from "@/assets/icons/arrow-up-md.svg";
 import { useScrollToTopVisible } from "@/hooks/useScrollToTopVisible";
 import { cn } from "@/lib/utils/cn";
@@ -15,12 +16,16 @@ interface ScrollToTopButtonProps {
  *
  * 숨길 때 언마운트하지 않고 opacity만 내립니다. 언마운트하면 사라지는 트랜지션을
  * 탈 DOM이 없어 툭 꺼집니다. 대신 숨은 동안은 포커스·클릭이 닿지 않게 막습니다.
+ * 클릭 직후 포커스를 빼는 이유는, 맨 위로 올라가면 버튼이 숨으면서 aria-hidden이
+ * 되는데 포커스가 남은 요소를 접근성 트리에서 숨기면 안 되기 때문입니다.
  */
 export default function ScrollToTopButton({ className }: ScrollToTopButtonProps) {
   const t = useTranslations("common");
   const visible = useScrollToTopVisible();
 
-  const scrollToTop = () => {
+  const scrollToTop = (event: MouseEvent<HTMLButtonElement>) => {
+    // 버튼이 문서 하단에 있어, blur하면 다음 Tab은 페이지 맨 위부터 시작합니다.
+    event.currentTarget.blur();
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     window.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" });
   };
@@ -36,7 +41,7 @@ export default function ScrollToTopButton({ className }: ScrollToTopButtonProps)
         // 채팅 FAB(75px·right 16px) 바로 위, 세로 중심축을 맞춥니다: 16 + (75 - 54) / 2
         "fixed right-[26.5px] bottom-28 z-[var(--z-sticky)]",
         "flex size-13.5 items-center justify-center rounded-2xl bg-orange-400 shadow-md",
-        "transition-opacity duration-200",
+        "transition-opacity duration-200 motion-reduce:transition-none",
         "focus-visible:ring-2 focus-visible:ring-orange-400 focus-visible:outline-none",
         visible ? "opacity-100 hover:opacity-90" : "pointer-events-none opacity-0",
         className
