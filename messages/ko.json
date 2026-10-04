@@ -288,6 +288,7 @@
     "reviewAlreadyConfirmed": "이미 작성한 리뷰입니다",
     "targetLimitExceeded": "지정 견적 요청은 최대 3명까지 가능합니다",
     "tooManyRequests": "요청이 너무 많아요. 잠시 후 다시 시도해 주세요.",
+    "botCheckFailed": "봇 검증에 실패했어요. 다시 시도해 주세요.",
     "unauthorized": "로그인이 필요합니다",
     "validationError": "입력하신 내용을 다시 확인해 주세요"
   },

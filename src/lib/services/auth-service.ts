@@ -48,6 +48,8 @@ export interface LoginPayload {
   role: UserRole;
   email: string;
   password: string;
+  /** Turnstile 통과 토큰. BE에 TURNSTILE_SECRET_KEY가 있을 때만 필수 */
+  turnstileToken?: string;
 }
 
 export interface AuthResult {
