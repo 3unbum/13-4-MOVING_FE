@@ -6,6 +6,7 @@ import { useRouter } from "@/i18n/navigation";
 import Filter, { type FilterOption } from "@/components/common/Filter";
 import Header from "@/components/common/Header";
 import InputSearchbar from "@/components/common/InputSearchbar";
+import ScrollToTopButton from "@/components/common/ScrollToTopButton";
 import Sort from "@/components/common/Sort";
 import CardMover from "@/components/mover/CardMover";
 import InfoRequiredModal from "@/components/quote/InfoRequiredModal";
@@ -374,6 +375,8 @@ export default function MoversPageClient({ initialFilters }: MoversPageClientPro
           </div>
         </main>
       </div>
+
+      <ScrollToTopButton />
 
       {/* 비회원 찜 가드 */}
       <InfoRequiredModal
