@@ -185,7 +185,7 @@ export default function Gnb({
     <>
       <header
         className={cn(
-          "flex w-full items-center bg-gray-50",
+          "fixed top-0 right-0 left-0 z-[var(--z-gnb)] flex w-full items-center bg-gray-50",
           "h-13.5 px-6 py-2.5",
           "tablet:px-18",
           "pc:h-22 pc:px-40 pc:py-6.5",
@@ -410,6 +410,9 @@ export default function Gnb({
           </>
         )}
       </header>
+
+      {/* fixed 높이(54px / PC 88px)만큼 문서 흐름 확보 */}
+      <div className="pc:h-22 h-13.5 shrink-0" aria-hidden="true" />
 
       <GnbMenu
         role={role}
