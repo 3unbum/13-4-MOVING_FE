@@ -108,6 +108,7 @@
     "readAllConfirm": "모든 알림을 읽음 처리할까요?",
     "deleteAllConfirm": "모든 알림을 삭제할까요? 삭제한 알림은 다시 볼 수 없어요.",
     "unread": "알림, 읽지 않음 {count}개",
+    "summaryUnread": "알림, 오늘 새 요청",
     "emptyTitle": "새로운 알림이 없어요",
     "emptyDescription": "지금은 확인할 알림이 없습니다.",
     "todayRequests": "오늘 새 요청",

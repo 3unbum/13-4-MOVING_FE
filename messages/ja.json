@@ -108,6 +108,7 @@
     "readAllConfirm": "すべての通知を既読にしますか？",
     "deleteAllConfirm": "すべての通知を削除しますか？削除した通知は元に戻せません。",
     "unread": "通知、未読{count}件",
+    "summaryUnread": "お知らせ、今日の新しい依頼",
     "emptyTitle": "新しい通知はありません",
     "emptyDescription": "今確認する通知はありません。",
     "todayRequests": "今日の新しい依頼",

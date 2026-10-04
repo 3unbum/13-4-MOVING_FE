@@ -108,6 +108,7 @@
     "readAllConfirm": "Mark every alert as read?",
     "deleteAllConfirm": "Delete every alert? This can't be undone.",
     "unread": "Notifications, {count} unread",
+    "summaryUnread": "Notifications, new requests today",
     "emptyTitle": "No new alerts",
     "emptyDescription": "There's nothing to check right now.",
     "todayRequests": "New requests today",

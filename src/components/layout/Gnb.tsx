@@ -25,7 +25,8 @@ import { cn } from "@/lib/utils/cn";
 import { getGnbNavColorClass, isGnbNavActive } from "@/lib/utils/gnb-nav";
 import Image from "next/image";
 import { Link, usePathname } from "@/i18n/navigation";
-import { useRef, useState, type ReactNode } from "react";
+import { useSummaryUnread } from "@/hooks/useSummaryUnread";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 
 export interface GnbNotification {
   id: string;
@@ -62,6 +63,11 @@ interface GnbProps {
   onMarkNotificationRead?: (id: string) => void;
   /** 기사님 패널 하단. 지역별 이사 유형 건수 */
   requestSummary?: NotificationSummaryLine[];
+  /**
+   * 오늘 새 요청 읽음 저장 키. 계정마다 나눈다.
+   * 없으면 새로고침 때 읽음이 유지되지 않는다.
+   */
+  summarySeenScope?: string | null;
   onRequestSummarySelect?: (id: string) => void;
   onProfileSelect?: (value: string) => void;
   /** 목록이 4장 넘으면 바닥에서 다음 페이지를 붙입니다 */
@@ -93,6 +99,7 @@ export default function Gnb({
   onDeleteNotification,
   onMarkNotificationRead,
   requestSummary,
+  summarySeenScope = null,
   onRequestSummarySelect,
   onProfileSelect,
   hasMoreNotifications = false,
@@ -108,6 +115,7 @@ export default function Gnb({
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [openPanel, setOpenPanel] = useState<GnbPanel>("none");
   const [unreadOnly, setUnreadOnly] = useState(false);
+  const { summaryUnread, markSummarySeen } = useSummaryUnread(summarySeenScope, requestSummary);
   const pathname = usePathname();
   // 트리거와 패널을 함께 감싸서, 아이콘 클릭이 "바깥 클릭"으로 잡혀 바로 닫히는 걸 막는다
   const actionsRef = useRef<HTMLDivElement>(null);
@@ -135,6 +143,12 @@ export default function Gnb({
     setOpenPanel("none");
     setUnreadOnly(false);
   };
+
+  // 종을 연 동안의 오늘 새 요청은 읽음이다. 건수가 늘면 다시 읽지 않음이 된다.
+  useEffect(() => {
+    if (openPanel !== "notification") return;
+    markSummarySeen();
+  }, [openPanel, markSummarySeen]);
 
   const hasNotifications = notifications.length > 0;
   // 다 읽으면 칩이 사라져 필터도 끕니다. effect에서 setState 하지 않습니다.
@@ -230,7 +244,9 @@ export default function Gnb({
                 aria-label={
                   unreadCount > 0
                     ? tNotification("unread", { count: unreadCount })
-                    : t("notification")
+                    : summaryUnread
+                      ? tNotification("summaryUnread")
+                      : t("notification")
                 }
                 aria-expanded={openPanel === "notification"}
                 onClick={() => togglePanel("notification")}
@@ -244,7 +260,7 @@ export default function Gnb({
                   height={36}
                   className="pc:block hidden size-9"
                 />
-                {unreadCount > 0 ? (
+                {unreadCount > 0 || summaryUnread ? (
                   <span className="absolute -top-0.5 -right-0.5 size-2 rounded-full bg-red-200" />
                 ) : null}
               </button>

@@ -108,6 +108,7 @@
     "readAllConfirm": "要将所有通知标为已读吗？",
     "deleteAllConfirm": "要删除所有通知吗？删除后无法恢复。",
     "unread": "通知，未读 {count} 条",
+    "summaryUnread": "通知，今天有新请求",
     "emptyTitle": "没有新通知",
     "emptyDescription": "现在没有需要查看的通知。",
     "todayRequests": "今天的新请求",
