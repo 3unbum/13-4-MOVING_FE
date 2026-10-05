@@ -12,6 +12,9 @@ import { SERVICE_LABELS, type ServiceCode } from "@/components/filter/ChipRegion
 import CardMyReview from "@/components/review/CardMyReview";
 import CardWritableReview from "@/components/review/CardWritableReview";
 import ReviewWriteModal from "@/components/review/ReviewWriteModal";
+import CardMyReviewSkeleton from "@/components/skeleton/CardMyReviewSkeleton";
+import CardWritableReviewSkeleton from "@/components/skeleton/CardWritableReviewSkeleton";
+import SkeletonStatus from "@/components/skeleton/SkeletonStatus";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import {
   reviewQueryKeys,
@@ -209,7 +212,46 @@ export default function CustomerReviewsPage() {
       >
         {isError ? (
           <p className="text-16 text-gray-gray-400 py-20 text-center">{t("loadFailed")}</p>
-        ) : isPending && !data ? null : isEmpty ? (
+        ) : isPending && !data ? (
+          <SkeletonStatus
+            label={t("loading")}
+            className={cn(
+              "flex w-full flex-col",
+              tab === "writable"
+                ? "tablet:max-w-[600px] pc:max-w-[1120px] pc:w-[1120px]"
+                : "tablet:max-w-[588px] pc:max-w-[1120px] pc:w-[1120px]"
+            )}
+          >
+            <ul className="flex w-full flex-col gap-5">
+              {Array.from({ length: 3 }, (_, index) => (
+                <li key={index}>
+                  {tab === "writable" ? (
+                    <>
+                      <div className="tablet:hidden">
+                        <CardWritableReviewSkeleton size="sm" />
+                      </div>
+                      <div className="tablet:block pc:hidden hidden">
+                        <CardWritableReviewSkeleton size="md" />
+                      </div>
+                      <div className="pc:block hidden">
+                        <CardWritableReviewSkeleton size="lg" />
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="tablet:hidden">
+                        <CardMyReviewSkeleton size="sm" />
+                      </div>
+                      <div className="tablet:block hidden">
+                        <CardMyReviewSkeleton size="lg" />
+                      </div>
+                    </>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </SkeletonStatus>
+        ) : isEmpty ? (
           <ReviewsEmptyFallback
             message={tab === "writable" ? t("emptyWritable") : t("empty")}
             actionLabel={tab === "written" ? t("goWrite") : undefined}

@@ -15,6 +15,10 @@ import ProgressBar from "@/components/common/ProgressBar";
 import Toast from "@/components/common/Toast";
 import InfoRequiredModal from "@/components/quote/InfoRequiredModal";
 import CardReview from "@/components/review/CardReview";
+import CardReviewSkeleton, {
+  ReviewDistributionSkeleton,
+} from "@/components/skeleton/CardReviewSkeleton";
+import SkeletonStatus from "@/components/skeleton/SkeletonStatus";
 import { moverQueryKeys } from "@/constants/query-keys/movers";
 import { useMoverDetail } from "@/hooks/useMoverDetail";
 import { myQuotesKeys } from "@/hooks/useMyQuotes";
@@ -375,12 +379,22 @@ function MoverDetailReviews({ moverId }: { moverId: number }) {
 
   if (listQuery.isPending && !listQuery.data) {
     return (
-      <div className="flex w-full flex-col gap-4">
+      <SkeletonStatus label={tReview("loading")} className="flex w-full flex-col gap-4">
         <ReviewHeading />
-        <div className="text-16 text-gray-gray-400 min-h-[200px] py-20 text-center" role="status">
-          {tReview("loading")}
-        </div>
-      </div>
+        <ReviewDistributionSkeleton />
+        <ul className="divide-line-100 flex w-full flex-col divide-y">
+          {Array.from({ length: 3 }, (_, index) => (
+            <li key={index}>
+              <div className="tablet:hidden">
+                <CardReviewSkeleton size="sm" />
+              </div>
+              <div className="tablet:block hidden">
+                <CardReviewSkeleton size="lg" />
+              </div>
+            </li>
+          ))}
+        </ul>
+      </SkeletonStatus>
     );
   }
 
