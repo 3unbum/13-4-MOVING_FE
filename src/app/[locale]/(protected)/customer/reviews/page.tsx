@@ -201,7 +201,7 @@ export default function CustomerReviewsPage() {
         id={tab === "writable" ? "panel-writable" : "panel-written"}
         role="tabpanel"
         aria-labelledby={`tab-${tab}`}
-        aria-busy={isPending || isPlaceholderData}
+        aria-busy={isPlaceholderData}
         tabIndex={0}
         className={cn(
           "tablet:px-18 pc:px-0 flex w-full flex-1 flex-col items-center px-6",
