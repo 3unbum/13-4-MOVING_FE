@@ -12,6 +12,7 @@ import moverDetailBannerMd from "@/assets/images/common/mover-detail-banner-md.s
 import moverDetailBannerSm from "@/assets/images/common/mover-detail-banner-sm.svg";
 import Pagination from "@/components/common/Pagination";
 import ProgressBar from "@/components/common/ProgressBar";
+import Sort from "@/components/common/Sort";
 import Toast from "@/components/common/Toast";
 import InfoRequiredModal from "@/components/quote/InfoRequiredModal";
 import CardReview from "@/components/review/CardReview";
@@ -21,7 +22,13 @@ import { myQuotesKeys } from "@/hooks/useMyQuotes";
 import { useShare } from "@/hooks/useShare";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { useToggleMoverFavorite } from "@/hooks/useToggleMoverFavorite";
-import { moverService, type MoverRatingDistribution } from "@/lib/services/mover-service";
+import {
+  DEFAULT_MOVER_REVIEW_SORT,
+  MOVER_REVIEW_SORTS,
+  moverService,
+  type MoverRatingDistribution,
+  type MoverReviewSort,
+} from "@/lib/services/mover-service";
 import { quotationRequestService } from "@/lib/services/quotation-request-service";
 import { ApiError } from "@/lib/utils/api-error";
 import { toAuthErrorDetail, toAuthErrorMessage } from "@/lib/auth/auth-error-message";
@@ -345,6 +352,13 @@ function toProgressBarData(distribution: MoverRatingDistribution) {
   };
 }
 
+const REVIEW_SORT_LABEL = {
+  oldest: "sortOldest",
+  latest: "sortLatest",
+  ratingDesc: "sortRatingDesc",
+  ratingAsc: "sortRatingAsc",
+} as const;
+
 function ReviewHeading() {
   const tReview = useTranslations("review");
   return (
@@ -358,13 +372,24 @@ function ReviewHeading() {
 function MoverDetailReviews({ moverId }: { moverId: number }) {
   const tReview = useTranslations("review");
   const [page, setPage] = useState(1);
+  const [sort, setSort] = useState<MoverReviewSort>(DEFAULT_MOVER_REVIEW_SORT);
   // 피그마: 모바일 Card-list-review sm, 태블릿·PC lg
   const isTabletUp = useMediaQuery(TABLET_QUERY);
   const reviewCardSize = isTabletUp ? "lg" : "sm";
+  const sortOptions = MOVER_REVIEW_SORTS.map((value) => ({
+    value,
+    label: tReview(REVIEW_SORT_LABEL[value]),
+  }));
+
+  const handleSortChange = (value: string) => {
+    if (!MOVER_REVIEW_SORTS.includes(value as MoverReviewSort)) return;
+    setSort(value as MoverReviewSort);
+    setPage(1);
+  };
 
   const listQuery = useQuery({
-    queryKey: moverQueryKeys.reviewList(moverId, page),
-    queryFn: () => moverService.getReviews(moverId, page, REVIEW_TAKE),
+    queryKey: moverQueryKeys.reviewList(moverId, page, sort),
+    queryFn: () => moverService.getReviews(moverId, page, REVIEW_TAKE, sort),
     placeholderData: keepPreviousData,
   });
 
@@ -415,7 +440,15 @@ function MoverDetailReviews({ moverId }: { moverId: number }) {
   return (
     <div className="flex w-full flex-col">
       <div className="flex flex-col gap-4">
-        <ReviewHeading />
+        <div className="flex items-center justify-between gap-3">
+          <ReviewHeading />
+          <Sort
+            size={isTabletUp ? "md" : "sm"}
+            options={sortOptions}
+            value={sort}
+            onChange={handleSortChange}
+          />
+        </div>
         {distribution ? <ProgressBar data={toProgressBarData(distribution)} hideTitle /> : null}
 
         <ul className="divide-line-100 flex w-full flex-col divide-y">
