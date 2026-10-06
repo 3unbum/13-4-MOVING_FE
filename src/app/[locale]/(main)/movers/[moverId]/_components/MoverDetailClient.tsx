@@ -12,9 +12,14 @@ import moverDetailBannerMd from "@/assets/images/common/mover-detail-banner-md.s
 import moverDetailBannerSm from "@/assets/images/common/mover-detail-banner-sm.svg";
 import Pagination from "@/components/common/Pagination";
 import ProgressBar from "@/components/common/ProgressBar";
+import SkeletonBone from "@/components/common/SkeletonBone";
 import Toast from "@/components/common/Toast";
 import InfoRequiredModal from "@/components/quote/InfoRequiredModal";
 import CardReview from "@/components/review/CardReview";
+import CardReviewSkeleton, {
+  ReviewDistributionSkeleton,
+} from "@/components/skeleton/CardReviewSkeleton";
+import SkeletonStatus from "@/components/skeleton/SkeletonStatus";
 import { moverQueryKeys } from "@/constants/query-keys/movers";
 import { useMoverDetail } from "@/hooks/useMoverDetail";
 import { myQuotesKeys } from "@/hooks/useMyQuotes";
@@ -129,7 +134,7 @@ export default function MoverDetailClient() {
   }
 
   if (detailQuery.isPending) {
-    return <p className="text-14 text-gray-gray-500 p-10 text-center">{t("loading")}</p>;
+    return <MoverDetailSkeleton label={t("loading")} />;
   }
 
   if (detailQuery.isError || !mover) {
@@ -354,6 +359,142 @@ function ReviewHeading() {
   );
 }
 
+/** 상세 첫 로딩 뼈대 */
+function MoverDetailSkeleton({ label }: { label: string }) {
+  const chips = (
+    <div className="flex flex-wrap gap-3">
+      {Array.from({ length: 3 }, (_, index) => (
+        <SkeletonBone
+          key={index}
+          className="tablet:h-7 tablet:w-20 tablet:rounded-md h-6 w-18 rounded"
+        />
+      ))}
+    </div>
+  );
+
+  return (
+    <SkeletonStatus label={label} className="pc:pb-20 flex min-h-screen flex-col bg-white pb-27.5">
+      {/* 배너 — 원본과 같은 높이·배경. 이미지는 생략 */}
+      <div
+        className={cn(
+          "relative w-full overflow-hidden bg-orange-400",
+          "tablet:h-[157px] pc:h-[225px] h-30.5"
+        )}
+      />
+
+      <div className="tablet:px-18 pc:px-0 flex w-full flex-col items-center px-5">
+        <div className="tablet:max-w-[600px] pc:max-w-[1202px] pc:w-[1202px] w-full">
+          <div className={cn("relative z-10", "-mt-10.5", "tablet:-mt-[77px]", "pc:-mt-[103px]")}>
+            <SkeletonBone className="tablet:hidden size-16 rounded-xl" />
+            <SkeletonBone className="tablet:block pc:hidden hidden size-25 rounded-xl" />
+            <SkeletonBone className="pc:block hidden size-33.5 rounded-xl" />
+          </div>
+
+          <div
+            className={cn("pt-4", "tablet:pt-6", "pc:flex pc:items-start pc:gap-[116px] pc:pt-8")}
+          >
+            <div className="pc:w-[766px] pc:shrink-0 flex w-full min-w-0 flex-col gap-8">
+              {/* MoverDetailProfile 골격 */}
+              <section className="flex w-full flex-col gap-8">
+                <div className="flex w-full flex-col gap-[31px]">
+                  <div className="flex flex-col gap-5">
+                    <div className="flex flex-col gap-3">
+                      {chips}
+                      <SkeletonBone className="tablet:h-8 pc:h-8 h-6.5 w-3/4" />
+                    </div>
+                    <div className="flex w-full items-center justify-between gap-2">
+                      <SkeletonBone className="h-6.5 w-32" />
+                      <SkeletonBone className="h-6.5 w-16" />
+                    </div>
+                    <div className="flex w-full flex-col gap-1">
+                      <SkeletonBone className="h-6 w-full" />
+                      <SkeletonBone className="h-6 w-5/6" />
+                    </div>
+                  </div>
+
+                  {/* 통계 박스 뼈대 */}
+                  <SkeletonBone className="tablet:h-30 h-[95px] w-full rounded-2xl" />
+                </div>
+
+                <div className="flex flex-col gap-4">
+                  <SkeletonBone className="tablet:h-8 h-6.5 w-28" />
+                  {chips}
+                </div>
+                <div className="flex flex-col gap-4">
+                  <SkeletonBone className="tablet:h-8 h-6.5 w-24" />
+                  {chips}
+                </div>
+              </section>
+
+              {/* 모바일·태블릿 공유 자리 */}
+              <div className="pc:hidden border-line-100 flex flex-col gap-3 border-t pt-8">
+                <SkeletonBone className="h-8 w-40" />
+                <div className="flex items-center gap-3">
+                  {Array.from({ length: 3 }, (_, index) => (
+                    <SkeletonBone key={index} className="size-10 rounded-xl" />
+                  ))}
+                </div>
+              </div>
+
+              {/* 리뷰 — 상세 로드 후 MoverDetailReviews 첫 로딩과 같은 구성 */}
+              <div className="border-line-100 pc:pt-10 flex flex-col gap-4 border-t pt-8">
+                <ReviewHeading />
+                <ReviewDistributionSkeleton />
+                <ul className="divide-line-100 flex w-full flex-col divide-y">
+                  {Array.from({ length: 3 }, (_, index) => (
+                    <li key={index}>
+                      <div className="tablet:hidden">
+                        <CardReviewSkeleton size="sm" />
+                      </div>
+                      <div className="tablet:block hidden">
+                        <CardReviewSkeleton size="lg" />
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
+            {/* PC 사이드바 — CTA + 공유 */}
+            <aside className="pc:flex hidden w-80 shrink-0 flex-col gap-17.5">
+              <div className="flex w-80 flex-col gap-4">
+                <div className="flex flex-col gap-1">
+                  <SkeletonBone className="h-7 w-full" />
+                  <SkeletonBone className="h-7 w-2/3" />
+                </div>
+                <SkeletonBone className="h-13.5 w-full rounded-2xl" />
+                <SkeletonBone className="h-13.5 w-full rounded-2xl" />
+              </div>
+              <div className="flex flex-col gap-5.5">
+                <SkeletonBone className="h-8 w-36" />
+                <div className="flex items-center gap-4">
+                  {Array.from({ length: 3 }, (_, index) => (
+                    <SkeletonBone key={index} className="size-16 rounded-2xl" />
+                  ))}
+                </div>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </div>
+
+      {/* 모바일·태블릿 sticky CTA 자리 */}
+      <div
+        className={cn(
+          "pc:hidden border-line-100 fixed inset-x-0 bottom-0 z-[var(--z-sticky)] border-t bg-white",
+          "h-27.5 px-6 py-7",
+          "tablet:px-18"
+        )}
+      >
+        <div className="tablet:mx-auto tablet:max-w-150 flex items-center gap-2">
+          <SkeletonBone className="size-13.5 shrink-0 rounded-2xl" />
+          <SkeletonBone className="h-13.5 min-w-0 flex-1 rounded-2xl" />
+        </div>
+      </div>
+    </SkeletonStatus>
+  );
+}
+
 /** 상세 페이지 리뷰 영역. 마이페이지 공용 섹션과 분리해서 여기서만 다룬다. */
 function MoverDetailReviews({ moverId }: { moverId: number }) {
   const tReview = useTranslations("review");
@@ -375,12 +516,22 @@ function MoverDetailReviews({ moverId }: { moverId: number }) {
 
   if (listQuery.isPending && !listQuery.data) {
     return (
-      <div className="flex w-full flex-col gap-4">
+      <SkeletonStatus label={tReview("loading")} className="flex w-full flex-col gap-4">
         <ReviewHeading />
-        <div className="text-16 text-gray-gray-400 min-h-[200px] py-20 text-center" role="status">
-          {tReview("loading")}
-        </div>
-      </div>
+        <ReviewDistributionSkeleton />
+        <ul className="divide-line-100 flex w-full flex-col divide-y">
+          {Array.from({ length: 3 }, (_, index) => (
+            <li key={index}>
+              <div className="tablet:hidden">
+                <CardReviewSkeleton size="sm" />
+              </div>
+              <div className="tablet:block hidden">
+                <CardReviewSkeleton size="lg" />
+              </div>
+            </li>
+          ))}
+        </ul>
+      </SkeletonStatus>
     );
   }
 

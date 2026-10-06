@@ -3,10 +3,13 @@
 import { useRouter } from "@/i18n/navigation";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
+import SkeletonBone from "@/components/common/SkeletonBone";
 import Tab from "@/components/common/Tab";
 import TabList from "@/components/common/TabList";
 import PastQuotesPanel from "@/components/quote/PastQuotesPanel";
 import PendingQuotesPanel from "@/components/quote/PendingQuotesPanel";
+import CardEstimateSkeleton from "@/components/skeleton/CardEstimateSkeleton";
+import SkeletonStatus from "@/components/skeleton/SkeletonStatus";
 import { usePastQuotes, usePendingQuotes } from "@/hooks/useMyQuotes";
 
 type QuoteTab = "pending" | "past";
@@ -22,9 +25,91 @@ function QuoteError() {
   );
 }
 
-/** 로딩 — 스켈레톤은 컴포넌트 단위로 하기로 했으나(9/6 멘토링) 이 페이지는 후속 작업으로 둡니다 */
-function QuoteLoading() {
-  return <div className="bg-background-background-100 flex flex-1" aria-busy="true" />;
+/** 대기 탭 첫 로딩 — SubHeader 자리 + CardPendingHistory 그리드 */
+function PendingQuoteLoading() {
+  const t = useTranslations("common");
+  const summary = (
+    <>
+      <SkeletonBone className="h-6.5 w-28" />
+      <SkeletonBone className="h-12.5 w-full" />
+    </>
+  );
+
+  return (
+    <SkeletonStatus
+      label={t("loading")}
+      className="bg-background-background-100 flex flex-1 flex-col"
+    >
+      {/* SubHeader 높이(sm 198 / md 202 / lg 124)를 그대로 잡아 로딩 후 아래 카드가 밀리지 않게 한다 */}
+      <div className="tablet:hidden flex h-49.5 flex-col justify-center gap-3 bg-gray-50 px-6">
+        {summary}
+      </div>
+      <div className="tablet:flex pc:hidden hidden h-50.5 flex-col justify-center gap-3 bg-gray-50 px-18">
+        {summary}
+      </div>
+      <div className="pc:flex hidden h-31 items-center bg-gray-50">
+        <div className="mx-auto flex w-full max-w-285 flex-col gap-3">{summary}</div>
+      </div>
+
+      <div className="bg-background-background-100 tablet:px-18 tablet:pt-10.5 pc:px-10 pc:pt-19.5 flex flex-1 justify-center px-6 pt-8.75 pb-20">
+        <div className="tablet:max-w-150 tablet:gap-8 pc:max-w-285 pc:grid-cols-2 pc:gap-6 grid w-full max-w-81.75 grid-cols-1 gap-5">
+          {Array.from({ length: 4 }, (_, index) => (
+            <div key={index}>
+              <div className="tablet:hidden">
+                <CardEstimateSkeleton size="sm" variant="pending" />
+              </div>
+              <div className="tablet:block hidden">
+                <CardEstimateSkeleton size="lg" variant="pending" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </SkeletonStatus>
+  );
+}
+
+/** 지난 견적 탭 첫 로딩 — 요청 블록 1개 + CardEstimateHistory 목록 */
+function PastQuoteLoading() {
+  const t = useTranslations("common");
+
+  return (
+    <SkeletonStatus
+      label={t("loading")}
+      className="tablet:gap-8 tablet:px-9 tablet:py-8 pc:gap-10 pc:px-10 pc:py-10 flex flex-1 flex-col items-center gap-2 bg-gray-50 py-0"
+    >
+      <section className="tablet:max-w-150 tablet:gap-8 tablet:rounded-[20px] tablet:px-7 tablet:py-8 tablet:shadow-[inset_0_0_0_0.5px_var(--color-line-100),2px_2px_10px_0_rgba(220,220,220,0.2)] pc:max-w-280 pc:flex-row pc:gap-15 pc:px-10 pc:py-11 flex w-full flex-col gap-8 bg-white px-6 py-8">
+        <div className="pc:w-65 flex shrink-0 flex-col gap-5">
+          <SkeletonBone className="h-8 w-24" />
+          <div className="tablet:gap-3 flex flex-col gap-2">
+            {Array.from({ length: 4 }, (_, index) => (
+              <SkeletonBone key={index} className="h-6 w-full" />
+            ))}
+          </div>
+        </div>
+        <div className="border-line-200 pc:block -mr-px hidden shrink-0 border-l" />
+        <div className="flex min-w-0 flex-1 flex-col gap-5">
+          <SkeletonBone className="h-8 w-28" />
+          <div className="flex flex-col gap-5">
+            {/* 상태 필터 드롭다운 — 모바일·태블릿 75×36 / PC 160×50 */}
+            <SkeletonBone className="pc:h-12.5 pc:w-40 h-9 w-18.75 rounded-lg" />
+            <div className="divide-line-100 flex flex-col divide-y">
+              {Array.from({ length: 3 }, (_, index) => (
+                <div key={index}>
+                  <div className="tablet:hidden">
+                    <CardEstimateSkeleton size="sm" variant="history" />
+                  </div>
+                  <div className="tablet:block hidden">
+                    <CardEstimateSkeleton size="lg" variant="history" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+    </SkeletonStatus>
+  );
 }
 
 interface MyQuotesTabsProps {
@@ -99,7 +184,7 @@ export default function MyQuotesTabs({ initialTab }: MyQuotesTabsProps) {
           {pending.error ? (
             <QuoteError />
           ) : pending.isLoading ? (
-            <QuoteLoading />
+            <PendingQuoteLoading />
           ) : (
             <PendingQuotesPanel
               request={pending.request}
@@ -124,7 +209,7 @@ export default function MyQuotesTabs({ initialTab }: MyQuotesTabsProps) {
           {past.error ? (
             <QuoteError />
           ) : past.isLoading ? (
-            <QuoteLoading />
+            <PastQuoteLoading />
           ) : (
             <PastQuotesPanel blocks={past.blocks} onDetailClick={openDetail} />
           )}

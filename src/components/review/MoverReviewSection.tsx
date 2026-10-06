@@ -6,6 +6,10 @@ import { useState } from "react";
 import Pagination from "@/components/common/Pagination";
 import ProgressBar from "@/components/common/ProgressBar";
 import CardReview from "@/components/review/CardReview";
+import CardReviewSkeleton, {
+  ReviewDistributionSkeleton,
+} from "@/components/skeleton/CardReviewSkeleton";
+import SkeletonStatus from "@/components/skeleton/SkeletonStatus";
 import { moverQueryKeys } from "@/constants/query-keys/movers";
 import { moverService, type MoverRatingDistribution } from "@/lib/services/mover-service";
 import { cn } from "@/lib/utils/cn";
@@ -73,12 +77,24 @@ export default function MoverReviewSection({ moverId, className }: MoverReviewSe
 
   if (listQuery.isPending && !listQuery.data) {
     return (
-      <div
-        className={cn("text-16 text-gray-gray-400 min-h-[200px] py-20 text-center", className)}
-        role="status"
-      >
-        {t("loading")}
-      </div>
+      <SkeletonStatus label={t("loading")} className={cn("flex w-full flex-col", className)}>
+        <div className="flex flex-col gap-4">
+          <ReviewDistributionSkeleton
+            title={
+              <h2 className="text-16 tablet:text-20 text-black-black-400 font-semibold">
+                {t("title")}
+              </h2>
+            }
+          />
+          <ul className="divide-line-100 flex w-full flex-col divide-y">
+            {Array.from({ length: 3 }, (_, index) => (
+              <li key={index}>
+                <CardReviewSkeleton size="lg" />
+              </li>
+            ))}
+          </ul>
+        </div>
+      </SkeletonStatus>
     );
   }
 
