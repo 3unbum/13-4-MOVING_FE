@@ -290,7 +290,9 @@
     "passwordConfirm": "Confirm Password",
     "passwordConfirmPlaceholder": "Re-enter your password",
     "emailPlaceholder": "Enter your email",
-    "currentPasswordNotice": "You'll need to enter your current password every time, no matter what you change, to verify it's you"
+    "currentPasswordNotice": "You only need to enter your current password when changing it",
+    "emailVerifyTitle": "Verify it's you",
+    "emailVerifyDescription": "We'll send a verification code to {email} so you can safely update your info"
   },
   "auth": {
     "snsSignup": "Quick sign-up with social account",
@@ -364,7 +366,10 @@
     "invalidResetCode": "The verification code is incorrect",
     "resetCodeExpired": "The verification code has expired. Please request a new one",
     "resetCodeAttemptsExceeded": "Too many incorrect attempts. Please request a new verification code",
-    "invalidOrExpiredResetToken": "Your verification has expired. Please request a new code"
+    "invalidOrExpiredResetToken": "Your verification has expired. Please request a new code",
+    "invalidProfileEditCode": "The verification code is incorrect",
+    "profileEditCodeExpired": "The verification code has expired. Please request a new one",
+    "profileEditCodeAttemptsExceeded": "Too many incorrect attempts. Please request a new verification code"
   },
   "review": {
     "writeReview": "Write a Review",

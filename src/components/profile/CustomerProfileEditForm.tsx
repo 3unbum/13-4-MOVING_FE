@@ -10,6 +10,7 @@ import FormField from "@/components/auth/FormField";
 import ProfileImageUpload from "@/components/common/ProfileImageUpload";
 import Toast from "@/components/common/Toast";
 import Chip from "@/components/filter/ChipRegion";
+import ProfileEmailVerificationGate from "@/components/profile/ProfileEmailVerificationGate";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { REGION_OPTIONS, SERVICE_OPTIONS } from "@/constants/profile/options";
 import {
@@ -129,10 +130,13 @@ export default function CustomerProfileEditForm({ initialAccount }: CustomerProf
         image: values.image,
         region: values.region,
         services: values.services,
-        // currentPassword는 항상 같이 보낸다(계정 정보 수정 시 항상 재확인 필요).
-        // newPassword는 실제로 바꿀 때만 실어 보낸다 — 빈 문자열을 보내면 BE 검증(정규식)에 걸림
-        currentPassword: values.currentPassword,
-        ...(values.newPassword && { newPassword: values.newPassword }),
+        // #131: currentPassword/newPassword 둘 다 비밀번호를 실제로 바꿀 때만 실어 보낸다 —
+        // 진입 자체는 이메일 인증(ProfileEmailVerificationGate)으로 이미 본인 확인이 끝났다.
+        // 빈 문자열을 보내면 BE 검증(정규식)에 걸리므로 newPassword가 있을 때만 포함한다.
+        ...(values.newPassword && {
+          currentPassword: values.currentPassword,
+          newPassword: values.newPassword,
+        }),
       });
       // refetch 실패는 제출 실패로 취급하지 않되, 로그는 남긴다
       await refetch().catch((error) => {
@@ -153,212 +157,230 @@ export default function CustomerProfileEditForm({ initialAccount }: CustomerProf
   }
 
   return (
-    // 피그마 node 1:10192 실측(2026-09-17): 데스크탑에서 [구분선+2열 그리드] 묶음과 [버튼 줄]
-    // 사이 간격이 64px(gap-16)이고, 묶음 내부(구분선→그리드)는 40px(gap-10)로 서로 다른 리듬이라
-    // 두 단계로 중첩함 — 이전엔 전부 한 레벨(gap-14=56px)로 뭉뚱그려서 중간 간격이 어긋났었음
-    <form onSubmit={handleSubmit(onSubmit)} className="pc:gap-16 flex w-full flex-col gap-8">
-      <div className="pc:gap-10 flex flex-col gap-5">
-        <div className="bg-line-100 h-px w-full" />
+    // #131: 프로필 수정 진입 자체를 이메일 인증으로 한 번 더 막는다(비밀번호 재확인이 아님 —
+    // 소셜 로그인 계정은 비밀번호가 없어서 그 방식은 못 쓴다). 인증 전에는 아래 폼 자체가 안 보인다.
+    <ProfileEmailVerificationGate email={account.email}>
+      {/* 피그마 node 1:10192 실측(2026-09-17): 데스크탑에서 [구분선+2열 그리드] 묶음과 [버튼 줄]
+          사이 간격이 64px(gap-16)이고, 묶음 내부(구분선→그리드)는 40px(gap-10)로 서로 다른 리듬이라
+          두 단계로 중첩함 — 이전엔 전부 한 레벨(gap-14=56px)로 뭉뚱그려서 중간 간격이 어긋났었음 */}
+      <form onSubmit={handleSubmit(onSubmit)} className="pc:gap-16 flex w-full flex-col gap-8">
+        <div className="pc:gap-10 flex flex-col gap-5">
+          <div className="bg-line-100 h-px w-full" />
 
-        {/* 1120px 콘텐츠를 500px 2열(간격 120px)로 — MoverProfileForm의 pc:gap-x-30과 동일 수치.
+          {/* 1120px 콘텐츠를 500px 2열(간격 120px)로 — MoverProfileForm의 pc:gap-x-30과 동일 수치.
             모바일/태블릿은 세로 한 줄로 접힘(register 폼과 동일 패턴) */}
-        <div className="pc:grid pc:grid-cols-2 pc:items-start pc:gap-x-30 pc:gap-y-8 flex flex-col gap-5">
-          <div className="pc:gap-8 flex flex-col gap-5">
-            <FormField
-              id="name"
-              label={t("name")}
-              type="text"
-              size={fieldSize}
-              placeholder={t("namePlaceholder")}
-              autoComplete="name"
-              errorMessage={errors.name?.message}
-              {...register("name")}
-            />
+          <div className="pc:grid pc:grid-cols-2 pc:items-start pc:gap-x-30 pc:gap-y-8 flex flex-col gap-5">
+            <div className="pc:gap-8 flex flex-col gap-5">
+              <FormField
+                id="name"
+                label={t("name")}
+                type="text"
+                size={fieldSize}
+                placeholder={t("namePlaceholder")}
+                autoComplete="name"
+                errorMessage={errors.name?.message}
+                {...register("name")}
+              />
 
-            {/* 이메일은 BE customerProfileUpdateSchema에 필드 자체가 없어 이 화면에서 수정 불가 —
+              {/* 이메일은 BE customerProfileUpdateSchema에 필드 자체가 없어 이 화면에서 수정 불가 —
                 계정 조회 값을 읽기 전용으로만 보여준다 */}
-            <FormField
-              id="email"
-              label={t("email")}
-              type="email"
-              size={fieldSize}
-              value={account.email}
-              disabled
-              readOnly
-            />
+              <FormField
+                id="email"
+                label={t("email")}
+                type="email"
+                size={fieldSize}
+                value={account.email}
+                disabled
+                readOnly
+              />
 
-            <FormField
-              id="phoneNumber"
-              label={t("phone")}
-              type="tel"
-              size={fieldSize}
-              placeholder={t("phonePlaceholder")}
-              autoComplete="tel"
-              errorMessage={errors.phoneNumber?.message}
-              {...register("phoneNumber")}
-            />
+              <FormField
+                id="phoneNumber"
+                label={t("phone")}
+                type="tel"
+                size={fieldSize}
+                placeholder={t("phonePlaceholder")}
+                autoComplete="tel"
+                errorMessage={errors.phoneNumber?.message}
+                {...register("phoneNumber")}
+              />
 
-            <hr className="border-line-100" />
+              {/* #131: 소셜 로그인 계정(hasPassword === false)은 비밀번호 자체가 없어 변경할 수
+                없으므로 섹션 전체를 숨긴다. 이 화면 진입 자체는 이미 이메일 인증을 통과한
+                뒤라(ProfileEmailVerificationGate) 본인 확인은 끝난 상태 — 아래 필드는 "비밀번호를
+                바꾸고 싶을 때만" 쓰는 선택 입력이다. */}
+              {account.hasPassword && (
+                <>
+                  <hr className="border-line-100" />
 
-            <FormField
-              id="currentPassword"
-              label={t("currentPassword")}
-              type="password"
-              size={fieldSize}
-              placeholder={t("currentPasswordPlaceholder")}
-              autoComplete="current-password"
-              errorMessage={errors.currentPassword?.message}
-              {...register("currentPassword")}
-            />
-            {/* 무엇을 바꾸든 현재 비밀번호가 항상 필요하다는 걸 안내 */}
-            <p className="text-12 text-black-100 pc:text-16">{t("currentPasswordNotice")}</p>
+                  <FormField
+                    id="currentPassword"
+                    label={t("currentPassword")}
+                    type="password"
+                    size={fieldSize}
+                    placeholder={t("currentPasswordPlaceholder")}
+                    autoComplete="current-password"
+                    errorMessage={errors.currentPassword?.message}
+                    {...register("currentPassword")}
+                  />
+                  {/* 비밀번호를 바꿀 때만 현재 비밀번호가 필요하다는 걸 안내 */}
+                  <p className="text-12 text-black-100 pc:text-16">{t("currentPasswordNotice")}</p>
 
-            <hr className="border-line-100" />
+                  <hr className="border-line-100" />
 
-            <FormField
-              id="newPassword"
-              label={t("newPassword")}
-              type="password"
-              size={fieldSize}
-              placeholder={t("newPasswordPlaceholder")}
-              autoComplete="new-password"
-              errorMessage={errors.newPassword?.message}
-              {...register("newPassword")}
-            />
+                  <FormField
+                    id="newPassword"
+                    label={t("newPassword")}
+                    type="password"
+                    size={fieldSize}
+                    placeholder={t("newPasswordPlaceholder")}
+                    autoComplete="new-password"
+                    errorMessage={errors.newPassword?.message}
+                    {...register("newPassword")}
+                  />
 
-            <FormField
-              id="newPasswordConfirm"
-              label={t("newPasswordConfirm")}
-              type="password"
-              size={fieldSize}
-              placeholder={t("newPasswordConfirmPlaceholder")}
-              autoComplete="new-password"
-              errorMessage={errors.newPasswordConfirm?.message}
-              {...register("newPasswordConfirm")}
-            />
-          </div>
+                  <FormField
+                    id="newPasswordConfirm"
+                    label={t("newPasswordConfirm")}
+                    type="password"
+                    size={fieldSize}
+                    placeholder={t("newPasswordConfirmPlaceholder")}
+                    autoComplete="new-password"
+                    errorMessage={errors.newPasswordConfirm?.message}
+                    {...register("newPasswordConfirm")}
+                  />
+                </>
+              )}
+            </div>
 
-          {/* 데스크탑 2열에서는 안 보이지만, 태블릿/모바일에서 한 줄로 이어질 때 계정 정보
+            {/* 데스크탑 2열에서는 안 보이지만, 태블릿/모바일에서 한 줄로 이어질 때 계정 정보
               블록과 프로필 이미지 블록 사이에 실제로 구분선이 하나 더 있음(피그마 node 1:10149,
               Vector 2516) — 2열 grid의 3번째 child가 되면 배치가 깨지므로 pc에서만 숨김 */}
-          <div className="bg-line-100 pc:hidden h-px w-full" />
+            <div className="bg-line-100 pc:hidden h-px w-full" />
 
-          <div className="pc:gap-8 flex flex-col gap-5">
-            <div className="flex flex-col gap-4">
-              <span className="text-16 text-black-black-400 pc:text-20 font-semibold">
-                {t("profileImage")}
-              </span>
-              <Controller
-                name="image"
-                control={control}
-                render={({ field }) => (
-                  <ProfileImageUpload
-                    value={field.value}
-                    onChange={field.onChange}
-                    onUploadingChange={setIsImageUploading}
-                  />
+            <div className="pc:gap-8 flex flex-col gap-5">
+              <div className="flex flex-col gap-4">
+                <span className="text-16 text-black-black-400 pc:text-20 font-semibold">
+                  {t("profileImage")}
+                </span>
+                <Controller
+                  name="image"
+                  control={control}
+                  render={({ field }) => (
+                    <ProfileImageUpload
+                      value={field.value}
+                      onChange={field.onChange}
+                      onUploadingChange={setIsImageUploading}
+                    />
+                  )}
+                />
+              </div>
+
+              <div className="bg-line-100 h-px w-full" />
+
+              <div className="flex flex-col gap-8">
+                <div className="pc:gap-1 flex flex-col gap-2">
+                  <span className="text-16 text-black-black-400 pc:text-20 font-semibold">
+                    {t("customerServices")}
+                  </span>
+                  <p className="text-12 text-black-100 pc:text-16">{t("customerServicesHint")}</p>
+                </div>
+                <div className="pc:gap-3 flex flex-wrap gap-2">
+                  {SERVICE_OPTIONS.map((option) => {
+                    const selected = selectedServices.includes(option.value);
+                    return (
+                      <Chip
+                        key={option.value}
+                        size="sm"
+                        selected={selected}
+                        onClick={() => toggleService(option.value)}
+                        className={cn(
+                          "pc:px-5 pc:py-2.5 pc:text-18",
+                          !selected && "pc:font-normal"
+                        )}
+                      >
+                        {tService(option.value)}
+                      </Chip>
+                    );
+                  })}
+                </div>
+                {errors.services && (
+                  <p className="text-13 font-medium text-red-200">{errors.services.message}</p>
                 )}
-              />
-            </div>
-
-            <div className="bg-line-100 h-px w-full" />
-
-            <div className="flex flex-col gap-8">
-              <div className="pc:gap-1 flex flex-col gap-2">
-                <span className="text-16 text-black-black-400 pc:text-20 font-semibold">
-                  {t("customerServices")}
-                </span>
-                <p className="text-12 text-black-100 pc:text-16">{t("customerServicesHint")}</p>
               </div>
-              <div className="pc:gap-3 flex flex-wrap gap-2">
-                {SERVICE_OPTIONS.map((option) => {
-                  const selected = selectedServices.includes(option.value);
-                  return (
-                    <Chip
-                      key={option.value}
-                      size="sm"
-                      selected={selected}
-                      onClick={() => toggleService(option.value)}
-                      className={cn("pc:px-5 pc:py-2.5 pc:text-18", !selected && "pc:font-normal")}
-                    >
-                      {tService(option.value)}
-                    </Chip>
-                  );
-                })}
-              </div>
-              {errors.services && (
-                <p className="text-13 font-medium text-red-200">{errors.services.message}</p>
-              )}
-            </div>
 
-            <div className="bg-line-100 h-px w-full" />
+              <div className="bg-line-100 h-px w-full" />
 
-            <div className="flex flex-col gap-8">
-              <div className="flex flex-col gap-2">
-                <span className="text-16 text-black-black-400 pc:text-20 font-semibold">
-                  {t("customerRegion")}
-                </span>
-                <p className="text-12 text-black-100 pc:text-16">{t("customerRegionHint")}</p>
+              <div className="flex flex-col gap-8">
+                <div className="flex flex-col gap-2">
+                  <span className="text-16 text-black-black-400 pc:text-20 font-semibold">
+                    {t("customerRegion")}
+                  </span>
+                  <p className="text-12 text-black-100 pc:text-16">{t("customerRegionHint")}</p>
+                </div>
+                <div className="pc:gap-4 flex flex-wrap gap-2">
+                  {REGION_OPTIONS.map((option) => {
+                    const selected = selectedRegion === option.value;
+                    return (
+                      <Chip
+                        key={option.value}
+                        size="sm"
+                        selected={selected}
+                        onClick={() => setValue("region", option.value, { shouldValidate: true })}
+                        className={cn(
+                          "pc:px-5 pc:py-2.5 pc:text-18",
+                          !selected && "pc:font-normal"
+                        )}
+                      >
+                        {tRegion(option.value)}
+                      </Chip>
+                    );
+                  })}
+                </div>
+                {errors.region && (
+                  <p className="text-13 font-medium text-red-200">{errors.region.message}</p>
+                )}
               </div>
-              <div className="pc:gap-4 flex flex-wrap gap-2">
-                {REGION_OPTIONS.map((option) => {
-                  const selected = selectedRegion === option.value;
-                  return (
-                    <Chip
-                      key={option.value}
-                      size="sm"
-                      selected={selected}
-                      onClick={() => setValue("region", option.value, { shouldValidate: true })}
-                      className={cn("pc:px-5 pc:py-2.5 pc:text-18", !selected && "pc:font-normal")}
-                    >
-                      {tRegion(option.value)}
-                    </Chip>
-                  );
-                })}
-              </div>
-              {errors.region && (
-                <p className="text-13 font-medium text-red-200">{errors.region.message}</p>
-              )}
             </div>
           </div>
         </div>
-      </div>
 
-      {/* 버튼 줄: 피그마상 오른쪽 컬럼(500px)과 같은 폭·같은 x좌표에 정렬됨 — MoverProfileForm의
+        {/* 버튼 줄: 피그마상 오른쪽 컬럼(500px)과 같은 폭·같은 x좌표에 정렬됨 — MoverProfileForm의
           단일 제출 버튼 래퍼(pc:w-125 pc:self-end)와 동일 패턴. 안쪽은 취소(240px)+수정하기(240px)
           +20px 간격 = 정확히 500px. 모바일/태블릿은 수정하기(위)/취소(아래) 세로 풀폭으로 순서만
           뒤집는다(DOM 순서는 [취소, 수정하기] 그대로 — 포커스 이동 순서를 안 건드리려고) */}
-      <div className="pc:w-125 pc:self-end w-full">
-        <div className="pc:flex-row pc:gap-5 flex w-full flex-col-reverse gap-2">
-          <div className="pc:w-60">
-            <Button
-              type="button"
-              variant="outlined"
-              size="sm"
-              className="pc:h-15 pc:rounded-2xl pc:text-18"
-              onClick={() => {
-                // 직접 진입(북마크·새 탭)이면 돌아갈 곳이 없어 빈 화면이 된다 — 랜딩으로 보낸다
-                if (window.history.length > 1) router.back();
-                else router.replace("/");
-              }}
-            >
-              {tCommon("cancel")}
-            </Button>
-          </div>
-          <div className="pc:w-60">
-            <Button
-              type="submit"
-              size="sm"
-              className="pc:h-15 pc:rounded-2xl pc:text-18"
-              disabled={isSubmitting || isImageUploading}
-            >
-              {isSubmitting ? t("submitting") : t("submit")}
-            </Button>
+        <div className="pc:w-125 pc:self-end w-full">
+          <div className="pc:flex-row pc:gap-5 flex w-full flex-col-reverse gap-2">
+            <div className="pc:w-60">
+              <Button
+                type="button"
+                variant="outlined"
+                size="sm"
+                className="pc:h-15 pc:rounded-2xl pc:text-18"
+                onClick={() => {
+                  // 직접 진입(북마크·새 탭)이면 돌아갈 곳이 없어 빈 화면이 된다 — 랜딩으로 보낸다
+                  if (window.history.length > 1) router.back();
+                  else router.replace("/");
+                }}
+              >
+                {tCommon("cancel")}
+              </Button>
+            </div>
+            <div className="pc:w-60">
+              <Button
+                type="submit"
+                size="sm"
+                className="pc:h-15 pc:rounded-2xl pc:text-18"
+                disabled={isSubmitting || isImageUploading}
+              >
+                {isSubmitting ? t("submitting") : t("submit")}
+              </Button>
+            </div>
           </div>
         </div>
-      </div>
 
-      {submitError && <Toast message={submitError} />}
-    </form>
+        {submitError && <Toast message={submitError} />}
+      </form>
+    </ProfileEmailVerificationGate>
   );
 }

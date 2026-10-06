@@ -104,4 +104,15 @@ export const profileService = {
       method: "PATCH",
       body: JSON.stringify(payload),
     }),
+
+  // 프로필 수정 진입용 이메일 인증(#131) — 로그인된 사용자 기준이라 role/email을 안 보낸다(BE가
+  // req.user.id로 처리). 가입 여부를 숨길 필요가 없어 비밀번호 재설정과 달리 항상 204는 아니다.
+  sendEmailVerificationCode: () =>
+    cookieFetch<void>("/profiles/email-verification/send", { method: "POST" }),
+
+  verifyEmailVerificationCode: (payload: { code: string }) =>
+    cookieFetch<void>("/profiles/email-verification/verify", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    }),
 };

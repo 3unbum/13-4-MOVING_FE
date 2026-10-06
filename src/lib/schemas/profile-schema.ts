@@ -45,6 +45,13 @@ function withPasswordRules<T extends z.ZodType<PasswordFields>>(
 ) {
   return (
     schema
+      // #131 재설계: 프로필 수정 진입 자체는 이메일 인증(ProfileEmailVerificationGate)으로 본인
+      // 확인을 하므로, currentPassword는 더 이상 항상 필수가 아니라 "비밀번호 변경" 액션에만
+      // 필요하다 — BE customerProfileUpdateSchema/moverProfileUpdateSchema와 동일한 계약.
+      .refine((data: z.infer<T>) => !data.newPassword || !!data.currentPassword, {
+        message: t("passwordChangeAllRequired"),
+        path: ["currentPassword"],
+      })
       // 소셜 로그인 계정(비밀번호 없음)은 BE가 별도 에러 메시지로 응답
       .refine(
         (data: z.infer<T>) => !data.newPassword || data.newPassword === data.newPasswordConfirm,
@@ -64,12 +71,13 @@ function withPasswordRules<T extends z.ZodType<PasswordFields>>(
   );
 }
 
-// currentPassword는 항상 필수(#157) — 무엇을 바꾸든 재확인 필요.
-// newPassword/newPasswordConfirm만 선택 입력(비워두면 "변경 안 함")
+// currentPassword는 newPassword를 보낼 때만 필수(#131, withPasswordRules의 refine이 강제).
+// newPassword/newPasswordConfirm도 선택 입력(비워두면 "변경 안 함") — 소셜 로그인 계정
+// (hasPassword === false)은 이 세 필드 자체를 화면에서 숨긴다(CustomerProfileEditForm 참고).
 const makeAccountFields = (t: ValidationTranslator) => ({
   name: z.string().trim().min(1, t("nameRequired")),
   phoneNumber: z.string().min(1, t("phoneRequired")).regex(PHONE_PATTERN, t("phoneInvalid")),
-  currentPassword: z.string().min(1, t("currentPasswordRequired")),
+  currentPassword: z.string().optional().or(z.literal("")),
   newPassword: z
     .string()
     .regex(PASSWORD_PATTERN, t("passwordPattern"))

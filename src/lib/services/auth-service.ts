@@ -9,6 +9,8 @@ export interface CustomerAccountResponse {
   phoneNumber: string;
   /** 프로필 등록 완료 여부 — false면 아래 프로필 필드는 비어있음 */
   hasProfile: boolean;
+  /** 소셜 로그인 계정이면 false(#131) — 비밀번호 변경 섹션 노출 여부를 이 값으로 가른다 */
+  hasPassword: boolean;
   image: string | null;
   region: string | null;
   services: string[];
@@ -21,6 +23,8 @@ export interface MoverAccountResponse {
   email: string;
   phoneNumber: string;
   hasProfile: boolean;
+  /** 소셜 로그인 계정이면 false(#131) — 비밀번호 변경 섹션 노출 여부를 이 값으로 가른다 */
+  hasPassword: boolean;
   image: string | null;
   nickName: string | null;
   career: number | null;

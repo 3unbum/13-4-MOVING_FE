@@ -8,6 +8,9 @@ const MESSAGE_KEY_BY_CODE: Record<AuthErrorCode, string> = {
   [AUTH_ERROR_CODES.RESET_CODE_EXPIRED]: "resetCodeExpired",
   [AUTH_ERROR_CODES.RESET_CODE_ATTEMPTS_EXCEEDED]: "resetCodeAttemptsExceeded",
   [AUTH_ERROR_CODES.INVALID_OR_EXPIRED_RESET_TOKEN]: "invalidOrExpiredResetToken",
+  [AUTH_ERROR_CODES.INVALID_PROFILE_EDIT_CODE]: "invalidProfileEditCode",
+  [AUTH_ERROR_CODES.PROFILE_EDIT_CODE_EXPIRED]: "profileEditCodeExpired",
+  [AUTH_ERROR_CODES.PROFILE_EDIT_CODE_ATTEMPTS_EXCEEDED]: "profileEditCodeAttemptsExceeded",
 };
 
 const isAuthErrorCode = (code: string): code is AuthErrorCode =>
