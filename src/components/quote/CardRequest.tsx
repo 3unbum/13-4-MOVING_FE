@@ -5,7 +5,7 @@ import type { ServiceCode } from "@/components/filter/ChipRegion";
 import MovingInfo from "@/components/quote/MovingInfo";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils/cn";
-import type { HTMLAttributes, KeyboardEvent, ReactNode } from "react";
+import type { HTMLAttributes, KeyboardEvent, MouseEvent, ReactNode } from "react";
 
 type CardRequestSize = "sm" | "lg";
 
@@ -66,13 +66,26 @@ export default function CardRequest({
 
   // 카드를 누르면 상세로 가지만 article은 기본으로 포커스를 받지 못해
   // role·tabIndex·키보드 핸들러를 함께 줍니다. 마우스만 되는 영역을 만들지 않기 위해서입니다.
+  //
+  // ⚠️ footer·overlay에 버튼이 들어가는 카드가 있습니다(받은 요청의 [반려][견적 보내기],
+  // 이사완료의 [견적 상세보기]). 그 버튼을 누르면 이벤트가 article까지 올라와
+  // 버튼 동작 뒤에 상세로도 이동합니다. preventDefault는 전파를 막지 못하므로
+  // **이벤트가 어디서 시작됐는지**를 보고 내부 컨트롤이면 카드 이동을 건너뜁니다.
+  const isFromInnerControl = (target: EventTarget | null) =>
+    target instanceof Element && target.closest("button,a,input,select,textarea,[role='button']");
+
   const clickable = onCardClick
     ? {
         role: "button" as const,
         tabIndex: 0,
-        onClick: onCardClick,
+        onClick: (event: MouseEvent<HTMLElement>) => {
+          if (isFromInnerControl(event.target)) return;
+          onCardClick();
+        },
         onKeyDown: (event: KeyboardEvent<HTMLElement>) => {
           if (event.key !== "Enter" && event.key !== " ") return;
+          // 내부 버튼에서 Enter·Space를 누른 경우도 여기로 올라옵니다
+          if (event.target !== event.currentTarget) return;
           // Space는 기본 동작이 스크롤이라 막습니다
           event.preventDefault();
           onCardClick();

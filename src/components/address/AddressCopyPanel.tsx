@@ -9,8 +9,6 @@ import { cn } from "@/lib/utils/cn";
 
 /** 토스트 노출 시간 — useShare와 같은 값입니다 */
 const TOAST_DURATION_MS = 3000;
-/** 아래로 펼칠지 판단하는 기준 높이 — 세 줄 + 여백의 대략값입니다 */
-const PANEL_MAX_HEIGHT = 200;
 
 interface AddressCopyPanelProps {
   /** 도로명 주소 — 접힌 상태에서 보이는 값입니다 */
@@ -38,6 +36,7 @@ export default function AddressCopyPanel({
   const [open, setOpen] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
   // 아래 공간이 모자라면 위로 펼칩니다 — 화면 끝에서 열면 패널이 잘립니다
   const [dropUp, setDropUp] = useState(false);
 
@@ -53,10 +52,6 @@ export default function AddressCopyPanel({
   useEffect(() => {
     if (!open) return;
 
-    // 펼칠 자리가 아래에 있는지 — 대략적인 패널 높이로 판단합니다
-    const rect = wrapperRef.current?.getBoundingClientRect();
-    if (rect) setDropUp(window.innerHeight - rect.bottom < PANEL_MAX_HEIGHT);
-
     const onPointerDown = (event: PointerEvent) => {
       if (!wrapperRef.current?.contains(event.target as Node)) setOpen(false);
     };
@@ -71,6 +66,21 @@ export default function AddressCopyPanel({
       document.removeEventListener("keydown", onKeyDown);
     };
   }, [open]);
+
+  // 펼칠 방향은 **실제 패널 높이**로 정합니다. 주소가 두 줄로 접히면 높이가 달라져
+  // 고정값으로는 아래가 잘릴 수 있습니다. 위아래 중 들어가는 쪽을 고르고,
+  // 둘 다 부족하면 공간이 더 넓은 쪽으로 보냅니다.
+  useEffect(() => {
+    if (!open) return;
+
+    const anchor = wrapperRef.current?.getBoundingClientRect();
+    const panelHeight = panelRef.current?.offsetHeight;
+    if (!anchor || !panelHeight) return;
+
+    const below = window.innerHeight - anchor.bottom;
+    const above = anchor.top;
+    setDropUp(below < panelHeight && above > below);
+  }, [open, address, detailAddress, postalCode]);
 
   const detail = detailAddress?.trim();
 
@@ -103,6 +113,7 @@ export default function AddressCopyPanel({
 
       {open && (
         <div
+          ref={panelRef}
           className={cn(
             "border-line-100 shadow-modal tablet:w-90 absolute right-0 z-10 flex w-[min(20rem,calc(100vw-3rem))] flex-col gap-2.5 rounded-lg border bg-white p-4",
             dropUp ? "bottom-full mb-2" : "top-full mt-2"
@@ -141,9 +152,12 @@ function CopyRow({
       <span className="text-14 text-black-black-400 min-w-0 flex-1 font-medium break-keep">
         {value}
       </span>
+      {/* 세 버튼이 모두 "복사"라 화면 읽기 도구의 버튼 목록에서 구별되지 않습니다.
+          보이는 문구는 그대로 두고 이름에 항목을 넣습니다 ("도로명 주소 복사") */}
       <button
         type="button"
         onClick={() => onCopy(value)}
+        aria-label={`${label} ${t("copy")}`}
         className="text-12 text-primary-orange-300 hover:text-primary-orange-400 shrink-0 cursor-pointer font-semibold"
       >
         {t("copy")}
