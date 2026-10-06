@@ -206,7 +206,13 @@
     "targetedMessage": "일반 견적 요청을 먼저 진행해 주세요.",
     "targetedAction": "일반 견적 요청 하기",
     "arrowAlt": "에서",
-    "shareKakaoFallback": "링크 복사하기 (카카오톡 공유는 준비 중)"
+    "shareKakaoFallback": "링크 복사하기 (카카오톡 공유는 준비 중)",
+    "postalCode": "우편번호",
+    "roadAddressLabel": "도로명 주소",
+    "detailAddressLabel": "상세 주소",
+    "addressCopied": "주소가 복사되었어요!",
+    "addressCopyFailed": "복사에 실패했어요. 주소를 직접 선택해 복사해 주세요",
+    "copy": "복사"
   },
   "validation": {
     "emailRequired": "이메일을 입력해 주세요",

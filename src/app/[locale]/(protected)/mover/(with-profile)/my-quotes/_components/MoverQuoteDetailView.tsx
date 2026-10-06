@@ -1,6 +1,8 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { ConfirmedBadge } from "@/components/common/CardParts";
+import AddressCopyPanel from "@/components/address/AddressCopyPanel";
 import { useLocale, useTranslations } from "next-intl";
 import MoveTypeChip from "@/components/filter/ChipMoveType";
 import QuoteShare from "@/components/quote/QuoteShare";
@@ -22,7 +24,7 @@ interface MoverQuoteDetailViewProps {
  *
  * 피그마(`1:9352`)는 라벨이 x=0 w=90, 값이 x=113이라 사이가 23px입니다.
  */
-function InfoRow({ label, value }: { label: string; value: string }) {
+function InfoRow({ label, value }: { label: string; value: ReactNode }) {
   return (
     // 라벨 90 + 사이 23 = 값이 113에서 시작합니다 (피그마 라벨 x=0, 값 x=113)
     //
@@ -62,7 +64,6 @@ export default function MoverQuoteDetailView({
   const { quotationRequest: request } = estimate;
   const isConfirmed =
     estimate.estimateStatus === "CONFIRMED" || estimate.estimateStatus === "COMPLETED";
-
   return (
     <div className="tablet:px-18 pc:px-10 flex w-full flex-col items-center px-5">
       {/* PC는 본문 741 + 사이 139 + 공유 224 = 1104가 1200 안에 들어갑니다 (피그마 x=360/1240) */}
@@ -124,8 +125,28 @@ export default function MoverQuoteDetailView({
               label={tQuote("usageDate")}
               value={formatUsageDate(request.movingDate, locale)}
             />
-            <InfoRow label={tCommon("from")} value={request.fromAddress} />
-            <InfoRow label={tCommon("to")} value={request.toAddress} />
+            {/* 주소는 도로명까지만 보입니다. 실제로 찾아가려면 동·호수와 우편번호가 필요해
+                그 자리에서 펼쳐 항목별로 복사하게 했습니다 (네이버 지도 방식). */}
+            <InfoRow
+              label={tCommon("from")}
+              value={
+                <AddressCopyPanel
+                  address={request.fromAddress}
+                  detailAddress={request.fromDetailAddress}
+                  postalCode={request.fromPostalCode}
+                />
+              }
+            />
+            <InfoRow
+              label={tCommon("to")}
+              value={
+                <AddressCopyPanel
+                  address={request.toAddress}
+                  detailAddress={request.toDetailAddress}
+                  postalCode={request.toPostalCode}
+                />
+              }
+            />
           </div>
         </div>
 

@@ -206,7 +206,13 @@
     "targetedMessage": "Please submit a general quote request first.",
     "targetedAction": "Request a General Quote",
     "arrowAlt": "to",
-    "shareKakaoFallback": "Copy link (Kakao sharing unavailable)"
+    "shareKakaoFallback": "Copy link (Kakao sharing unavailable)",
+    "postalCode": "Postal code",
+    "roadAddressLabel": "Street address",
+    "detailAddressLabel": "Address details",
+    "addressCopied": "Address copied!",
+    "addressCopyFailed": "Couldn't copy. Please select the address and copy it manually.",
+    "copy": "Copy"
   },
   "validation": {
     "emailRequired": "Please enter your email",

@@ -1,0 +1,153 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
+import Image from "next/image";
+import chevronDown from "@/assets/icons/chevron-down-sm.svg";
+import Toast from "@/components/common/Toast";
+import { cn } from "@/lib/utils/cn";
+
+/** 토스트 노출 시간 — useShare와 같은 값입니다 */
+const TOAST_DURATION_MS = 3000;
+/** 아래로 펼칠지 판단하는 기준 높이 — 세 줄 + 여백의 대략값입니다 */
+const PANEL_MAX_HEIGHT = 200;
+
+interface AddressCopyPanelProps {
+  /** 도로명 주소 — 접힌 상태에서 보이는 값입니다 */
+  address: string;
+  /** 동·호수 등. 옛 데이터는 비어 있을 수 있습니다 */
+  detailAddress?: string;
+  postalCode?: string;
+  className?: string;
+}
+
+/**
+ * 주소 + 펼쳐서 복사 (네이버 지도 장소 패널과 같은 방식).
+ *
+ * 기사님이 실제로 찾아가려면 동·호수와 우편번호가 필요한데, 견적 정보 줄은
+ * 도로명까지만 보여줍니다. 화면을 덮는 모달 대신 **그 자리에서 펼쳐** 항목별로
+ * 복사하게 했습니다 — 주소를 보면서 필요한 부분만 가져갈 수 있습니다.
+ */
+export default function AddressCopyPanel({
+  address,
+  detailAddress,
+  postalCode,
+  className,
+}: AddressCopyPanelProps) {
+  const t = useTranslations("quote");
+  const [open, setOpen] = useState(false);
+  const [toast, setToast] = useState<string | null>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  // 아래 공간이 모자라면 위로 펼칩니다 — 화면 끝에서 열면 패널이 잘립니다
+  const [dropUp, setDropUp] = useState(false);
+
+  // 토스트는 일정 시간 뒤 스스로 사라집니다 (useShare와 같은 방식)
+  useEffect(() => {
+    if (!toast) return;
+
+    const timer = setTimeout(() => setToast(null), TOAST_DURATION_MS);
+    return () => clearTimeout(timer);
+  }, [toast]);
+
+  // 패널 밖을 누르거나 ESC를 누르면 접습니다. 모달이 아니라 포커스를 가두지는 않습니다.
+  useEffect(() => {
+    if (!open) return;
+
+    // 펼칠 자리가 아래에 있는지 — 대략적인 패널 높이로 판단합니다
+    const rect = wrapperRef.current?.getBoundingClientRect();
+    if (rect) setDropUp(window.innerHeight - rect.bottom < PANEL_MAX_HEIGHT);
+
+    const onPointerDown = (event: PointerEvent) => {
+      if (!wrapperRef.current?.contains(event.target as Node)) setOpen(false);
+    };
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpen(false);
+    };
+
+    document.addEventListener("pointerdown", onPointerDown);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("pointerdown", onPointerDown);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [open]);
+
+  const detail = detailAddress?.trim();
+
+  const copy = async (value: string) => {
+    try {
+      await navigator.clipboard.writeText(value);
+      setToast(t("addressCopied"));
+    } catch {
+      // 클립보드는 https·사용자 제스처 등 조건이 안 맞으면 거부됩니다.
+      // 값은 화면에 그대로 떠 있으니 복사만 실패했다고 알립니다.
+      setToast(t("addressCopyFailed"));
+    }
+  };
+
+  return (
+    <div ref={wrapperRef} className={cn("relative flex min-w-0 flex-col items-end", className)}>
+      <button
+        type="button"
+        onClick={() => setOpen((prev) => !prev)}
+        aria-expanded={open}
+        className="text-black-black-400 flex min-w-0 cursor-pointer items-center gap-1 text-left"
+      >
+        <span className="min-w-0 truncate">{address}</span>
+        <Image
+          src={chevronDown}
+          alt=""
+          className={cn("size-4 shrink-0 transition-transform", open && "rotate-180")}
+        />
+      </button>
+
+      {open && (
+        <div
+          className={cn(
+            "border-line-100 shadow-modal tablet:w-90 absolute right-0 z-10 flex w-[min(20rem,calc(100vw-3rem))] flex-col gap-2.5 rounded-lg border bg-white p-4",
+            dropUp ? "bottom-full mb-2" : "top-full mt-2"
+          )}
+        >
+          <CopyRow label={t("roadAddressLabel")} value={address} onCopy={copy} />
+          {/* 상세주소는 BE 스키마상 필수지만(detailAddress.min(1)) 옛 데이터가 비어 있을 수 있습니다 */}
+          {detail && <CopyRow label={t("detailAddressLabel")} value={detail} onCopy={copy} />}
+          {postalCode && <CopyRow label={t("postalCode")} value={postalCode} onCopy={copy} />}
+        </div>
+      )}
+
+      {toast && <Toast message={toast} />}
+    </div>
+  );
+}
+
+/** 라벨 + 값 + 복사 버튼 한 줄 */
+function CopyRow({
+  label,
+  value,
+  onCopy,
+}: {
+  label: string;
+  value: string;
+  onCopy: (value: string) => void;
+}) {
+  const t = useTranslations("quote");
+
+  return (
+    <div className="flex items-start gap-2">
+      {/* 라벨 폭을 고정해 값의 시작점을 맞춥니다 — 세 줄이 들쭉날쭉하면 읽기 어렵습니다 */}
+      <span className="text-12 text-gray-gray-400 bg-background-200 w-14 shrink-0 rounded py-0.5 text-center font-medium">
+        {label}
+      </span>
+      <span className="text-14 text-black-black-400 min-w-0 flex-1 font-medium break-keep">
+        {value}
+      </span>
+      <button
+        type="button"
+        onClick={() => onCopy(value)}
+        className="text-12 text-primary-orange-300 hover:text-primary-orange-400 shrink-0 cursor-pointer font-semibold"
+      >
+        {t("copy")}
+      </button>
+    </div>
+  );
+}

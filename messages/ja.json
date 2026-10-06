@@ -206,7 +206,13 @@
     "targetedMessage": "先に通常の見積もり依頼を行ってください。",
     "targetedAction": "通常の見積もりを依頼する",
     "arrowAlt": "から",
-    "shareKakaoFallback": "リンクをコピー（KakaoTalk共有は準備中）"
+    "shareKakaoFallback": "リンクをコピー（KakaoTalk共有は準備中）",
+    "postalCode": "郵便番号",
+    "roadAddressLabel": "道路名住所",
+    "detailAddressLabel": "詳細住所",
+    "addressCopied": "住所をコピーしました！",
+    "addressCopyFailed": "コピーできませんでした。住所を選択して手動でコピーしてください",
+    "copy": "コピー"
   },
   "validation": {
     "emailRequired": "メールアドレスを入力してください",

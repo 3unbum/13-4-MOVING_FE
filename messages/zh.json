@@ -206,7 +206,13 @@
     "targetedMessage": "请先提交普通报价申请。",
     "targetedAction": "申请普通报价",
     "arrowAlt": "至",
-    "shareKakaoFallback": "复制链接（KakaoTalk 分享准备中）"
+    "shareKakaoFallback": "复制链接（KakaoTalk 分享准备中）",
+    "postalCode": "邮政编码",
+    "roadAddressLabel": "路名地址",
+    "detailAddressLabel": "详细地址",
+    "addressCopied": "地址已复制！",
+    "addressCopyFailed": "复制失败，请手动选择地址复制",
+    "copy": "复制"
   },
   "validation": {
     "emailRequired": "请输入邮箱",

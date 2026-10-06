@@ -5,7 +5,7 @@ import type { ServiceCode } from "@/components/filter/ChipRegion";
 import MovingInfo from "@/components/quote/MovingInfo";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils/cn";
-import type { HTMLAttributes, ReactNode } from "react";
+import type { HTMLAttributes, KeyboardEvent, ReactNode } from "react";
 
 type CardRequestSize = "sm" | "lg";
 
@@ -27,6 +27,11 @@ interface CardRequestProps extends HTMLAttributes<HTMLElement> {
   footer?: ReactNode;
   /** 카드 전체를 덮는 딤 레이어 — 반려/이사완료 카드용 */
   overlay?: ReactNode;
+  /**
+   * 카드를 눌러 상세로 보낼 때. 주면 카드 전체가 버튼처럼 동작합니다
+   * (키보드 Enter·Space 포함). 내부 버튼이 있는 카드는 그쪽 클릭이 우선입니다.
+   */
+  onCardClick?: () => void;
 }
 
 /**
@@ -53,10 +58,27 @@ export default function CardRequest({
   footer,
   overlay,
   className,
+  onCardClick,
   ...props
 }: CardRequestProps) {
   const honorific = useTranslations("quote")("customerHonorific");
   const isLg = size === "lg";
+
+  // 카드를 누르면 상세로 가지만 article은 기본으로 포커스를 받지 못해
+  // role·tabIndex·키보드 핸들러를 함께 줍니다. 마우스만 되는 영역을 만들지 않기 위해서입니다.
+  const clickable = onCardClick
+    ? {
+        role: "button" as const,
+        tabIndex: 0,
+        onClick: onCardClick,
+        onKeyDown: (event: KeyboardEvent<HTMLElement>) => {
+          if (event.key !== "Enter" && event.key !== " ") return;
+          // Space는 기본 동작이 스크롤이라 막습니다
+          event.preventDefault();
+          onCardClick();
+        },
+      }
+    : undefined;
 
   return (
     <article
@@ -65,8 +87,11 @@ export default function CardRequest({
         "shadow-[inset_0_0_0_0.5px_var(--color-line-100),-2px_-2px_10px_0_rgba(220,220,220,0.2),2px_2px_10px_0_rgba(220,220,220,0.2)]",
         "w-full",
         isLg ? "gap-8 rounded-[20px] px-10 py-8" : "gap-6 rounded-[20px] px-5 py-6",
+        onCardClick &&
+          "focus-visible:outline-primary-orange-300 cursor-pointer focus-visible:outline-2",
         className
       )}
+      {...clickable}
       {...props}
     >
       <div className={cn("flex w-full flex-col items-start", isLg ? "gap-6" : "gap-4")}>
