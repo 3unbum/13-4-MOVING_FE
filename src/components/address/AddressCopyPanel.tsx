@@ -17,6 +17,11 @@ interface AddressCopyPanelProps {
   detailAddress?: string;
   postalCode?: string;
   className?: string;
+  /**
+   * 펼친 패널의 폭. 좁은 컨테이너(모달)에서는 바깥 행이 relative 기준이 되도록 두고
+   * `w-full`을 넘겨 그 폭에 맞춥니다. 안 넘기면 내용 크기(`w-max`)를 씁니다.
+   */
+  panelClassName?: string;
 }
 
 /**
@@ -31,6 +36,7 @@ export default function AddressCopyPanel({
   detailAddress,
   postalCode,
   className,
+  panelClassName,
 }: AddressCopyPanelProps) {
   const t = useTranslations("quote");
   const [open, setOpen] = useState(false);
@@ -115,8 +121,19 @@ export default function AddressCopyPanel({
         <div
           ref={panelRef}
           className={cn(
-            "border-line-100 shadow-modal tablet:w-90 absolute right-0 z-10 flex w-[min(20rem,calc(100vw-3rem))] flex-col gap-2.5 rounded-lg border bg-white p-4",
-            dropUp ? "bottom-full mb-2" : "top-full mt-2"
+            // 좁은 컨테이너(모달 sm 327px) 안에서도 넘치지 않게 부모 폭을 넘지 않습니다.
+            // 100vw 기준으로 잡으면 모달에서 왼쪽이 잘리고 가로 스크롤이 생깁니다.
+            // w-max만 두면 내용이 가장 좁게 잡혀 "충북 / 증평군"처럼 쪼개집니다.
+            // 그래서 최소 폭을 주는데, 모바일은 모달 내용이 327px뿐이라 min-w를 크게 잡으면
+            // 패널이 왼쪽으로 삐져나가 라벨이 잘립니다("명 주소"). tablet부터만 넓힙니다.
+            "border-line-100 shadow-modal absolute right-0 z-10 flex max-w-full flex-col gap-2.5 rounded-lg border bg-white p-4",
+            // 폭: 호출부가 지정하지 않으면 내용 크기. w-max만 두면 "충북 / 증평군"처럼
+            // 어절마다 쪼개져 최소 폭(364px)을 함께 줍니다.
+            // 모바일 모달은 내용이 327px뿐이라 min-w를 크게 잡으면 패널이 왼쪽으로
+            // 삐져나가 라벨이 잘립니다 — 그래서 호출부가 w-full을 주면 그쪽을 씁니다.
+            !panelClassName && "tablet:min-w-91 w-max",
+            dropUp ? "bottom-full mb-2" : "top-full mt-2",
+            panelClassName
           )}
         >
           <CopyRow label={t("roadAddressLabel")} value={address} onCopy={copy} />
@@ -149,9 +166,9 @@ function CopyRow({
       <span className="text-12 text-gray-gray-400 bg-background-200 w-14 shrink-0 rounded py-0.5 text-center font-medium">
         {label}
       </span>
-      <span className="text-14 text-black-black-400 min-w-0 flex-1 font-medium break-keep">
-        {value}
-      </span>
+      {/* break-keep을 쓰면 "광장로 / 88"처럼 번지만 떨어집니다.
+          폭이 모자랄 때는 그냥 흐르듯 접히는 쪽이 덜 어색합니다. */}
+      <span className="text-14 text-black-black-400 min-w-0 flex-1 font-medium">{value}</span>
       {/* 세 버튼이 모두 "복사"라 화면 읽기 도구의 버튼 목록에서 구별되지 않습니다.
           보이는 문구는 그대로 두고 이름에 항목을 넣습니다 ("도로명 주소 복사") */}
       <button
