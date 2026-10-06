@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { OG_FALLBACK_IMAGE } from "@/constants/site";
 import { useTranslations } from "next-intl";
 import clipLg from "@/assets/icons/clip-lg.svg";
 import clipMd from "@/assets/icons/clip-md.svg";
@@ -14,10 +15,17 @@ import { cn } from "@/lib/utils/cn";
 interface QuoteShareProps {
   /** 피그마: PC "견적서 공유하기" / 모바일 "나만 알긴 아쉬운 기사님인가요?" */
   title: string;
-  /** 공유 대상 — 요구사항이 "기사님 상세 페이지 URL"을 공유하도록 정하고 있습니다 */
-  moverId: number;
+  /**
+   * 공유할 견적서 경로 (예: `/customer/my-quotes/123`).
+   *
+   * 처음에는 기사님 상세 URL을 보냈는데, 제목이 "견적서 공유하기"인데
+   * 기사님 소개가 열려 어긋났습니다. 제목대로 견적서를 보냅니다.
+   */
+  quoteUrl: string;
   /** 공유 문구에 들어갈 기사님 별명 */
   moverNickName: string;
+  /** 카카오 카드 썸네일 — 없으면 브랜드 폴백 이미지를 씁니다 */
+  moverImage?: string | null;
   className?: string;
 }
 
@@ -66,14 +74,23 @@ function ShareButton({
  * 카카오는 JS SDK, 페이스북은 sharer를 씁니다. 카카오는 키(`NEXT_PUBLIC_KAKAO_JS_KEY`)가
  * 없거나 SDK 로드에 실패하면, 페이스북은 팝업이 차단되면 링크 복사로 폴백합니다.
  */
-export default function QuoteShare({ title, moverId, moverNickName, className }: QuoteShareProps) {
+export default function QuoteShare({
+  title,
+  quoteUrl,
+  moverNickName,
+  moverImage,
+  className,
+}: QuoteShareProps) {
   const t = useTranslations("quote");
   const tCommon = useTranslations("common");
 
   const { copyLink, shareToKakao, shareToFacebook, isKakaoReady, toast } = useShare({
-    url: `/movers/${moverId}`,
-    text: t("shareText", { moverName: moverNickName }),
-    buttonTitle: t("shareButtonTitle"),
+    url: quoteUrl,
+    text: t("shareQuoteText", { moverName: moverNickName }),
+    buttonTitle: t("shareQuoteButton"),
+    // 카카오 카드 제목·썸네일 — og와 같은 값 (SDK는 og를 읽지 않습니다)
+    title: t("shareQuoteCardTitle", { moverName: moverNickName }),
+    imageUrl: moverImage || OG_FALLBACK_IMAGE,
   });
 
   return (

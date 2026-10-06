@@ -267,8 +267,9 @@ export default function QuoteDetailView({
                   하단 고정 CTA(110px)가 덮지 않도록 확정 대기일 때 여백을 더 둡니다. */}
             <QuoteShare
               title={t("shareTitleMobile")}
-              moverId={mover.id}
+              quoteUrl={`/customer/my-quotes/${estimate.id}`}
               moverNickName={mover.nickName}
+              moverImage={mover.image}
               className={cn(
                 "pc:hidden border-line-100 border-t pt-6",
                 // 확정 CTA가 없으면 공유 버튼이 화면 맨 아래에 붙습니다 (1차 QA-10)
@@ -305,8 +306,9 @@ export default function QuoteDetailView({
             )}
             <QuoteShare
               title={t("shareTitlePc")}
-              moverId={mover.id}
+              quoteUrl={`/customer/my-quotes/${estimate.id}`}
               moverNickName={mover.nickName}
+              moverImage={mover.image}
             />
           </aside>
         </div>

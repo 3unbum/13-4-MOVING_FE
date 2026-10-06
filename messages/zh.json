@@ -206,7 +206,11 @@
     "targetedMessage": "请先提交普通报价申请。",
     "targetedAction": "申请普通报价",
     "arrowAlt": "至",
-    "shareKakaoFallback": "复制链接（KakaoTalk 分享准备中）"
+    "shareKakaoFallback": "复制链接（KakaoTalk 分享准备中）",
+    "shareCardTitle": "{moverName} 师傅 | Moving",
+    "shareQuoteText": "这是 {moverName} 师傅的报价单。快来 Moving 查看吧！",
+    "shareQuoteButton": "查看报价单",
+    "shareQuoteCardTitle": "{moverName} 师傅的报价单 | Moving"
   },
   "validation": {
     "emailRequired": "请输入邮箱",

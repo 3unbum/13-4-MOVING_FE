@@ -206,7 +206,11 @@
     "targetedMessage": "Please submit a general quote request first.",
     "targetedAction": "Request a General Quote",
     "arrowAlt": "to",
-    "shareKakaoFallback": "Copy link (Kakao sharing unavailable)"
+    "shareKakaoFallback": "Copy link (Kakao sharing unavailable)",
+    "shareCardTitle": "{moverName} | Moving",
+    "shareQuoteText": "Here's the quote from {moverName}. Check it out on Moving!",
+    "shareQuoteButton": "View quote",
+    "shareQuoteCardTitle": "Quote from {moverName} | Moving"
   },
   "validation": {
     "emailRequired": "Please enter your email",

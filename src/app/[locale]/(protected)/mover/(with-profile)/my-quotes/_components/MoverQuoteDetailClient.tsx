@@ -72,7 +72,6 @@ export default function MoverQuoteDetailClient({ estimateId }: MoverQuoteDetailC
       ) : (
         <MoverQuoteDetailView
           estimate={estimate}
-          moverId={estimate.moverId}
           // 공유 문구에 쓰는 이름 — 상세 응답의 mover는 본인 프로필입니다
           moverNickName={estimate.mover.nickName}
         />

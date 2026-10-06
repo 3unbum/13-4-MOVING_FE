@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { OG_FALLBACK_IMAGE } from "@/constants/site";
 import { useTranslations } from "next-intl";
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
@@ -78,6 +79,9 @@ export default function MoverDetailClient() {
     url: Number.isFinite(moverId) && moverId > 0 ? `/movers/${moverId}` : "/",
     text: mover ? tQuote("shareText", { moverName: mover.nickName }) : t("shareTextFallback"),
     buttonTitle: tQuote("shareButtonTitle"),
+    // 카카오 카드 제목·썸네일 — og와 같은 값을 씁니다 (SDK는 og를 읽지 않습니다)
+    title: mover ? tQuote("shareCardTitle", { moverName: mover.nickName }) : undefined,
+    imageUrl: mover?.image || OG_FALLBACK_IMAGE,
   });
 
   const { favoritedIds, isFavoritesLoading, toggleFavorite, getFavoriteCount } =
