@@ -16,12 +16,20 @@ interface QuoteShareProps {
   /** 피그마: PC "견적서 공유하기" / 모바일 "나만 알긴 아쉬운 기사님인가요?" */
   title: string;
   /**
-   * 공유할 견적서 경로 (예: `/customer/my-quotes/123`).
+   * 공유할 경로. 화면에 따라 가리키는 대상이 다릅니다.
    *
-   * 처음에는 기사님 상세 URL을 보냈는데, 제목이 "견적서 공유하기"인데
-   * 기사님 소개가 열려 어긋났습니다. 제목대로 견적서를 보냅니다.
+   * - 고객 견적 상세 → `/customer/my-quotes/123` (본인이면 열립니다)
+   * - 기사님 견적 상세 → `/movers/45` (기사님 전용 경로는 받는 사람이 못 엽니다)
    */
-  quoteUrl: string;
+  shareUrl: string;
+  /**
+   * 공유 문구 맥락.
+   *
+   * 같은 컴포넌트를 고객·기사님이 함께 쓰는데 **누가 누구에게 보내는지**가 다릅니다.
+   * 고객은 "받은 견적서", 기사님은 본인 소개라 "추천"이 됩니다
+   * (기사님 화면에서 "본인께 받은 견적서"는 말이 안 됩니다).
+   */
+  variant?: "quote" | "mover";
   /** 공유 문구에 들어갈 기사님 별명 */
   moverNickName: string;
   /** 카카오 카드 썸네일 — 없으면 브랜드 폴백 이미지를 씁니다 */
@@ -76,20 +84,26 @@ function ShareButton({
  */
 export default function QuoteShare({
   title,
-  quoteUrl,
+  shareUrl,
+  variant = "quote",
   moverNickName,
   moverImage,
   className,
 }: QuoteShareProps) {
   const t = useTranslations("quote");
   const tCommon = useTranslations("common");
+  const isQuote = variant === "quote";
 
   const { copyLink, shareToKakao, shareToFacebook, isKakaoReady, toast } = useShare({
-    url: quoteUrl,
-    text: t("shareQuoteText", { moverName: moverNickName }),
-    buttonTitle: t("shareQuoteButton"),
+    url: shareUrl,
+    text: isQuote
+      ? t("shareQuoteText", { moverName: moverNickName })
+      : t("shareText", { moverName: moverNickName }),
+    buttonTitle: isQuote ? t("shareQuoteButton") : t("shareButtonTitle"),
     // 카카오 카드 제목·썸네일 — og와 같은 값 (SDK는 og를 읽지 않습니다)
-    title: t("shareQuoteCardTitle", { moverName: moverNickName }),
+    title: isQuote
+      ? t("shareQuoteCardTitle", { moverName: moverNickName })
+      : t("shareCardTitle", { moverName: moverNickName }),
     imageUrl: moverImage || OG_FALLBACK_IMAGE,
   });
 

@@ -267,7 +267,7 @@ export default function QuoteDetailView({
                   하단 고정 CTA(110px)가 덮지 않도록 확정 대기일 때 여백을 더 둡니다. */}
             <QuoteShare
               title={t("shareTitleMobile")}
-              quoteUrl={`/customer/my-quotes/${estimate.id}`}
+              shareUrl={`/customer/my-quotes/${estimate.id}`}
               moverNickName={mover.nickName}
               moverImage={mover.image}
               className={cn(
@@ -306,7 +306,7 @@ export default function QuoteDetailView({
             )}
             <QuoteShare
               title={t("shareTitlePc")}
-              quoteUrl={`/customer/my-quotes/${estimate.id}`}
+              shareUrl={`/customer/my-quotes/${estimate.id}`}
               moverNickName={mover.nickName}
               moverImage={mover.image}
             />
