@@ -198,6 +198,8 @@
     "pricePlaceholder": "Enter price",
     "priceMin": "Please enter at least {price}",
     "priceMax": "Please enter {price} or less",
+    "moverComment": "Mover's message",
+    "rejectReason": "Reason for rejection",
     "commentPrompt": "Enter a comment",
     "rejectReasonPrompt": "Enter a reason for rejection",
     "commentPlaceholder": "Enter at least 10 characters",

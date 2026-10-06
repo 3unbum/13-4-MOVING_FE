@@ -198,6 +198,8 @@
     "pricePlaceholder": "見積もり金額を入力",
     "priceMin": "{price} 以上で入力してください",
     "priceMax": "{price} 以下で入力してください",
+    "moverComment": "業者からのメッセージ",
+    "rejectReason": "却下理由",
     "commentPrompt": "コメントを入力してください",
     "rejectReasonPrompt": "却下理由を入力してください",
     "commentPlaceholder": "10文字以上で入力してください",

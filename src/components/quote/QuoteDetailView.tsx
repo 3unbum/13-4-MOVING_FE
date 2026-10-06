@@ -4,7 +4,12 @@ import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import Button from "@/components/common/Button";
 import EtcButton from "@/components/common/EtcButton";
-import { ConfirmedBadge, FavoriteCount, PendingBadge } from "@/components/common/CardParts";
+import {
+  ConfirmedBadge,
+  FavoriteCount,
+  PendingBadge,
+  RejectedBadge,
+} from "@/components/common/CardParts";
 import Header from "@/components/common/Header";
 import ProfileAvatar from "@/components/common/ProfileAvatar";
 import MoverMeta from "@/components/mover/MoverMeta";
@@ -106,11 +111,22 @@ export default function QuoteDetailView({
   // 이사일이 지나면 배치가 확정 견적을 CONFIRMED → COMPLETED로 바꿉니다.
   // CONFIRMED만 보면 이사를 마친 견적에 "확정하지 않은 견적" 안내가 붙습니다.
   const isConfirmed = estimateStatus === "CONFIRMED" || estimateStatus === "COMPLETED";
-  // 지난 요청에서 확정되지 않은 채 끝난 견적 — 하단에 안내가 붙습니다
-  const isUnconfirmed = !isPending && !isConfirmed;
+  // 기사님이 반려한 견적. 카드 목록(CardPendingHistory)과 표시를 맞춥니다 —
+  // 카드에서는 "반려됨"인데 상세로 들어오면 배지가 사라지면 상태를 다시 읽어야 합니다.
+  const isRejected = estimateStatus === "REJECTED";
+  // 지난 요청에서 확정되지 않은 채 끝난 견적 — 하단에 안내가 붙습니다.
+  // 반려는 제외합니다. "확정하지 않은 견적이에요!"는 고객이 고르지 않았다는 뜻인데,
+  // 반려는 기사님이 거절한 것이라 사실과 다릅니다. 반려 사유를 대신 보여줍니다.
+  const isUnconfirmed = !isPending && !isConfirmed && !isRejected;
 
   // 위치만 다르고 내용은 같아 한 번만 만들어 두 자리에서 씁니다
-  const statusBadge = isPending ? <PendingBadge /> : isConfirmed ? <ConfirmedBadge /> : null;
+  const statusBadge = isPending ? (
+    <PendingBadge />
+  ) : isConfirmed ? (
+    <ConfirmedBadge />
+  ) : isRejected ? (
+    <RejectedBadge />
+  ) : null;
 
   return (
     <div className="flex min-h-dvh flex-col">
@@ -231,6 +247,20 @@ export default function QuoteDetailView({
                 {priceText}
               </span>
             </div>
+
+            {/* 기사님이 견적·반려 때 쓴 코멘트(BE가 10~200자 필수로 받습니다).
+                피그마 시안에는 없지만, 반려 사유를 고객이 볼 곳이 여기뿐이라 넣었습니다.
+                일반 견적에서도 금액만으로는 알 수 없는 설명이 담깁니다. */}
+            {estimate.comment.trim() && (
+              <div className="border-line-100 tablet:pb-8 pc:pb-9 flex flex-col gap-2 border-b pb-5">
+                <h2 className="text-16 text-black-black-450 pc:text-20 font-semibold">
+                  {isRejected ? t("rejectReason") : t("moverComment")}
+                </h2>
+                <p className="text-14 text-gray-gray-500 tablet:text-16 whitespace-pre-line">
+                  {estimate.comment}
+                </p>
+              </div>
+            )}
 
             <div className="tablet:gap-8 pc:gap-7 flex flex-col gap-5">
               <h2 className="text-16 text-black-black-450 pc:text-20 font-semibold">
