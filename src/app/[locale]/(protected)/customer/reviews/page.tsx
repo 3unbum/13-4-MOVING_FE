@@ -12,13 +12,16 @@ import { SERVICE_LABELS, type ServiceCode } from "@/components/filter/ChipRegion
 import CardMyReview from "@/components/review/CardMyReview";
 import CardWritableReview from "@/components/review/CardWritableReview";
 import ReviewWriteModal from "@/components/review/ReviewWriteModal";
+import CardMyReviewSkeleton from "@/components/skeleton/CardMyReviewSkeleton";
+import CardWritableReviewSkeleton from "@/components/skeleton/CardWritableReviewSkeleton";
+import SkeletonStatus from "@/components/skeleton/SkeletonStatus";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import {
   reviewQueryKeys,
   reviewService,
   type WritableReviewItem,
 } from "@/lib/services/review-service";
-import { ApiError } from "@/lib/utils/api-error";
+import { toAuthErrorMessage } from "@/lib/auth/auth-error-message";
 import { cn } from "@/lib/utils/cn";
 import ReviewsEmptyFallback from "./_components/ReviewsEmptyFallback";
 
@@ -34,6 +37,7 @@ function toServiceCode(category: string): ServiceCode {
 
 export default function CustomerReviewsPage() {
   const t = useTranslations("review");
+  const tAuthError = useTranslations("authError");
   const locale = useLocale() as DateLocale;
 
   const tabs: { id: ReviewTab; labelKey: "tabWritable" | "tabWritten"; panelId: string }[] = [
@@ -168,7 +172,7 @@ export default function CustomerReviewsPage() {
         await refreshActiveReviewQueries();
         return;
       }
-      showToast(error instanceof ApiError ? error.message : t("submitFailed"));
+      showToast(toAuthErrorMessage(error, tAuthError, t("submitFailed")));
     } finally {
       if (submitAbortRef.current === controller) {
         submitAbortRef.current = null;
@@ -197,7 +201,7 @@ export default function CustomerReviewsPage() {
         id={tab === "writable" ? "panel-writable" : "panel-written"}
         role="tabpanel"
         aria-labelledby={`tab-${tab}`}
-        aria-busy={isPending || isPlaceholderData}
+        aria-busy={isPlaceholderData}
         tabIndex={0}
         className={cn(
           "tablet:px-18 pc:px-0 flex w-full flex-1 flex-col items-center px-6",
@@ -208,7 +212,46 @@ export default function CustomerReviewsPage() {
       >
         {isError ? (
           <p className="text-16 text-gray-gray-400 py-20 text-center">{t("loadFailed")}</p>
-        ) : isPending && !data ? null : isEmpty ? (
+        ) : isPending && !data ? (
+          <SkeletonStatus
+            label={t("loading")}
+            className={cn(
+              "flex w-full flex-col",
+              tab === "writable"
+                ? "tablet:max-w-[600px] pc:max-w-[1120px] pc:w-[1120px]"
+                : "tablet:max-w-[588px] pc:max-w-[1120px] pc:w-[1120px]"
+            )}
+          >
+            <ul className="flex w-full flex-col gap-5">
+              {Array.from({ length: 3 }, (_, index) => (
+                <li key={index}>
+                  {tab === "writable" ? (
+                    <>
+                      <div className="tablet:hidden">
+                        <CardWritableReviewSkeleton size="sm" />
+                      </div>
+                      <div className="tablet:block pc:hidden hidden">
+                        <CardWritableReviewSkeleton size="md" />
+                      </div>
+                      <div className="pc:block hidden">
+                        <CardWritableReviewSkeleton size="lg" />
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="tablet:hidden">
+                        <CardMyReviewSkeleton size="sm" />
+                      </div>
+                      <div className="tablet:block hidden">
+                        <CardMyReviewSkeleton size="lg" />
+                      </div>
+                    </>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </SkeletonStatus>
+        ) : isEmpty ? (
           <ReviewsEmptyFallback
             message={tab === "writable" ? t("emptyWritable") : t("empty")}
             actionLabel={tab === "written" ? t("goWrite") : undefined}

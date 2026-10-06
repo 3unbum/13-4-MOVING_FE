@@ -9,6 +9,8 @@ import Button from "@/components/common/Button";
 import Tab from "@/components/common/Tab";
 import TabList from "@/components/common/TabList";
 import MoverEstimateList from "@/components/mover/MoverEstimateList";
+import CardRequestSkeleton from "@/components/skeleton/CardRequestSkeleton";
+import SkeletonStatus from "@/components/skeleton/SkeletonStatus";
 import { useConfirmedEstimates, useRejectedEstimates } from "@/hooks/useMoverEstimates";
 
 type QuoteTab = "confirmed" | "rejected";
@@ -50,9 +52,27 @@ function QuoteError() {
   );
 }
 
-/** 로딩 — 스켈레톤은 컴포넌트 단위로 하기로 했으나(9/6 멘토링) 후속 작업으로 둡니다 */
-function QuoteLoading() {
-  return <div className="flex flex-1" aria-busy="true" />;
+/** 첫 로딩 — MoverEstimateList와 같은 그리드. 반려 카드는 금액 줄이 없다 */
+function QuoteLoading({ footer }: { footer: "price" | "none" }) {
+  const t = useTranslations("common");
+
+  return (
+    <SkeletonStatus
+      label={t("loading")}
+      className="tablet:gap-8 pc:grid-cols-2 pc:gap-6 grid w-full grid-cols-1 gap-5"
+    >
+      {Array.from({ length: 4 }, (_, index) => (
+        <div key={index}>
+          <div className="tablet:hidden">
+            <CardRequestSkeleton size="sm" footer={footer} />
+          </div>
+          <div className="tablet:block hidden">
+            <CardRequestSkeleton size="lg" footer={footer} />
+          </div>
+        </div>
+      ))}
+    </SkeletonStatus>
+  );
 }
 
 interface MoverMyQuotesTabsProps {
@@ -132,7 +152,7 @@ export default function MoverMyQuotesTabs({ initialTab }: MoverMyQuotesTabsProps
           {panel.error ? (
             <QuoteError />
           ) : panel.isPending ? (
-            <QuoteLoading />
+            <QuoteLoading footer={tab === "confirmed" ? "price" : "none"} />
           ) : panel.estimates.length === 0 ? (
             <EmptyState message={emptyMessage} />
           ) : (

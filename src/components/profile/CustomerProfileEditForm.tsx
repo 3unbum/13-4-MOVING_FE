@@ -19,7 +19,7 @@ import {
 } from "@/lib/schemas/profile-schema";
 import { profileService } from "@/lib/services/profile-service";
 import type { CustomerAccountResponse } from "@/lib/services/auth-service";
-import { ApiError } from "@/lib/utils/api-error";
+import { toAuthErrorMessage } from "@/lib/auth/auth-error-message";
 import { cn } from "@/lib/utils/cn";
 import { useAuth } from "@/providers/AuthProvider";
 
@@ -53,6 +53,7 @@ export default function CustomerProfileEditForm({ initialAccount }: CustomerProf
   const tService = useTranslations("service");
   const tRegion = useTranslations("region");
   const tCommon = useTranslations("common");
+  const tAuthError = useTranslations("authError");
   const router = useRouter();
   const { refetch } = useAuth();
   const [account, setAccount] = useState<CustomerAccountResponse | null>(initialAccount);
@@ -144,7 +145,7 @@ export default function CustomerProfileEditForm({ initialAccount }: CustomerProf
       });
       router.push("/");
     } catch (error) {
-      setSubmitError(error instanceof ApiError ? error.message : t("updateFailed"));
+      setSubmitError(toAuthErrorMessage(error, tAuthError, t("updateFailed")));
     }
   }
 

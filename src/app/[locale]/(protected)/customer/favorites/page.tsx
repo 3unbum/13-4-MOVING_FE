@@ -6,12 +6,15 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "@/i18n/navigation";
 import CheckboxButton from "@/components/common/CheckboxButton";
 import Header from "@/components/common/Header";
+import SkeletonBone from "@/components/common/SkeletonBone";
 import Toast from "@/components/common/Toast";
 import CardMover from "@/components/mover/CardMover";
+import CardMoverSkeleton from "@/components/skeleton/CardMoverSkeleton";
+import SkeletonStatus from "@/components/skeleton/SkeletonStatus";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { favoriteQueryKeys } from "@/constants/query-keys/favorites";
 import { favoriteService } from "@/lib/services/favorite-service";
-import { ApiError } from "@/lib/utils/api-error";
+import { toAuthErrorMessage } from "@/lib/auth/auth-error-message";
 import { cn } from "@/lib/utils/cn";
 import { toServiceCode } from "@/lib/utils/mover-list-mapper";
 import FavoritesEmptyFallback from "./_components/FavoritesEmptyFallback";
@@ -21,6 +24,7 @@ const PC_QUERY = "(min-width: 1280px)";
 
 export default function CustomerFavoritesPage() {
   const t = useTranslations("page");
+  const tAuthError = useTranslations("authError");
   const tMover = useTranslations("mover");
   const tCommon = useTranslations("common");
   const router = useRouter();
@@ -69,7 +73,7 @@ export default function CustomerFavoritesPage() {
       );
     },
     onError: (error) => {
-      showToast(error instanceof ApiError ? error.message : tCommon("favoriteRemoveFailed"));
+      showToast(toAuthErrorMessage(error, tAuthError, tCommon("favoriteRemoveFailed")));
     },
   });
 
@@ -99,7 +103,31 @@ export default function CustomerFavoritesPage() {
         <p className="text-16 text-gray-gray-400 py-20 text-center">
           {t("favoriteListLoadFailed")}
         </p>
-      ) : isPending && !data ? null : isEmpty ? (
+      ) : isPending && !data ? (
+        <SkeletonStatus
+          label={tCommon("loading")}
+          className="tablet:px-18 pc:px-0 pc:pt-8 flex w-full flex-1 flex-col items-center px-6 pt-4 pb-10"
+        >
+          <div className="tablet:max-w-[600px] pc:max-w-[1200px] pc:w-[1200px] flex w-full flex-col">
+            {/* 전체 선택 줄은 체크박스(size-9) 높이 */}
+            <div className="flex h-9 items-center">
+              <SkeletonBone className="h-6 w-32" />
+            </div>
+            <ul className="tablet:mt-5 pc:mt-7 mt-2.5 flex flex-col gap-5">
+              {Array.from({ length: 4 }, (_, index) => (
+                <li key={index}>
+                  <div className="tablet:hidden">
+                    <CardMoverSkeleton size="md" selectable />
+                  </div>
+                  <div className="tablet:block hidden">
+                    <CardMoverSkeleton size="lg" selectable />
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </SkeletonStatus>
+      ) : isEmpty ? (
         <FavoritesEmptyFallback onFindMovers={() => router.push("/movers")} />
       ) : (
         <section className="tablet:px-18 pc:px-0 pc:pt-8 flex w-full flex-1 flex-col items-center px-6 pt-4 pb-10">

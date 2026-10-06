@@ -3,7 +3,6 @@
 import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
-import Loading from "@/app/[locale]/loading";
 import emptyCharacter from "@/assets/images/common/empty-review.png";
 import Header from "@/components/common/Header";
 import Toast from "@/components/common/Toast";
@@ -14,12 +13,14 @@ import MoverRequestFilters, {
 } from "@/components/mover/MoverRequestFilters";
 import MoverRequestList from "@/components/mover/MoverRequestList";
 import QuoteActionModal from "@/components/quote/QuoteActionModal";
+import CardRequestSkeleton from "@/components/skeleton/CardRequestSkeleton";
+import SkeletonStatus from "@/components/skeleton/SkeletonStatus";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useInfiniteScrollTrigger } from "@/hooks/useInfiniteScrollTrigger";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { useMoverRequestAction, useMoverRequests } from "@/hooks/useMoverRequests";
 import type { MoverRequest } from "@/lib/services/mover-request-service";
-import { ApiError } from "@/lib/utils/api-error";
+import { toAuthErrorMessage } from "@/lib/auth/auth-error-message";
 import { shortenAddress } from "@/lib/utils/address";
 import { formatMovingDate, type DateLocale } from "@/lib/utils/date";
 
@@ -79,6 +80,7 @@ function EmptyState({ message }: { message: string }) {
 export default function MoverRequestsClient() {
   const locale = useLocale() as DateLocale;
   const t = useTranslations("moverPage");
+  const tAuthError = useTranslations("authError");
   const tCommon = useTranslations("common");
   const isTabletUp = useMediaQuery(TABLET_QUERY);
   const isPc = useMediaQuery(PC_QUERY);
@@ -117,10 +119,11 @@ export default function MoverRequestsClient() {
     setTimeout(() => setToast(null), 3000);
   };
 
-  // BE가 이유를 담아 보냅니다("이 견적 요청에 이미 일반 견적이 5건 도착했습니다" 등).
-  // 뭉뚱그리면 상한 초과인지 일시 장애인지 구분이 안 돼 다시 눌러보게 됩니다.
+  // 에러 코드별 문구를 띄웁니다(상한 초과·이미 보냄 등). 뭉뚱그리면 상한 초과인지
+  // 일시 장애인지 구분이 안 돼 다시 눌러보게 됩니다.
+  // 번역이 없는 코드만 `actionFailed`로 떨어집니다.
   const { sendEstimate, reject } = useMoverRequestAction((error) =>
-    showToast(error instanceof ApiError && error.message ? error.message : t("actionFailed"))
+    showToast(toAuthErrorMessage(error, tAuthError, t("actionFailed")))
   );
 
   const headerSize = isPc ? "lg" : isTabletUp ? "md" : "sm";
@@ -203,7 +206,21 @@ export default function MoverRequestsClient() {
             {error ? (
               <Message>{t("requestLoadFailed")}</Message>
             ) : isPending ? (
-              <Loading />
+              <SkeletonStatus
+                label={tCommon("loading")}
+                className="tablet:gap-8 pc:grid-cols-2 pc:gap-6 grid w-full grid-cols-1 gap-6"
+              >
+                {Array.from({ length: 4 }, (_, index) => (
+                  <div key={index}>
+                    <div className="tablet:hidden">
+                      <CardRequestSkeleton size="sm" footer="actions" />
+                    </div>
+                    <div className="tablet:block hidden">
+                      <CardRequestSkeleton size="lg" footer="actions" />
+                    </div>
+                  </div>
+                ))}
+              </SkeletonStatus>
             ) : requests.length === 0 ? (
               // 피그마 empty 문구는 t("noRequests") 하나뿐이라, 검색·필터로
               // 걸러져 0건인 경우는 원인을 알 수 있게 문구만 바꿔 같은 화면을 씁니다

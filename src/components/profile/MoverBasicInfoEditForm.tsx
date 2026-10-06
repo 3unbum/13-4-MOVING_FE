@@ -16,7 +16,7 @@ import {
 } from "@/lib/schemas/profile-schema";
 import { profileService } from "@/lib/services/profile-service";
 import type { MoverAccountResponse } from "@/lib/services/auth-service";
-import { ApiError } from "@/lib/utils/api-error";
+import { toAuthErrorMessage } from "@/lib/auth/auth-error-message";
 import { useAuth } from "@/providers/AuthProvider";
 
 const PC_QUERY = "(min-width: 1280px)";
@@ -45,6 +45,7 @@ export default function MoverBasicInfoEditForm({
 }: MoverBasicInfoEditFormProps) {
   const t = useTranslations("profile");
   const tCommon = useTranslations("common");
+  const tAuthError = useTranslations("authError");
   const router = useRouter();
   const { refetch } = useAuth();
   const [submitError, setSubmitError] = useState<string>();
@@ -103,7 +104,7 @@ export default function MoverBasicInfoEditForm({
       // (HoneyLatlll 리뷰, PR #135)
       router.push("/mover/mypage");
     } catch (error) {
-      setSubmitError(error instanceof ApiError ? error.message : t("basicInfoUpdateFailed"));
+      setSubmitError(toAuthErrorMessage(error, tAuthError, t("basicInfoUpdateFailed")));
     }
   }
 

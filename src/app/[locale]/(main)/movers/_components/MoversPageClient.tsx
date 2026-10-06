@@ -6,9 +6,12 @@ import { useRouter } from "@/i18n/navigation";
 import Filter, { type FilterOption } from "@/components/common/Filter";
 import Header from "@/components/common/Header";
 import InputSearchbar from "@/components/common/InputSearchbar";
+import ScrollToTopButton from "@/components/common/ScrollToTopButton";
 import Sort from "@/components/common/Sort";
 import CardMover from "@/components/mover/CardMover";
 import InfoRequiredModal from "@/components/quote/InfoRequiredModal";
+import CardMoverSkeleton from "@/components/skeleton/CardMoverSkeleton";
+import SkeletonStatus from "@/components/skeleton/SkeletonStatus";
 import { REGION_COLUMNS, SERVICE_OPTIONS, SORT_OPTIONS } from "@/constants/movers/filters";
 import type { MoverListFilters } from "@/constants/query-keys/movers";
 import { useDebounce } from "@/hooks/useDebounce";
@@ -22,6 +25,7 @@ import { toMoverListRegionParam, toMoverListServiceParam } from "@/lib/utils/mov
 import type { MoverListUrlFilters } from "@/lib/utils/mover-list-url-filters";
 import { mapFavoriteCardToCard, mapMoverListItemToCard } from "@/lib/utils/mover-list-mapper";
 import { cn } from "@/lib/utils/cn";
+import { toAuthErrorDetail } from "@/lib/auth/auth-error-message";
 import { useAuth } from "@/providers/AuthProvider";
 
 type MoverCardViewModel = ReturnType<typeof mapMoverListItemToCard>;
@@ -94,6 +98,7 @@ export default function MoversPageClient({ initialFilters }: MoversPageClientPro
   const tRegion = useTranslations("region");
   const tService = useTranslations("service");
   const tFilter = useTranslations("filter");
+  const tAuthError = useTranslations("authError");
 
   // 상수는 value(코드)만 쓰고 표시 라벨은 여기서 번역합니다 — label은 폴백으로만 남습니다
   const serviceOptions = SERVICE_OPTIONS.map((option) => ({
@@ -148,6 +153,7 @@ export default function MoversPageClient({ initialFilters }: MoversPageClientPro
 
   const { data, isPending, isError, error, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useMoversInfinite(listFilters);
+  const errorDetail = toAuthErrorDetail(error, tAuthError);
 
   // infinite query pages → 카드용 flat 배열
   const movers = useMemo(
@@ -278,13 +284,26 @@ export default function MoversPageClient({ initialFilters }: MoversPageClientPro
           <div className="tablet:mt-6 pc:mt-9.25 pc:gap-13.5 mt-3 flex items-start">
             <div className="pc:w-205 pc:flex-none flex min-w-0 flex-1 flex-col">
               {isPending && (
-                <p className="text-14 text-gray-gray-500 py-8 text-center">{t("loadingMovers")}</p>
+                <SkeletonStatus label={t("loadingMovers")}>
+                  <ul className="pc:gap-5 flex flex-col gap-6">
+                    {Array.from({ length: 4 }, (_, index) => (
+                      <li key={index}>
+                        <div className="tablet:hidden">
+                          <CardMoverSkeleton size="md" withDescription />
+                        </div>
+                        <div className="tablet:block hidden">
+                          <CardMoverSkeleton size="lg" withDescription />
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                </SkeletonStatus>
               )}
 
               {isError && (
                 <p className="text-14 py-8 text-center text-red-500" role="alert">
                   {t("loadFailed")}
-                  {error instanceof Error ? ` (${error.message})` : null}
+                  {errorDetail ? ` (${errorDetail})` : null}
                 </p>
               )}
 
@@ -327,7 +346,17 @@ export default function MoversPageClient({ initialFilters }: MoversPageClientPro
                 <h2 className="text-20 text-black-black-450 font-semibold">
                   {t("favoriteMovers")}
                 </h2>
-                {isSidebarPending && <p className="text-14 text-gray-gray-500">{t("loading")}</p>}
+                {isSidebarPending && (
+                  <SkeletonStatus label={t("loading")}>
+                    <ul className="flex flex-col gap-4">
+                      {Array.from({ length: 3 }, (_, index) => (
+                        <li key={index}>
+                          <CardMoverSkeleton size="sm" />
+                        </li>
+                      ))}
+                    </ul>
+                  </SkeletonStatus>
+                )}
                 {isSidebarError && (
                   <p className="text-14 text-red-500" role="alert">
                     {t("favoriteLoadFailed")}
@@ -371,6 +400,8 @@ export default function MoversPageClient({ initialFilters }: MoversPageClientPro
           </div>
         </main>
       </div>
+
+      <ScrollToTopButton />
 
       {/* 비회원 찜 가드 */}
       <InfoRequiredModal
