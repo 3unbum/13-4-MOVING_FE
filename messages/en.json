@@ -275,6 +275,7 @@
     "botCheckFailed": "Bot verification failed. Please try again.",
     "concurrentRequestConflict": "We couldn't process your request due to high traffic. Please try again in a moment.",
     "emailAlreadyExists": "This email is already registered.",
+    "emailNotVerified": "Email verification is required. Please request a new verification code",
     "estimateAlreadyProcessed": "This quote has already been processed.",
     "estimateLimitExceeded": "This request has already received the maximum number of quotes.",
     "forbidden": "You don't have permission to access this.",
@@ -285,6 +286,7 @@
     "invalidOrExpiredSignupToken": "Your verification expired. Please start over.",
     "invalidProfileEditCode": "The verification code is incorrect",
     "invalidResetCode": "The verification code is incorrect",
+    "invalidSignupCode": "The verification code is incorrect",
     "noActiveRequest": "This request has already been confirmed or closed.",
     "notFound": "We couldn't find what you were looking for.",
     "notServiceRegion": "This is outside your service area.",
@@ -301,6 +303,8 @@
     "resetCodeAttemptsExceeded": "Too many incorrect attempts. Please request a new verification code",
     "resetCodeExpired": "The verification code has expired. Please request a new one",
     "reviewAlreadyConfirmed": "You have already written this review.",
+    "signupCodeAttemptsExceeded": "Too many incorrect attempts. Please request a new verification code",
+    "signupCodeExpired": "The verification code has expired. Please request a new one",
     "targetLimitExceeded": "You can request targeted quotes from up to 3 movers.",
     "tooManyRequests": "Too many requests. Please try again later.",
     "unauthorized": "Login required.",
@@ -435,6 +439,13 @@
       "failed": "Something went wrong. Please try again later.",
       "mailHelp": "Didn't get the email? Check your spam folder, or double-check your email address and request a new code.",
       "dailyLimitReached": "You've used all of today's requests. Please try again in about {hours, plural, one {# hour} other {# hours}}."
+    },
+    "signupVerification": {
+      "guide": "Please verify your email to sign up",
+      "verify": "Verify",
+      "verified": "Your email has been verified",
+      "changeEmail": "Change email",
+      "sending": "Sending code..."
     }
   },
   "review": {
