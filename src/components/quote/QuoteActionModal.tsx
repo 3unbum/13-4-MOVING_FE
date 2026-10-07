@@ -97,6 +97,10 @@ function AddressRow({
   const t = useTranslations("quote");
   const detail = detailAddress?.trim();
   const full = [address, detail].filter(Boolean).join(" ");
+  // 우편번호도 함께 복사합니다. 화면에는 "(04535)"가 보이는데 복사에서 빠지면
+  // 보이는 대로 가져갔다고 생각한 사용자가 우편번호를 다시 찾아야 합니다.
+  // 펼침 패널(AddressCopyPanel)은 항목별 버튼이 따로 있어 이런 일이 없습니다.
+  const copyText = postalCode ? `${full} (${postalCode})` : full;
 
   return (
     // 라벨·주소·복사를 한 줄에 둡니다. 두 줄로 나누면 모달 높이가 64px 늘어
@@ -109,9 +113,9 @@ function AddressRow({
       </p>
       <button
         type="button"
-        onClick={() => onCopy(full)}
+        onClick={() => onCopy(copyText)}
         aria-label={`${label} ${t("copy")}`}
-        className="text-12 text-primary-orange-300 hover:text-primary-orange-400 shrink-0 cursor-pointer font-semibold"
+        className="text-12 shrink-0 cursor-pointer font-semibold text-orange-400 hover:text-orange-500"
       >
         {t("copy")}
       </button>
