@@ -1,4 +1,4 @@
-import type { MoverListSort } from "@/lib/services/mover-service";
+import type { MoverListSort, MoverReviewSort } from "@/lib/services/mover-service";
 
 /**
  * 목록 infinite query 필터.
@@ -27,8 +27,8 @@ export const moverQueryKeys = {
   detailByAuth: (moverId: number, userId: number | null) =>
     [...moverQueryKeys.detail(moverId), userId ?? "guest"] as const,
   reviews: (moverId: number) => [...moverQueryKeys.all, "reviews", moverId] as const,
-  reviewList: (moverId: number, page: number) =>
-    [...moverQueryKeys.reviews(moverId), "list", page] as const,
+  reviewList: (moverId: number, page: number, sort: MoverReviewSort = "latest") =>
+    [...moverQueryKeys.reviews(moverId), "list", page, sort] as const,
   reviewDistribution: (moverId: number) =>
     [...moverQueryKeys.reviews(moverId), "distribution"] as const,
 };

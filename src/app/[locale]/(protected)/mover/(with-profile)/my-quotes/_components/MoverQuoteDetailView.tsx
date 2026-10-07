@@ -14,8 +14,12 @@ const PC_QUERY = "(min-width: 1280px)";
 
 interface MoverQuoteDetailViewProps {
   estimate: MoverEstimate;
-  /** 공유 문구·링크에 쓰는 본인 정보 — 공유 대상은 기사님 상세 페이지입니다 */
+  /**
+   * 공유 대상 — 기사님 화면은 **본인 상세 페이지**를 공유합니다.
+   * 견적서 경로(`/mover/my-quotes/...`)는 기사님 전용이라 받는 사람이 못 엽니다.
+   */
   moverId: number;
+  /** 공유 문구에 쓰는 본인 별명 */
   moverNickName: string;
 }
 
@@ -158,7 +162,8 @@ export default function MoverQuoteDetailView({
               태블릿·모바일 tQuote("shareTitleMobile")(`1:9508`). */}
           <QuoteShare
             title={isPc ? tQuote("shareTitlePc") : tQuote("shareTitleMobile")}
-            moverId={moverId}
+            shareUrl={`/movers/${moverId}`}
+            variant="mover"
             moverNickName={moverNickName}
             className="pc:items-start"
           />
