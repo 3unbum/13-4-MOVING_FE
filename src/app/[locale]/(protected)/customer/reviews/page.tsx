@@ -134,10 +134,11 @@ export default function CustomerReviewsPage() {
     });
   };
 
-  const closeWriteModal = () => {
+  const closeWriteModal = ({ refreshWritable = true }: { refreshWritable?: boolean } = {}) => {
     // 닫기는 제출 취소를 뜻한다. 진행 중인 PATCH는 버리고 성공/실패 토스트도 띄우지 않는다.
-    // 사진 추가·삭제는 이미 서버에 반영됐으므로 작성한 리뷰 목록은 다시 받는다.
+    // 사진 추가·삭제는 이미 서버에 반영됐으므로, 제출하지 않고 닫으면 그 목록을 다시 받는다.
     const editedMoverId = editing?.mover.id;
+    const closedWritable = selected != null;
     submitAbortRef.current?.abort();
     submitAbortRef.current = null;
     setSelected(null);
@@ -150,6 +151,11 @@ export default function CustomerReviewsPage() {
         queryKey: reviewQueryKeys.written(writtenPage, writtenCursor),
       });
       void queryClient.invalidateQueries({ queryKey: moverQueryKeys.reviews(editedMoverId) });
+    }
+    if (closedWritable && refreshWritable) {
+      void queryClient.invalidateQueries({
+        queryKey: reviewQueryKeys.writable(writablePage, writableCursor),
+      });
     }
   };
 
@@ -205,7 +211,8 @@ export default function CustomerReviewsPage() {
         return;
       }
       const editedMoverId = editing?.mover.id;
-      closeWriteModal();
+      // 성공 경로는 아래에서 1페이지만 다시 받는다. 닫기에서 지금 페이지를 또 받으면 곧 버려진다.
+      closeWriteModal({ refreshWritable: false });
       if (editedMoverId != null) {
         await queryClient.invalidateQueries({ queryKey: reviewQueryKeys.all });
         await queryClient.invalidateQueries({ queryKey: moverQueryKeys.reviews(editedMoverId) });
