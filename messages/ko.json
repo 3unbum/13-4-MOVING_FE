@@ -208,7 +208,11 @@
     "targetedMessage": "일반 견적 요청을 먼저 진행해 주세요.",
     "targetedAction": "일반 견적 요청 하기",
     "arrowAlt": "에서",
-    "shareKakaoFallback": "링크 복사하기 (카카오톡 공유는 준비 중)"
+    "shareKakaoFallback": "링크 복사하기 (카카오톡 공유는 준비 중)",
+    "shareCardTitle": "{moverName} 기사님 | 무빙",
+    "shareQuoteText": "{moverName} 기사님께 받은 견적서예요. 무빙에서 확인해 보세요!",
+    "shareQuoteButton": "견적서 보러가기",
+    "shareQuoteCardTitle": "{moverName} 기사님 견적서 | 무빙"
   },
   "validation": {
     "emailRequired": "이메일을 입력해 주세요",
