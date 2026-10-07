@@ -108,8 +108,7 @@ export default function CardRequest({
         "shadow-[inset_0_0_0_0.5px_var(--color-line-100),-2px_-2px_10px_0_rgba(220,220,220,0.2),2px_2px_10px_0_rgba(220,220,220,0.2)]",
         "w-full",
         isLg ? "gap-8 rounded-[20px] px-10 py-8" : "gap-6 rounded-[20px] px-5 py-6",
-        onCardClick &&
-          "focus-visible:outline-primary-orange-300 cursor-pointer focus-visible:outline-2",
+        onCardClick && "cursor-pointer focus-visible:outline-2 focus-visible:outline-orange-400",
         className
       )}
       {...clickable}

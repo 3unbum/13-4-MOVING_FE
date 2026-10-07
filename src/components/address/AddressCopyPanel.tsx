@@ -175,7 +175,7 @@ function CopyRow({
         type="button"
         onClick={() => onCopy(value)}
         aria-label={`${label} ${t("copy")}`}
-        className="text-12 text-primary-orange-300 hover:text-primary-orange-400 shrink-0 cursor-pointer font-semibold"
+        className="text-12 shrink-0 cursor-pointer font-semibold text-orange-400 hover:text-orange-500"
       >
         {t("copy")}
       </button>
