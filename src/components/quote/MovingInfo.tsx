@@ -23,6 +23,14 @@ interface MovingInfoProps extends HTMLAttributes<HTMLDivElement> {
   movingDate: string;
   size?: MovingInfoSize;
   variant?: MovingInfoVariant;
+  /**
+   * 출발지·도착지를 숨기고 이사일만 보여줍니다.
+   *
+   * 견적 보내기 모달은 바로 아래에 전체 주소(동·호수까지)를 따로 두는데,
+   * 여기까지 "충남 천안시 → 경기 안산시"를 내면 같은 정보가 두 번 나와
+   * 모달 높이만 늘어납니다.
+   */
+  hideAddresses?: boolean;
 }
 
 /** 라벨(회색) + 값(진한색) 한 쌍 */
@@ -72,6 +80,7 @@ export default function MovingInfo({
   movingDate,
   size = "sm",
   variant = "card",
+  hideAddresses = false,
   className,
   ...props
 }: MovingInfoProps) {
@@ -98,21 +107,23 @@ export default function MovingInfo({
       {...props}
     >
       {/* lg 201px는 기본 문구에 딱 맞는 값이라 최소폭으로 둡니다 — 주소가 길면 늘어나고, 그래도 모자라면 잘립니다 */}
-      <div
-        className={cn(
-          "flex gap-3",
-          // 모바일 모달만 라벨·값이 한 줄이라 가운데 정렬, 나머지는 값 기준 아래 맞춤
-          isModal && !isLg ? "items-center" : "items-end",
-          // 모달 PC는 이사일이 48px 옆에 붙고, 주소가 길면 남는 폭 안에서 줄어듭니다.
-          // `shrink-0`로 두면 행 폭을 넘겨 이사일을 밀어냅니다 — 안쪽 truncate만으로는
-          // 부모가 안 줄어서 소용이 없습니다.
-          isModal && isLg ? "min-w-0 flex-1" : isLg ? "min-w-50.25" : "w-full min-w-0"
-        )}
-      >
-        <InfoItem label={tCommon("from")} value={from} {...item} />
-        <Image src={arrowRight} alt={t("arrowAlt")} className="h-5.75 w-4.5 shrink-0" />
-        <InfoItem label={tCommon("to")} value={to} {...item} />
-      </div>
+      {!hideAddresses && (
+        <div
+          className={cn(
+            "flex gap-3",
+            // 모바일 모달만 라벨·값이 한 줄이라 가운데 정렬, 나머지는 값 기준 아래 맞춤
+            isModal && !isLg ? "items-center" : "items-end",
+            // 모달 PC는 이사일이 48px 옆에 붙고, 주소가 길면 남는 폭 안에서 줄어듭니다.
+            // `shrink-0`로 두면 행 폭을 넘겨 이사일을 밀어냅니다 — 안쪽 truncate만으로는
+            // 부모가 안 줄어서 소용이 없습니다.
+            isModal && isLg ? "min-w-0 flex-1" : isLg ? "min-w-50.25" : "w-full min-w-0"
+          )}
+        >
+          <InfoItem label={tCommon("from")} value={from} {...item} />
+          <Image src={arrowRight} alt={t("arrowAlt")} className="h-5.75 w-4.5 shrink-0" />
+          <InfoItem label={tCommon("to")} value={to} {...item} />
+        </div>
+      )}
       {/* sm은 세로 배치라 부모 폭을 직접 제한해야 잘립니다 */}
       <div className={cn("flex min-w-0", isLg ? "shrink-0" : "w-full")}>
         <InfoItem label={tCommon("movingDate")} value={movingDate} {...item} />

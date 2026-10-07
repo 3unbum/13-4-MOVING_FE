@@ -213,7 +213,13 @@
     "shareCardTitle": "{moverName} 师傅 | Moving",
     "shareQuoteText": "这是 {moverName} 师傅的报价单。快来 Moving 查看吧！",
     "shareQuoteButton": "查看报价单",
-    "shareQuoteCardTitle": "{moverName} 师傅的报价单 | Moving"
+    "shareQuoteCardTitle": "{moverName} 师傅的报价单 | Moving",
+    "postalCode": "邮政编码",
+    "roadAddressLabel": "路名地址",
+    "detailAddressLabel": "详细地址",
+    "addressCopied": "地址已复制！",
+    "addressCopyFailed": "复制失败，请手动选择地址复制",
+    "copy": "复制"
   },
   "validation": {
     "emailRequired": "请输入邮箱",

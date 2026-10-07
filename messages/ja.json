@@ -213,7 +213,13 @@
     "shareCardTitle": "{moverName} 業者 | Moving",
     "shareQuoteText": "{moverName} 業者からの見積書です。Moving で確認してください！",
     "shareQuoteButton": "見積書を見る",
-    "shareQuoteCardTitle": "{moverName} 業者の見積書 | Moving"
+    "shareQuoteCardTitle": "{moverName} 業者の見積書 | Moving",
+    "postalCode": "郵便番号",
+    "roadAddressLabel": "道路名住所",
+    "detailAddressLabel": "詳細住所",
+    "addressCopied": "住所をコピーしました！",
+    "addressCopyFailed": "コピーできませんでした。住所を選択して手動でコピーしてください",
+    "copy": "コピー"
   },
   "validation": {
     "emailRequired": "メールアドレスを入力してください",

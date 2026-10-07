@@ -213,7 +213,13 @@
     "shareCardTitle": "{moverName} 기사님 | 무빙",
     "shareQuoteText": "{moverName} 기사님께 받은 견적서예요. 무빙에서 확인해 보세요!",
     "shareQuoteButton": "견적서 보러가기",
-    "shareQuoteCardTitle": "{moverName} 기사님 견적서 | 무빙"
+    "shareQuoteCardTitle": "{moverName} 기사님 견적서 | 무빙",
+    "postalCode": "우편번호",
+    "roadAddressLabel": "도로명 주소",
+    "detailAddressLabel": "상세 주소",
+    "addressCopied": "주소가 복사되었어요!",
+    "addressCopyFailed": "복사에 실패했어요. 주소를 직접 선택해 복사해 주세요",
+    "copy": "복사"
   },
   "validation": {
     "emailRequired": "이메일을 입력해 주세요",

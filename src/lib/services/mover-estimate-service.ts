@@ -22,6 +22,14 @@ export interface MoverEstimateRequest {
   createdAt: string;
   fromAddress: string;
   toAddress: string;
+  /**
+   * 상세 주소·우편번호 — 기사님이 실제로 찾아가는 데 필요합니다 (BE #133).
+   * 그 전에 배포된 서버는 내려주지 않아 optional로 둡니다.
+   */
+  fromPostalCode?: string;
+  fromDetailAddress?: string;
+  toPostalCode?: string;
+  toDetailAddress?: string;
   /** 카드·상세의 "OOO 고객님" */
   userName: string;
 }

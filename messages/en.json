@@ -213,7 +213,13 @@
     "shareCardTitle": "{moverName} | Moving",
     "shareQuoteText": "Here's the quote from {moverName}. Check it out on Moving!",
     "shareQuoteButton": "View quote",
-    "shareQuoteCardTitle": "Quote from {moverName} | Moving"
+    "shareQuoteCardTitle": "Quote from {moverName} | Moving",
+    "postalCode": "Postal code",
+    "roadAddressLabel": "Street address",
+    "detailAddressLabel": "Address details",
+    "addressCopied": "Address copied!",
+    "addressCopyFailed": "Couldn't copy. Please select the address and copy it manually.",
+    "copy": "Copy"
   },
   "validation": {
     "emailRequired": "Please enter your email",

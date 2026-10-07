@@ -5,7 +5,7 @@ import type { ServiceCode } from "@/components/filter/ChipRegion";
 import MovingInfo from "@/components/quote/MovingInfo";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils/cn";
-import type { HTMLAttributes, ReactNode } from "react";
+import type { HTMLAttributes, KeyboardEvent, MouseEvent, ReactNode } from "react";
 
 type CardRequestSize = "sm" | "lg";
 
@@ -27,6 +27,11 @@ interface CardRequestProps extends HTMLAttributes<HTMLElement> {
   footer?: ReactNode;
   /** 카드 전체를 덮는 딤 레이어 — 반려/이사완료 카드용 */
   overlay?: ReactNode;
+  /**
+   * 카드를 눌러 상세로 보낼 때. 주면 카드 전체가 버튼처럼 동작합니다
+   * (키보드 Enter·Space 포함). 내부 버튼이 있는 카드는 그쪽 클릭이 우선입니다.
+   */
+  onCardClick?: () => void;
 }
 
 /**
@@ -53,10 +58,48 @@ export default function CardRequest({
   footer,
   overlay,
   className,
+  onCardClick,
   ...props
 }: CardRequestProps) {
   const honorific = useTranslations("quote")("customerHonorific");
   const isLg = size === "lg";
+
+  // 카드를 누르면 상세로 가지만 article은 기본으로 포커스를 받지 못해
+  // role·tabIndex·키보드 핸들러를 함께 줍니다. 마우스만 되는 영역을 만들지 않기 위해서입니다.
+  //
+  // ⚠️ footer·overlay에 버튼이 들어가는 카드가 있습니다(받은 요청의 [반려][견적 보내기],
+  // 이사완료의 [견적 상세보기]). 그 버튼을 누르면 이벤트가 article까지 올라와
+  // 버튼 동작 뒤에 상세로도 이동합니다. preventDefault는 전파를 막지 못하므로
+  // **이벤트가 어디서 시작됐는지**를 보고 내부 컨트롤이면 카드 이동을 건너뜁니다.
+  // ⚠️ 카드 자신도 role="button"이라 선택자에 [role] 을 넣으면 closest가 **자기 자신**을
+  // 찾아 모든 클릭이 막힙니다. 실제 컨트롤 태그만 보고, 찾은 것이 카드 바깥이면
+  // (= currentTarget 자신이면) 내부 컨트롤이 아닙니다.
+  const isFromInnerControl = (event: MouseEvent<HTMLElement>) => {
+    const target = event.target;
+    if (!(target instanceof Element)) return false;
+
+    const control = target.closest("button,a,input,select,textarea");
+    return control !== null && control !== event.currentTarget;
+  };
+
+  const clickable = onCardClick
+    ? {
+        role: "button" as const,
+        tabIndex: 0,
+        onClick: (event: MouseEvent<HTMLElement>) => {
+          if (isFromInnerControl(event)) return;
+          onCardClick();
+        },
+        onKeyDown: (event: KeyboardEvent<HTMLElement>) => {
+          if (event.key !== "Enter" && event.key !== " ") return;
+          // 내부 버튼에서 Enter·Space를 누른 경우도 여기로 올라옵니다
+          if (event.target !== event.currentTarget) return;
+          // Space는 기본 동작이 스크롤이라 막습니다
+          event.preventDefault();
+          onCardClick();
+        },
+      }
+    : undefined;
 
   return (
     <article
@@ -65,8 +108,10 @@ export default function CardRequest({
         "shadow-[inset_0_0_0_0.5px_var(--color-line-100),-2px_-2px_10px_0_rgba(220,220,220,0.2),2px_2px_10px_0_rgba(220,220,220,0.2)]",
         "w-full",
         isLg ? "gap-8 rounded-[20px] px-10 py-8" : "gap-6 rounded-[20px] px-5 py-6",
+        onCardClick && "cursor-pointer focus-visible:outline-2 focus-visible:outline-orange-400",
         className
       )}
+      {...clickable}
       {...props}
     >
       <div className={cn("flex w-full flex-col items-start", isLg ? "gap-6" : "gap-4")}>
