@@ -293,6 +293,7 @@
     "profileAlreadyExists": "이미 등록된 프로필입니다",
     "profileEditCodeAttemptsExceeded": "인증번호를 여러 번 틀려 무효가 되었습니다. 인증번호를 다시 받아 주세요",
     "profileEditCodeExpired": "인증번호가 만료되었습니다. 인증번호를 다시 받아 주세요",
+    "profileEditVerificationRequired": "이메일 인증이 필요해요. 인증 후 다시 시도해 주세요",
     "profileRequired": "프로필 등록이 필요합니다",
     "providerAccountAlreadyLinked": "이미 가입된 계정입니다",
     "refreshTokenExpired": "로그인이 만료되었습니다. 다시 로그인해 주세요",

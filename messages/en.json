@@ -293,6 +293,7 @@
     "profileAlreadyExists": "Your profile is already set up.",
     "profileEditCodeAttemptsExceeded": "Too many incorrect attempts. Please request a new verification code",
     "profileEditCodeExpired": "The verification code has expired. Please request a new one",
+    "profileEditVerificationRequired": "Email verification is required. Please verify and try again",
     "profileRequired": "Please set up your profile first.",
     "providerAccountAlreadyLinked": "This account is already registered.",
     "refreshTokenExpired": "Your session has expired. Please log in again.",

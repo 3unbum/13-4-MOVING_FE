@@ -1,5 +1,6 @@
 "use client";
 
+import { isProfileEditVerificationRequiredError } from "@/lib/auth/profile-edit-verification";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { Controller, useForm, useWatch } from "react-hook-form";
@@ -28,6 +29,8 @@ interface MoverProfileEditFormProps {
   // 성공적으로 저장되면 부모(MoverProfileEditPanel)의 계정 상태를 갱신 — 별도 재조회 없이
   // 이 화면에서 받은 응답을 그대로 올려보낸다
   onAccountUpdated: (account: MoverAccountResponse) => void;
+  // 인증 후 30분이 지나 BE가 403으로 거절하면 부모가 인증 화면을 다시 띄운다
+  onVerificationRequired: () => void;
 }
 
 // 피그마 "마이페이지_프로필 수정_기사님" 대응(#73). 필드 구성(별명/경력/한줄소개/상세설명/
@@ -49,6 +52,7 @@ function accountToFormValues(account: MoverAccountResponse): MoverProfileFormVal
 export default function MoverProfileEditForm({
   account,
   onAccountUpdated,
+  onVerificationRequired,
 }: MoverProfileEditFormProps) {
   const t = useTranslations("profile");
   const tAuthError = useTranslations("authError");
@@ -122,6 +126,10 @@ export default function MoverProfileEditForm({
       // 확인할 수 있어야 하니 (CustomerProfileEditForm도 성공 시 라우팅으로 마무리하는 동일 패턴)
       router.push("/mover/mypage");
     } catch (error) {
+      if (isProfileEditVerificationRequiredError(error)) {
+        onVerificationRequired();
+        return;
+      }
       setSubmitError(toAuthErrorMessage(error, tAuthError, t("updateFailed")));
     }
   }

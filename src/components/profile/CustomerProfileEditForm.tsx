@@ -11,6 +11,10 @@ import ProfileImageUpload from "@/components/common/ProfileImageUpload";
 import Toast from "@/components/common/Toast";
 import Chip from "@/components/filter/ChipRegion";
 import ProfileEmailVerificationGate from "@/components/profile/ProfileEmailVerificationGate";
+import {
+  isProfileEditVerificationRequiredError,
+  useProfileEditVerified,
+} from "@/lib/auth/profile-edit-verification";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { REGION_OPTIONS, SERVICE_OPTIONS } from "@/constants/profile/options";
 import {
@@ -60,6 +64,7 @@ export default function CustomerProfileEditForm({ initialAccount }: CustomerProf
   const [isLoadingAccount, setIsLoadingAccount] = useState(!initialAccount);
   const [submitError, setSubmitError] = useState<string>();
   const [isImageUploading, setIsImageUploading] = useState(false);
+  const { isVerified, setVerified } = useProfileEditVerified(account?.isProfileEditVerified);
   // PC에서만 필드를 md 크기로 키움 (태블릿은 FormField 내부 CSS로 이미 처리됨)
   const isPc = useMediaQuery(PC_QUERY);
   const fieldSize = isPc ? "md" : "sm";
@@ -145,6 +150,11 @@ export default function CustomerProfileEditForm({ initialAccount }: CustomerProf
       });
       router.push("/");
     } catch (error) {
+      // 인증 후 30분이 지났다면 BE가 403으로 거절한다 — 인증 화면을 다시 띄운다
+      if (isProfileEditVerificationRequiredError(error)) {
+        setVerified(false);
+        return;
+      }
       setSubmitError(toAuthErrorMessage(error, tAuthError, t("updateFailed")));
     }
   }
@@ -160,7 +170,11 @@ export default function CustomerProfileEditForm({ initialAccount }: CustomerProf
   return (
     // #131: 프로필 수정 진입 자체를 이메일 인증으로 한 번 더 막는다(비밀번호 재확인이 아님 —
     // 소셜 로그인 계정은 비밀번호가 없어서 그 방식은 못 쓴다). 인증 전에는 아래 폼 자체가 안 보인다.
-    <ProfileEmailVerificationGate email={account.email}>
+    <ProfileEmailVerificationGate
+      email={account.email}
+      isVerified={isVerified}
+      onVerified={() => setVerified(true)}
+    >
       {/* 피그마 node 1:10192 실측(2026-09-17): 데스크탑에서 [구분선+2열 그리드] 묶음과 [버튼 줄]
           사이 간격이 64px(gap-16)이고, 묶음 내부(구분선→그리드)는 40px(gap-10)로 서로 다른 리듬이라
           두 단계로 중첩함 — 이전엔 전부 한 레벨(gap-14=56px)로 뭉뚱그려서 중간 간격이 어긋났었음 */}

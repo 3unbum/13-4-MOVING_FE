@@ -2,6 +2,7 @@
 
 import MoverProfileEditForm from "@/components/profile/MoverProfileEditForm";
 import ProfileEmailVerificationGate from "@/components/profile/ProfileEmailVerificationGate";
+import { useProfileEditVerified } from "@/lib/auth/profile-edit-verification";
 import { useTranslations } from "next-intl";
 import { useMoverAccount } from "@/hooks/useMoverAccount";
 import type { MoverAccountResponse } from "@/lib/services/auth-service";
@@ -16,6 +17,7 @@ export default function MoverProfileEditPanel({ initialAccount }: MoverProfileEd
   const tCommon = useTranslations("common");
   const tProfile = useTranslations("profile");
   const { account, isLoading, setAccount } = useMoverAccount(initialAccount);
+  const { isVerified, setVerified } = useProfileEditVerified(account?.isProfileEditVerified);
 
   if (isLoading) {
     return <p className="text-14 text-black-100 pc:text-16">{tCommon("loading")}</p>;
@@ -28,8 +30,16 @@ export default function MoverProfileEditPanel({ initialAccount }: MoverProfileEd
   return (
     // #131: 프로필 수정 진입은 화면 종류와 관계없이 이메일 인증을 한 번 거친다
     // (MoverBasicInfoEditPanel / CustomerProfileEditForm과 동일 패턴)
-    <ProfileEmailVerificationGate email={account.email}>
-      <MoverProfileEditForm account={account} onAccountUpdated={setAccount} />
+    <ProfileEmailVerificationGate
+      email={account.email}
+      isVerified={isVerified}
+      onVerified={() => setVerified(true)}
+    >
+      <MoverProfileEditForm
+        account={account}
+        onAccountUpdated={setAccount}
+        onVerificationRequired={() => setVerified(false)}
+      />
     </ProfileEmailVerificationGate>
   );
 }

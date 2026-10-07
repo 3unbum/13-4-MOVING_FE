@@ -1,5 +1,6 @@
 "use client";
 
+import { isProfileEditVerificationRequiredError } from "@/lib/auth/profile-edit-verification";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useForm } from "react-hook-form";
@@ -24,6 +25,8 @@ const PC_QUERY = "(min-width: 1280px)";
 interface MoverBasicInfoEditFormProps {
   account: MoverAccountResponse;
   onAccountUpdated: (account: MoverAccountResponse) => void;
+  // 인증 후 30분이 지나 BE가 403으로 거절하면 부모가 인증 화면을 다시 띄운다
+  onVerificationRequired: () => void;
 }
 
 // 피그마 "마이페이지_기본정보 수정_기사님" 대응(#73). 이름/전화번호/비밀번호 변경만 다루고,
@@ -42,6 +45,7 @@ function accountToFormValues(account: MoverAccountResponse): MoverBasicInfoUpdat
 export default function MoverBasicInfoEditForm({
   account,
   onAccountUpdated,
+  onVerificationRequired,
 }: MoverBasicInfoEditFormProps) {
   const t = useTranslations("profile");
   const tCommon = useTranslations("common");
@@ -104,6 +108,10 @@ export default function MoverBasicInfoEditForm({
       // (HoneyLatlll 리뷰, PR #135)
       router.push("/mover/mypage");
     } catch (error) {
+      if (isProfileEditVerificationRequiredError(error)) {
+        onVerificationRequired();
+        return;
+      }
       setSubmitError(toAuthErrorMessage(error, tAuthError, t("basicInfoUpdateFailed")));
     }
   }

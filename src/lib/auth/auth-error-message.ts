@@ -33,6 +33,7 @@ const MESSAGE_KEY_BY_CODE: Record<AuthErrorCode, string> = {
   [AUTH_ERROR_CODES.INVALID_PROFILE_EDIT_CODE]: "invalidProfileEditCode",
   [AUTH_ERROR_CODES.PROFILE_EDIT_CODE_EXPIRED]: "profileEditCodeExpired",
   [AUTH_ERROR_CODES.PROFILE_EDIT_CODE_ATTEMPTS_EXCEEDED]: "profileEditCodeAttemptsExceeded",
+  [AUTH_ERROR_CODES.PROFILE_EDIT_VERIFICATION_REQUIRED]: "profileEditVerificationRequired",
 
   // 견적 요청
   [AUTH_ERROR_CODES.ACTIVE_REQUEST_EXISTS]: "activeRequestExists",

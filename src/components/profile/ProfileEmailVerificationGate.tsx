@@ -23,6 +23,10 @@ type Step = "request" | "code";
 interface ProfileEmailVerificationGateProps {
   // 인증번호를 받을 이메일 표시용 — 발송 대상 자체는 BE가 로그인 세션(req.user.id)으로 판단한다.
   email: string;
+  // 최근 30분 이내 인증 여부 — true면 인증 화면 없이 바로 children을 보여준다(useProfileEditVerified).
+  isVerified: boolean;
+  // 인증 성공 시 호출 — 부모가 isVerified를 true로 바꿔 준다
+  onVerified: () => void;
   // 인증 성공 후에만 보여줄 실제 수정 화면
   children: ReactNode;
 }
@@ -31,17 +35,18 @@ interface ProfileEmailVerificationGateProps {
 // 진입을 막을 수 없는 문제가 있었다 — 그렇다고 계정 유형별로 확인 수단을 나누면 일관성이 깨져서,
 // 계정 유형과 무관하게 진입 자체는 이메일 인증으로 통일했다. 비밀번호 재확인은 "비밀번호 변경"
 // 액션에만 남겼다(CustomerProfileEditForm/MoverBasicInfoEditForm의 currentPassword 참고).
-// 검증에 성공해도 BE가 별도 토큰을 내려주지 않는다(1회용 소비 토큰이 아니라 단순 진입 게이트라서) —
-// 그래서 이 컴포넌트가 리마운트되기 전(= 이 화면을 벗어났다 다시 들어오기 전)까지만 통과 상태를 기억한다.
+// 인증 결과는 BE가 기억한다(인증 성공 시각 기준 30분) — 계정 조회 응답의 isProfileEditVerified로 받아
+// 새로고침하거나 다른 페이지에 다녀와도 인증 화면을 다시 거치지 않는다. 계정 정보 수정 요청은 BE가
+// 같은 기준으로 한 번 더 확인하므로(403), 화면을 건너뛰어도 우회가 되지 않는다.
 export default function ProfileEmailVerificationGate({
   email,
+  isVerified,
+  onVerified,
   children,
 }: ProfileEmailVerificationGateProps) {
-  const [isVerified, setIsVerified] = useState(false);
-
   if (isVerified) return <>{children}</>;
 
-  return <ProfileEmailVerificationForm email={email} onVerified={() => setIsVerified(true)} />;
+  return <ProfileEmailVerificationForm email={email} onVerified={onVerified} />;
 }
 
 interface ProfileEmailVerificationFormProps {

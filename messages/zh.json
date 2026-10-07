@@ -293,6 +293,7 @@
     "profileAlreadyExists": "个人资料已登记。",
     "profileEditCodeAttemptsExceeded": "验证码错误次数过多已失效，请重新获取",
     "profileEditCodeExpired": "验证码已过期，请重新获取",
+    "profileEditVerificationRequired": "需要先完成邮箱验证，请验证后重试",
     "profileRequired": "请先完成个人资料登记。",
     "providerAccountAlreadyLinked": "该账号已注册。",
     "refreshTokenExpired": "登录已过期，请重新登录。",
