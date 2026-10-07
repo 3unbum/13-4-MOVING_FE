@@ -13,7 +13,7 @@ import { ApiError } from "@/lib/utils/api-error";
  * (`PROFILE_REQUIRED`), 이걸 그대로 error로 두면 화면이 "불러오지 못했어요"가 됩니다.
  * 정작 필요한 건 "견적 요청하러 가기" CTA입니다 (1차 QA-3).
  */
-function isProfileRequired(error: unknown) {
+export function isProfileRequired(error: unknown) {
   return error instanceof ApiError && error.code === "PROFILE_REQUIRED";
 }
 
@@ -23,13 +23,13 @@ function isProfileRequired(error: unknown) {
  * QueryClient 기본값이 3회 재시도라, 프로필 없는 사용자가 CTA를 보기까지 7초 넘게
  * 빈 화면을 봅니다. 서버 오류(5xx)·네트워크 오류만 재시도합니다.
  */
-function retryExceptClientError(failureCount: number, error: unknown) {
+export function retryExceptClientError(failureCount: number, error: unknown) {
   if (error instanceof ApiError && error.status >= 400 && error.status < 500) return false;
   return failureCount < 3;
 }
 
 /** `PROFILE_REQUIRED`는 빈 상태로 흘려보내고, 진짜 오류만 남깁니다 */
-function toRealError(error: unknown) {
+export function toRealError(error: unknown) {
   return error && !isProfileRequired(error) ? error : null;
 }
 

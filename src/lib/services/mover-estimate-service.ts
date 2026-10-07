@@ -1,5 +1,11 @@
 import { cookieFetch } from "@/lib/utils/api-client";
 import type { ServiceCode } from "@/components/filter/ChipRegion";
+import type {
+  EstimateExtraCharge,
+  PaymentStage,
+  PaymentStageFilter,
+  PaymentStatus,
+} from "@/lib/services/estimate-service";
 
 /**
  * 기사님이 보낸 견적의 상태.
@@ -55,14 +61,41 @@ export interface MoverEstimate {
   price: number | null;
   comment: string;
   estimateStatus: MoverEstimateStatus;
+  /** 고객의 결제 여부 — 기사님은 이사가 끝난(COMPLETED) 견적에서만 의미가 있습니다 */
+  paymentStatus: PaymentStatus;
+  /** 고객이 잔금을 결제한 시각. UNPAID면 null */
+  paidAt: string | null;
+  /** 지금 결제 단계 — 선수금 대기(DEPOSIT_DUE)인지 잔금 대기(BALANCE_DUE)인지 */
+  paymentStage: PaymentStage;
+  /** 선수금(견적의 10%). 확정 전·옛 견적은 null */
+  depositAmount: number | null;
+  /** 잔금 = 견적가 − 선수금 + 승인된 추가 금액 */
+  balanceAmount: number;
+  /** 요청한 추가 금액 목록(오래된 순). 요청한 적 없으면 빈 배열 */
+  extraCharges: EstimateExtraCharge[];
+  /** 추가 금액 상한(견적의 20%) — 거절되지 않은 건의 합계에 적용됩니다 */
+  extraChargeMax: number;
+  /** 아직 더 요청할 수 있는 금액 = 상한 − (응답 대기 + 승인) 합계 */
+  extraChargeRemaining: number;
+  /** 기사님이 결제 요청 알림을 보낸 시각. 견적당 1번만 보낼 수 있어 값이 있으면 이미 보낸 것입니다 */
+  paymentRequestedAt: string | null;
   isTargeted: boolean;
   createdAt: string;
   updatedAt: string;
   quotationRequest: MoverEstimateRequest;
 }
 
+/** 결제 탭 정렬 — 최신순 / 오래된 순 */
+export type MoverEstimateSort = "latest" | "oldest";
+
 export interface MoverEstimateListQuery {
   status?: MoverEstimateStatus;
+  /** 결제 탭 — DUE(대기 중인 결제) / PAID(결제 내역) (BE #140) */
+  paymentStage?: PaymentStageFilter;
+  /** 정렬 — 최신순(기본) / 오래된 순 */
+  sort?: MoverEstimateSort;
+  /** 월별 조회 — "YYYY-MM". 이사 완료일(이사일)이 그 달인 견적만 */
+  month?: string;
   cursor?: number;
   take?: number;
 }
@@ -79,6 +112,9 @@ function toSearchParams(query: MoverEstimateListQuery = {}) {
   const params = new URLSearchParams();
 
   if (query.status) params.set("status", query.status);
+  if (query.paymentStage) params.set("paymentStage", query.paymentStage);
+  if (query.sort) params.set("sort", query.sort);
+  if (query.month) params.set("month", query.month);
   if (query.cursor !== undefined) params.set("cursor", String(query.cursor));
   if (query.take !== undefined) params.set("take", String(query.take));
 
@@ -90,6 +126,30 @@ export const moverEstimateService = {
   /** 내 견적 목록 (#33) — status로 확정/반려를 가릅니다 */
   getList: (query?: MoverEstimateListQuery) =>
     cookieFetch<MoverEstimate[]>(`/mover/estimates${toSearchParams(query)}`),
+
+  /** 결제 요청 보내기 (BE #140) — 고객에게 알림이 갑니다. 견적당 1번만, 이사 완료 + 미결제일 때만 */
+  requestPayment: (estimateId: number) =>
+    cookieFetch<MoverEstimate>(`/mover/estimates/${estimateId}/payment-request`, {
+      method: "POST",
+    }),
+
+  /** 추가 금액 요청 (BE #140) — 이사 완료 + 잔금 미결제일 때 여러 건 가능. 사유는 1~200자, 거절되지 않은 건의 합계가 견적의 20% 이내 */
+  proposeExtraCharge: (estimateId: number, input: { amount: number; reason: string }) =>
+    cookieFetch<MoverEstimate>(`/mover/estimates/${estimateId}/extra-charge`, {
+      method: "POST",
+      body: JSON.stringify(input),
+    }),
+
+  /** 추가 금액 수정 (BE #140) — 고객이 아직 응답하지 않은 건의 금액·사유만 고칠 수 있습니다 */
+  updateExtraCharge: (
+    estimateId: number,
+    chargeId: number,
+    input: { amount: number; reason: string }
+  ) =>
+    cookieFetch<MoverEstimate>(`/mover/estimates/${estimateId}/extra-charge/${chargeId}`, {
+      method: "PATCH",
+      body: JSON.stringify(input),
+    }),
 
   /** 견적 상세 (#34) — 본인이 보낸 견적만 조회됩니다 */
   getById: (estimateId: number) => cookieFetch<MoverEstimate>(`/mover/estimates/${estimateId}`),

@@ -1,4 +1,4 @@
-import MyQuotesTabs from "@/components/quote/MyQuotesTabs";
+import MyQuotesTabs, { type QuoteTab } from "@/components/quote/MyQuotesTabs";
 import { requireRole } from "@/lib/auth/guards";
 
 // hasProfile 하드 게이트 없음 — 프로필 없어도 접근 가능. 견적 없을 때(=프로필 없는 경우 포함)
@@ -8,6 +8,8 @@ import { requireRole } from "@/lib/auth/guards";
 // 탭은 URL 쿼리(?tab=past)로 들고 있다. 상세 페이지에서 뒤로 가면 보던 탭으로 돌아와야
 // 하는데, useState로만 두면 항상 첫 탭으로 초기화된다. 여기서 읽어 초기값으로 내려주면
 // useSearchParams(+Suspense 경계)를 쓰지 않아도 된다.
+const QUOTE_TABS: QuoteTab[] = ["pending", "past", "payPending", "payHistory"];
+
 export default async function CustomerMyQuotesPage({
   searchParams,
 }: PageProps<"/[locale]/customer/my-quotes">) {
@@ -15,5 +17,5 @@ export default async function CustomerMyQuotesPage({
 
   const { tab } = await searchParams;
 
-  return <MyQuotesTabs initialTab={tab === "past" ? "past" : "pending"} />;
+  return <MyQuotesTabs initialTab={QUOTE_TABS.find((value) => value === tab) ?? "pending"} />;
 }

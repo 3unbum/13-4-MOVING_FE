@@ -10,6 +10,7 @@ import NotificationMessage, {
 import {
   GNB_HOME_PATH,
   GNB_LOGIN_PATH,
+  GNB_MOVER_PAYMENT_PATH,
   GNB_PROFILE_PATHS,
   isGnbProfilePathAction,
 } from "@/constants/gnb/profile";
@@ -86,7 +87,10 @@ export default function GlobalGnb() {
 
   const handleProfileSelect = async (value: string) => {
     if (isGnbProfilePathAction(value)) {
-      router.push(GNB_PROFILE_PATHS[value]);
+      // 결제 내역만 역할마다 경로가 다릅니다
+      router.push(
+        value === "payment" && isMover ? GNB_MOVER_PAYMENT_PATH : GNB_PROFILE_PATHS[value]
+      );
       return;
     }
 
