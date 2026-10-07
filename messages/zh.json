@@ -363,7 +363,10 @@
     "passwordPlaceholder": "请输入密码",
     "passwordConfirm": "确认密码",
     "passwordConfirmPlaceholder": "请再次输入密码",
-    "emailPlaceholder": "请输入邮箱"
+    "emailPlaceholder": "请输入邮箱",
+    "currentPasswordNotice": "仅在修改密码时才需要输入当前密码",
+    "emailVerifyTitle": "身份验证",
+    "emailVerifyDescription": "为了安全地修改信息，我们将向 {email} 发送验证码"
   },
   "auth": {
     "snsSignup": "使用社交账号快速注册",

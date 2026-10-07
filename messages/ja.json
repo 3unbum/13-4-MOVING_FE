@@ -363,7 +363,10 @@
     "passwordPlaceholder": "パスワードを入力してください",
     "passwordConfirm": "パスワード（確認）",
     "passwordConfirmPlaceholder": "パスワードをもう一度入力してください",
-    "emailPlaceholder": "メールアドレスを入力してください"
+    "emailPlaceholder": "メールアドレスを入力してください",
+    "currentPasswordNotice": "パスワードを変更する場合のみ、現在のパスワードを入力してください",
+    "emailVerifyTitle": "本人確認",
+    "emailVerifyDescription": "安全に情報を変更できるよう、{email}に認証番号をお送りします"
   },
   "auth": {
     "snsSignup": "SNSアカウントで簡単登録",

@@ -363,7 +363,10 @@
     "passwordPlaceholder": "비밀번호를 입력해 주세요",
     "passwordConfirm": "비밀번호 확인",
     "passwordConfirmPlaceholder": "비밀번호를 다시 한번 입력해 주세요",
-    "emailPlaceholder": "이메일을 입력해 주세요"
+    "emailPlaceholder": "이메일을 입력해 주세요",
+    "currentPasswordNotice": "비밀번호를 변경할 때만 현재 비밀번호를 입력해 주세요",
+    "emailVerifyTitle": "본인 확인",
+    "emailVerifyDescription": "안전하게 정보를 수정할 수 있도록 {email}로 인증번호를 보내드려요"
   },
   "auth": {
     "snsSignup": "SNS 계정으로 간편 가입하기",

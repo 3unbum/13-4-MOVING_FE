@@ -363,7 +363,10 @@
     "passwordPlaceholder": "Enter your password",
     "passwordConfirm": "Confirm Password",
     "passwordConfirmPlaceholder": "Re-enter your password",
-    "emailPlaceholder": "Enter your email"
+    "emailPlaceholder": "Enter your email",
+    "currentPasswordNotice": "You only need to enter your current password when changing it",
+    "emailVerifyTitle": "Verify it's you",
+    "emailVerifyDescription": "We'll send a verification code to {email} so you can safely update your info"
   },
   "auth": {
     "snsSignup": "Quick sign-up with social account",
