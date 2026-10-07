@@ -91,7 +91,7 @@ export default function CustomerProfileForm() {
             render={({ field }) => (
               <ProfileImageUpload
                 value={field.value}
-                onChange={field.onChange}
+                onChange={(imageUrl) => field.onChange(imageUrl ?? undefined)}
                 onUploadingChange={setIsImageUploading}
               />
             )}

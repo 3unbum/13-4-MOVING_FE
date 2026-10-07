@@ -145,6 +145,7 @@
   "profileImage": {
     "upload": "프로필 이미지 업로드",
     "change": "프로필 이미지 변경",
+    "remove": "프로필 이미지 삭제",
     "invalidType": "jpeg, png, webp 파일만 업로드할 수 있어요",
     "tooLarge": "이미지 용량은 5MB를 초과할 수 없어요",
     "uploadFailed": "이미지 업로드에 실패했어요. 다시 시도해주세요",

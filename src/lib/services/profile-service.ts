@@ -37,7 +37,8 @@ export interface CustomerProfileUpdatePayload {
   phoneNumber?: string;
   currentPassword?: string;
   newPassword?: string;
-  image?: string;
+  // null이면 프로필 이미지를 삭제, undefined면 변경 없음
+  image?: string | null;
   region?: string;
   services?: string[];
 }
@@ -47,7 +48,8 @@ export interface CustomerProfileUpdatePayload {
 // 엔드포인트를 각자 다른 필드 조합으로 호출한다(#73). newPasswordConfirm은 FE 검증 전용이라 여기
 // 타입엔 없음.
 export interface MoverProfileUpdatePayload {
-  image?: string;
+  // null이면 프로필 이미지를 삭제, undefined면 변경 없음
+  image?: string | null;
   nickName?: string;
   career?: number;
   bio?: string;

@@ -17,7 +17,8 @@ export const makeCustomerProfileSchema = (t: ValidationTranslator) =>
 // BE moverProfileCreateSchema와 동일한 계약: services/regions 둘 다 배열(다중 선택)
 export const makeMoverProfileSchema = (t: ValidationTranslator) =>
   z.object({
-    image: z.string().optional(),
+    // null은 수정 화면에서 "이미지 삭제"를 뜻한다(등록 화면은 null을 undefined로 바꿔 보낸다)
+    image: z.string().nullable().optional(),
     // trim()을 min(1)보다 먼저 걸어야 공백만 입력한 값이 통과하지 않는다
     nickName: z.string().trim().min(1, t("nickNameRequired")),
     // valueAsNumber로 이미 숫자 변환된 값이 들어온다는 전제 — z.coerce는 resolver 타입 에러가 남
@@ -92,7 +93,7 @@ export const makeCustomerProfileUpdateSchema = (t: ValidationTranslator) =>
   withPasswordRules(
     z.object({
       ...makeAccountFields(t),
-      image: z.string().optional(),
+      image: z.string().nullable().optional(),
       region: z.enum(regionValues, { message: t("regionRequired") }),
       services: z.array(z.enum(serviceValues)).min(1, t("customerServicesRequired")),
     }),

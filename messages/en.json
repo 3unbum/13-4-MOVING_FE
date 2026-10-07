@@ -145,6 +145,7 @@
   "profileImage": {
     "upload": "Upload profile image",
     "change": "Change profile image",
+    "remove": "Remove profile image",
     "invalidType": "Only jpeg, png and webp files can be uploaded",
     "tooLarge": "Image size cannot exceed 5MB",
     "uploadFailed": "Failed to upload the image. Please try again",

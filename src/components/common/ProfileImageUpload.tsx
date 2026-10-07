@@ -14,9 +14,11 @@ const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
 const MAX_SIZE_BYTES = 5 * 1024 * 1024;
 
 interface ProfileImageUploadProps {
-  // 업로드 완료 시 서버 imageUrl(POST /profiles/image 응답)을 부모(RHF)에 전달, 실패/제거 시 undefined
-  value?: string;
-  onChange: (imageUrl: string | undefined) => void;
+  // 업로드 완료 시 서버 imageUrl(POST /profiles/image 응답)을 부모(RHF)에 전달.
+  // "삭제" 버튼을 누르면 null — PATCH는 undefined를 "변경 없음"으로 보기 때문에, 이미지를 비우려면
+  // undefined와 구분되는 null을 보내야 한다(등록 폼은 null을 undefined로 바꿔 쓴다).
+  value?: string | null;
+  onChange: (imageUrl: string | null | undefined) => void;
   // 업로드 진행 상태를 부모에 알림 — 부모 폼은 업로드 중엔 제출 버튼을 막는 데 사용
   onUploadingChange?: (isUploading: boolean) => void;
   disabled?: boolean;
@@ -34,7 +36,7 @@ export default function ProfileImageUpload({
 }: ProfileImageUploadProps) {
   const t = useTranslations("profileImage");
   const inputRef = useRef<HTMLInputElement>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | undefined>(value);
+  const [previewUrl, setPreviewUrl] = useState<string | undefined>(value ?? undefined);
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | undefined>();
 
@@ -64,7 +66,7 @@ export default function ProfileImageUpload({
       onChange(imageUrl);
     } catch {
       setError(t("uploadFailed"));
-      setPreviewUrl(value);
+      setPreviewUrl(value ?? undefined);
       // 교체 업로드 실패 시 기존 값을 유지 — undefined로 지우면 미리보기(기존 이미지로 복원)와
       // 실제 제출값이 어긋나 버린다
       onChange(value);
@@ -73,6 +75,18 @@ export default function ProfileImageUpload({
       onUploadingChange?.(false);
     }
   }
+
+  // 이미지 박스를 눌러도 바뀌지만 눈에 띄지 않아 "수정이 안 되는 줄" 아는 사용자가 있어 명시 버튼을 둔다
+  function handleRemove() {
+    setError(undefined);
+    setPreviewUrl(undefined);
+    onChange(null);
+  }
+
+  const actionButtonClass = cn(
+    "border-line-200 not-disabled:hover:bg-background-200 text-14 text-black-black-400 h-9 rounded-lg border bg-gray-50 px-3 font-semibold",
+    "disabled:cursor-not-allowed disabled:opacity-40"
+  );
 
   return (
     <div className="flex flex-col gap-2">
@@ -92,6 +106,26 @@ export default function ProfileImageUpload({
           <Image src={galleryIcon} alt="" className="pc:size-10 size-8" />
         )}
       </button>
+      <div className="flex flex-wrap gap-2">
+        <button
+          type="button"
+          onClick={() => inputRef.current?.click()}
+          disabled={disabled || isUploading}
+          className={actionButtonClass}
+        >
+          {previewUrl ? t("change") : t("upload")}
+        </button>
+        {previewUrl && (
+          <button
+            type="button"
+            onClick={handleRemove}
+            disabled={disabled || isUploading}
+            className={actionButtonClass}
+          >
+            {t("remove")}
+          </button>
+        )}
+      </div>
       <input
         ref={inputRef}
         type="file"

@@ -145,6 +145,7 @@
   "profileImage": {
     "upload": "上传头像",
     "change": "更换头像",
+    "remove": "删除头像",
     "invalidType": "仅支持上传 jpeg、png、webp 格式的文件",
     "tooLarge": "图片大小不能超过 5MB",
     "uploadFailed": "图片上传失败，请重试",

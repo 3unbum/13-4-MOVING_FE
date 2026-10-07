@@ -145,6 +145,7 @@
   "profileImage": {
     "upload": "プロフィール画像をアップロード",
     "change": "プロフィール画像を変更",
+    "remove": "プロフィール画像を削除",
     "invalidType": "jpeg・png・webp 形式のファイルのみアップロードできます",
     "tooLarge": "画像サイズは5MBを超えられません",
     "uploadFailed": "画像のアップロードに失敗しました。もう一度お試しください",
