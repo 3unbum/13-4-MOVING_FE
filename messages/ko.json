@@ -198,6 +198,8 @@
     "pricePlaceholder": "견적가 입력",
     "priceMin": "최소 {price} 이상 입력해 주세요",
     "priceMax": "{price} 이하로 입력해 주세요",
+    "moverComment": "기사님 코멘트",
+    "rejectReason": "반려 사유",
     "commentPrompt": "코멘트를 입력해 주세요",
     "rejectReasonPrompt": "반려 사유를 입력해 주세요",
     "commentPlaceholder": "최소 10자 이상 입력해주세요",

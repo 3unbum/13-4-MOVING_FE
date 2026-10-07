@@ -234,7 +234,13 @@ interface CardPendingHistoryProps extends HTMLAttributes<HTMLElement>, MoverInfo
   category: ServiceCode;
   isTargeted?: boolean;
   title: string;
-  price: number;
+  /** 반려(REJECTED) 견적은 금액이 없어 null이 옵니다 */
+  price: number | null;
+  /**
+   * 기사님이 반려한 견적 — "견적대기" 대신 "반려됨"으로 표시하고 확정 버튼을 숨깁니다.
+   * 요청이 아직 PENDING인 동안에는 이 탭이 고객이 반려를 확인할 유일한 화면입니다.
+   */
+  isRejected?: boolean;
   onDetailClick?: () => void;
   onConfirmClick?: () => void;
   /**
@@ -257,6 +263,7 @@ export function CardPendingHistory({
   isTargeted = false,
   title,
   price,
+  isRejected = false,
   onDetailClick,
   onConfirmClick,
   isFavorited = false,
@@ -307,7 +314,7 @@ export function CardPendingHistory({
               <MoveTypeChip variant={category} size={isLg ? "md" : "sm"} />
               {isTargeted && <MoveTypeChip variant="TARGETED" size={isLg ? "md" : "sm"} />}
             </div>
-            <PendingBadge />
+            {isRejected ? <RejectedBadge /> : <PendingBadge />}
           </div>
 
           {/* 제목과 기사님 정보 사이는 4px입니다 (피그마 `510:44550` 제목 h26 → 박스 y30) */}
@@ -333,9 +340,14 @@ export function CardPendingHistory({
         <PriceFooter price={price} size={size} />
       </div>
 
-      {/* lg는 [상세보기][견적 확정하기] 가로, sm은 [견적 확정하기][상세보기] 세로 — 순서가 반대입니다 */}
+      {/* lg는 [상세보기][견적 확정하기] 가로, sm은 [견적 확정하기][상세보기] 세로 — 순서가 반대입니다.
+          반려된 견적은 확정할 수 없으므로 상세보기만 남깁니다 (BE도 REJECTED 확정을 막습니다). */}
       <div className={cn("flex w-full gap-2.75", !isLg && "flex-col")}>
-        {isLg ? (
+        {isRejected ? (
+          <Button variant="outlined" size="sm" onClick={onDetailClick}>
+            {t("viewDetail")}
+          </Button>
+        ) : isLg ? (
           <>
             <Button variant="outlined" size="sm" onClick={onDetailClick}>
               {t("viewDetail")}
