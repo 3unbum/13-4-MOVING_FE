@@ -99,6 +99,9 @@ export default function PendingQuotesPanel({
     createdAt: request.createdAt,
     fromAddress: request.fromAddress,
     toAddress: request.toAddress,
+    // 한국어가 아닐 때 주소 대신 번역된 시/도를 보여주기 위해 함께 넘깁니다
+    fromRegion: request.fromRegion,
+    toRegion: request.toRegion,
     movingDate: request.movingDate,
   };
 
