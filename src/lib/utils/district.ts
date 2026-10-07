@@ -250,3 +250,50 @@ export function translateDistrict(district: string, locale: string): string | nu
 
   return stem[key] + suffix[key];
 }
+
+/** 주소 첫 토큰(시/도)을 `region` 번역 키로 되돌리는 표 — "울산" → "ULSAN" */
+const SIDO_CODES: Record<string, string> = {
+  서울: "SEOUL",
+  경기: "GYEONGGI",
+  인천: "INCHEON",
+  강원: "GANGWON",
+  충북: "CHUNGBUK",
+  충남: "CHUNGNAM",
+  세종: "SEJONG",
+  대전: "DAEJEON",
+  전북: "JEONBUK",
+  전남: "JEONNAM",
+  광주: "GWANGJU",
+  경북: "GYEONGBUK",
+  경남: "GYEONGNAM",
+  대구: "DAEGU",
+  울산: "ULSAN",
+  부산: "BUSAN",
+  제주: "JEJU",
+};
+
+/**
+ * 축약 주소("울산 남구")를 언어별 표기로 — "Ulsan Nam-gu" / "蔚山 南区".
+ *
+ * `shortenAddress` 결과를 받습니다. 시/도는 호출부가 넘긴 `translateRegion`(messages 의
+ * `region` 네임스페이스)으로, 시·군·구는 위 표로 바꿉니다.
+ *
+ * 한국어이거나 표에 없는 이름이면 원문을 그대로 돌려줍니다 — 모르는 값을 억지로 바꾸는
+ * 것보다 한글로 두는 쪽이 안전합니다.
+ */
+export function localizeShortAddress(
+  shortened: string,
+  locale: string,
+  translateRegion: (code: string) => string
+): string {
+  if (locale === "ko") return shortened;
+
+  const [sido, district] = shortened.split(" ");
+  const code = SIDO_CODES[sido ?? ""];
+  if (!code) return shortened;
+
+  const region = translateRegion(code);
+  // 세종처럼 시·군·구가 없거나 표에 없으면 시/도만 보여줍니다
+  const translated = district ? translateDistrict(district, locale) : null;
+  return translated ? `${region} ${translated}` : region;
+}
