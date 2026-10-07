@@ -116,28 +116,37 @@ export default function MoverEstimateList({
         singleColumn ? "tablet:max-w-147 mx-auto" : "pc:grid-cols-2 pc:gap-6"
       )}
     >
-      {estimates.map((estimate) => (
-        <div
-          key={estimate.id}
-          // 카드(CardQuotation)와 같은 은은한 그림자 — 테두리가 있어 inset 선은 뺐습니다
-          className="border-line-100 flex flex-col gap-3 rounded-4xl border p-5 shadow-[-2px_-2px_10px_0_rgba(200,200,200,0.3),2px_2px_10px_0_rgba(200,200,200,0.3)]"
-        >
-          {/* 이사 완료 상태는 이사일이 지나야 되므로 이사일이 곧 이사 완료일입니다. 선수금 대기(확정)는 아직 이사 전이라 뺍니다 */}
-          {showMovedAt && estimate.estimateStatus === "COMPLETED" && (
-            <p className="text-18 font-semibold text-orange-400">
-              {tQuote("movedAt")}{" "}
-              {formatMovingDate(estimate.quotationRequest.movingDate, locale, false)}
-            </p>
-          )}
-          {showPaidAt && estimate.paidAt && (
-            <p className="text-14 font-semibold text-orange-400">
-              {tQuote("paidAt")} {formatMovingDate(estimate.paidAt, locale, false)}
-            </p>
-          )}
-          <EstimateCard estimate={estimate} onDetailClick={() => onDetailClick?.(estimate.id)} />
-          {renderFooter?.(estimate)}
-        </div>
-      ))}
+      {estimates.map((estimate) =>
+        // 보낸 견적·반려 탭처럼 카드만 보여주는 곳은 감싸지 않습니다 — 카드에 이미 테두리가 있어 겹쳐 보입니다
+        !showPaidAt && !showMovedAt && !renderFooter ? (
+          <EstimateCard
+            key={estimate.id}
+            estimate={estimate}
+            onDetailClick={() => onDetailClick?.(estimate.id)}
+          />
+        ) : (
+          <div
+            key={estimate.id}
+            // 카드(CardQuotation)와 같은 은은한 그림자 — 테두리가 있어 inset 선은 뺐습니다
+            className="border-line-100 flex flex-col gap-3 rounded-4xl border p-5 shadow-[-2px_-2px_10px_0_rgba(200,200,200,0.3),2px_2px_10px_0_rgba(200,200,200,0.3)]"
+          >
+            {/* 이사 완료 상태는 이사일이 지나야 되므로 이사일이 곧 이사 완료일입니다. 선수금 대기(확정)는 아직 이사 전이라 뺍니다 */}
+            {showMovedAt && estimate.estimateStatus === "COMPLETED" && (
+              <p className="text-18 font-semibold text-orange-400">
+                {tQuote("movedAt")}{" "}
+                {formatMovingDate(estimate.quotationRequest.movingDate, locale, false)}
+              </p>
+            )}
+            {showPaidAt && estimate.paidAt && (
+              <p className="text-14 font-semibold text-orange-400">
+                {tQuote("paidAt")} {formatMovingDate(estimate.paidAt, locale, false)}
+              </p>
+            )}
+            <EstimateCard estimate={estimate} onDetailClick={() => onDetailClick?.(estimate.id)} />
+            {renderFooter?.(estimate)}
+          </div>
+        )
+      )}
     </div>
   );
 }
