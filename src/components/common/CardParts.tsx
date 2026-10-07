@@ -144,8 +144,16 @@ export function ElapsedTime({ children }: { children: ReactNode }) {
  * 위쪽 구분선(line-200)까지 포함합니다.
  * 피그마가 높이를 고정하고 내용을 아래로 붙입니다 (lg 52 / sm 47).
  */
-export function PriceFooter({ price, size = "sm" }: { price: number; size?: "sm" | "lg" }) {
+export function PriceFooter({
+  price,
+  size = "sm",
+}: {
+  /** 반려(REJECTED) 견적은 금액이 없습니다 — null이면 "견적가 없음"으로 표기합니다 (PriceInline과 같은 규칙) */
+  price: number | null;
+  size?: "sm" | "lg";
+}) {
   const t = useTranslations("card");
+  const tc = useTranslations("common");
   const locale = useLocale() as DateLocale;
   const isLg = size === "lg";
 
@@ -170,7 +178,7 @@ export function PriceFooter({ price, size = "sm" }: { price: number; size?: "sm"
           isLg ? "text-24" : "text-18"
         )}
       >
-        {formatPrice(price, locale)}
+        {price === null ? tc("noPrice") : formatPrice(price, locale)}
       </span>
     </div>
   );

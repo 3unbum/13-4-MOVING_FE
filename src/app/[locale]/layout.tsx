@@ -6,10 +6,25 @@ import "pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css";
 import Providers from "./providers";
 import GlobalGnb from "@/components/layout/GlobalGnb";
 import ChatWidget from "@/components/chat/ChatWidget";
+import { OG_FALLBACK_IMAGE } from "@/constants/site";
+import { SITE_URL } from "@/constants/site.server";
 
 export const metadata: Metadata = {
+  // 상대 경로 og:image를 절대 URL로 바꾸는 기준점입니다. 없으면 공유 미리보기에
+  // 이미지가 실리지 않습니다(Next가 경고만 내고 넘어갑니다).
+  metadataBase: SITE_URL,
   title: "Moving",
   description: "A matching service connecting moving customers with moving professionals",
+  openGraph: {
+    title: "Moving",
+    description: "A matching service connecting moving customers with moving professionals",
+    type: "website",
+    images: [OG_FALLBACK_IMAGE],
+  },
+  twitter: {
+    card: "summary_large_image",
+    images: [OG_FALLBACK_IMAGE],
+  },
 };
 
 /** 빌드 타임에 locale별 페이지를 미리 생성합니다 */

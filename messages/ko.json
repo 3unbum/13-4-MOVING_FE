@@ -198,6 +198,8 @@
     "pricePlaceholder": "견적가 입력",
     "priceMin": "최소 {price} 이상 입력해 주세요",
     "priceMax": "{price} 이하로 입력해 주세요",
+    "moverComment": "기사님 코멘트",
+    "rejectReason": "반려 사유",
     "commentPrompt": "코멘트를 입력해 주세요",
     "rejectReasonPrompt": "반려 사유를 입력해 주세요",
     "commentPlaceholder": "최소 10자 이상 입력해주세요",
@@ -206,7 +208,11 @@
     "targetedMessage": "일반 견적 요청을 먼저 진행해 주세요.",
     "targetedAction": "일반 견적 요청 하기",
     "arrowAlt": "에서",
-    "shareKakaoFallback": "링크 복사하기 (카카오톡 공유는 준비 중)"
+    "shareKakaoFallback": "링크 복사하기 (카카오톡 공유는 준비 중)",
+    "shareCardTitle": "{moverName} 기사님 | 무빙",
+    "shareQuoteText": "{moverName} 기사님께 받은 견적서예요. 무빙에서 확인해 보세요!",
+    "shareQuoteButton": "견적서 보러가기",
+    "shareQuoteCardTitle": "{moverName} 기사님 견적서 | 무빙"
   },
   "validation": {
     "emailRequired": "이메일을 입력해 주세요",
@@ -441,6 +447,10 @@
     "loading": "리뷰를 불러오는 중이에요.",
     "loadFailed": "리뷰를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.",
     "title": "리뷰",
+    "sortOldest": "오래된순",
+    "sortLatest": "최신순",
+    "sortRatingDesc": "별점 높은순",
+    "sortRatingAsc": "별점 낮은순",
     "empty": "아직 등록된 리뷰가 없어요!",
     "emptyHint": "가장 먼저 리뷰를 등록해보세요",
     "chipsPrompt": "어떤 점이 좋았는지 선택해 주세요",

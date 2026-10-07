@@ -50,6 +50,18 @@ export interface MoverReviewItem {
   customerName: string;
 }
 
+/** 기사님 리뷰 정렬. 없으면 백엔드는 latest로 본다. */
+export type MoverReviewSort = "oldest" | "latest" | "ratingDesc" | "ratingAsc";
+
+export const MOVER_REVIEW_SORTS = [
+  "oldest",
+  "latest",
+  "ratingDesc",
+  "ratingAsc",
+] as const satisfies readonly MoverReviewSort[];
+
+export const DEFAULT_MOVER_REVIEW_SORT: MoverReviewSort = "latest";
+
 /** GET /movers/:id/reviews — BE는 page(1-base). page/totalPages가 루트에 있어 json.data만 쓰면 잘린다. */
 export interface MoverReviewsResult {
   data: MoverReviewItem[];
@@ -143,8 +155,14 @@ export const moverService = {
   /** optionalAuth — 쿠키 있으면 CUSTOMER 전용 필드 포함 */
   getById: (moverId: number) => cookieFetch<MoverDetail>(`/movers/${moverId}`),
 
-  getReviews: (moverId: number, page = 1, limit = 5) =>
-    fetchPublicJson<MoverReviewsResult>(`/movers/${moverId}/reviews?page=${page}&limit=${limit}`),
+  getReviews: (moverId: number, page = 1, limit = 5, sort?: MoverReviewSort) => {
+    const params = new URLSearchParams({
+      page: String(page),
+      limit: String(limit),
+    });
+    if (sort) params.set("sort", sort);
+    return fetchPublicJson<MoverReviewsResult>(`/movers/${moverId}/reviews?${params.toString()}`);
+  },
 
   getReviewDistribution: (moverId: number) =>
     defaultFetch<MoverRatingDistribution>(`/movers/${moverId}/reviews/distribution`),

@@ -198,6 +198,8 @@
     "pricePlaceholder": "見積もり金額を入力",
     "priceMin": "{price} 以上で入力してください",
     "priceMax": "{price} 以下で入力してください",
+    "moverComment": "業者からのメッセージ",
+    "rejectReason": "却下理由",
     "commentPrompt": "コメントを入力してください",
     "rejectReasonPrompt": "却下理由を入力してください",
     "commentPlaceholder": "10文字以上で入力してください",
@@ -206,7 +208,11 @@
     "targetedMessage": "先に通常の見積もり依頼を行ってください。",
     "targetedAction": "通常の見積もりを依頼する",
     "arrowAlt": "から",
-    "shareKakaoFallback": "リンクをコピー（KakaoTalk共有は準備中）"
+    "shareKakaoFallback": "リンクをコピー（KakaoTalk共有は準備中）",
+    "shareCardTitle": "{moverName} 業者 | Moving",
+    "shareQuoteText": "{moverName} 業者からの見積書です。Moving で確認してください！",
+    "shareQuoteButton": "見積書を見る",
+    "shareQuoteCardTitle": "{moverName} 業者の見積書 | Moving"
   },
   "validation": {
     "emailRequired": "メールアドレスを入力してください",
@@ -441,6 +447,10 @@
     "loading": "レビューを読み込んでいます。",
     "loadFailed": "レビューを読み込めませんでした。しばらくしてからもう一度お試しください。",
     "title": "レビュー",
+    "sortOldest": "古い順",
+    "sortLatest": "新しい順",
+    "sortRatingDesc": "評価が高い順",
+    "sortRatingAsc": "評価が低い順",
     "empty": "まだレビューがありません！",
     "emptyHint": "最初のレビューを投稿してみましょう",
     "chipsPrompt": "どんな点がよかったですか？",

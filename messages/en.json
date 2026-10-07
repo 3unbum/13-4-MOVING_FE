@@ -198,6 +198,8 @@
     "pricePlaceholder": "Enter price",
     "priceMin": "Please enter at least {price}",
     "priceMax": "Please enter {price} or less",
+    "moverComment": "Mover's message",
+    "rejectReason": "Reason for rejection",
     "commentPrompt": "Enter a comment",
     "rejectReasonPrompt": "Enter a reason for rejection",
     "commentPlaceholder": "Enter at least 10 characters",
@@ -206,7 +208,11 @@
     "targetedMessage": "Please submit a general quote request first.",
     "targetedAction": "Request a General Quote",
     "arrowAlt": "to",
-    "shareKakaoFallback": "Copy link (Kakao sharing unavailable)"
+    "shareKakaoFallback": "Copy link (Kakao sharing unavailable)",
+    "shareCardTitle": "{moverName} | Moving",
+    "shareQuoteText": "Here's the quote from {moverName}. Check it out on Moving!",
+    "shareQuoteButton": "View quote",
+    "shareQuoteCardTitle": "Quote from {moverName} | Moving"
   },
   "validation": {
     "emailRequired": "Please enter your email",
@@ -441,6 +447,10 @@
     "loading": "Loading reviews.",
     "loadFailed": "Couldn't load reviews. Please try again in a moment.",
     "title": "Reviews",
+    "sortOldest": "Oldest",
+    "sortLatest": "Newest",
+    "sortRatingDesc": "Highest rating",
+    "sortRatingAsc": "Lowest rating",
     "empty": "No reviews yet!",
     "emptyHint": "Be the first to leave a review",
     "chipsPrompt": "What did you like?",
