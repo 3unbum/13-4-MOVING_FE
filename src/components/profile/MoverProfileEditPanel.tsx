@@ -1,6 +1,7 @@
 "use client";
 
 import MoverProfileEditForm from "@/components/profile/MoverProfileEditForm";
+import ProfileEmailVerificationGate from "@/components/profile/ProfileEmailVerificationGate";
 import { useTranslations } from "next-intl";
 import { useMoverAccount } from "@/hooks/useMoverAccount";
 import type { MoverAccountResponse } from "@/lib/services/auth-service";
@@ -24,5 +25,11 @@ export default function MoverProfileEditPanel({ initialAccount }: MoverProfileEd
     return <p className="text-14 pc:text-16 text-red-200">{tProfile("accountLoadFailed")}</p>;
   }
 
-  return <MoverProfileEditForm account={account} onAccountUpdated={setAccount} />;
+  return (
+    // #131: 프로필 수정 진입은 화면 종류와 관계없이 이메일 인증을 한 번 거친다
+    // (MoverBasicInfoEditPanel / CustomerProfileEditForm과 동일 패턴)
+    <ProfileEmailVerificationGate email={account.email}>
+      <MoverProfileEditForm account={account} onAccountUpdated={setAccount} />
+    </ProfileEmailVerificationGate>
+  );
 }

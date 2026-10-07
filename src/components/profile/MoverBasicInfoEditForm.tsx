@@ -183,7 +183,7 @@ export default function MoverBasicInfoEditForm({
 
             <div className="pc:gap-8 flex flex-col gap-5">
               <div className="flex flex-col gap-4">
-                <FieldLabel>{t("currentPassword")}</FieldLabel>
+                <FieldLabel required={false}>{t("currentPassword")}</FieldLabel>
                 {/* 비밀번호를 바꿀 때만 현재 비밀번호가 필요하다는 걸 안내 */}
                 <p className="text-12 text-black-100 pc:text-16">{t("currentPasswordNotice")}</p>
                 <InputTextField

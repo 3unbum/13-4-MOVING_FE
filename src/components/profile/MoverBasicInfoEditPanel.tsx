@@ -26,9 +26,7 @@ export default function MoverBasicInfoEditPanel({ initialAccount }: MoverBasicIn
   }
 
   return (
-    // #131: 이 화면은 비밀번호 변경이 가능한 화면이라 진입 자체를 이메일 인증으로 한 번 더 막는다
-    // (CustomerProfileEditForm과 동일 패턴). "내 프로필 수정"(MoverProfileEditPanel, 별명/경력 등)은
-    // 비밀번호를 다루지 않아 이 게이트를 적용하지 않는다.
+    // #131: 프로필 수정 진입은 이메일 인증을 한 번 거친다 (MoverProfileEditPanel / CustomerProfileEditForm과 동일 패턴)
     <ProfileEmailVerificationGate email={account.email}>
       <MoverBasicInfoEditForm account={account} onAccountUpdated={setAccount} />
     </ProfileEmailVerificationGate>
