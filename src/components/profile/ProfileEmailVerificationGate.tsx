@@ -94,7 +94,15 @@ function ProfileEmailVerificationForm({ email, onVerified }: ProfileEmailVerific
       setStep("code");
     } catch (error) {
       const retryAfterSeconds = findRetryAfterSeconds(error);
-      if (retryAfterSeconds !== null) {
+      if (retryAfterSeconds !== null && retryAfterSeconds <= RESEND_COOLDOWN_SECONDS) {
+        // 1분 재발송 제한에 걸린 경우 — 방금 보낸 인증번호가 메일에 있을 수 있으니(다른 화면에서
+        // 인증하다 넘어온 경우 등) 코드 입력 단계로 넘겨 그 코드를 입력할 수 있게 한다.
+        // 남은 유효시간은 "1분 전에 발송"했다고 보고 계산한다(실제 만료는 BE가 판단).
+        startCodeTimer(CODE_EXPIRY_SECONDS - (RESEND_COOLDOWN_SECONDS - retryAfterSeconds));
+        startResendTimer(retryAfterSeconds);
+        setCodeSendCount((count) => count + 1);
+        setStep("code");
+      } else if (retryAfterSeconds !== null) {
         startSendLock(retryAfterSeconds);
       } else {
         setRequestError(toErrorMessage(error));
