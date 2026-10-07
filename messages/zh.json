@@ -821,7 +821,7 @@
     "preparing": "正在加载支付方式。",
     "unavailable": "目前无法付款，请稍后重试。",
     "loadFailed": "无法加载报价，请稍后重试。",
-    "notPayable": "只有搬家已完成的报价才能付款。",
+    "notPayable": "该报价目前无法付款。",
     "alreadyPaid": "该报价已付款。",
     "confirming": "正在确认付款...",
     "successTitle": "付款完成",

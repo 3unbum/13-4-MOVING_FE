@@ -821,7 +821,7 @@
     "preparing": "Loading payment methods.",
     "unavailable": "Payment isn't available right now. Please try again in a moment.",
     "loadFailed": "Couldn't load the quote. Please try again in a moment.",
-    "notPayable": "You can only pay for quotes where the move is complete.",
+    "notPayable": "This quote isn't ready for payment.",
     "alreadyPaid": "You've already paid for this quote.",
     "confirming": "Confirming your payment...",
     "successTitle": "Payment complete",

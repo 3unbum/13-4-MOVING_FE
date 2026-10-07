@@ -821,7 +821,7 @@
     "preparing": "결제 수단을 불러오는 중이에요.",
     "unavailable": "지금은 결제할 수 없어요. 잠시 후 다시 시도해 주세요.",
     "loadFailed": "견적을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.",
-    "notPayable": "이사가 완료된 견적만 결제할 수 있어요.",
+    "notPayable": "지금은 결제할 수 없는 견적이에요.",
     "alreadyPaid": "이미 결제한 견적이에요.",
     "confirming": "결제를 확인하고 있어요...",
     "successTitle": "결제가 완료되었어요",
