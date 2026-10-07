@@ -2,7 +2,7 @@
 
 import MoverProfileEditForm from "@/components/profile/MoverProfileEditForm";
 import ProfileEmailVerificationGate from "@/components/profile/ProfileEmailVerificationGate";
-import { useProfileEditVerified } from "@/lib/auth/profile-edit-verification";
+import { useProfileEditVerified } from "@/hooks/useProfileEditVerified";
 import { useTranslations } from "next-intl";
 import { useMoverAccount } from "@/hooks/useMoverAccount";
 import type { MoverAccountResponse } from "@/lib/services/auth-service";

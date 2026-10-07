@@ -1,6 +1,6 @@
 "use client";
 
-import { isProfileEditVerificationRequiredError } from "@/lib/auth/profile-edit-verification";
+import { isProfileEditVerificationRequiredError } from "@/hooks/useProfileEditVerified";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useForm } from "react-hook-form";

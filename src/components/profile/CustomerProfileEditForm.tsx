@@ -14,7 +14,7 @@ import ProfileEmailVerificationGate from "@/components/profile/ProfileEmailVerif
 import {
   isProfileEditVerificationRequiredError,
   useProfileEditVerified,
-} from "@/lib/auth/profile-edit-verification";
+} from "@/hooks/useProfileEditVerified";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { REGION_OPTIONS, SERVICE_OPTIONS } from "@/constants/profile/options";
 import {
