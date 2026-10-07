@@ -121,8 +121,9 @@ export default function ChatWidget() {
     setIsOpen((prev) => !prev);
   };
 
+  // 모바일 전체화면 패널이 fixed GNB(1000) 아래에 깔리지 않게 sticky 이상
   return (
-    <div className="z-sticky fixed" style={{ right, bottom }}>
+    <div className="fixed z-[var(--z-sticky)]" style={{ right, bottom }}>
       <button
         ref={buttonRef}
         type="button"
