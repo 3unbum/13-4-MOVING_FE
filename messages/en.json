@@ -145,6 +145,7 @@
   "profileImage": {
     "upload": "Upload profile image",
     "change": "Change profile image",
+    "remove": "Remove profile image",
     "invalidType": "Only jpeg, png and webp files can be uploaded",
     "tooLarge": "Image size cannot exceed 5MB",
     "uploadFailed": "Failed to upload the image. Please try again",
@@ -271,6 +272,7 @@
     "alreadyEstimated": "You have already sent a quote for this request.",
     "alreadyFavorited": "You have already saved this mover.",
     "alreadyTargeted": "You have already requested a quote from this mover.",
+    "botCheckFailed": "Bot verification failed. Please try again.",
     "concurrentRequestConflict": "We couldn't process your request due to high traffic. Please try again in a moment.",
     "emailAlreadyExists": "This email is already registered.",
     "estimateAlreadyProcessed": "This quote has already been processed.",
@@ -281,6 +283,7 @@
     "invalidOauthCode": "Social login verification expired. Please try again.",
     "invalidOrExpiredResetToken": "Your verification has expired. Please request a new code",
     "invalidOrExpiredSignupToken": "Your verification expired. Please start over.",
+    "invalidProfileEditCode": "The verification code is incorrect",
     "invalidResetCode": "The verification code is incorrect",
     "noActiveRequest": "This request has already been confirmed or closed.",
     "notFound": "We couldn't find what you were looking for.",
@@ -288,6 +291,9 @@
     "oauthEmailRequired": "An email address is required. Please allow email sharing in your social account settings and try again.",
     "oauthProviderError": "Something went wrong during social login. Please try again.",
     "profileAlreadyExists": "Your profile is already set up.",
+    "profileEditCodeAttemptsExceeded": "Too many incorrect attempts. Please request a new verification code",
+    "profileEditCodeExpired": "The verification code has expired. Please request a new one",
+    "profileEditVerificationRequired": "Email verification is required. Please verify and try again",
     "profileRequired": "Please set up your profile first.",
     "providerAccountAlreadyLinked": "This account is already registered.",
     "refreshTokenExpired": "Your session has expired. Please log in again.",
@@ -297,7 +303,6 @@
     "reviewAlreadyConfirmed": "You have already written this review.",
     "targetLimitExceeded": "You can request targeted quotes from up to 3 movers.",
     "tooManyRequests": "Too many requests. Please try again later.",
-    "botCheckFailed": "Bot verification failed. Please try again.",
     "unauthorized": "Login required.",
     "validationError": "Please check the information you entered."
   },
@@ -360,7 +365,10 @@
     "passwordPlaceholder": "Enter your password",
     "passwordConfirm": "Confirm Password",
     "passwordConfirmPlaceholder": "Re-enter your password",
-    "emailPlaceholder": "Enter your email"
+    "emailPlaceholder": "Enter your email",
+    "currentPasswordNotice": "You only need to enter your current password when changing it",
+    "emailVerifyTitle": "Verify it's you",
+    "emailVerifyDescription": "We'll send a verification code to {email} so you can safely update your info"
   },
   "auth": {
     "snsSignup": "Quick sign-up with social account",

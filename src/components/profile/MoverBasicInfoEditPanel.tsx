@@ -1,6 +1,8 @@
 "use client";
 
 import MoverBasicInfoEditForm from "@/components/profile/MoverBasicInfoEditForm";
+import ProfileEmailVerificationGate from "@/components/profile/ProfileEmailVerificationGate";
+import { useProfileEditVerified } from "@/hooks/useProfileEditVerified";
 import { useTranslations } from "next-intl";
 import { useMoverAccount } from "@/hooks/useMoverAccount";
 import type { MoverAccountResponse } from "@/lib/services/auth-service";
@@ -15,6 +17,7 @@ export default function MoverBasicInfoEditPanel({ initialAccount }: MoverBasicIn
   const tCommon = useTranslations("common");
   const tProfile = useTranslations("profile");
   const { account, isLoading, setAccount } = useMoverAccount(initialAccount);
+  const { isVerified, setVerified } = useProfileEditVerified(account?.isProfileEditVerified);
 
   if (isLoading) {
     return <p className="text-14 text-black-100 pc:text-16">{tCommon("loading")}</p>;
@@ -24,5 +27,18 @@ export default function MoverBasicInfoEditPanel({ initialAccount }: MoverBasicIn
     return <p className="text-14 pc:text-16 text-red-200">{tProfile("accountLoadFailed")}</p>;
   }
 
-  return <MoverBasicInfoEditForm account={account} onAccountUpdated={setAccount} />;
+  return (
+    // #131: 프로필 수정 진입은 이메일 인증을 한 번 거친다 (MoverProfileEditPanel / CustomerProfileEditForm과 동일 패턴)
+    <ProfileEmailVerificationGate
+      email={account.email}
+      isVerified={isVerified}
+      onVerified={() => setVerified(true)}
+    >
+      <MoverBasicInfoEditForm
+        account={account}
+        onAccountUpdated={setAccount}
+        onVerificationRequired={() => setVerified(false)}
+      />
+    </ProfileEmailVerificationGate>
+  );
 }

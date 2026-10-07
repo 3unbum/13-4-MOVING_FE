@@ -145,6 +145,7 @@
   "profileImage": {
     "upload": "프로필 이미지 업로드",
     "change": "프로필 이미지 변경",
+    "remove": "프로필 이미지 삭제",
     "invalidType": "jpeg, png, webp 파일만 업로드할 수 있어요",
     "tooLarge": "이미지 용량은 5MB를 초과할 수 없어요",
     "uploadFailed": "이미지 업로드에 실패했어요. 다시 시도해주세요",
@@ -271,6 +272,7 @@
     "alreadyEstimated": "이미 이 요청에 견적을 보내셨습니다",
     "alreadyFavorited": "이미 찜한 기사님입니다",
     "alreadyTargeted": "이미 지정한 기사님입니다",
+    "botCheckFailed": "봇 검증에 실패했어요. 다시 시도해 주세요.",
     "concurrentRequestConflict": "요청이 몰려 처리하지 못했습니다. 잠시 후 다시 시도해 주세요",
     "emailAlreadyExists": "이미 가입된 이메일입니다",
     "estimateAlreadyProcessed": "이미 처리된 견적입니다",
@@ -281,6 +283,7 @@
     "invalidOauthCode": "소셜 로그인 인증이 만료되었습니다. 다시 시도해 주세요",
     "invalidOrExpiredResetToken": "인증 시간이 만료되었습니다. 인증번호를 다시 받아 주세요",
     "invalidOrExpiredSignupToken": "인증 정보가 만료되었습니다. 처음부터 다시 시도해 주세요",
+    "invalidProfileEditCode": "인증번호가 일치하지 않습니다",
     "invalidResetCode": "인증번호가 일치하지 않습니다",
     "noActiveRequest": "이미 기사님이 확정되었거나 종료된 견적 요청입니다",
     "notFound": "요청하신 정보를 찾을 수 없습니다",
@@ -288,6 +291,9 @@
     "oauthEmailRequired": "이메일 정보가 필요합니다. 소셜 계정 설정에서 이메일 제공에 동의한 뒤 다시 시도해 주세요",
     "oauthProviderError": "소셜 로그인 처리 중 오류가 발생했습니다. 다시 시도해 주세요",
     "profileAlreadyExists": "이미 등록된 프로필입니다",
+    "profileEditCodeAttemptsExceeded": "인증번호를 여러 번 틀려 무효가 되었습니다. 인증번호를 다시 받아 주세요",
+    "profileEditCodeExpired": "인증번호가 만료되었습니다. 인증번호를 다시 받아 주세요",
+    "profileEditVerificationRequired": "이메일 인증이 필요해요. 인증 후 다시 시도해 주세요",
     "profileRequired": "프로필 등록이 필요합니다",
     "providerAccountAlreadyLinked": "이미 가입된 계정입니다",
     "refreshTokenExpired": "로그인이 만료되었습니다. 다시 로그인해 주세요",
@@ -297,7 +303,6 @@
     "reviewAlreadyConfirmed": "이미 작성한 리뷰입니다",
     "targetLimitExceeded": "지정 견적 요청은 최대 3명까지 가능합니다",
     "tooManyRequests": "요청이 너무 많아요. 잠시 후 다시 시도해 주세요.",
-    "botCheckFailed": "봇 검증에 실패했어요. 다시 시도해 주세요.",
     "unauthorized": "로그인이 필요합니다",
     "validationError": "입력하신 내용을 다시 확인해 주세요"
   },
@@ -360,7 +365,10 @@
     "passwordPlaceholder": "비밀번호를 입력해 주세요",
     "passwordConfirm": "비밀번호 확인",
     "passwordConfirmPlaceholder": "비밀번호를 다시 한번 입력해 주세요",
-    "emailPlaceholder": "이메일을 입력해 주세요"
+    "emailPlaceholder": "이메일을 입력해 주세요",
+    "currentPasswordNotice": "비밀번호를 변경할 때만 현재 비밀번호를 입력해 주세요",
+    "emailVerifyTitle": "본인 확인",
+    "emailVerifyDescription": "안전하게 정보를 수정할 수 있도록 {email}로 인증번호를 보내드려요"
   },
   "auth": {
     "snsSignup": "SNS 계정으로 간편 가입하기",

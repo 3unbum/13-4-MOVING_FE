@@ -145,6 +145,7 @@
   "profileImage": {
     "upload": "上传头像",
     "change": "更换头像",
+    "remove": "删除头像",
     "invalidType": "仅支持上传 jpeg、png、webp 格式的文件",
     "tooLarge": "图片大小不能超过 5MB",
     "uploadFailed": "图片上传失败，请重试",
@@ -271,6 +272,7 @@
     "alreadyEstimated": "您已针对该申请发送报价。",
     "alreadyFavorited": "您已收藏该师傅。",
     "alreadyTargeted": "您已指定该师傅。",
+    "botCheckFailed": "机器人验证失败，请重试。",
     "concurrentRequestConflict": "请求过于集中，暂时无法处理。请稍后重试。",
     "emailAlreadyExists": "该邮箱已注册。",
     "estimateAlreadyProcessed": "该报价已处理。",
@@ -281,6 +283,7 @@
     "invalidOauthCode": "社交登录验证已过期，请重试。",
     "invalidOrExpiredResetToken": "验证已过期，请重新获取验证码",
     "invalidOrExpiredSignupToken": "验证信息已过期，请重新开始。",
+    "invalidProfileEditCode": "验证码不正确",
     "invalidResetCode": "验证码不正确",
     "noActiveRequest": "该报价申请已确定师傅或已结束。",
     "notFound": "找不到您请求的信息。",
@@ -288,6 +291,9 @@
     "oauthEmailRequired": "需要邮箱信息。请在社交账号设置中同意提供邮箱后重试。",
     "oauthProviderError": "社交登录处理时发生错误，请重试。",
     "profileAlreadyExists": "个人资料已登记。",
+    "profileEditCodeAttemptsExceeded": "验证码错误次数过多已失效，请重新获取",
+    "profileEditCodeExpired": "验证码已过期，请重新获取",
+    "profileEditVerificationRequired": "需要先完成邮箱验证，请验证后重试",
     "profileRequired": "请先完成个人资料登记。",
     "providerAccountAlreadyLinked": "该账号已注册。",
     "refreshTokenExpired": "登录已过期，请重新登录。",
@@ -297,7 +303,6 @@
     "reviewAlreadyConfirmed": "您已撰写该评价。",
     "targetLimitExceeded": "指定报价申请最多可选择 3 位师傅。",
     "tooManyRequests": "请求过于频繁，请稍后再试。",
-    "botCheckFailed": "机器人验证失败，请重试。",
     "unauthorized": "需要登录。",
     "validationError": "请重新确认您输入的内容。"
   },
@@ -360,7 +365,10 @@
     "passwordPlaceholder": "请输入密码",
     "passwordConfirm": "确认密码",
     "passwordConfirmPlaceholder": "请再次输入密码",
-    "emailPlaceholder": "请输入邮箱"
+    "emailPlaceholder": "请输入邮箱",
+    "currentPasswordNotice": "仅在修改密码时才需要输入当前密码",
+    "emailVerifyTitle": "身份验证",
+    "emailVerifyDescription": "为了安全地修改信息，我们将向 {email} 发送验证码"
   },
   "auth": {
     "snsSignup": "使用社交账号快速注册",
