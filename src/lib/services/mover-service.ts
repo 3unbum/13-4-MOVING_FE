@@ -48,6 +48,12 @@ export interface MoverReviewItem {
   comment: string;
   createdAt: string;
   customerName: string;
+  imageUrls: string[];
+}
+
+export interface MoverReviewImageItem {
+  reviewId: number;
+  imageUrl: string;
 }
 
 /** 기사님 리뷰 정렬. 없으면 백엔드는 latest로 본다. */
@@ -65,6 +71,14 @@ export const DEFAULT_MOVER_REVIEW_SORT: MoverReviewSort = "latest";
 /** GET /movers/:id/reviews — BE는 page(1-base). page/totalPages가 루트에 있어 json.data만 쓰면 잘린다. */
 export interface MoverReviewsResult {
   data: MoverReviewItem[];
+  page: number;
+  totalPages: number;
+  totalCount: number;
+}
+
+/** GET /movers/:id/reviews/images — 리뷰 목록과 같이 page/totalPages가 루트에 있다. */
+export interface MoverReviewImagesResult {
+  data: MoverReviewImageItem[];
   page: number;
   totalPages: number;
   totalCount: number;
@@ -166,4 +180,55 @@ export const moverService = {
 
   getReviewDistribution: (moverId: number) =>
     defaultFetch<MoverRatingDistribution>(`/movers/${moverId}/reviews/distribution`),
+
+  /** limit는 BE가 최대 5다. */
+  getReviewImages: (moverId: number, page = 1, limit = 5) => {
+    const params = new URLSearchParams({
+      page: String(page),
+      limit: String(limit),
+    });
+    return fetchPublicJson<MoverReviewImagesResult>(
+      `/movers/${moverId}/reviews/images?${params.toString()}`
+    );
+  },
 };
+
+const REVIEW_IMAGE_PAGE_SIZE = 5;
+/** 더보기 모달에 넣을 전체 목록. 페이지당 5장 제한이라 이 페이지까지만 모은다. */
+const REVIEW_IMAGE_MAX_PAGES = 40;
+
+/** 확정 리뷰 사진을 최신 리뷰 순으로 모은다. */
+export async function getReviewImageGallery(moverId: number): Promise<{
+  items: MoverReviewImageItem[];
+  totalCount: number;
+}> {
+  const first = await moverService.getReviewImages(moverId, 1, REVIEW_IMAGE_PAGE_SIZE);
+  const items = [...first.data];
+  const pages = Math.min(first.totalPages, REVIEW_IMAGE_MAX_PAGES);
+
+  for (let page = 2; page <= pages; page += 1) {
+    const next = await moverService.getReviewImages(moverId, page, REVIEW_IMAGE_PAGE_SIZE);
+    items.push(...next.data);
+  }
+
+  return { items, totalCount: first.totalCount };
+}
+
+/** 사진의 reviewId로 리뷰 본문을 찾는다. 정렬과 무관하게 최신순 페이지를 훑는다. */
+export async function findMoverReview(
+  moverId: number,
+  reviewId: number
+): Promise<MoverReviewItem | null> {
+  let page = 1;
+  let totalPages = 1;
+
+  while (page <= totalPages && page <= 30) {
+    const result = await moverService.getReviews(moverId, page, REVIEW_IMAGE_PAGE_SIZE, "latest");
+    const found = result.data.find((item) => item.id === reviewId);
+    if (found) return found;
+    totalPages = result.totalPages;
+    page += 1;
+  }
+
+  return null;
+}

@@ -31,4 +31,7 @@ export const moverQueryKeys = {
     [...moverQueryKeys.reviews(moverId), "list", page, sort] as const,
   reviewDistribution: (moverId: number) =>
     [...moverQueryKeys.reviews(moverId), "distribution"] as const,
+  reviewImages: (moverId: number) => [...moverQueryKeys.reviews(moverId), "images"] as const,
+  reviewItem: (moverId: number, reviewId: number) =>
+    [...moverQueryKeys.reviews(moverId), "item", reviewId] as const,
 };

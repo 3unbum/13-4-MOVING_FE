@@ -11,6 +11,7 @@ import Toast from "@/components/common/Toast";
 import { SERVICE_LABELS, type ServiceCode } from "@/components/filter/ChipRegion";
 import CardMyReview from "@/components/review/CardMyReview";
 import CardWritableReview from "@/components/review/CardWritableReview";
+import { ReviewPhotoModal } from "@/components/review/ReviewPhotoGallery";
 import ReviewWriteModal from "@/components/review/ReviewWriteModal";
 import CardMyReviewSkeleton from "@/components/skeleton/CardMyReviewSkeleton";
 import CardWritableReviewSkeleton from "@/components/skeleton/CardWritableReviewSkeleton";
@@ -20,7 +21,10 @@ import {
   reviewQueryKeys,
   reviewService,
   type WritableReviewItem,
+  type WrittenReviewItem,
 } from "@/lib/services/review-service";
+import { moverQueryKeys } from "@/constants/query-keys/movers";
+import type { MoverReviewItem } from "@/lib/services/mover-service";
 import { toAuthErrorMessage } from "@/lib/auth/auth-error-message";
 import { cn } from "@/lib/utils/cn";
 import ReviewsEmptyFallback from "./_components/ReviewsEmptyFallback";
@@ -60,10 +64,15 @@ export default function CustomerReviewsPage() {
     written: { 1: undefined },
   });
   const [selected, setSelected] = useState<WritableReviewItem | null>(null);
+  const [editing, setEditing] = useState<WrittenReviewItem | null>(null);
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [photoReview, setPhotoReview] = useState<{
+    review: MoverReviewItem;
+    index: number;
+  } | null>(null);
   const submitAbortRef = useRef<AbortController | null>(null);
   const toastTimeoutRef = useRef<number | null>(null);
 
@@ -109,14 +118,39 @@ export default function CustomerReviewsPage() {
     setPageByTab((current) => ({ ...current, [tab]: nextPage }));
   };
 
+  const openWrittenPhotos = (item: WrittenReviewItem, imageUrl: string) => {
+    const urls = item.imageUrls ?? [];
+    const index = Math.max(0, urls.indexOf(imageUrl));
+    setPhotoReview({
+      index,
+      review: {
+        id: item.id,
+        rating: item.rating,
+        comment: item.comment,
+        createdAt: item.createdAt,
+        customerName: "",
+        imageUrls: urls,
+      },
+    });
+  };
+
   const closeWriteModal = () => {
     // 닫기는 제출 취소를 뜻한다. 진행 중인 PATCH는 버리고 성공/실패 토스트도 띄우지 않는다.
+    // 사진 추가·삭제는 이미 서버에 반영됐으므로 작성한 리뷰 목록은 다시 받는다.
+    const editedMoverId = editing?.mover.id;
     submitAbortRef.current?.abort();
     submitAbortRef.current = null;
     setSelected(null);
+    setEditing(null);
     setRating(0);
     setComment("");
     setIsSubmitting(false);
+    if (editedMoverId != null) {
+      void queryClient.invalidateQueries({
+        queryKey: reviewQueryKeys.written(writtenPage, writtenCursor),
+      });
+      void queryClient.invalidateQueries({ queryKey: moverQueryKeys.reviews(editedMoverId) });
+    }
   };
 
   const showToast = (message: string) => {
@@ -147,14 +181,22 @@ export default function CustomerReviewsPage() {
     });
   };
 
+  const openEditReview = (item: WrittenReviewItem) => {
+    setSelected(null);
+    setEditing(item);
+    setRating(item.rating);
+    setComment(item.comment);
+  };
+
   const handleSubmitReview = async () => {
-    if (!selected || isSubmitting) return;
+    const target = editing ?? selected;
+    if (!target || isSubmitting) return;
     const controller = new AbortController();
     submitAbortRef.current = controller;
     setIsSubmitting(true);
     try {
       await reviewService.confirm(
-        selected.id,
+        target.id,
         { rating, comment: comment.trim() },
         controller.signal
       );
@@ -162,11 +204,18 @@ export default function CustomerReviewsPage() {
         await refreshActiveReviewQueries();
         return;
       }
+      const editedMoverId = editing?.mover.id;
       closeWriteModal();
-      setPageByTab((current) => ({ ...current, writable: 1 }));
-      setCursorByTab((current) => ({ ...current, writable: { 1: undefined } }));
-      await refreshAfterWriteSuccess();
-      showToast(t("submitted"));
+      if (editedMoverId != null) {
+        await queryClient.invalidateQueries({ queryKey: reviewQueryKeys.all });
+        await queryClient.invalidateQueries({ queryKey: moverQueryKeys.reviews(editedMoverId) });
+        showToast(t("updated"));
+      } else {
+        setPageByTab((current) => ({ ...current, writable: 1 }));
+        setCursorByTab((current) => ({ ...current, writable: { 1: undefined } }));
+        await refreshAfterWriteSuccess();
+        showToast(t("submitted"));
+      }
     } catch (error) {
       if (controller.signal.aborted || (error instanceof Error && error.name === "AbortError")) {
         await refreshActiveReviewQueries();
@@ -302,7 +351,11 @@ export default function CustomerReviewsPage() {
                         )}
                         rating={item.rating}
                         content={item.comment}
-                        createdAt={formatWrittenDate(item.createdAt)}
+                        createdAt={formatWrittenDate(item.editedAt ?? item.createdAt)}
+                        edited={item.editedAt != null}
+                        images={item.imageUrls ?? []}
+                        onImageClick={(imageUrl) => openWrittenPhotos(item, imageUrl)}
+                        onEdit={() => openEditReview(item)}
                       />
                     </li>
                   ))}
@@ -324,6 +377,7 @@ export default function CustomerReviewsPage() {
       </section>
       {selected ? (
         <ReviewWriteModal
+          key={selected.id}
           open
           onClose={closeWriteModal}
           size={isPc ? "md" : "sm"}
@@ -343,6 +397,47 @@ export default function CustomerReviewsPage() {
             void handleSubmitReview();
           }}
           isSubmitting={isSubmitting}
+          reviewId={selected.id}
+          initialImageUrls={selected.imageUrls ?? []}
+        />
+      ) : null}
+      {editing ? (
+        <ReviewWriteModal
+          key={`edit-${editing.id}`}
+          open
+          onClose={closeWriteModal}
+          mode="edit"
+          size={isPc ? "md" : "sm"}
+          position={isTabletUp ? "center" : "bottom"}
+          category={toServiceCode(editing.moving.category)}
+          isTargeted={false}
+          moverNickName={editing.mover.nickName}
+          moverProfileImage={editing.mover.image}
+          fromAddress={editing.moving.fromAddress}
+          toAddress={editing.moving.toAddress}
+          movingDate={formatMovingDate(editing.moving.movingDate, locale)}
+          rating={rating}
+          onRatingChange={setRating}
+          review={comment}
+          onReviewChange={setComment}
+          onSubmit={() => {
+            void handleSubmitReview();
+          }}
+          isSubmitting={isSubmitting}
+          reviewId={editing.id}
+          initialImageUrls={editing.imageUrls ?? []}
+        />
+      ) : null}
+      {photoReview ? (
+        <ReviewPhotoModal
+          open
+          onClose={() => setPhotoReview(null)}
+          slides={photoReview.review.imageUrls.map((imageUrl) => ({
+            reviewId: photoReview.review.id,
+            imageUrl,
+          }))}
+          initialIndex={photoReview.index}
+          knownReviews={[photoReview.review]}
         />
       ) : null}
       {toastMessage ? <Toast message={toastMessage} /> : null}

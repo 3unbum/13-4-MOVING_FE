@@ -17,6 +17,11 @@ import Sort from "@/components/common/Sort";
 import Toast from "@/components/common/Toast";
 import InfoRequiredModal from "@/components/quote/InfoRequiredModal";
 import CardReview from "@/components/review/CardReview";
+import {
+  ReviewPhotoListModal,
+  ReviewPhotoModal,
+  ReviewPhotoStrip,
+} from "@/components/review/ReviewPhotoGallery";
 import CardReviewSkeleton, {
   ReviewDistributionSkeleton,
 } from "@/components/skeleton/CardReviewSkeleton";
@@ -30,8 +35,11 @@ import { useToggleMoverFavorite } from "@/hooks/useToggleMoverFavorite";
 import {
   DEFAULT_MOVER_REVIEW_SORT,
   MOVER_REVIEW_SORTS,
+  getReviewImageGallery,
   moverService,
   type MoverRatingDistribution,
+  type MoverReviewImageItem,
+  type MoverReviewItem,
   type MoverReviewSort,
 } from "@/lib/services/mover-service";
 import { quotationRequestService } from "@/lib/services/quotation-request-service";
@@ -514,6 +522,13 @@ function MoverDetailReviews({ moverId }: { moverId: number }) {
   const tReview = useTranslations("review");
   const [page, setPage] = useState(1);
   const [sort, setSort] = useState<MoverReviewSort>(DEFAULT_MOVER_REVIEW_SORT);
+  const [photoListOpen, setPhotoListOpen] = useState(false);
+  const [photoViewer, setPhotoViewer] = useState<{
+    slides: MoverReviewImageItem[];
+    index: number;
+    known: MoverReviewItem[];
+    fromList?: boolean;
+  } | null>(null);
   // 피그마: 모바일 Card-list-review sm, 태블릿·PC lg
   const isTabletUp = useMediaQuery(TABLET_QUERY);
   const reviewCardSize = isTabletUp ? "lg" : "sm";
@@ -537,6 +552,11 @@ function MoverDetailReviews({ moverId }: { moverId: number }) {
   const distributionQuery = useQuery({
     queryKey: moverQueryKeys.reviewDistribution(moverId),
     queryFn: () => moverService.getReviewDistribution(moverId),
+  });
+
+  const imagesQuery = useQuery({
+    queryKey: moverQueryKeys.reviewImages(moverId),
+    queryFn: () => getReviewImageGallery(moverId),
   });
 
   if (listQuery.isPending && !listQuery.data) {
@@ -574,6 +594,24 @@ function MoverDetailReviews({ moverId }: { moverId: number }) {
   const totalPages = listQuery.data?.totalPages ?? 0;
   const isEmpty = (listQuery.data?.totalCount ?? 0) === 0;
   const distribution = distributionQuery.isError ? undefined : distributionQuery.data;
+  const gallery = imagesQuery.data?.items ?? [];
+
+  const openReviewPhotos = (item: MoverReviewItem, imageUrl: string) => {
+    const galleryIndex = gallery.findIndex(
+      (photo) => photo.reviewId === item.id && photo.imageUrl === imageUrl
+    );
+    if (galleryIndex >= 0) {
+      setPhotoViewer({ slides: gallery, index: galleryIndex, known: items });
+      return;
+    }
+
+    const urls = item.imageUrls ?? [];
+    setPhotoViewer({
+      slides: urls.map((url) => ({ reviewId: item.id, imageUrl: url })),
+      index: Math.max(0, urls.indexOf(imageUrl)),
+      known: [item],
+    });
+  };
 
   if (isEmpty) {
     // 피그마 상세 empty는 이미지 없이 제목 + 안내 문구만 (1:8169 / 1:8766)
@@ -600,6 +638,7 @@ function MoverDetailReviews({ moverId }: { moverId: number }) {
             onChange={handleSortChange}
           />
         </div>
+        <ReviewPhotoStrip items={gallery} onOpen={() => setPhotoListOpen(true)} />
         {distribution ? <ProgressBar data={toProgressBarData(distribution)} hideTitle /> : null}
 
         <ul className="divide-line-100 flex w-full flex-col divide-y">
@@ -611,6 +650,8 @@ function MoverDetailReviews({ moverId }: { moverId: number }) {
                 createdAt={formatReviewCreatedAt(item.createdAt)}
                 rating={item.rating}
                 content={item.comment}
+                images={item.imageUrls ?? []}
+                onImageClick={(imageUrl) => openReviewPhotos(item, imageUrl)}
               />
             </li>
           ))}
@@ -623,6 +664,36 @@ function MoverDetailReviews({ moverId }: { moverId: number }) {
         onPageChange={setPage}
         className="mt-8 justify-center"
       />
+      {photoListOpen ? (
+        <ReviewPhotoListModal
+          open
+          onClose={() => setPhotoListOpen(false)}
+          items={gallery}
+          onSelect={(index) => {
+            setPhotoListOpen(false);
+            setPhotoViewer({ slides: gallery, index, known: items, fromList: true });
+          }}
+        />
+      ) : null}
+      {photoViewer ? (
+        <ReviewPhotoModal
+          key={`${photoViewer.index}-${photoViewer.slides[photoViewer.index]?.imageUrl ?? ""}`}
+          open
+          onClose={() => setPhotoViewer(null)}
+          slides={photoViewer.slides}
+          initialIndex={photoViewer.index}
+          moverId={moverId}
+          knownReviews={photoViewer.known}
+          onBack={
+            photoViewer.fromList
+              ? () => {
+                  setPhotoViewer(null);
+                  setPhotoListOpen(true);
+                }
+              : undefined
+          }
+        />
+      ) : null}
     </div>
   );
 }
