@@ -711,6 +711,42 @@
     "heroBody2": "and makes choosing a mover simple",
     "step1": "Skip the hassle —",
     "step2": "start with your moving type",
+    "serviceTitle1": "Request your moving service",
+    "serviceTitle2": "and receive quotes",
+    "compareTitle1": "Compare quotes at a glance",
+    "compareTitle2": "and choose your mover",
+    "mockFrom": "343 Samil-daero, Jung-gu, Seoul",
+    "mockTo": "428 Seolleung-ro, Gangnam-gu, Seoul",
+    "samples": [
+      {
+        "mover": "Kim Code",
+        "from": "Jung-gu, Seoul",
+        "to": "Suwon, Gyeonggi",
+        "date": "Mon, Oct 12, 2026",
+        "title": "We'll move your belongings safely."
+      },
+      {
+        "mover": "Park Isat",
+        "from": "Haeundae-gu, Busan",
+        "to": "Suseong-gu, Daegu",
+        "date": "Sat, Oct 17, 2026",
+        "title": "From packing to tidying, we handle it all."
+      },
+      {
+        "mover": "Lee Dundun",
+        "from": "Yeonsu-gu, Incheon",
+        "to": "Gangnam-gu, Seoul",
+        "date": "Sat, Oct 24, 2026",
+        "title": "10 years of know-how for a safe move."
+      },
+      {
+        "mover": "Choi Mideum",
+        "from": "Seo-gu, Daejeon",
+        "to": "Sejong",
+        "date": "Tue, Oct 27, 2026",
+        "title": "A worry-free move with zero damage."
+      }
+    ],
     "footer1": "Moving made simple,",
     "footer2": "all in one place!",
     "notFoundTitle": "Page not found",
