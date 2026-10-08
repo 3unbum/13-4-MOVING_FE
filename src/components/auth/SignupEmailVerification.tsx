@@ -38,6 +38,9 @@ interface SignupEmailVerificationProps {
   // 이메일 입력란 잠금·가입 버튼 활성화를 부모가 이 값으로 정해서 부모가 소유한다
   status: SignupEmailStatus;
   onStatusChange: (status: SignupEmailStatus) => void;
+  // 발송 중에 이메일이 바뀌면 늦게 온 성공 응답이 이전 주소로 보낸 인증번호를 새 이메일의 codeSent로 적용한다 —
+  // 부모가 그동안 이메일 입력란을 잠그도록 알린다
+  onSendingChange: (isSending: boolean) => void;
 }
 
 // 회원가입 폼 안, 이메일 입력란 바로 아래에 놓이는 인증 영역. 바깥이 이미 <form>이라 중첩 form을 만들 수
@@ -49,6 +52,7 @@ export default function SignupEmailVerification({
   canRequest,
   status,
   onStatusChange,
+  onSendingChange,
 }: SignupEmailVerificationProps) {
   const t = useTranslations("auth");
   const tError = useTranslations("authError");
@@ -81,6 +85,7 @@ export default function SignupEmailVerification({
   // 성공이면 null, 실패면 BE 에러를 그대로 돌려준다. Turnstile 토큰은 1회용이라 결과와 상관없이 위젯을 새로 받는다.
   const requestCode = async (): Promise<unknown> => {
     setIsSending(true);
+    onSendingChange(true);
     try {
       await authService.sendSignupCode({
         role,
@@ -92,6 +97,7 @@ export default function SignupEmailVerification({
       return error;
     } finally {
       setIsSending(false);
+      onSendingChange(false);
       setTurnstileToken(null);
       setTurnstileResetKey((key) => key + 1);
     }
@@ -149,11 +155,13 @@ export default function SignupEmailVerification({
     onStatusChange("idle");
   };
 
+  // 재발송 중에 이메일을 바꾸면 늦게 온 응답이 바뀐 화면을 codeSent로 되돌린다 — 응답이 올 때까지 막는다
   const changeEmailButton = (
     <button
       type="button"
       onClick={handleChangeEmail}
-      className="text-14 tablet:text-16 shrink-0 font-semibold text-orange-400 underline"
+      disabled={isSending}
+      className="text-14 tablet:text-16 shrink-0 font-semibold text-orange-400 underline disabled:cursor-not-allowed disabled:text-gray-400 disabled:no-underline"
     >
       {t("signupVerification.changeEmail")}
     </button>

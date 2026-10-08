@@ -43,6 +43,8 @@ export default function MoverSignupPage() {
   } = useForm<SignupFormValues>({ resolver: zodResolver(schema), mode: "onChange" });
   // 인증이 끝나야 가입 버튼이 열린다. 인증 후 이메일이 바뀌면 BE가 403을 주므로 idle이 아니면 입력란을 잠근다
   const [emailStatus, setEmailStatus] = useState<SignupEmailStatus>("idle");
+  // 발송 중에 고친 이메일에 이전 주소의 발송 결과가 적용되지 않게, 응답이 올 때까지 입력란을 잠근다
+  const [isEmailSending, setIsEmailSending] = useState(false);
   const email = useWatch({ control, name: "email" }) ?? "";
 
   const handleEmailStatusChange = (status: SignupEmailStatus) => {
@@ -109,7 +111,7 @@ export default function MoverSignupPage() {
                 placeholder={tp("emailPlaceholder")}
                 autoComplete="email"
                 errorMessage={errors.email?.message}
-                readOnly={emailStatus !== "idle"}
+                readOnly={emailStatus !== "idle" || isEmailSending}
                 {...register("email")}
               />
               <SignupEmailVerification
@@ -118,6 +120,7 @@ export default function MoverSignupPage() {
                 canRequest={Boolean(email) && !errors.email}
                 status={emailStatus}
                 onStatusChange={handleEmailStatusChange}
+                onSendingChange={setIsEmailSending}
               />
               <FormField
                 id="phoneNumber"
