@@ -285,6 +285,14 @@ export default function MoverRequestsClient() {
           customerName={action.request.userName}
           fromAddress={shortenAddress(action.request.fromAddress)}
           toAddress={shortenAddress(action.request.toAddress)}
+          // 위 두 값은 "서울 강남구"까지 줄인 것입니다. 견적가를 정하려면
+          // 동·호수까지 필요해 전체 주소를 따로 넘깁니다.
+          fullFromAddress={action.request.fromAddress}
+          fullToAddress={action.request.toAddress}
+          fromDetailAddress={action.request.fromDetailAddress}
+          fromPostalCode={action.request.fromPostalCode}
+          toDetailAddress={action.request.toDetailAddress}
+          toPostalCode={action.request.toPostalCode}
           movingDate={formatMovingDate(action.request.movingDate, locale)}
           price={price}
           onPriceChange={setPrice}

@@ -54,12 +54,16 @@ function EstimateCard({
         );
       // PENDING(보냈고 결과 대기) / CONFIRMED(확정, 이사 전) — 같은 카드에 배지만 갈립니다.
       // 피그마 `1:9301`이 확정(배지 O), `1:9302`가 대기(배지 X)입니다.
+      //
+      // 이사완료 카드에만 "견적 상세보기" 버튼이 있어 이 둘은 상세로 갈 길이 없었습니다.
+      // 정작 주소가 필요한 건 이사 전(CONFIRMED)이라 카드 전체를 눌러 들어가게 했습니다.
       default:
         return (
           <CardCustomerQuotation
             size={size}
             price={price}
             isConfirmed={estimate.estimateStatus === "CONFIRMED"}
+            onCardClick={onDetailClick}
             {...common}
           />
         );

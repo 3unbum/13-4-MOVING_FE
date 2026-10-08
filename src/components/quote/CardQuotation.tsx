@@ -27,6 +27,8 @@ interface RequestBase {
   /** 표시용으로 이미 포맷된 문자열 (예: "2024년 07월 01일 (월)") */
   movingDate: string;
   className?: string;
+  /** 카드를 눌러 상세로 보낼 때 (키보드 포함) — CardRequest가 처리합니다 */
+  onCardClick?: () => void;
 }
 
 /** 견적 보내기 버튼 — 라벨 뒤에 writing 아이콘이 붙습니다 */

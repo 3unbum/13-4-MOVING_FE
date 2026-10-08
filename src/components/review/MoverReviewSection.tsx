@@ -6,12 +6,18 @@ import { useState } from "react";
 import Pagination from "@/components/common/Pagination";
 import ProgressBar from "@/components/common/ProgressBar";
 import CardReview from "@/components/review/CardReview";
+import { ReviewPhotoModal } from "@/components/review/ReviewPhotoGallery";
 import CardReviewSkeleton, {
   ReviewDistributionSkeleton,
 } from "@/components/skeleton/CardReviewSkeleton";
 import SkeletonStatus from "@/components/skeleton/SkeletonStatus";
 import { moverQueryKeys } from "@/constants/query-keys/movers";
-import { moverService, type MoverRatingDistribution } from "@/lib/services/mover-service";
+import {
+  moverService,
+  type MoverRatingDistribution,
+  type MoverReviewImageItem,
+  type MoverReviewItem,
+} from "@/lib/services/mover-service";
 import { cn } from "@/lib/utils/cn";
 
 const TAKE = 5;
@@ -58,6 +64,11 @@ function toProgressBarData(distribution: MoverRatingDistribution) {
 export default function MoverReviewSection({ moverId, className }: MoverReviewSectionProps) {
   const t = useTranslations("review");
   const [page, setPage] = useState(1);
+  const [photoViewer, setPhotoViewer] = useState<{
+    slides: MoverReviewImageItem[];
+    index: number;
+    review: MoverReviewItem;
+  } | null>(null);
   const enabled = moverId != null;
 
   const listQuery = useQuery({
@@ -137,6 +148,15 @@ export default function MoverReviewSection({ moverId, className }: MoverReviewSe
                 createdAt={formatCreatedAt(item.createdAt)}
                 rating={item.rating}
                 content={item.comment}
+                images={item.imageUrls ?? []}
+                onImageClick={(imageUrl) => {
+                  const urls = item.imageUrls ?? [];
+                  setPhotoViewer({
+                    review: item,
+                    index: Math.max(0, urls.indexOf(imageUrl)),
+                    slides: urls.map((url) => ({ reviewId: item.id, imageUrl: url })),
+                  });
+                }}
               />
             </li>
           ))}
@@ -149,6 +169,17 @@ export default function MoverReviewSection({ moverId, className }: MoverReviewSe
         onPageChange={setPage}
         className="mt-8 justify-center"
       />
+      {photoViewer && moverId != null ? (
+        <ReviewPhotoModal
+          key={`${photoViewer.review.id}-${photoViewer.index}`}
+          open
+          onClose={() => setPhotoViewer(null)}
+          slides={photoViewer.slides}
+          initialIndex={photoViewer.index}
+          moverId={moverId}
+          knownReviews={[photoViewer.review]}
+        />
+      ) : null}
     </div>
   );
 }

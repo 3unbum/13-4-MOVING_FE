@@ -92,7 +92,7 @@ export default function QuotationRequestMobile({
                 className="justify-start px-6 py-4"
                 onClick={departure.open}
               >
-                {departure.value?.roadAddress ?? t("selectFrom")}
+                {departure.value?.label ?? departure.value?.roadAddress ?? t("selectFrom")}
               </Button>
               {departure.value && (
                 <button
@@ -122,7 +122,7 @@ export default function QuotationRequestMobile({
                 className="justify-start px-6 py-4"
                 onClick={arrival.open}
               >
-                {arrival.value?.roadAddress ?? t("selectTo")}
+                {arrival.value?.label ?? arrival.value?.roadAddress ?? t("selectTo")}
               </Button>
               {arrival.value && (
                 <button
