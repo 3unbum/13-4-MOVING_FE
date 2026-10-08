@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils/cn";
 import Image from "next/image";
 import type { ReactNode } from "react";
+import chevronLeft from "@/assets/icons/chevron-left-md.svg";
 import xMd from "@/assets/icons/x-md.svg";
 import xSm from "@/assets/icons/x-sm.svg";
 import { useDialog } from "@/hooks/useDialog";
@@ -68,23 +69,44 @@ export interface ModalHeaderProps {
   title: string;
   size?: ModalHeaderSize;
   onClose: () => void;
+  onBack?: () => void;
+  backLabel?: string;
 }
 
-export function ModalHeader({ id, title, size = "sm", onClose }: ModalHeaderProps) {
+export function ModalHeader({
+  id,
+  title,
+  size = "sm",
+  onClose,
+  onBack,
+  backLabel,
+}: ModalHeaderProps) {
   const t = useTranslations("common");
   const isMd = size === "md";
 
   return (
     <div className="flex w-full shrink-0 items-center justify-between bg-gray-50">
-      <p
-        id={id}
-        className={cn(
-          "text-black-black-400 shrink-0 whitespace-nowrap",
-          isMd ? "text-24 font-semibold" : "text-18 font-bold"
-        )}
-      >
-        {title}
-      </p>
+      <div className="flex min-w-0 items-center gap-2">
+        {onBack ? (
+          <button
+            type="button"
+            onClick={onBack}
+            aria-label={backLabel ?? t("back")}
+            className="shrink-0"
+          >
+            <Image src={chevronLeft} alt="" className={isMd ? "size-9" : "size-6"} />
+          </button>
+        ) : null}
+        <p
+          id={id}
+          className={cn(
+            "text-black-black-400 shrink-0 whitespace-nowrap",
+            isMd ? "text-24 font-semibold" : "text-18 font-bold"
+          )}
+        >
+          {title}
+        </p>
+      </div>
       <button type="button" onClick={onClose} aria-label={t("close")} className="shrink-0">
         <Image src={isMd ? xMd : xSm} alt="" className={isMd ? "size-9" : "size-6"} />
       </button>

@@ -13,10 +13,14 @@ export interface ReviewMovingInfo {
   category: string;
 }
 
+/** 리뷰당 사진 상한. BE와 같다. */
+export const MAX_REVIEW_IMAGES = 3;
+
 export interface WritableReviewItem {
   id: number;
   mover: ReviewMoverSummary;
   moving: ReviewMovingInfo;
+  imageUrls: string[];
 }
 
 export interface WrittenReviewItem {
@@ -26,6 +30,8 @@ export interface WrittenReviewItem {
   mover: ReviewMoverSummary;
   moving: ReviewMovingInfo;
   createdAt: string;
+  editedAt: string | null;
+  imageUrls: string[];
 }
 
 export interface ReviewListResult<T> {
@@ -64,4 +70,21 @@ export const reviewService = {
     cookieFetch<ReviewListResult<WrittenReviewItem>>(`/reviews/my${toQueryString(query)}`),
   confirm: (id: number, body: ConfirmReviewInput, signal?: AbortSignal) =>
     cookieFetch(`/reviews/${id}`, { method: "PATCH", body: JSON.stringify(body), signal }),
+
+  /** PENDING 리뷰에 사진 한 장. 이미 3장이면 400. */
+  uploadImage: (id: number, file: File) => {
+    const formData = new FormData();
+    formData.append("image", file);
+    return cookieFetch<{ imageUrl: string }>(`/reviews/${id}/images`, {
+      method: "POST",
+      body: formData,
+    });
+  },
+
+  /** PENDING일 때만 삭제된다. */
+  removeImage: (id: number, imageUrl: string) =>
+    cookieFetch<void>(`/reviews/${id}/images`, {
+      method: "DELETE",
+      body: JSON.stringify({ imageUrl }),
+    }),
 };

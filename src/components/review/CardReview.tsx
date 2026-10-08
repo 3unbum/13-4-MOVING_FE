@@ -1,4 +1,5 @@
 import RatingStars from "@/components/common/RatingStars";
+import { ReviewPhotoThumbs } from "@/components/review/ReviewPhotoGallery";
 import { cn } from "@/lib/utils/cn";
 import type { HTMLAttributes } from "react";
 
@@ -12,6 +13,8 @@ interface CardReviewProps extends HTMLAttributes<HTMLElement> {
   createdAt: string;
   rating: number;
   content: string;
+  images?: string[];
+  onImageClick?: (imageUrl: string) => void;
 }
 
 /** 작성자와 날짜를 나누는 세로 구분선 */
@@ -38,6 +41,8 @@ export default function CardReview({
   createdAt,
   rating,
   content,
+  images = [],
+  onImageClick,
   className,
   ...props
 }: CardReviewProps) {
@@ -67,6 +72,7 @@ export default function CardReview({
       <p className={cn("text-black-500 w-full whitespace-pre-wrap", isLg ? "text-18" : "text-14")}>
         {content}
       </p>
+      <ReviewPhotoThumbs urls={images} onSelect={onImageClick} />
     </article>
   );
 }
