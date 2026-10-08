@@ -28,7 +28,8 @@ export default function ScaledStage({
     const box = boxRef.current;
     if (!box) return;
 
-    const update = () => setScale(box.clientWidth / width);
+    const update = () =>
+      setScale(box.clientWidth > 0 && width > 0 ? box.clientWidth / width : null);
     update();
 
     const observer = new ResizeObserver(update);
