@@ -13,6 +13,7 @@ import {
 import MoveTypeChip from "@/components/filter/ChipMoveType";
 import type { ServiceCode } from "@/components/filter/ChipRegion";
 import MoverMeta from "@/components/mover/MoverMeta";
+import MovingInfo from "@/components/quote/MovingInfo";
 import MoverName from "@/components/mover/MoverName";
 import ProfileAvatar from "@/components/common/ProfileAvatar";
 import { cn } from "@/lib/utils/cn";
@@ -249,6 +250,12 @@ interface CardPendingHistoryProps extends HTMLAttributes<HTMLElement>, MoverInfo
    * 견적 응답에 `isFavorited`가 없어 호출부가 찜 목록과 대조해 넘깁니다.
    */
   isFavorited?: boolean;
+  /** 주면 기사님 정보 아래에 출발지·도착지·이사일 줄이 붙습니다 (랜딩 소개 카드용) */
+  movingInfo?: { from: string; to: string; movingDate: string };
+  /** true면 "견적대기"/"반려됨" 배지를 숨깁니다 (랜딩 소개 카드용) */
+  hideStatus?: boolean;
+  /** true면 [상세보기][견적 확정하기] 버튼을 누르거나 포커스할 수 없게 막습니다. 색은 그대로입니다 (랜딩 소개 카드용) */
+  buttonsInert?: boolean;
 }
 
 /**
@@ -267,6 +274,9 @@ export function CardPendingHistory({
   onDetailClick,
   onConfirmClick,
   isFavorited = false,
+  movingInfo,
+  hideStatus = false,
+  buttonsInert = false,
   className,
   nickName,
   profileImage,
@@ -314,7 +324,7 @@ export function CardPendingHistory({
               <MoveTypeChip variant={category} size={isLg ? "md" : "sm"} />
               {isTargeted && <MoveTypeChip variant="TARGETED" size={isLg ? "md" : "sm"} />}
             </div>
-            {isRejected ? <RejectedBadge /> : <PendingBadge />}
+            {!hideStatus && (isRejected ? <RejectedBadge /> : <PendingBadge />)}
           </div>
 
           {/* 제목과 기사님 정보 사이는 4px입니다 (피그마 `510:44550` 제목 h26 → 박스 y30) */}
@@ -335,6 +345,13 @@ export function CardPendingHistory({
               {...mover}
             />
           </div>
+
+          {movingInfo && (
+            <>
+              <hr className="h-0 w-full border-0 shadow-[0_0_0_0.5px_var(--color-line-100)]" />
+              <MovingInfo size={size} {...movingInfo} />
+            </>
+          )}
         </div>
 
         <PriceFooter price={price} size={size} />
@@ -342,7 +359,14 @@ export function CardPendingHistory({
 
       {/* lg는 [상세보기][견적 확정하기] 가로, sm은 [견적 확정하기][상세보기] 세로 — 순서가 반대입니다.
           반려된 견적은 확정할 수 없으므로 상세보기만 남깁니다 (BE도 REJECTED 확정을 막습니다). */}
-      <div className={cn("flex w-full gap-2.75", !isLg && "flex-col")}>
+      <div
+        className={cn(
+          "flex w-full gap-2.75",
+          !isLg && "flex-col",
+          buttonsInert && "pointer-events-none"
+        )}
+        inert={buttonsInert}
+      >
         {isRejected ? (
           <Button variant="outlined" size="sm" onClick={onDetailClick}>
             {t("viewDetail")}
