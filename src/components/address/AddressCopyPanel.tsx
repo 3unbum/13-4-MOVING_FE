@@ -126,7 +126,10 @@ export default function AddressCopyPanel({
             // w-max만 두면 내용이 가장 좁게 잡혀 "충북 / 증평군"처럼 쪼개집니다.
             // 그래서 최소 폭을 주는데, 모바일은 모달 내용이 327px뿐이라 min-w를 크게 잡으면
             // 패널이 왼쪽으로 삐져나가 라벨이 잘립니다("명 주소"). tablet부터만 넓힙니다.
-            "border-line-100 shadow-modal absolute right-0 z-10 flex max-w-full flex-col gap-2.5 rounded-lg border bg-white p-4",
+            // grid — 라벨 열은 가장 긴 라벨(영어 "Address details")에 맞추고, 값 열이
+            // 나머지를 가져갑니다. 라벨 폭을 고정하면 언어마다 길이가 달라
+            // 영어·일본어에서 라벨이 두 줄로 접혔습니다.
+            "border-line-100 shadow-modal absolute right-0 z-10 grid max-w-full grid-cols-[auto_1fr_auto] items-start gap-x-2 gap-y-2.5 rounded-lg border bg-white p-4",
             // 폭: 호출부가 지정하지 않으면 내용 크기. w-max만 두면 "충북 / 증평군"처럼
             // 어절마다 쪼개져 최소 폭(364px)을 함께 줍니다.
             // 모바일 모달은 내용이 327px뿐이라 min-w를 크게 잡으면 패널이 왼쪽으로
@@ -160,25 +163,28 @@ function CopyRow({
 }) {
   const t = useTranslations("quote");
 
+  // 부모가 grid라 세 칸을 직접 냅니다 — div로 감싸면 라벨 열이 줄마다 따로 잡혀
+  // 값의 시작점이 어긋납니다.
   return (
-    <div className="flex items-start gap-2">
-      {/* 라벨 폭을 고정해 값의 시작점을 맞춥니다 — 세 줄이 들쭉날쭉하면 읽기 어렵습니다 */}
-      <span className="text-12 text-gray-gray-400 bg-background-200 w-14 shrink-0 rounded py-0.5 text-center font-medium">
+    <>
+      {/* 라벨은 내용 크기로 두고 줄바꿈만 막습니다. 폭을 고정하면 언어마다 길이가 달라
+          ("도로명 주소" 6자 / "Address details" 15자) 긴 쪽이 두 줄로 접힙니다. */}
+      <span className="text-12 text-gray-gray-400 bg-background-200 rounded px-1.5 py-0.5 text-center font-medium whitespace-nowrap">
         {label}
       </span>
       {/* break-keep을 쓰면 "광장로 / 88"처럼 번지만 떨어집니다.
           폭이 모자랄 때는 그냥 흐르듯 접히는 쪽이 덜 어색합니다. */}
-      <span className="text-14 text-black-black-400 min-w-0 flex-1 font-medium">{value}</span>
+      <span className="text-14 text-black-black-400 min-w-0 font-medium">{value}</span>
       {/* 세 버튼이 모두 "복사"라 화면 읽기 도구의 버튼 목록에서 구별되지 않습니다.
           보이는 문구는 그대로 두고 이름에 항목을 넣습니다 ("도로명 주소 복사") */}
       <button
         type="button"
         onClick={() => onCopy(value)}
         aria-label={`${label} ${t("copy")}`}
-        className="text-12 shrink-0 cursor-pointer font-semibold text-orange-400 hover:text-orange-500"
+        className="text-12 cursor-pointer font-semibold whitespace-nowrap text-orange-400 hover:text-orange-500"
       >
         {t("copy")}
       </button>
-    </div>
+    </>
   );
 }
