@@ -174,7 +174,9 @@ function CopyRow({
       </span>
       {/* break-keep을 쓰면 "광장로 / 88"처럼 번지만 떨어집니다.
           폭이 모자랄 때는 그냥 흐르듯 접히는 쪽이 덜 어색합니다. */}
-      <span className="text-14 text-black-black-400 min-w-0 font-medium">{value}</span>
+      {/* break-words — 공백 없는 긴 값(사용자가 적은 상세주소 등)이 들어오면
+          grid 열을 넘칩니다. min-w-0 은 열을 줄일 뿐 단어를 쪼개지는 못합니다. */}
+      <span className="text-14 text-black-black-400 min-w-0 font-medium break-words">{value}</span>
       {/* 세 버튼이 모두 "복사"라 화면 읽기 도구의 버튼 목록에서 구별되지 않습니다.
           보이는 문구는 그대로 두고 이름에 항목을 넣습니다 ("도로명 주소 복사") */}
       <button
