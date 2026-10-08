@@ -1,5 +1,6 @@
 "use client";
 
+import DeleteAccountSection from "@/components/profile/DeleteAccountSection";
 import MoverBasicInfoEditForm from "@/components/profile/MoverBasicInfoEditForm";
 import ProfileEmailVerificationGate from "@/components/profile/ProfileEmailVerificationGate";
 import { useProfileEditVerified } from "@/hooks/useProfileEditVerified";
@@ -39,6 +40,7 @@ export default function MoverBasicInfoEditPanel({ initialAccount }: MoverBasicIn
         onAccountUpdated={setAccount}
         onVerificationRequired={() => setVerified(false)}
       />
+      <DeleteAccountSection onVerificationRequired={() => setVerified(false)} />
     </ProfileEmailVerificationGate>
   );
 }

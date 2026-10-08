@@ -11,6 +11,7 @@ import ProfileImageUpload from "@/components/common/ProfileImageUpload";
 import Toast from "@/components/common/Toast";
 import Chip from "@/components/filter/ChipRegion";
 import ProfileEmailVerificationGate from "@/components/profile/ProfileEmailVerificationGate";
+import DeleteAccountSection from "@/components/profile/DeleteAccountSection";
 import {
   isProfileEditVerificationRequiredError,
   useProfileEditVerified,
@@ -396,6 +397,7 @@ export default function CustomerProfileEditForm({ initialAccount }: CustomerProf
 
         {submitError && <Toast message={submitError} />}
       </form>
+      <DeleteAccountSection onVerificationRequired={() => setVerified(false)} />
     </ProfileEmailVerificationGate>
   );
 }

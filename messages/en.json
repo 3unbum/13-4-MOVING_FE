@@ -329,6 +329,8 @@
     "alreadyTargeted": "You have already requested a quote from this mover.",
     "botCheckFailed": "Bot verification failed. Please try again.",
     "concurrentRequestConflict": "We couldn't process your request due to high traffic. Please try again in a moment.",
+    "confirmedMoveExists": "You can't delete your account while you have a confirmed move. Please try again after the move is completed.",
+    "unpaidPaymentExists": "You can't delete your account while a payment is still outstanding. Please try again after the payment is completed.",
     "emailAlreadyExists": "This email is already registered.",
     "estimateAlreadyProcessed": "This quote has already been processed.",
     "estimateLimitExceeded": "This request has already received the maximum number of quotes.",
@@ -434,7 +436,13 @@
     "emailPlaceholder": "Enter your email",
     "currentPasswordNotice": "You only need to enter your current password when changing it",
     "emailVerifyTitle": "Verify it's you",
-    "emailVerifyDescription": "We'll send a verification code to {email} so you can safely update your info"
+    "emailVerifyDescription": "We'll send a verification code to {email} so you can safely update your info",
+    "deleteAccount": "Delete account",
+    "deleteAccountDescription": "Deleted accounts can't be restored. To continue, type the phrase below exactly as shown.",
+    "deleteAccountConfirmPhrase": "delete my account",
+    "deleteAccountSubmit": "Delete",
+    "deleteAccountSubmitting": "Deleting...",
+    "deleteAccountFailed": "Failed to delete your account. Please try again later."
   },
   "auth": {
     "snsSignup": "Quick sign-up with social account",
