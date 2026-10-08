@@ -6,13 +6,23 @@ import {
   CardRejectedRequest,
 } from "@/components/quote/CardQuotation";
 import type { MoverEstimate } from "@/lib/services/mover-estimate-service";
-import { useLocale } from "next-intl";
+import type { ReactNode } from "react";
+import { useLocale, useTranslations } from "next-intl";
+import { cn } from "@/lib/utils/cn";
 import { shortenAddress } from "@/lib/utils/address";
 import { formatMovingDate, type DateLocale } from "@/lib/utils/date";
 
 interface MoverEstimateListProps {
   estimates: MoverEstimate[];
   onDetailClick?: (estimateId: number) => void;
+  /** 결제 내역 탭 — 카드 위에 고객이 결제한 날짜를 보여줍니다 */
+  showPaidAt?: boolean;
+  /** 대기 중인 결제 탭 — 이사가 끝난 견적은 카드 위에 이사 완료일(이사일)을 보여줍니다 */
+  showMovedAt?: boolean;
+  /** 카드를 한 줄에 하나씩 보여줍니다 — 카드 밑에 버튼이 붙는 대기 중인 결제 탭 */
+  singleColumn?: boolean;
+  /** 카드 밑에 붙는 영역(버튼 등) */
+  renderFooter?: (estimate: MoverEstimate) => ReactNode;
 }
 
 /** 카드 한 장 — size만 다른 두 벌을 CSS로 전환합니다 (JS 미디어쿼리는 첫 렌더에 깜빡임) */
@@ -86,17 +96,57 @@ function EstimateCard({
  *
  * 그리드는 PC만 2열이고, 카드는 폭을 갖지 않으므로 그리드 칸이 폭을 정합니다.
  */
-export default function MoverEstimateList({ estimates, onDetailClick }: MoverEstimateListProps) {
+export default function MoverEstimateList({
+  estimates,
+  onDetailClick,
+  showPaidAt = false,
+  showMovedAt = false,
+  singleColumn = false,
+  renderFooter,
+}: MoverEstimateListProps) {
+  const tQuote = useTranslations("quote");
+  const locale = useLocale() as DateLocale;
+
   return (
     // 카드 간격 — 피그마 모바일 20 / 태블릿 32 / PC 24 (가로·세로 모두 24)
-    <div className="tablet:gap-8 pc:grid-cols-2 pc:gap-6 grid w-full grid-cols-1 gap-5">
-      {estimates.map((estimate) => (
-        <EstimateCard
-          key={estimate.id}
-          estimate={estimate}
-          onDetailClick={() => onDetailClick?.(estimate.id)}
-        />
-      ))}
+    <div
+      className={cn(
+        "tablet:gap-8 grid w-full grid-cols-1 gap-5",
+        // 한 줄에 하나일 때는 PC에서도 카드가 늘어나지 않게 폭을 잡습니다 (태블릿 588)
+        singleColumn ? "tablet:max-w-147 mx-auto" : "pc:grid-cols-2 pc:gap-6"
+      )}
+    >
+      {estimates.map((estimate) =>
+        // 보낸 견적·반려 탭처럼 카드만 보여주는 곳은 감싸지 않습니다 — 카드에 이미 테두리가 있어 겹쳐 보입니다
+        !showPaidAt && !showMovedAt && !renderFooter ? (
+          <EstimateCard
+            key={estimate.id}
+            estimate={estimate}
+            onDetailClick={() => onDetailClick?.(estimate.id)}
+          />
+        ) : (
+          <div
+            key={estimate.id}
+            // 카드(CardQuotation)와 같은 은은한 그림자 — 테두리가 있어 inset 선은 뺐습니다
+            className="border-line-100 flex flex-col gap-3 rounded-4xl border p-5 shadow-[-2px_-2px_10px_0_rgba(200,200,200,0.3),2px_2px_10px_0_rgba(200,200,200,0.3)]"
+          >
+            {/* 이사 완료 상태는 이사일이 지나야 되므로 이사일이 곧 이사 완료일입니다. 선수금 대기(확정)는 아직 이사 전이라 뺍니다 */}
+            {showMovedAt && estimate.estimateStatus === "COMPLETED" && (
+              <p className="text-18 font-semibold text-orange-400">
+                {tQuote("movedAt")}{" "}
+                {formatMovingDate(estimate.quotationRequest.movingDate, locale, false)}
+              </p>
+            )}
+            {showPaidAt && estimate.paidAt && (
+              <p className="text-14 font-semibold text-orange-400">
+                {tQuote("paidAt")} {formatMovingDate(estimate.paidAt, locale, false)}
+              </p>
+            )}
+            <EstimateCard estimate={estimate} onDetailClick={() => onDetailClick?.(estimate.id)} />
+            {renderFooter?.(estimate)}
+          </div>
+        )
+      )}
     </div>
   );
 }

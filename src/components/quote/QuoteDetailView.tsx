@@ -16,10 +16,12 @@ import MoverMeta from "@/components/mover/MoverMeta";
 import MoverName from "@/components/mover/MoverName";
 import MoveTypeChip from "@/components/filter/ChipMoveType";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
+import ExtraChargeInfo from "@/components/quote/ExtraChargeInfo";
+import PayAction from "@/components/quote/PayAction";
 import QuoteShare from "@/components/quote/QuoteShare";
 import { cn } from "@/lib/utils/cn";
 import { formatPrice, formatRequestDate, formatUsageDate, type DateLocale } from "@/lib/utils/date";
-import type { Estimate } from "@/lib/services/estimate-service";
+import { paymentTypeOfStage, type Estimate } from "@/lib/services/estimate-service";
 import type { QuotationRequest } from "@/lib/services/quotation-request-service";
 // 카드용 빨간 하트가 아니라 검은 하트입니다 (피그마 견적 상세 기준)
 import logoMark from "@/assets/icons/logo-mark-sm.svg";
@@ -118,6 +120,9 @@ export default function QuoteDetailView({
   // 반려는 제외합니다. "확정하지 않은 견적이에요!"는 고객이 고르지 않았다는 뜻인데,
   // 반려는 기사님이 거절한 것이라 사실과 다릅니다. 반려 사유를 대신 보여줍니다.
   const isUnconfirmed = !isPending && !isConfirmed && !isRejected;
+
+  // 선수금 대기(확정 후) 또는 잔금 대기(이사 완료 후)이면 공유 밑에 결제 버튼을 둡니다
+  const isPayDue = paymentTypeOfStage(estimate.paymentStage) !== null;
 
   // 위치만 다르고 내용은 같아 한 번만 만들어 두 자리에서 씁니다
   const statusBadge = isPending ? (
@@ -286,6 +291,9 @@ export default function QuoteDetailView({
               </div>
             </div>
 
+            {/* 기사님이 요청한 추가 금액이 있으면 얼마가 왜 추가됐는지 보여줍니다 (승인·거절한 뒤에도 남습니다) */}
+            <ExtraChargeInfo estimate={estimate} />
+
             {isUnconfirmed && (
               <div className="bg-background-200 text-14 text-gray-gray-500 flex items-center gap-2 rounded-lg px-4 py-4 font-medium">
                 <span aria-hidden>ⓘ</span>
@@ -302,10 +310,12 @@ export default function QuoteDetailView({
               moverImage={mover.image}
               className={cn(
                 "pc:hidden border-line-100 border-t pt-6",
-                // 확정 CTA가 없으면 공유 버튼이 화면 맨 아래에 붙습니다 (1차 QA-10)
-                isPending ? "pb-32" : "pb-14"
+                // 확정 CTA가 없으면 공유 버튼이 화면 맨 아래에 붙습니다 (1차 QA-10).
+                // 결제 버튼이 밑에 오면 공유와의 간격만 두고, 아래 여백은 결제 버튼이 갖습니다
+                isPending ? "pb-32" : isPayDue ? "pb-6" : "pb-14"
               )}
             />
+            {isPayDue && <PayAction estimate={estimate} className="pc:hidden pb-14" />}
           </div>
 
           {/* 우: PC 전용 사이드 — 견적가 + 확정 버튼 + 공유 */}
@@ -340,6 +350,12 @@ export default function QuoteDetailView({
               moverNickName={mover.nickName}
               moverImage={mover.image}
             />
+            {isPayDue && (
+              <>
+                <hr className="border-line-100 my-10" />
+                <PayAction estimate={estimate} />
+              </>
+            )}
           </aside>
         </div>
       </div>
