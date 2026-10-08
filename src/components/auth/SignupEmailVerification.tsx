@@ -155,12 +155,13 @@ export default function SignupEmailVerification({
     onStatusChange("idle");
   };
 
-  // 재발송 중에 이메일을 바꾸면 늦게 온 응답이 바뀐 화면을 codeSent로 되돌린다 — 응답이 올 때까지 막는다
-  const changeEmailButton = (
+  // 재발송·인증번호 확인 중에 이메일을 바꾸면 늦게 온 응답이 바뀐 화면을 codeSent·verified로 덮는다 — 응답이
+  // 올 때까지 막는다. 확인 중 여부(isSubmitting)는 SignupCodeStep 안에만 있어서, 완성된 버튼 대신 만드는 함수를 넘긴다
+  const renderChangeEmailButton = (isVerifying: boolean) => (
     <button
       type="button"
       onClick={handleChangeEmail}
-      disabled={isSending}
+      disabled={isSending || isVerifying}
       className="text-14 tablet:text-16 shrink-0 font-semibold text-orange-400 underline disabled:cursor-not-allowed disabled:text-gray-400 disabled:no-underline"
     >
       {t("signupVerification.changeEmail")}
@@ -173,7 +174,7 @@ export default function SignupEmailVerification({
         <p className="text-13 tablet:text-14 font-medium text-orange-400">
           {t("signupVerification.verified")}
         </p>
-        {changeEmailButton}
+        {renderChangeEmailButton(false)}
       </div>
     );
   }
@@ -188,7 +189,7 @@ export default function SignupEmailVerification({
         resendRemainingSeconds={resendRemainingSeconds}
         isSending={isSending}
         isResendDisabled={isSending || resendRemainingSeconds > 0 || isTurnstileMissing}
-        changeEmailButton={changeEmailButton}
+        renderChangeEmailButton={renderChangeEmailButton}
         turnstile={
           <TurnstileField
             onToken={setTurnstileToken}
@@ -254,7 +255,8 @@ interface SignupCodeStepProps {
   // 재발송 요청 중 — 링크 문구를 "보내는 중"으로 바꾼다
   isSending: boolean;
   isResendDisabled: boolean;
-  changeEmailButton: ReactNode;
+  // 인증번호 확인 중(isSubmitting)이면 버튼을 막도록 이 단계가 직접 상태를 넣어 만든다
+  renderChangeEmailButton: (isVerifying: boolean) => ReactNode;
   // 재발송에도 Turnstile 토큰이 필요해 코드 입력 단계에서도 위젯을 보여준다
   turnstile: ReactNode;
   onResend: () => Promise<string | undefined>;
@@ -270,7 +272,7 @@ function SignupCodeStep({
   resendRemainingSeconds,
   isSending,
   isResendDisabled,
-  changeEmailButton,
+  renderChangeEmailButton,
   turnstile,
   onResend,
   onExpire,
@@ -328,7 +330,7 @@ function SignupCodeStep({
         <p className="text-13 tablet:text-14 text-black-300 min-w-0 break-all">
           {t("resetPassword.sentTo", { email })}
         </p>
-        {changeEmailButton}
+        {renderChangeEmailButton(isSubmitting)}
       </div>
 
       <div className="flex flex-col gap-2">
