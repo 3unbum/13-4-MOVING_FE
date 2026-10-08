@@ -24,6 +24,8 @@ const MESSAGE_KEY_BY_CODE: Record<AuthErrorCode, string> = {
   [AUTH_ERROR_CODES.INVALID_OR_EXPIRED_SIGNUP_TOKEN]: "invalidOrExpiredSignupToken",
   [AUTH_ERROR_CODES.PROVIDER_ACCOUNT_ALREADY_LINKED]: "providerAccountAlreadyLinked",
   [AUTH_ERROR_CODES.OAUTH_EMAIL_REQUIRED]: "oauthEmailRequired",
+  [AUTH_ERROR_CODES.CONFIRMED_MOVE_EXISTS]: "confirmedMoveExists",
+  [AUTH_ERROR_CODES.UNPAID_PAYMENT_EXISTS]: "unpaidPaymentExists",
 
   // 비밀번호 재설정
   [AUTH_ERROR_CODES.INVALID_RESET_CODE]: "invalidResetCode",

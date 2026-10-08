@@ -130,6 +130,9 @@ export const authService = {
 
   logout: () => cookieFetch<void>("/auth/logout", { method: "POST" }),
 
+  // 본인 확인은 BE가 프로필 수정 진입 이메일 인증(30분 이내)으로 대신하므로 바디가 없다. 성공하면 BE가 인증 쿠키를 지운다.
+  deleteAccount: () => cookieFetch<void>("/auth/me", { method: "DELETE" }),
+
   signup: (payload: SignupPayload) =>
     cookieFetch<AuthResult>("/auth/signup", {
       method: "POST",
