@@ -251,6 +251,19 @@ export function translateDistrict(district: string, locale: string): string | nu
   return stem[key] + suffix[key];
 }
 
+/**
+ * 시/도 토큰을 아래 `SIDO_CODES` 의 키로 맞춥니다 — "서울시" → "서울".
+ *
+ * 저장되는 주소는 카카오가 주는 축약형("서울 강남구")이라 보통 그대로 걸리지만,
+ * 풀네임("서울특별시 ...")이 들어오면 `shortenAddress` 가 "서울시"로 줄여서
+ * 키와 어긋납니다. 옛 데이터나 다른 경로로 들어온 주소를 대비해 한 번 더 맞춥니다.
+ */
+function normalizeSido(sido: string) {
+  // "경기도"·"강원특별자치도"는 SIDO_CODES 키("경기"·"강원")보다 길고,
+  // "서울시"처럼 shortenAddress 가 만든 형태도 있습니다.
+  return sido.replace(/(특별자치시|특별자치도|특별시|광역시|시|도)$/, "") || sido;
+}
+
 /** 주소 첫 토큰(시/도)을 `region` 번역 키로 되돌리는 표 — "울산" → "ULSAN" */
 const SIDO_CODES: Record<string, string> = {
   서울: "SEOUL",
@@ -279,7 +292,9 @@ const SIDO_CODES: Record<string, string> = {
  * `region` 네임스페이스)으로, 시·군·구는 위 표로 바꿉니다.
  *
  * 한국어이거나 표에 없는 이름이면 원문을 그대로 돌려줍니다 — 모르는 값을 억지로 바꾸는
- * 것보다 한글로 두는 쪽이 안전합니다.
+ * 것보다 한글로 두는 쪽이 안전합니다. 시/도만 번역해 내보내면 "Seoul"만 남아
+ * 구 정보가 사라지므로, 구가 있는데 표에 없으면 시/도까지 원문을 유지합니다.
+ * 세종처럼 **애초에 시·군·구가 없는** 주소만 시/도 단독으로 나갑니다.
  */
 export function localizeShortAddress(
   shortened: string,
@@ -289,11 +304,14 @@ export function localizeShortAddress(
   if (locale === "ko") return shortened;
 
   const [sido, district] = shortened.split(" ");
-  const code = SIDO_CODES[sido ?? ""];
+  const code = SIDO_CODES[normalizeSido(sido ?? "")];
   if (!code) return shortened;
 
-  const region = translateRegion(code);
-  // 세종처럼 시·군·구가 없거나 표에 없으면 시/도만 보여줍니다
-  const translated = district ? translateDistrict(district, locale) : null;
-  return translated ? `${region} ${translated}` : region;
+  // 세종처럼 시·군·구가 아예 없으면 시/도만 보여줍니다.
+  if (!district) return translateRegion(code);
+
+  // 표에 없는 이름은 시/도까지 포함해 원문을 유지합니다 — 시/도만 번역해 내보내면
+  // "Seoul"만 남아 구 정보가 사라집니다.
+  const translated = translateDistrict(district, locale);
+  return translated ? `${translateRegion(code)} ${translated}` : shortened;
 }
