@@ -325,6 +325,8 @@ export default function MoverAiChatModal({ open, onClose, onRequireLogin }: Move
   const t = useTranslations("moverAi");
   const titleId = useId();
   const listRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const wasBusyRef = useRef(false);
   const router = useRouter();
   const isTabletUp = useMediaQuery("(min-width: 744px)");
   const [input, setInput] = useState("");
@@ -335,6 +337,8 @@ export default function MoverAiChatModal({ open, onClose, onRequireLogin }: Move
   const { favoritedIds, isFavoritesLoading, toggleFavorite, getFavoriteCount } =
     useToggleMoverFavorite({ onRequireLogin });
 
+  const busy = isBooting || isSending;
+
   useEffect(() => {
     if (!open) return;
     const el = listRef.current;
@@ -342,7 +346,18 @@ export default function MoverAiChatModal({ open, onClose, onRequireLogin }: Move
     el.scrollTop = el.scrollHeight;
   }, [messages, open, isBooting, isSending]);
 
-  const busy = isBooting || isSending;
+  // disabled 되면 브라우저가 포커스를 빼므로, 다시 입력 가능해질 때 복구
+  useEffect(() => {
+    if (!open) {
+      wasBusyRef.current = false;
+      return;
+    }
+    const wasBusy = wasBusyRef.current;
+    wasBusyRef.current = busy;
+    if (wasBusy && !busy && messages.length > 0) {
+      inputRef.current?.focus();
+    }
+  }, [open, busy, messages.length]);
 
   // effect에서 setState 하면 cascading render 경고 — 닫는 시점에 입력 초기화
   const handleClose = () => {
@@ -431,6 +446,7 @@ export default function MoverAiChatModal({ open, onClose, onRequireLogin }: Move
             {t("inputLabel")}
           </label>
           <input
+            ref={inputRef}
             id="mover-ai-chat-input"
             type="text"
             value={input}
