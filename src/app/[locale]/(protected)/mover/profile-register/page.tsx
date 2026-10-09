@@ -2,6 +2,7 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { redirect } from "@/i18n/navigation";
 import { requireRole } from "@/lib/auth/guards";
 import MoverProfileForm from "@/components/profile/MoverProfileForm";
+import DeleteAccountSection from "@/components/profile/DeleteAccountSection";
 
 // 카드 폭/패딩은 피그마 실측값 그대로:
 // - 데스크탑(pc): 1200px 카드(px-10 패딩 포함), rounded-4xl(32px), pt-8 pb-10, gap-12 —
@@ -28,6 +29,7 @@ export default async function MoverProfileRegisterPage() {
         </div>
         <div className="bg-line-100 h-px w-full" />
         <MoverProfileForm />
+        <DeleteAccountSection />
       </div>
     </div>
   );

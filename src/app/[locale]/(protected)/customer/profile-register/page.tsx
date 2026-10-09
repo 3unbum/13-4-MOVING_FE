@@ -2,6 +2,7 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { redirect } from "@/i18n/navigation";
 import { requireRole } from "@/lib/auth/guards";
 import CustomerProfileForm from "@/components/profile/CustomerProfileForm";
+import DeleteAccountSection from "@/components/profile/DeleteAccountSection";
 
 // 카드 폭/패딩/라운드는 피그마 실측값 그대로:
 // - 데스크탑(pc): 폭 720px 카드(px-10 패딩 포함, 안쪽 콘텐츠는 640px), rounded-4xl(32px), pt-6 pb-10, gap-10
@@ -31,6 +32,7 @@ export default async function CustomerProfileRegisterPage() {
           </p>
         </div>
         <CustomerProfileForm />
+        <DeleteAccountSection />
       </div>
     </div>
   );
