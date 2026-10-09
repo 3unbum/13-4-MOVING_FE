@@ -122,11 +122,14 @@ export default function CardRequest({
             headerRight ? "min-h-8.5" : "min-h-8"
           )}
         >
-          <div className="flex items-center gap-2">
+          {/* 칩 묶음은 자리가 모자라면 아랫줄로 접힙니다. 칩 자체는 shrink-0 이라
+              줄어들지 않아서, 그냥 두면 오른쪽 배지와 겹칩니다 — 영어는 문구가 길어
+              ("Designated Quote") 모바일에서 실제로 겹쳤습니다. */}
+          <div className="flex min-w-0 shrink flex-wrap items-center gap-2">
             <MoveTypeChip variant={category} size={isLg ? "md" : "sm"} />
             {isTargeted && <MoveTypeChip variant="TARGETED" size={isLg ? "md" : "sm"} />}
           </div>
-          {headerRight}
+          <div className="shrink-0">{headerRight}</div>
         </div>
 
         <div className="flex w-full flex-col gap-3">

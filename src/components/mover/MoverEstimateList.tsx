@@ -10,6 +10,7 @@ import type { ReactNode } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { cn } from "@/lib/utils/cn";
 import { shortenAddress } from "@/lib/utils/address";
+import { localizeShortAddress } from "@/lib/utils/district";
 import { formatMovingDate, type DateLocale } from "@/lib/utils/date";
 
 interface MoverEstimateListProps {
@@ -36,12 +37,16 @@ function EstimateCard({
   const locale = useLocale() as DateLocale;
   const { quotationRequest: request } = estimate;
 
+  const tRegion = useTranslations("region");
+  // 카드는 "울산 남구" 수준의 요약이라 번역해도 안전합니다. 전체 주소(동·호수까지)는
+  // 견적 상세에서 한국어 원문으로 봅니다 — 기사님이 실제로 찾아갈 때 쓰는 값입니다.
+  const place = (address: string) => localizeShortAddress(shortenAddress(address), locale, tRegion);
   const common = {
     category: request.category,
     isTargeted: estimate.isTargeted,
     customerName: request.userName,
-    from: shortenAddress(request.fromAddress),
-    to: shortenAddress(request.toAddress),
+    from: place(request.fromAddress),
+    to: place(request.toAddress),
     movingDate: formatMovingDate(request.movingDate, locale),
   };
 

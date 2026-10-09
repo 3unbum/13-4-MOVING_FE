@@ -39,11 +39,13 @@ function InfoItem({
   value,
   variant,
   isLg,
+  className,
 }: {
   label: string;
   value: string;
   variant: MovingInfoVariant;
   isLg: boolean;
+  className?: string;
 }) {
   // 라벨과 값이 한 줄에 붙는 건 모바일 모달뿐입니다 (피그마 `1:10738` gap 8).
   // PC 모달(`1:10684` / `1:11274`)은 카드와 똑같이 라벨 위 / 값 아래입니다.
@@ -56,10 +58,15 @@ function InfoItem({
     <div
       className={cn(
         "flex min-w-0",
-        isInline ? "items-center gap-2" : "flex-col items-start justify-center"
+        isInline ? "items-center gap-2" : "flex-col items-start justify-center",
+        className
       )}
     >
       <span className="text-14 text-gray-gray-500 shrink-0">{label}</span>
+      {/* 넘칠 때는 줄임표로 자릅니다. 지역명을 끝까지 보여주려고 nowrap 을 걸어봤지만,
+          카드가 2열인 사이즈에서는 주소 둘이 쓸 폭이 모자라 글자가 이사일·화살표와
+          맞닿거나("Chuncheon-s10/18/2026") 카드 밖으로 삐져나갔습니다.
+          조금 잘리더라도 레이아웃이 유지되는 쪽이 읽기 낫습니다. */}
       <span
         className={cn(
           "text-black-500 max-w-full truncate",
@@ -100,28 +107,34 @@ export default function MovingInfo({
             ? "gap-12"
             : "flex-col gap-2"
           : isLg
-            ? "justify-between"
+            ? // gap-3 — 주소가 길어지면 이사일과 맞닿습니다. justify-between 만으로는
+              // 둘이 붙는 순간 "Chuncheon...10/18/2026" 처럼 읽히지 않습니다.
+              "justify-between gap-3"
             : "flex-col gap-3",
         className
       )}
       {...props}
     >
-      {/* lg 201px는 기본 문구에 딱 맞는 값이라 최소폭으로 둡니다 — 주소가 길면 늘어나고, 그래도 모자라면 잘립니다 */}
+      {/* #216 의 hideAddresses(견적 보내기 모달은 아래에 전체 주소를 따로 둬서 요약을
+          숨깁니다)와 폭 배분을 함께 둡니다. */}
       {!hideAddresses && (
         <div
           className={cn(
             "flex gap-3",
             // 모바일 모달만 라벨·값이 한 줄이라 가운데 정렬, 나머지는 값 기준 아래 맞춤
             isModal && !isLg ? "items-center" : "items-end",
-            // 모달 PC는 이사일이 48px 옆에 붙고, 주소가 길면 남는 폭 안에서 줄어듭니다.
-            // `shrink-0`로 두면 행 폭을 넘겨 이사일을 밀어냅니다 — 안쪽 truncate만으로는
-            // 부모가 안 줄어서 소용이 없습니다.
-            isModal && isLg ? "min-w-0 flex-1" : isLg ? "min-w-50.25" : "w-full min-w-0"
+            // 주소 묶음은 남는 폭을 받되(flex-1) 모자라면 줄어듭니다(min-w-0).
+            // `shrink-0`로 두면 행 폭을 넘겨 이사일을 밀어내고, min-w 를 고정하면
+            // 안쪽 truncate 가 안 걸립니다 — 부모가 안 줄어들기 때문입니다.
+            // 피그마 201px 최소폭은 한국어 기준이라 영문에는 걸지 않습니다.
+            isLg ? "min-w-0 flex-1" : "w-full min-w-0"
           )}
         >
-          <InfoItem label={tCommon("from")} value={from} {...item} />
+          {/* 출발지·도착지가 폭을 반씩 나눕니다. 이게 없으면 각자 내용 크기대로 배치돼
+              긴 쪽만 먼저 잘립니다 — "Gangwon Chunc..."로 시·군·구가 사라집니다. */}
+          <InfoItem label={tCommon("from")} value={from} {...item} className="flex-1" />
           <Image src={arrowRight} alt={t("arrowAlt")} className="h-5.75 w-4.5 shrink-0" />
-          <InfoItem label={tCommon("to")} value={to} {...item} />
+          <InfoItem label={tCommon("to")} value={to} {...item} className="flex-1" />
         </div>
       )}
       {/* sm은 세로 배치라 부모 폭을 직접 제한해야 잘립니다 */}
