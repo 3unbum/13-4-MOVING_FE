@@ -13,17 +13,22 @@ import { toAuthErrorMessage } from "@/lib/auth/auth-error-message";
 import { useAuth } from "@/providers/AuthProvider";
 
 interface DeleteAccountSectionProps {
-  // 프로필 수정 진입 인증 후 30분이 지나 BE가 403으로 거절하면 부모가 인증 화면을 다시 띄운다
-  onVerificationRequired: () => void;
+  // 프로필 수정 진입 인증 후 30분이 지나 BE가 403으로 거절하면 부모가 인증 화면을 다시 띄운다.
+  // 프로필 등록 화면은 BE가 진입 인증을 확인하지 않아 403이 나지 않으므로 넘기지 않는다.
+  onVerificationRequired?: () => void;
 }
 
 interface DeleteAccountFormValues {
   phrase: string;
 }
 
-// 프로필 수정(일반 유저) / 기본정보 수정(기사님) 화면 하단의 회원 탈퇴. 진입 시 이메일 인증을
-// 이미 거쳤으므로 비밀번호는 다시 받지 않고, 확인 문구 입력으로 실수 탈퇴만 막는다.
-// 모달이 포털 없이 그 자리에 렌더링되므로 수정 폼(<form>) 바깥에 둬야 폼이 중첩되지 않는다.
+// 회원 탈퇴 버튼 + 확인 모달. 두 곳에서 같은 모양으로 쓴다.
+// - 프로필 수정(일반 유저) / 기본정보 수정(기사님) 하단: 진입 시 이메일 인증을 이미 거쳤으므로
+//   비밀번호는 다시 받지 않는다.
+// - 프로필 등록(미등록 계정) 하단: "가입 취소"로 취급해 인증 없이 탈퇴한다 — 활동 기록이 없어
+//   잘못 탈퇴해도 재가입으로 복구되기 때문 (BE 정책).
+// 어느 쪽이든 확인 문구 입력으로 실수 탈퇴만 막는다.
+// 모달이 포털 없이 그 자리에 렌더링되므로 다른 폼(<form>) 바깥에 둬야 폼이 중첩되지 않는다.
 export default function DeleteAccountSection({
   onVerificationRequired,
 }: DeleteAccountSectionProps) {
@@ -73,7 +78,7 @@ export default function DeleteAccountSection({
       router.replace("/");
     } catch (error) {
       setIsOpen(false);
-      if (isProfileEditVerificationRequiredError(error)) {
+      if (onVerificationRequired && isProfileEditVerificationRequiredError(error)) {
         onVerificationRequired();
         return;
       }
