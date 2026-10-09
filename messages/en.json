@@ -508,6 +508,9 @@
     "noFavorites": "No saved movers yet.",
     "loginRequired": "Login required",
     "loginToFavorite": "Log in to save movers.",
+    "loginToAi": "Log in to use AI mover search.",
+    "aiCustomerOnly": "AI mover search is available to customers only.",
+    "aiCustomerOnlyTitle": "Notice",
     "loginToUse": "Log in to use this feature.",
     "goLogin": "Log in",
     "invalidMoverPath": "Invalid mover address.",
@@ -527,7 +530,21 @@
     "moverServices": "Services Provided",
     "moverRegions": "Service Areas",
     "moverDetailLabel": "View {name}'s profile",
-    "ctaPromptRich": "<line>Request a designated quote</line><line>from {name}!</line>"
+    "ctaPromptRich": "<line>Request a designated quote</line><line>from {name}!</line>",
+    "aiButton": "AI"
+  },
+  "moverAi": {
+    "modalTitle": "Find movers with AI chatbot",
+    "beaverName": "Moving",
+    "welcomeMessage": "What kind of mover are you looking for?\nYou can share region, move type, and what matters most (rating / reviews / experience / bookings).",
+    "inputLabel": "Message",
+    "inputPlaceholder": "e.g. Looking for a small move in Seoul",
+    "send": "Send",
+    "booting": "Preparing your chat…",
+    "thinking": "Thinking…",
+    "retrySession": "Start over",
+    "carouselPrev": "Previous mover",
+    "carouselNext": "Next mover"
   },
   "request": {
     "step1Title": "Select your moving type",

@@ -508,6 +508,9 @@
     "noFavorites": "お気に入りの業者がありません。",
     "loginRequired": "ログインが必要です",
     "loginToFavorite": "お気に入り登録はログイン後にご利用いただけます。",
+    "loginToAi": "AI業者検索はログイン後にご利用いただけます。",
+    "aiCustomerOnly": "AI業者検索は一般のお客様のみご利用いただけます。",
+    "aiCustomerOnlyTitle": "ご案内",
     "loginToUse": "ログイン後にご利用いただけます。",
     "goLogin": "ログインする",
     "invalidMoverPath": "業者のアドレスが正しくありません。",
@@ -527,7 +530,21 @@
     "moverServices": "提供サービス",
     "moverRegions": "対応可能地域",
     "moverDetailLabel": "{name} さんの詳細を見る",
-    "ctaPromptRich": "<line>{name} さんに</line><line>指定見積もりを依頼してみましょう！</line>"
+    "ctaPromptRich": "<line>{name} さんに</line><line>指定見積もりを依頼してみましょう！</line>",
+    "aiButton": "AI"
+  },
+  "moverAi": {
+    "modalTitle": "AIチャットボットで業者を探す",
+    "beaverName": "ムービー",
+    "welcomeMessage": "どのような業者さんをお探しですか？\n地域・引越しタイプ・重視ポイント（評価/レビュー/経歴/確定件数）を教えてください。",
+    "inputLabel": "メッセージ入力",
+    "inputPlaceholder": "例：ソウルで小型引越しをしたいです",
+    "send": "送信",
+    "booting": "会話を準備しています…",
+    "thinking": "考えています…",
+    "retrySession": "やり直す",
+    "carouselPrev": "前の業者",
+    "carouselNext": "次の業者"
   },
   "request": {
     "step1Title": "引っ越しタイプを選択してください",
