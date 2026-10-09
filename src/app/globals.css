@@ -129,3 +129,49 @@ body {
     cursor: pointer;
   }
 }
+
+/* InputSearchbar withAi 전용 — 호버 그라데이션 테두리 */
+@layer components {
+  @keyframes ai-search-entry-spin {
+    to {
+      transform: rotate(1turn);
+    }
+  }
+
+  .ai-search-entry {
+    isolation: isolate;
+    overflow: hidden;
+  }
+
+  .ai-search-entry::before {
+    content: "";
+    position: absolute;
+    inset: -45%;
+    z-index: -2;
+    background: conic-gradient(from 0deg, #fd947f, #f9502e, #ffc149, #e04829, #ff4f64, #fd947f);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+
+  .ai-search-entry:hover:not(:disabled)::before,
+  .ai-search-entry:focus-visible:not(:disabled)::before {
+    opacity: 1;
+    animation: ai-search-entry-spin 2.5s linear infinite;
+  }
+
+  /* 가운데를 채워 테두리만 보이게 */
+  .ai-search-entry::after {
+    content: "";
+    position: absolute;
+    inset: 2px;
+    z-index: -1;
+    border-radius: calc(1rem - 2px);
+    background: var(--color-orange-100);
+    transition: background-color 0.15s ease;
+  }
+
+  .ai-search-entry:hover:not(:disabled)::after,
+  .ai-search-entry:focus-visible:not(:disabled)::after {
+    background: var(--color-orange-200);
+  }
+}

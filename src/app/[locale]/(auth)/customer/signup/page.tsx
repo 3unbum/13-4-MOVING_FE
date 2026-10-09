@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { useMemo, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import avatarLg from "@/assets/images/common/avatartion_lg.png";
 import avatarMd from "@/assets/images/common/avatartion_md.png";
 import AuthCard from "@/components/auth/AuthCard";
@@ -13,7 +13,11 @@ import AuthSubmitButton from "@/components/auth/AuthSubmitButton";
 import AuthSwitchLink from "@/components/auth/AuthSwitchLink";
 import FormField from "@/components/auth/FormField";
 import ProfileRegisterModal from "@/components/auth/ProfileRegisterModal";
+import SignupEmailVerification, {
+  type SignupEmailStatus,
+} from "@/components/auth/SignupEmailVerification";
 import SocialLoginSection from "@/components/auth/SocialLoginSection";
+import { AUTH_ERROR_CODES } from "@/constants/auth/error-codes";
 import { authService } from "@/lib/services/auth-service";
 import { makeSignupSchema, type SignupFormValues } from "@/lib/schemas/auth-schema";
 import { ApiError } from "@/lib/utils/api-error";
@@ -35,8 +39,21 @@ export default function CustomerSignupPage() {
     register,
     handleSubmit,
     setError,
+    clearErrors,
+    control,
     formState: { errors, isSubmitting, isValid },
   } = useForm<SignupFormValues>({ resolver: zodResolver(schema), mode: "onChange" });
+  // 인증이 끝나야 가입 버튼이 열린다. 인증 후 이메일이 바뀌면 BE가 403을 주므로 idle이 아니면 입력란을 잠근다
+  const [emailStatus, setEmailStatus] = useState<SignupEmailStatus>("idle");
+  // 발송 중에 고친 이메일에 이전 주소의 발송 결과가 적용되지 않게, 응답이 올 때까지 입력란을 잠근다
+  const [isEmailSending, setIsEmailSending] = useState(false);
+  const email = useWatch({ control, name: "email" }) ?? "";
+
+  const handleEmailStatusChange = (status: SignupEmailStatus) => {
+    setEmailStatus(status);
+    // 403(인증 만료) 안내는 다시 인증하면 더 이상 맞지 않는 문구라 지운다
+    if (status === "verified") clearErrors("root");
+  };
 
   const onSubmit = async (values: SignupFormValues) => {
     const { passwordConfirm: _passwordConfirm, ...signupValues } = values;
@@ -48,6 +65,13 @@ export default function CustomerSignupPage() {
       // 가입 직후엔 hasProfile이 항상 false — 바로 등록시키지 않고 모달로 물어본다.
       setIsProfileModalOpen(true);
     } catch (error) {
+      // 인증 후 30분이 지났으면 인증번호부터 다시 받아야 한다 — 이메일 입력란을 풀고 인증 영역을 처음으로 되돌린다
+      if (error instanceof ApiError && error.code === AUTH_ERROR_CODES.EMAIL_NOT_VERIFIED) {
+        // 이메일 필드가 아니라 root에 둔다 — 필드 에러가 남아 있으면 인증번호 받기 버튼(canRequest)이 막힌다
+        setEmailStatus("idle");
+        setError("root", { message: tAuthError("emailNotVerified") });
+        return;
+      }
       if (error instanceof ApiError && error.code === "EMAIL_ALREADY_EXISTS") {
         setError("email", { message: tAuthError("emailAlreadyExists") });
         return;
@@ -95,7 +119,16 @@ export default function CustomerSignupPage() {
                   placeholder={tp("emailPlaceholder")}
                   autoComplete="email"
                   errorMessage={errors.email?.message}
+                  readOnly={emailStatus !== "idle" || isEmailSending}
                   {...register("email")}
+                />
+                <SignupEmailVerification
+                  role="CUSTOMER"
+                  email={email}
+                  canRequest={Boolean(email) && !errors.email}
+                  status={emailStatus}
+                  onStatusChange={handleEmailStatusChange}
+                  onSendingChange={setIsEmailSending}
                 />
                 <FormField
                   id="phoneNumber"
@@ -132,7 +165,7 @@ export default function CustomerSignupPage() {
               </div>
 
               <AuthSubmitButton
-                disabled={isSubmitting || !isValid}
+                disabled={isSubmitting || !isValid || emailStatus !== "verified"}
                 errorMessage={errors.root?.message}
               >
                 {t("signupTitle")}

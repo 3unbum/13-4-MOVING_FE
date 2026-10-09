@@ -27,6 +27,12 @@ const MESSAGE_KEY_BY_CODE: Record<AuthErrorCode, string> = {
   [AUTH_ERROR_CODES.CONFIRMED_MOVE_EXISTS]: "confirmedMoveExists",
   [AUTH_ERROR_CODES.UNPAID_PAYMENT_EXISTS]: "unpaidPaymentExists",
 
+  // 회원가입 이메일 인증
+  [AUTH_ERROR_CODES.INVALID_SIGNUP_CODE]: "invalidSignupCode",
+  [AUTH_ERROR_CODES.SIGNUP_CODE_EXPIRED]: "signupCodeExpired",
+  [AUTH_ERROR_CODES.SIGNUP_CODE_ATTEMPTS_EXCEEDED]: "signupCodeAttemptsExceeded",
+  [AUTH_ERROR_CODES.EMAIL_NOT_VERIFIED]: "emailNotVerified",
+
   // 비밀번호 재설정
   [AUTH_ERROR_CODES.INVALID_RESET_CODE]: "invalidResetCode",
   [AUTH_ERROR_CODES.RESET_CODE_EXPIRED]: "resetCodeExpired",

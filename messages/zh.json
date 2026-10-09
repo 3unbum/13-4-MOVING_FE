@@ -332,6 +332,7 @@
     "confirmedMoveExists": "您有已确认的搬家，暂时无法注销账号。请在搬家完成后重试。",
     "unpaidPaymentExists": "您有尚未完成付款的报价，暂时无法注销账号。请在付款完成后重试。",
     "emailAlreadyExists": "该邮箱已注册。",
+    "emailNotVerified": "需要完成邮箱验证，请重新获取验证码",
     "estimateAlreadyProcessed": "该报价已处理。",
     "estimateLimitExceeded": "该报价申请已收到可接收的全部报价。",
     "forbidden": "您没有访问权限。",
@@ -342,6 +343,7 @@
     "invalidOrExpiredSignupToken": "验证信息已过期，请重新开始。",
     "invalidProfileEditCode": "验证码不正确",
     "invalidResetCode": "验证码不正确",
+    "invalidSignupCode": "验证码不正确",
     "noActiveRequest": "该报价申请已确定师傅或已结束。",
     "notFound": "找不到您请求的信息。",
     "notServiceRegion": "不在服务区域内。",
@@ -358,6 +360,8 @@
     "resetCodeAttemptsExceeded": "验证码错误次数过多已失效，请重新获取",
     "resetCodeExpired": "验证码已过期，请重新获取",
     "reviewAlreadyConfirmed": "您已撰写该评价。",
+    "signupCodeAttemptsExceeded": "验证码错误次数过多已失效，请重新获取",
+    "signupCodeExpired": "验证码已过期，请重新获取",
     "targetLimitExceeded": "指定报价申请最多可选择 3 位师傅。",
     "tooManyRequests": "请求过于频繁，请稍后再试。",
     "unauthorized": "需要登录。",
@@ -509,6 +513,13 @@
       "failed": "处理请求时出现问题，请稍后再试。",
       "mailHelp": "没有收到邮件？请检查垃圾邮件箱，或确认邮箱地址后重新获取。",
       "dailyLimitReached": "今天的请求次数已用完，请约{hours}小时后再试。"
+    },
+    "signupVerification": {
+      "guide": "完成邮箱验证后才能注册",
+      "verify": "验证",
+      "verified": "邮箱验证已完成",
+      "changeEmail": "更换邮箱",
+      "sending": "正在发送验证码..."
     }
   },
   "review": {
@@ -602,6 +613,9 @@
     "noFavorites": "还没有收藏的师傅。",
     "loginRequired": "需要登录",
     "loginToFavorite": "登录后即可收藏。",
+    "loginToAi": "登录后即可使用 AI 找师傅。",
+    "aiCustomerOnly": "AI 找师傅仅限普通用户使用。",
+    "aiCustomerOnlyTitle": "使用提示",
     "loginToUse": "登录后即可使用。",
     "goLogin": "去登录",
     "invalidMoverPath": "师傅地址无效。",
@@ -621,7 +635,21 @@
     "moverServices": "提供服务",
     "moverRegions": "服务地区",
     "moverDetailLabel": "查看 {name} 师傅详情",
-    "ctaPromptRich": "<line>向 {name} 师傅</line><line>申请指定报价吧！</line>"
+    "ctaPromptRich": "<line>向 {name} 师傅</line><line>申请指定报价吧！</line>",
+    "aiButton": "AI"
+  },
+  "moverAi": {
+    "modalTitle": "用 AI 聊天机器人找师傅",
+    "beaverName": "Moving",
+    "welcomeMessage": "您在找什么样的师傅呢？\n可以告诉我地区、搬家类型，以及更看重什么（评分/评价/经验/成交）。",
+    "inputLabel": "输入消息",
+    "inputPlaceholder": "例如：想在首尔做小型搬家",
+    "send": "发送",
+    "booting": "正在准备对话…",
+    "thinking": "正在思考…",
+    "retrySession": "重新开始",
+    "carouselPrev": "上一位师傅",
+    "carouselNext": "下一位师傅"
   },
   "request": {
     "step1Title": "请选择搬家类型",
@@ -719,6 +747,42 @@
     "heroBody2": "让搬家公司的选择变得简单",
     "step1": "告别繁琐的挑选过程，",
     "step2": "从搬家类型开始选择",
+    "serviceTitle1": "申请您需要的搬家服务",
+    "serviceTitle2": "并收到报价",
+    "compareTitle1": "一目了然地比较多家公司的报价",
+    "compareTitle2": "轻松选择",
+    "mockFrom": "首尔 中区 三一大路 343",
+    "mockTo": "首尔 江南区 宣陵路 428",
+    "samples": [
+      {
+        "mover": "金科德",
+        "from": "首尔市 中区",
+        "to": "京畿道 水原市",
+        "date": "2026年10月12日(周一)",
+        "title": "我们会安全地运送您的物品。"
+      },
+      {
+        "mover": "朴搬家",
+        "from": "釜山市 海云台区",
+        "to": "大邱市 寿城区",
+        "date": "2026年10月17日(周六)",
+        "title": "从打包到整理，一手包办。"
+      },
+      {
+        "mover": "李可靠",
+        "from": "仁川市 延寿区",
+        "to": "首尔市 江南区",
+        "date": "2026年10月24日(周六)",
+        "title": "凭借10年经验，安全搬运。"
+      },
+      {
+        "mover": "崔信赖",
+        "from": "大田市 西区",
+        "to": "世宗市",
+        "date": "2026年10月27日(周二)",
+        "title": "承诺无损安心搬家。"
+      }
+    ],
     "footer1": "复杂的搬家准备，",
     "footer2": "有 Moving 就够了！",
     "notFoundTitle": "找不到页面",

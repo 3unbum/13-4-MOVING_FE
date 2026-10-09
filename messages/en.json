@@ -332,6 +332,7 @@
     "confirmedMoveExists": "You can't delete your account while you have a confirmed move. Please try again after the move is completed.",
     "unpaidPaymentExists": "You can't delete your account while a payment is still outstanding. Please try again after the payment is completed.",
     "emailAlreadyExists": "This email is already registered.",
+    "emailNotVerified": "Email verification is required. Please request a new verification code",
     "estimateAlreadyProcessed": "This quote has already been processed.",
     "estimateLimitExceeded": "This request has already received the maximum number of quotes.",
     "forbidden": "You don't have permission to access this.",
@@ -342,6 +343,7 @@
     "invalidOrExpiredSignupToken": "Your verification expired. Please start over.",
     "invalidProfileEditCode": "The verification code is incorrect",
     "invalidResetCode": "The verification code is incorrect",
+    "invalidSignupCode": "The verification code is incorrect",
     "noActiveRequest": "This request has already been confirmed or closed.",
     "notFound": "We couldn't find what you were looking for.",
     "notServiceRegion": "This is outside your service area.",
@@ -358,6 +360,8 @@
     "resetCodeAttemptsExceeded": "Too many incorrect attempts. Please request a new verification code",
     "resetCodeExpired": "The verification code has expired. Please request a new one",
     "reviewAlreadyConfirmed": "You have already written this review.",
+    "signupCodeAttemptsExceeded": "Too many incorrect attempts. Please request a new verification code",
+    "signupCodeExpired": "The verification code has expired. Please request a new one",
     "targetLimitExceeded": "You can request targeted quotes from up to 3 movers.",
     "tooManyRequests": "Too many requests. Please try again later.",
     "unauthorized": "Login required.",
@@ -509,6 +513,13 @@
       "failed": "Something went wrong. Please try again later.",
       "mailHelp": "Didn't get the email? Check your spam folder, or double-check your email address and request a new code.",
       "dailyLimitReached": "You've used all of today's requests. Please try again in about {hours, plural, one {# hour} other {# hours}}."
+    },
+    "signupVerification": {
+      "guide": "Please verify your email to sign up",
+      "verify": "Verify",
+      "verified": "Your email has been verified",
+      "changeEmail": "Change email",
+      "sending": "Sending code..."
     }
   },
   "review": {
@@ -602,6 +613,9 @@
     "noFavorites": "No saved movers yet.",
     "loginRequired": "Login required",
     "loginToFavorite": "Log in to save movers.",
+    "loginToAi": "Log in to use AI mover search.",
+    "aiCustomerOnly": "AI mover search is available to customers only.",
+    "aiCustomerOnlyTitle": "Notice",
     "loginToUse": "Log in to use this feature.",
     "goLogin": "Log in",
     "invalidMoverPath": "Invalid mover address.",
@@ -621,7 +635,21 @@
     "moverServices": "Services Provided",
     "moverRegions": "Service Areas",
     "moverDetailLabel": "View {name}'s profile",
-    "ctaPromptRich": "<line>Request a designated quote</line><line>from {name}!</line>"
+    "ctaPromptRich": "<line>Request a designated quote</line><line>from {name}!</line>",
+    "aiButton": "AI"
+  },
+  "moverAi": {
+    "modalTitle": "Find movers with AI chatbot",
+    "beaverName": "Moving",
+    "welcomeMessage": "What kind of mover are you looking for?\nYou can share region, move type, and what matters most (rating / reviews / experience / bookings).",
+    "inputLabel": "Message",
+    "inputPlaceholder": "e.g. Looking for a small move in Seoul",
+    "send": "Send",
+    "booting": "Preparing your chat…",
+    "thinking": "Thinking…",
+    "retrySession": "Start over",
+    "carouselPrev": "Previous mover",
+    "carouselNext": "Next mover"
   },
   "request": {
     "step1Title": "Select your moving type",
@@ -719,6 +747,42 @@
     "heroBody2": "and makes choosing a mover simple",
     "step1": "Skip the hassle —",
     "step2": "start with your moving type",
+    "serviceTitle1": "Request your moving service",
+    "serviceTitle2": "and receive quotes",
+    "compareTitle1": "Compare quotes at a glance",
+    "compareTitle2": "and choose your mover",
+    "mockFrom": "343 Samil-daero, Jung-gu, Seoul",
+    "mockTo": "428 Seolleung-ro, Gangnam-gu, Seoul",
+    "samples": [
+      {
+        "mover": "Kim Code",
+        "from": "Jung-gu, Seoul",
+        "to": "Suwon, Gyeonggi",
+        "date": "Mon, Oct 12, 2026",
+        "title": "We'll move your belongings safely."
+      },
+      {
+        "mover": "Park Isat",
+        "from": "Haeundae-gu, Busan",
+        "to": "Suseong-gu, Daegu",
+        "date": "Sat, Oct 17, 2026",
+        "title": "From packing to tidying, we handle it all."
+      },
+      {
+        "mover": "Lee Dundun",
+        "from": "Yeonsu-gu, Incheon",
+        "to": "Gangnam-gu, Seoul",
+        "date": "Sat, Oct 24, 2026",
+        "title": "10 years of know-how for a safe move."
+      },
+      {
+        "mover": "Choi Mideum",
+        "from": "Seo-gu, Daejeon",
+        "to": "Sejong",
+        "date": "Tue, Oct 27, 2026",
+        "title": "A worry-free move with zero damage."
+      }
+    ],
     "footer1": "Moving made simple,",
     "footer2": "all in one place!",
     "notFoundTitle": "Page not found",

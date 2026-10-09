@@ -332,6 +332,7 @@
     "confirmedMoveExists": "확정된 이사가 있어 탈퇴할 수 없습니다. 이사 완료 후 다시 시도해 주세요",
     "unpaidPaymentExists": "결제가 끝나지 않은 견적이 있어 탈퇴할 수 없습니다. 결제 완료 후 다시 시도해 주세요",
     "emailAlreadyExists": "이미 가입된 이메일입니다",
+    "emailNotVerified": "이메일 인증이 필요합니다. 인증번호를 다시 받아 주세요",
     "estimateAlreadyProcessed": "이미 처리된 견적입니다",
     "estimateLimitExceeded": "이 견적 요청에 받을 수 있는 견적이 모두 도착했습니다",
     "forbidden": "접근 권한이 없습니다",
@@ -342,6 +343,7 @@
     "invalidOrExpiredSignupToken": "인증 정보가 만료되었습니다. 처음부터 다시 시도해 주세요",
     "invalidProfileEditCode": "인증번호가 일치하지 않습니다",
     "invalidResetCode": "인증번호가 일치하지 않습니다",
+    "invalidSignupCode": "인증번호가 일치하지 않습니다",
     "noActiveRequest": "이미 기사님이 확정되었거나 종료된 견적 요청입니다",
     "notFound": "요청하신 정보를 찾을 수 없습니다",
     "notServiceRegion": "서비스 가능 지역이 아닙니다",
@@ -358,6 +360,8 @@
     "resetCodeAttemptsExceeded": "인증번호를 여러 번 틀려 무효가 되었습니다. 인증번호를 다시 받아 주세요",
     "resetCodeExpired": "인증번호가 만료되었습니다. 인증번호를 다시 받아 주세요",
     "reviewAlreadyConfirmed": "이미 작성한 리뷰입니다",
+    "signupCodeAttemptsExceeded": "인증번호를 여러 번 틀려 무효가 되었습니다. 인증번호를 다시 받아 주세요",
+    "signupCodeExpired": "인증번호가 만료되었습니다. 인증번호를 다시 받아 주세요",
     "targetLimitExceeded": "지정 견적 요청은 최대 3명까지 가능합니다",
     "tooManyRequests": "요청이 너무 많아요. 잠시 후 다시 시도해 주세요.",
     "unauthorized": "로그인이 필요합니다",
@@ -509,6 +513,13 @@
       "failed": "요청 처리 중 문제가 발생했어요. 잠시 후 다시 시도해 주세요.",
       "mailHelp": "메일이 오지 않나요? 스팸함을 확인하거나, 이메일 주소를 확인한 뒤 다시 받아 보세요.",
       "dailyLimitReached": "오늘 요청 가능한 횟수를 모두 사용했어요. 약 {hours}시간 후 다시 시도해 주세요."
+    },
+    "signupVerification": {
+      "guide": "이메일 인증을 완료해야 가입할 수 있어요",
+      "verify": "인증하기",
+      "verified": "이메일 인증이 완료되었어요",
+      "changeEmail": "이메일 변경",
+      "sending": "인증번호 보내는 중..."
     }
   },
   "review": {
@@ -602,6 +613,9 @@
     "noFavorites": "찜한 기사님이 없어요.",
     "loginRequired": "로그인이 필요해요",
     "loginToFavorite": "찜하기는 로그인 후 이용할 수 있어요.",
+    "loginToAi": "AI 기사님 찾기는 로그인 후 이용할 수 있어요.",
+    "aiCustomerOnly": "AI 기사님 찾기는 일반 고객만 이용할 수 있어요.",
+    "aiCustomerOnlyTitle": "이용 안내",
     "loginToUse": "로그인 후 이용할 수 있어요.",
     "goLogin": "로그인하기",
     "invalidMoverPath": "잘못된 기사님 주소예요.",
@@ -621,7 +635,21 @@
     "moverServices": "제공 서비스",
     "moverRegions": "서비스 가능 지역",
     "moverDetailLabel": "{name} 기사님 상세 보기",
-    "ctaPromptRich": "<line>{name} 기사님에게</line><line>지정 견적을 요청해보세요!</line>"
+    "ctaPromptRich": "<line>{name} 기사님에게</line><line>지정 견적을 요청해보세요!</line>",
+    "aiButton": "AI"
+  },
+  "moverAi": {
+    "modalTitle": "AI 챗봇으로 기사님 찾기",
+    "beaverName": "무빙이",
+    "welcomeMessage": "어떤 기사님을 찾고 계세요?\n원하시면 지역·이사 유형·중점(평점/리뷰/경력/확정)을 알려주세요.",
+    "inputLabel": "메시지 입력",
+    "inputPlaceholder": "예: 서울에서 소형이사 하려고요",
+    "send": "보내기",
+    "booting": "대화를 준비하고 있어요…",
+    "thinking": "답변을 생각하고 있어요…",
+    "retrySession": "다시 시작하기",
+    "carouselPrev": "이전 기사님",
+    "carouselNext": "다음 기사님"
   },
   "request": {
     "step1Title": "이사 유형을 선택해주세요",
@@ -719,6 +747,42 @@
     "heroBody2": "이사업체 선정 과정을 간편하게 바꿔드려요",
     "step1": "번거로운 선정과정,",
     "step2": "이사 유형부터 선택해요",
+    "serviceTitle1": "원하는 이사 서비스를 요청하고",
+    "serviceTitle2": "견적을 받아보세요",
+    "compareTitle1": "여러 업체의 견적을",
+    "compareTitle2": "한눈에 비교하고 선택해요",
+    "mockFrom": "서울 중구 삼일대로 343",
+    "mockTo": "서울 강남구 선릉로 428",
+    "samples": [
+      {
+        "mover": "김코드",
+        "from": "서울시 중구",
+        "to": "경기도 수원시",
+        "date": "2026년 10월 12일 (월)",
+        "title": "고객님의 물품을 안전하게 운송해 드립니다."
+      },
+      {
+        "mover": "박이삿",
+        "from": "부산시 해운대구",
+        "to": "대구시 수성구",
+        "date": "2026년 10월 17일 (토)",
+        "title": "포장부터 정리까지 꼼꼼하게 책임집니다."
+      },
+      {
+        "mover": "이든든",
+        "from": "인천시 연수구",
+        "to": "서울시 강남구",
+        "date": "2026년 10월 24일 (토)",
+        "title": "10년 경력의 노하우로 안전하게 모십니다."
+      },
+      {
+        "mover": "최믿음",
+        "from": "대전시 서구",
+        "to": "세종시",
+        "date": "2026년 10월 27일 (화)",
+        "title": "파손 걱정 없는 안심 이사를 약속드려요."
+      }
+    ],
     "footer1": "복잡한 이사 준비,",
     "footer2": "무빙 하나면 끝!",
     "notFoundTitle": "페이지를 찾을 수 없어요",
