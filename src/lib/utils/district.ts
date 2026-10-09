@@ -239,13 +239,31 @@ const DISTRICT_STEMS: Record<string, Record<TranslatedLocale, string>> = {
  * 모르는 이름을 한글 그대로 내보내면 "Seoul 어딘가구" 처럼 두 언어가 섞여서,
  * 호출부가 시/도만 보여주는 쪽을 고를 수 있게 `null` 로 알립니다.
  */
-export function translateDistrict(district: string, locale: string): string | null {
+/**
+ * 이름은 같은데 시/도마다 한자가 다른 것 — `"{시/도}/{이름}"` 을 키로 씁니다.
+ *
+ * 전국에서 **고성군 하나뿐**입니다. 중구·동구·서구·남구·북구·강서구는 여러 곳에
+ * 있지만 한자가 같아서 위 `DISTRICT_STEMS` 로 충분합니다.
+ * 로마자는 둘 다 "Goseong" 이라 en 은 차이가 없습니다.
+ */
+const DISTRICT_BY_SIDO: Record<string, Record<TranslatedLocale, string>> = {
+  "강원/고성": { en: "Goseong", ja: "高城", zh: "高城" },
+  "경남/고성": { en: "Goseong", ja: "固城", zh: "固城" },
+};
+
+export function translateDistrict(
+  district: string,
+  locale: string,
+  /** 같은 이름이 시/도마다 한자가 다른 경우를 가르는 데만 씁니다 (위 `DISTRICT_BY_SIDO`) */
+  sido?: string
+): string | null {
   if (locale === "ko") return district;
   if (!TRANSLATED_LOCALES.includes(locale as TranslatedLocale)) return null;
 
   const key = locale as TranslatedLocale;
+  const name = district.slice(0, -1);
   const suffix = DISTRICT_SUFFIXES[district.at(-1) ?? ""];
-  const stem = DISTRICT_STEMS[district.slice(0, -1)];
+  const stem = DISTRICT_BY_SIDO[`${sido}/${name}`] ?? DISTRICT_STEMS[name];
   if (!suffix || !stem) return null;
 
   return stem[key] + suffix[key];
@@ -259,10 +277,27 @@ export function translateDistrict(district: string, locale: string): string | nu
  * 키와 어긋납니다. 옛 데이터나 다른 경로로 들어온 주소를 대비해 한 번 더 맞춥니다.
  */
 function normalizeSido(sido: string) {
+  // 접미사만 떼면 "경상남도" → "경상남" 이라 키("경남")와 어긋납니다.
+  // 두 글자로 줄여 부르는 6개 도는 따로 적어 둡니다.
+  const alias = SIDO_ALIASES[sido];
+  if (alias) return alias;
+
   // "경기도"·"강원특별자치도"는 SIDO_CODES 키("경기"·"강원")보다 길고,
   // "서울시"처럼 shortenAddress 가 만든 형태도 있습니다.
   return sido.replace(/(특별자치시|특별자치도|특별시|광역시|시|도)$/, "") || sido;
 }
+
+/** 접미사 제거만으로는 키가 안 나오는 이름 — "경상남도" → "경남" */
+const SIDO_ALIASES: Record<string, string> = {
+  충청북도: "충북",
+  충청남도: "충남",
+  전라북도: "전북",
+  전라남도: "전남",
+  경상북도: "경북",
+  경상남도: "경남",
+  // 전북은 2024년에 "전북특별자치도"가 됐습니다
+  전북특별자치도: "전북",
+};
 
 /** 주소 첫 토큰(시/도)을 `region` 번역 키로 되돌리는 표 — "울산" → "ULSAN" */
 const SIDO_CODES: Record<string, string> = {
@@ -304,7 +339,8 @@ export function localizeShortAddress(
   if (locale === "ko") return shortened;
 
   const [sido, district] = shortened.split(" ");
-  const code = SIDO_CODES[normalizeSido(sido ?? "")];
+  const normalized = normalizeSido(sido ?? "");
+  const code = SIDO_CODES[normalized];
   if (!code) return shortened;
 
   // 세종처럼 시·군·구가 아예 없으면 시/도만 보여줍니다.
@@ -312,6 +348,7 @@ export function localizeShortAddress(
 
   // 표에 없는 이름은 시/도까지 포함해 원문을 유지합니다 — 시/도만 번역해 내보내면
   // "Seoul"만 남아 구 정보가 사라집니다.
-  const translated = translateDistrict(district, locale);
+  // 시/도를 함께 넘겨 고성군처럼 지역마다 한자가 다른 이름을 가릅니다.
+  const translated = translateDistrict(district, locale, normalized);
   return translated ? `${translateRegion(code)} ${translated}` : shortened;
 }
