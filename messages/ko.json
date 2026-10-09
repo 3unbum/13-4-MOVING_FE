@@ -605,6 +605,9 @@
     "noFavorites": "찜한 기사님이 없어요.",
     "loginRequired": "로그인이 필요해요",
     "loginToFavorite": "찜하기는 로그인 후 이용할 수 있어요.",
+    "loginToAi": "AI 기사님 찾기는 로그인 후 이용할 수 있어요.",
+    "aiCustomerOnly": "AI 기사님 찾기는 일반 고객만 이용할 수 있어요.",
+    "aiCustomerOnlyTitle": "이용 안내",
     "loginToUse": "로그인 후 이용할 수 있어요.",
     "goLogin": "로그인하기",
     "invalidMoverPath": "잘못된 기사님 주소예요.",
@@ -624,7 +627,21 @@
     "moverServices": "제공 서비스",
     "moverRegions": "서비스 가능 지역",
     "moverDetailLabel": "{name} 기사님 상세 보기",
-    "ctaPromptRich": "<line>{name} 기사님에게</line><line>지정 견적을 요청해보세요!</line>"
+    "ctaPromptRich": "<line>{name} 기사님에게</line><line>지정 견적을 요청해보세요!</line>",
+    "aiButton": "AI"
+  },
+  "moverAi": {
+    "modalTitle": "AI 챗봇으로 기사님 찾기",
+    "beaverName": "무빙이",
+    "welcomeMessage": "어떤 기사님을 찾고 계세요?\n원하시면 지역·이사 유형·중점(평점/리뷰/경력/확정)을 알려주세요.",
+    "inputLabel": "메시지 입력",
+    "inputPlaceholder": "예: 서울에서 소형이사 하려고요",
+    "send": "보내기",
+    "booting": "대화를 준비하고 있어요…",
+    "thinking": "답변을 생각하고 있어요…",
+    "retrySession": "다시 시작하기",
+    "carouselPrev": "이전 기사님",
+    "carouselNext": "다음 기사님"
   },
   "request": {
     "step1Title": "이사 유형을 선택해주세요",

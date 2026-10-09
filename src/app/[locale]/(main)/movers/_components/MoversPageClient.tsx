@@ -13,6 +13,7 @@ import InfoRequiredModal from "@/components/quote/InfoRequiredModal";
 import CardMoverSkeleton from "@/components/skeleton/CardMoverSkeleton";
 import SkeletonStatus from "@/components/skeleton/SkeletonStatus";
 import { REGION_COLUMNS, SERVICE_OPTIONS, SORT_OPTIONS } from "@/constants/movers/filters";
+import MoverAiChatModal from "./MoverAiChatModal";
 import type { MoverListFilters } from "@/constants/query-keys/movers";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useInfiniteScrollTrigger } from "@/hooks/useInfiniteScrollTrigger";
@@ -123,6 +124,27 @@ export default function MoversPageClient({ initialFilters }: MoversPageClientPro
   const { search, setSearch, region, setRegion, service, setService, sort, setSort, resetFilters } =
     useMoverListUrlFilters(initialFilters);
   const [loginModalOpen, setLoginModalOpen] = useState(false);
+  /** 찜·AI 로그인 유도 / AI 기사님(역할) 제한 안내 */
+  const [loginModalReason, setLoginModalReason] = useState<"favorite" | "ai" | "aiCustomerOnly">(
+    "favorite"
+  );
+  const [aiChatOpen, setAiChatOpen] = useState(false);
+  const tCommon = useTranslations("common");
+
+  const openAiChat = () => {
+    // BE mover-ai는 CUSTOMER 전용 — 비로그인/기사님을 구분해 안내
+    if (!isAuthenticated) {
+      setLoginModalReason("ai");
+      setLoginModalOpen(true);
+      return;
+    }
+    if (!isCustomer) {
+      setLoginModalReason("aiCustomerOnly");
+      setLoginModalOpen(true);
+      return;
+    }
+    setAiChatOpen(true);
+  };
 
   // 입력은 즉시 반영, API keyword만 300ms debounce
   const debouncedSearch = useDebounce(search, 300);
@@ -142,7 +164,10 @@ export default function MoversPageClient({ initialFilters }: MoversPageClientPro
   // ── 서버 상태 ──
   const { favoritedIds, isFavoritesLoading, toggleFavorite, getFavoriteCount } =
     useToggleMoverFavorite({
-      onRequireLogin: () => setLoginModalOpen(true),
+      onRequireLogin: () => {
+        setLoginModalReason("favorite");
+        setLoginModalOpen(true);
+      },
     });
 
   const {
@@ -199,17 +224,23 @@ export default function MoversPageClient({ initialFilters }: MoversPageClientPro
             <div className="pc:pb-0 tablet:pb-2.5 pb-1.5">
               <InputSearchbar
                 size="sm"
+                variant="withAi"
                 className="pc:hidden"
                 value={search}
                 onChange={setSearch}
+                onAiClick={openAiChat}
+                aiLabel={t("aiButton")}
                 label={t("searchMoverLabel")}
                 placeholder={t("searchMoverPlaceholder")}
               />
               <InputSearchbar
                 size="md"
+                variant="withAi"
                 className="pc:flex hidden"
                 value={search}
                 onChange={setSearch}
+                onAiClick={openAiChat}
+                aiLabel={t("aiButton")}
                 label={t("searchMoverLabel")}
                 placeholder={t("searchMoverPlaceholder")}
               />
@@ -403,14 +434,34 @@ export default function MoversPageClient({ initialFilters }: MoversPageClientPro
 
       <ScrollToTopButton />
 
-      {/* 비회원 찜 가드 */}
+      {/* 비회원 찜·AI 로그인 유도 / 기사님 AI 역할 제한 */}
       <InfoRequiredModal
         open={loginModalOpen}
         onClose={() => setLoginModalOpen(false)}
-        title={t("loginRequired")}
-        message={t("loginToFavorite")}
-        actionLabel={t("goLogin")}
-        onAction={goToCustomerLogin}
+        title={
+          loginModalReason === "aiCustomerOnly" ? t("aiCustomerOnlyTitle") : t("loginRequired")
+        }
+        message={
+          loginModalReason === "ai"
+            ? t("loginToAi")
+            : loginModalReason === "aiCustomerOnly"
+              ? t("aiCustomerOnly")
+              : t("loginToFavorite")
+        }
+        actionLabel={loginModalReason === "aiCustomerOnly" ? tCommon("confirm") : t("goLogin")}
+        onAction={
+          loginModalReason === "aiCustomerOnly" ? () => setLoginModalOpen(false) : goToCustomerLogin
+        }
+      />
+
+      <MoverAiChatModal
+        open={aiChatOpen}
+        onClose={() => setAiChatOpen(false)}
+        onRequireLogin={() => {
+          setAiChatOpen(false);
+          setLoginModalReason("ai");
+          setLoginModalOpen(true);
+        }}
       />
     </div>
   );

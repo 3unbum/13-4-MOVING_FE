@@ -38,7 +38,7 @@ const SIZE_PX: Record<ProfileAvatarSize, string> = {
   "134": "134px",
 };
 
-// 50만 1x 전용 에셋, 나머지는 고해상도(1000px) 폴백을 Next가 리사이즈
+// 50: 상체 크롭 3x(150px) 에셋 / 나머지: 고해상도(1000px) 폴백을 Next가 리사이즈
 const FALLBACK_IMAGE: Record<ProfileAvatarSize, StaticImageData> = {
   "50": profile50,
   "64": profile140,
@@ -79,7 +79,7 @@ export default function ProfileAvatar({ src, alt, size = "50", className }: Prof
           className="object-cover"
         />
       ) : size === "50" ? (
-        // 프로필_50은 이미 상체 크롭된 1x 에셋 — offset 프레임 불필요
+        // 프로필_50은 상체 크롭 3x 에셋 — offset 프레임 불필요
         <Image
           src={FALLBACK_IMAGE[size]}
           alt={altText}

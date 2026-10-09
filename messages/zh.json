@@ -605,6 +605,9 @@
     "noFavorites": "还没有收藏的师傅。",
     "loginRequired": "需要登录",
     "loginToFavorite": "登录后即可收藏。",
+    "loginToAi": "登录后即可使用 AI 找师傅。",
+    "aiCustomerOnly": "AI 找师傅仅限普通用户使用。",
+    "aiCustomerOnlyTitle": "使用提示",
     "loginToUse": "登录后即可使用。",
     "goLogin": "去登录",
     "invalidMoverPath": "师傅地址无效。",
@@ -624,7 +627,21 @@
     "moverServices": "提供服务",
     "moverRegions": "服务地区",
     "moverDetailLabel": "查看 {name} 师傅详情",
-    "ctaPromptRich": "<line>向 {name} 师傅</line><line>申请指定报价吧！</line>"
+    "ctaPromptRich": "<line>向 {name} 师傅</line><line>申请指定报价吧！</line>",
+    "aiButton": "AI"
+  },
+  "moverAi": {
+    "modalTitle": "用 AI 聊天机器人找师傅",
+    "beaverName": "Moving",
+    "welcomeMessage": "您在找什么样的师傅呢？\n可以告诉我地区、搬家类型，以及更看重什么（评分/评价/经验/成交）。",
+    "inputLabel": "输入消息",
+    "inputPlaceholder": "例如：想在首尔做小型搬家",
+    "send": "发送",
+    "booting": "正在准备对话…",
+    "thinking": "正在思考…",
+    "retrySession": "重新开始",
+    "carouselPrev": "上一位师傅",
+    "carouselNext": "下一位师傅"
   },
   "request": {
     "step1Title": "请选择搬家类型",
