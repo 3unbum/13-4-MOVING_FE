@@ -4,9 +4,9 @@ import { useLocale, useTranslations } from "next-intl";
 import { cn } from "@/lib/utils/cn";
 import { formatMovingDate, type DateLocale } from "@/lib/utils/date";
 import type { HTMLAttributes } from "react";
-import { SERVICE_LABELS, type RegionCode, type ServiceCode } from "@/components/filter/ChipRegion";
+import { SERVICE_LABELS, type ServiceCode } from "@/components/filter/ChipRegion";
 import { shortenAddress } from "@/lib/utils/address";
-import { translateDistrict } from "@/lib/utils/district";
+import { localizeShortAddress } from "@/lib/utils/district";
 
 type SubHeaderSize = "sm" | "md" | "lg";
 
@@ -15,14 +15,6 @@ interface SubHeaderProps extends HTMLAttributes<HTMLDivElement> {
   createdAt: string;
   fromAddress: string;
   toAddress: string;
-  /**
-   * 출발지·도착지의 시/도 코드 — 한국어가 아닐 때 주소 대신 보여줍니다.
-   *
-   * 없으면 주소 축약으로 떨어집니다. 쇼케이스처럼 region을 안 넘기는 호출부가 있어
-   * 옵셔널로 둡니다.
-   */
-  fromRegion?: RegionCode;
-  toRegion?: RegionCode;
   movingDate: string;
   size?: SubHeaderSize;
 }
@@ -59,8 +51,6 @@ export default function SubHeader({
   createdAt,
   fromAddress,
   toAddress,
-  fromRegion,
-  toRegion,
   movingDate,
   size = "sm",
   className,
@@ -87,16 +77,10 @@ export default function SubHeader({
    * 전체 주소(동·호수까지)는 견적 상세에서 한국어 원문으로 봅니다 — 기사님께 전달하거나
    * 복사해서 쓰는 값이라 번역하면 오히려 쓸 수 없습니다.
    */
-  const place = (address: string, region: RegionCode | undefined) => {
-    const shortened = shortenAddress(address);
-    if (locale === "ko" || !region) return shortened;
-
-    // shortenAddress 는 "시/도 + 시·군·구"라 두 번째 토큰이 시·군·구입니다.
-    // 세종처럼 시·군·구가 없거나 표에 없는 이름이면 시/도만 보여줍니다.
-    const district = shortened.split(" ")[1];
-    const translated = district ? translateDistrict(district, locale) : null;
-    return translated ? `${tRegion(region)} ${translated}` : tRegion(region);
-  };
+  const place = (address: string) =>
+    // 기사님 화면(MoverRequestList·MoverEstimateList)과 같은 함수를 씁니다 —
+    // 따로 구현하면 "표에 없을 때 원문 유지" 같은 규칙이 한쪽에만 반영됩니다.
+    localizeShortAddress(shortenAddress(address), locale, tRegion);
 
   return (
     <section
@@ -132,7 +116,7 @@ export default function SubHeader({
             flex-1 로 균등 분배하면 짧은 한국어에서 칸이 떠 보입니다. */}
         <Field
           label={t("from")}
-          value={place(fromAddress, fromRegion)}
+          value={place(fromAddress)}
           big={big}
           className={big ? "min-w-0 shrink" : undefined}
         />
@@ -141,7 +125,7 @@ export default function SubHeader({
         </span>
         <Field
           label={t("to")}
-          value={place(toAddress, toRegion)}
+          value={place(toAddress)}
           big={big}
           className={big ? "min-w-0 shrink" : undefined}
         />
