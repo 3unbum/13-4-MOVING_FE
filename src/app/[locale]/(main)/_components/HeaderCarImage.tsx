@@ -3,18 +3,30 @@
 import car from "@/assets/images/landing/car.md.png";
 import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
 import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
 
-const HEADER_HEIGHT_PX = 313; // header의 h-78.25(78.25 * 4px)와 맞춤
-const EXIT_X = -450; // 이 정도 스크롤되면 뷰포트 왼쪽 밖으로 완전히 나감
-
-// 스크롤해서 header가 화면 위로 빠져나가는 만큼 car 이미지가 왼쪽으로 이동한다.
+// 첫 화면이 고정된 동안 스크롤하면 트럭이 가운데에서 화면 왼쪽 끝까지 이동한다.
+// 이동 거리 = (화면 너비 - 트럭 너비) / 2. page.tsx의 spacer 높이(50vw - 트럭너비/2)와 같아야 한다.
 export default function HeaderCarImage() {
   const { scrollY } = useScroll();
-  const x = useTransform(scrollY, [0, HEADER_HEIGHT_PX], [0, EXIT_X]);
+  const ref = useRef<HTMLDivElement>(null);
+  const [distance, setDistance] = useState(0);
   const prefersReducedMotion = useReducedMotion();
 
+  useEffect(() => {
+    const update = () => {
+      const width = ref.current?.offsetWidth ?? 0;
+      setDistance(Math.max(0, (window.innerWidth - width) / 2));
+    };
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, []);
+
+  const x = useTransform(scrollY, (y) => -Math.min(y, distance));
+
   return (
-    <motion.div style={{ x: prefersReducedMotion ? 0 : x }}>
+    <motion.div ref={ref} style={{ x: prefersReducedMotion ? 0 : x }}>
       <Image
         src={car}
         alt="car"

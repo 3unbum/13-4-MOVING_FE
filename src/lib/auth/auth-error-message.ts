@@ -4,7 +4,7 @@ import { ApiError } from "@/lib/utils/api-error";
 /**
  * `messages/*.json`의 `authError` 네임스페이스 키.
  *
- * BE `ERROR_CODES` 34종 전부를 덮습니다 — 인증뿐 아니라 견적·리뷰·찜까지.
+ * BE `ERROR_CODES` 45종 전부를 덮습니다 — 인증뿐 아니라 견적·리뷰·찜까지.
  * BE에 코드가 추가되면 `AUTH_ERROR_CODES` · 이 표 · `messages/*.json` 세 곳을 같이 채우세요.
  */
 const MESSAGE_KEY_BY_CODE: Record<AuthErrorCode, string> = {
@@ -52,6 +52,17 @@ const MESSAGE_KEY_BY_CODE: Record<AuthErrorCode, string> = {
   [AUTH_ERROR_CODES.ALREADY_ESTIMATED]: "alreadyEstimated",
   [AUTH_ERROR_CODES.NOT_SERVICE_REGION]: "notServiceRegion",
   [AUTH_ERROR_CODES.ESTIMATE_ALREADY_PROCESSED]: "estimateAlreadyProcessed",
+  [AUTH_ERROR_CODES.ESTIMATE_NOT_COMPLETED]: "estimateNotCompleted",
+  [AUTH_ERROR_CODES.ALREADY_PAID]: "alreadyPaid",
+  [AUTH_ERROR_CODES.PAYMENT_FAILED]: "paymentFailed",
+  [AUTH_ERROR_CODES.PAYMENT_REQUEST_ALREADY_SENT]: "paymentRequestAlreadySent",
+  [AUTH_ERROR_CODES.DEPOSIT_NOT_REQUIRED]: "depositNotRequired",
+  [AUTH_ERROR_CODES.DEPOSIT_EXPIRED]: "depositExpired",
+  [AUTH_ERROR_CODES.DEPOSIT_NOT_PAID]: "depositNotPaid",
+  [AUTH_ERROR_CODES.EXTRA_CHARGE_ALREADY_REQUESTED]: "extraChargeAlreadyRequested",
+  [AUTH_ERROR_CODES.EXTRA_CHARGE_TOO_LARGE]: "extraChargeTooLarge",
+  [AUTH_ERROR_CODES.EXTRA_CHARGE_NOT_PENDING]: "extraChargeNotPending",
+  [AUTH_ERROR_CODES.EXTRA_CHARGE_PENDING]: "extraChargePending",
 
   // 리뷰 / 찜
   [AUTH_ERROR_CODES.REVIEW_ALREADY_CONFIRMED]: "reviewAlreadyConfirmed",

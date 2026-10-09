@@ -27,6 +27,22 @@ function toKst(iso: string) {
   return new Date(new Date(iso).getTime() + KST_OFFSET_MS);
 }
 
+/**
+ * 기한처럼 **시각까지** 필요한 표기 — 예: `10. 9. 14:30` (한국어) / `10/9, 14:30` (영어).
+ *
+ * 시간대는 KST로 고정합니다(`toKst`와 같은 이유). 로케일은 표기 순서만 바꿉니다.
+ */
+export function formatDueDateTime(iso: string, locale: DateLocale = "ko") {
+  return new Intl.DateTimeFormat(locale, {
+    timeZone: "Asia/Seoul",
+    month: "numeric",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).format(new Date(iso));
+}
+
 /** 한국어 외 로케일의 요일 약칭 — KST 기준 요일을 넘겨 받습니다 */
 function weekdayLabel(kst: Date, locale: DateLocale) {
   if (locale === "ko") return WEEKDAYS_KO[kst.getUTCDay()];
@@ -155,4 +171,31 @@ export function formatPrice(amount: number, locale: DateLocale = "ko") {
   if (locale === "zh") return `${number} 韩元`;
   if (locale === "ja") return `${number} ウォン`;
   return `${number} KRW`;
+}
+
+/**
+ * 이번 달부터 거꾸로 `count`개월의 "YYYY-MM" 목록(최신 달이 먼저). 월별 조회 선택지에 씁니다.
+ * "이번 달"은 KST 기준입니다(`toKst`와 같은 이유).
+ */
+export function recentMonths(count: number, now: Date = new Date()): string[] {
+  const kst = toKst(now.toISOString());
+  const months: string[] = [];
+
+  for (let i = 0; i < count; i += 1) {
+    const d = new Date(Date.UTC(kst.getUTCFullYear(), kst.getUTCMonth() - i, 1));
+    months.push(`${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}`);
+  }
+
+  return months;
+}
+
+/** "2026-10" → 로케일별 연·월 표기 (ko "2026년 10월", en "October 2026") */
+export function formatMonthLabel(month: string, locale: DateLocale = "ko") {
+  const [year, mon] = month.split("-").map(Number);
+  const tag = { ko: "ko-KR", en: "en-US", ja: "ja-JP", zh: "zh-CN" }[locale];
+
+  // UTC로 고정해 실행 환경의 시간대가 달을 밀지 않게 합니다
+  return new Intl.DateTimeFormat(tag, { year: "numeric", month: "long", timeZone: "UTC" }).format(
+    new Date(Date.UTC(year, mon - 1, 1))
+  );
 }

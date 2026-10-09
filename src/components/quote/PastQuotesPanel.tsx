@@ -79,7 +79,7 @@ function InfoRow({ label, value }: { label: string; value: string }) {
  * 카드 전체를 클릭 영역으로 씁니다 — 피그마에 "견적 상세_확정 견적"과
  * "견적 상세_확정하지 않은 견적" 화면이 따로 있는데, 둘 다 여기서만 도달할 수 있습니다.
  */
-function EstimateRow({
+export function EstimateRow({
   estimate,
   onClick,
   isDimmed = false,

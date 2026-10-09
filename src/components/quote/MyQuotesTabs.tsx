@@ -7,12 +7,13 @@ import SkeletonBone from "@/components/common/SkeletonBone";
 import Tab from "@/components/common/Tab";
 import TabList from "@/components/common/TabList";
 import PastQuotesPanel from "@/components/quote/PastQuotesPanel";
+import PayQuotesPanel from "@/components/quote/PayQuotesPanel";
 import PendingQuotesPanel from "@/components/quote/PendingQuotesPanel";
 import CardEstimateSkeleton from "@/components/skeleton/CardEstimateSkeleton";
 import SkeletonStatus from "@/components/skeleton/SkeletonStatus";
 import { usePastQuotes, usePendingQuotes } from "@/hooks/useMyQuotes";
 
-type QuoteTab = "pending" | "past";
+export type QuoteTab = "pending" | "past" | "payPending" | "payHistory";
 
 /** 조회 실패 시 — 카드 대신 이유를 보여줍니다 */
 function QuoteError() {
@@ -126,6 +127,13 @@ interface MyQuotesTabsProps {
 export default function MyQuotesTabs({ initialTab }: MyQuotesTabsProps) {
   const router = useRouter();
   const [tab, setTab] = useState<QuoteTab>(initialTab);
+  // 프로필 메뉴의 "결제 내역"처럼 같은 페이지에서 ?tab=만 바뀌어 들어오면 서버가 새 initialTab을 내려주는데,
+  // useState 초기값은 한 번만 쓰여서 탭이 그대로 남습니다. 값이 바뀌면 렌더 중에 맞춰 줍니다
+  const [syncedInitialTab, setSyncedInitialTab] = useState(initialTab);
+  if (initialTab !== syncedInitialTab) {
+    setSyncedInitialTab(initialTab);
+    setTab(initialTab);
+  }
   const t = useTranslations("quote");
 
   const pending = usePendingQuotes();
@@ -138,7 +146,7 @@ export default function MyQuotesTabs({ initialTab }: MyQuotesTabsProps) {
    */
   const changeTab = (next: QuoteTab) => {
     setTab(next);
-    router.replace(next === "past" ? "/customer/my-quotes?tab=past" : "/customer/my-quotes", {
+    router.replace(next === "pending" ? "/customer/my-quotes" : `/customer/my-quotes?tab=${next}`, {
       scroll: false,
     });
   };
@@ -154,7 +162,12 @@ export default function MyQuotesTabs({ initialTab }: MyQuotesTabsProps) {
           TabList 기본 py-2.5가 54를 75로 키우고, PC는 Tab의 pc:py-4만으로 67에 그칩니다.
           공통 컴포넌트는 건드리지 않고 여기서만 보정합니다.
           TODO: 데일리 스크럼 공유 — 다른 탭 사용처에도 같은 차이가 납니다. */}
-      <TabList aria-label={t("tabsLabel")} className="pc:h-20 py-0">
+      {/* 탭이 4개라 모바일(<tablet) 폭에는 한 줄에 다 안 들어갑니다 — 줄바꿈 대신 가로로 밀어 보게 합니다.
+          overflow를 PC에서는 풀어 둡니다(PC는 탭이 목록 박스 아래로 2px 나와 있어 잘립니다). */}
+      <TabList
+        aria-label={t("tabsLabel")}
+        className="pc:h-20 max-tablet:overflow-x-auto max-tablet:[scrollbar-width:none] py-0"
+      >
         <Tab
           id="tab-pending"
           controls="panel-pending"
@@ -170,6 +183,24 @@ export default function MyQuotesTabs({ initialTab }: MyQuotesTabsProps) {
           onClick={() => changeTab("past")}
         >
           {t("tabPast")}
+        </Tab>
+        <Tab
+          id="tab-payPending"
+          controls="panel-payPending"
+          active={tab === "payPending"}
+          className="pc:border-transparent border-transparent"
+          onClick={() => changeTab("payPending")}
+        >
+          {t("tabPayPending")}
+        </Tab>
+        <Tab
+          id="tab-payHistory"
+          controls="panel-payHistory"
+          active={tab === "payHistory"}
+          className="pc:border-transparent border-transparent"
+          onClick={() => changeTab("payHistory")}
+        >
+          {t("tabPayHistory")}
         </Tab>
       </TabList>
 
@@ -213,6 +244,30 @@ export default function MyQuotesTabs({ initialTab }: MyQuotesTabsProps) {
           ) : (
             <PastQuotesPanel blocks={past.blocks} onDetailClick={openDetail} />
           )}
+        </div>
+      )}
+
+      {tab === "payPending" && (
+        <div
+          id="panel-payPending"
+          role="tabpanel"
+          aria-labelledby="tab-payPending"
+          tabIndex={0}
+          className="flex flex-1 flex-col"
+        >
+          <PayQuotesPanel stage="DUE" onDetailClick={openDetail} />
+        </div>
+      )}
+
+      {tab === "payHistory" && (
+        <div
+          id="panel-payHistory"
+          role="tabpanel"
+          aria-labelledby="tab-payHistory"
+          tabIndex={0}
+          className="flex flex-1 flex-col"
+        >
+          <PayQuotesPanel stage="PAID" onDetailClick={openDetail} />
         </div>
       )}
     </div>
