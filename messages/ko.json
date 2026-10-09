@@ -330,6 +330,7 @@
     "botCheckFailed": "봇 검증에 실패했어요. 다시 시도해 주세요.",
     "concurrentRequestConflict": "요청이 몰려 처리하지 못했습니다. 잠시 후 다시 시도해 주세요",
     "emailAlreadyExists": "이미 가입된 이메일입니다",
+    "emailNotVerified": "이메일 인증이 필요합니다. 인증번호를 다시 받아 주세요",
     "estimateAlreadyProcessed": "이미 처리된 견적입니다",
     "estimateLimitExceeded": "이 견적 요청에 받을 수 있는 견적이 모두 도착했습니다",
     "forbidden": "접근 권한이 없습니다",
@@ -340,6 +341,7 @@
     "invalidOrExpiredSignupToken": "인증 정보가 만료되었습니다. 처음부터 다시 시도해 주세요",
     "invalidProfileEditCode": "인증번호가 일치하지 않습니다",
     "invalidResetCode": "인증번호가 일치하지 않습니다",
+    "invalidSignupCode": "인증번호가 일치하지 않습니다",
     "noActiveRequest": "이미 기사님이 확정되었거나 종료된 견적 요청입니다",
     "notFound": "요청하신 정보를 찾을 수 없습니다",
     "notServiceRegion": "서비스 가능 지역이 아닙니다",
@@ -356,6 +358,8 @@
     "resetCodeAttemptsExceeded": "인증번호를 여러 번 틀려 무효가 되었습니다. 인증번호를 다시 받아 주세요",
     "resetCodeExpired": "인증번호가 만료되었습니다. 인증번호를 다시 받아 주세요",
     "reviewAlreadyConfirmed": "이미 작성한 리뷰입니다",
+    "signupCodeAttemptsExceeded": "인증번호를 여러 번 틀려 무효가 되었습니다. 인증번호를 다시 받아 주세요",
+    "signupCodeExpired": "인증번호가 만료되었습니다. 인증번호를 다시 받아 주세요",
     "targetLimitExceeded": "지정 견적 요청은 최대 3명까지 가능합니다",
     "tooManyRequests": "요청이 너무 많아요. 잠시 후 다시 시도해 주세요.",
     "unauthorized": "로그인이 필요합니다",
@@ -501,6 +505,13 @@
       "failed": "요청 처리 중 문제가 발생했어요. 잠시 후 다시 시도해 주세요.",
       "mailHelp": "메일이 오지 않나요? 스팸함을 확인하거나, 이메일 주소를 확인한 뒤 다시 받아 보세요.",
       "dailyLimitReached": "오늘 요청 가능한 횟수를 모두 사용했어요. 약 {hours}시간 후 다시 시도해 주세요."
+    },
+    "signupVerification": {
+      "guide": "이메일 인증을 완료해야 가입할 수 있어요",
+      "verify": "인증하기",
+      "verified": "이메일 인증이 완료되었어요",
+      "changeEmail": "이메일 변경",
+      "sending": "인증번호 보내는 중..."
     }
   },
   "review": {
