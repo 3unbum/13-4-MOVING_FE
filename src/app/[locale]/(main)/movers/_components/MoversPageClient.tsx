@@ -16,6 +16,7 @@ import { REGION_COLUMNS, SERVICE_OPTIONS, SORT_OPTIONS } from "@/constants/mover
 import MoverAiChatModal from "./MoverAiChatModal";
 import type { MoverListFilters } from "@/constants/query-keys/movers";
 import { useDebounce } from "@/hooks/useDebounce";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { useInfiniteScrollTrigger } from "@/hooks/useInfiniteScrollTrigger";
 import { useMoverListUrlFilters } from "@/hooks/useMoverListUrlFilters";
 import { useMoversInfinite } from "@/hooks/useMoversInfinite";
@@ -30,6 +31,8 @@ import { toAuthErrorDetail } from "@/lib/auth/auth-error-message";
 import { useAuth } from "@/providers/AuthProvider";
 
 type MoverCardViewModel = ReturnType<typeof mapMoverListItemToCard>;
+
+const TABLET_QUERY = "(min-width: 744px)";
 
 function getMoverCardNavProps(onNavigate: () => void) {
   return {
@@ -130,6 +133,8 @@ export default function MoversPageClient({ initialFilters }: MoversPageClientPro
   );
   const [aiChatOpen, setAiChatOpen] = useState(false);
   const tCommon = useTranslations("common");
+  const isTabletUp = useMediaQuery(TABLET_QUERY);
+  const infoModalSize = isTabletUp ? "md" : "sm";
 
   const openAiChat = () => {
     // BE mover-ai는 CUSTOMER 전용 — 비로그인/기사님을 구분해 안내
@@ -438,6 +443,7 @@ export default function MoversPageClient({ initialFilters }: MoversPageClientPro
       <InfoRequiredModal
         open={loginModalOpen}
         onClose={() => setLoginModalOpen(false)}
+        size={infoModalSize}
         title={
           loginModalReason === "aiCustomerOnly" ? t("aiCustomerOnlyTitle") : t("loginRequired")
         }
