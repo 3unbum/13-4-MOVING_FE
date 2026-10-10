@@ -119,6 +119,7 @@
     "meta": "{left} · {right}",
     "newRequest": "{name} 様が指定見積もり依頼を送りました。",
     "newEstimate": "{name}さんの<em>{category}の見積もり</em>が届きました。",
+    "estimateRejected": "{name}さんが指定見積もり依頼を<em>却下</em>しました。",
     "estimateConfirmedCustomer": "{name}さんの見積もりが<em>確定</em>しました。",
     "estimateConfirmedMover": "見積もりが<em>確定</em>しました。",
     "movingDayBefore": "明日は<em>{from}</em> → <dest>{to}</dest>の引っ越し予定日です。",
