@@ -76,6 +76,7 @@ export default function ProfileAvatar({ src, alt, size = "50", className }: Prof
           fill
           sizes={SIZE_PX[size]}
           quality={90}
+          draggable={false}
           className="object-cover"
         />
       ) : size === "50" ? (
@@ -86,6 +87,7 @@ export default function ProfileAvatar({ src, alt, size = "50", className }: Prof
           fill
           sizes={SIZE_PX[size]}
           quality={90}
+          draggable={false}
           className="object-cover"
         />
       ) : (
@@ -96,6 +98,7 @@ export default function ProfileAvatar({ src, alt, size = "50", className }: Prof
             fill
             sizes={SIZE_PX[size]}
             quality={90}
+            draggable={false}
             className="object-cover"
           />
         </div>
