@@ -119,6 +119,7 @@
     "meta": "{left} · {right}",
     "newRequest": "{name} 고객님이 지정 견적 요청을 보냈어요.",
     "newEstimate": "{name} 기사님의 <em>{category} 견적</em>이 도착했어요.",
+    "estimateRejected": "{name} 기사님이 지정 견적 요청을 <em>반려</em>했어요.",
     "estimateConfirmedCustomer": "{name} 기사님의 견적이 <em>확정</em>되었어요.",
     "estimateConfirmedMover": "이사 견적이 <em>확정</em>되었어요.",
     "movingDayBefore": "내일은 <em>{from}</em> → <dest>{to}</dest> 이사 예정일이에요.",
