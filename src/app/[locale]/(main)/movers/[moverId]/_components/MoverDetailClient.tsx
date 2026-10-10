@@ -52,7 +52,7 @@ import { MoverDetailDesktopCta, MoverDetailMobileStickyCta } from "./MoverDetail
 import MoverDetailProfile, { MoverDetailAvatar } from "./MoverDetailProfile";
 import MoverDetailShare from "./MoverDetailShare";
 
-type ModalKind = "login" | "needQuote" | null;
+type ModalKind = "loginFavorite" | "login" | "needQuote" | null;
 
 const TABLET_QUERY = "(min-width: 744px)";
 
@@ -77,7 +77,7 @@ export default function MoverDetailClient() {
 
   const [modalKind, setModalKind] = useState<ModalKind>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
-  // InfoRequiredModal 공통 기본은 md — 상세만 뷰포트에 맞춰 size 전달
+  // InfoRequiredModal 기본은 md — 상세는 뷰포트에 맞춰 size를 넘긴다
   const isTabletUp = useMediaQuery(TABLET_QUERY);
   const infoModalSize = isTabletUp ? "md" : "sm";
 
@@ -101,7 +101,7 @@ export default function MoverDetailClient() {
 
   const { favoritedIds, isFavoritesLoading, toggleFavorite, getFavoriteCount } =
     useToggleMoverFavorite({
-      onRequireLogin: () => setModalKind("login"),
+      onRequireLogin: () => setModalKind("loginFavorite"),
     });
 
   // 활성 일반 견적 — 지정 요청 가드용 (CUSTOMER만)
@@ -304,11 +304,11 @@ export default function MoverDetailClient() {
       />
 
       <InfoRequiredModal
-        open={modalKind === "login"}
+        open={modalKind === "login" || modalKind === "loginFavorite"}
         onClose={closeModal}
         size={infoModalSize}
         title={t("loginRequired")}
-        message={t("loginToUse")}
+        message={modalKind === "loginFavorite" ? t("loginToFavorite") : t("loginToUse")}
         actionLabel={t("goLogin")}
         onAction={() => {
           closeModal();
