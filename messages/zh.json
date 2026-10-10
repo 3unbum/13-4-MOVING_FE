@@ -329,6 +329,8 @@
     "alreadyTargeted": "您已指定该师傅。",
     "botCheckFailed": "机器人验证失败，请重试。",
     "concurrentRequestConflict": "请求过于集中，暂时无法处理。请稍后重试。",
+    "confirmedMoveExists": "您有已确认的搬家，暂时无法注销账号。请在搬家完成后重试。",
+    "unpaidPaymentExists": "您有尚未完成付款的报价，暂时无法注销账号。请在付款完成后重试。",
     "emailAlreadyExists": "该邮箱已注册。",
     "emailNotVerified": "需要完成邮箱验证，请重新获取验证码",
     "estimateAlreadyProcessed": "该报价已处理。",
@@ -438,7 +440,13 @@
     "emailPlaceholder": "请输入邮箱",
     "currentPasswordNotice": "仅在修改密码时才需要输入当前密码",
     "emailVerifyTitle": "身份验证",
-    "emailVerifyDescription": "为了安全地修改信息，我们将向 {email} 发送验证码"
+    "emailVerifyDescription": "为了安全地修改信息，我们将向 {email} 发送验证码",
+    "deleteAccount": "注销账号",
+    "deleteAccountDescription": "注销后账号将无法恢复。如需继续，请准确输入下方文字。",
+    "deleteAccountConfirmPhrase": "我要注销账号",
+    "deleteAccountSubmit": "注销",
+    "deleteAccountSubmitting": "注销中...",
+    "deleteAccountFailed": "注销账号失败，请稍后重试。"
   },
   "auth": {
     "snsSignup": "使用社交账号快速注册",

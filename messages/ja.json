@@ -329,6 +329,8 @@
     "alreadyTargeted": "すでに指名した業者です。",
     "botCheckFailed": "ボット検証に失敗しました。もう一度お試しください。",
     "concurrentRequestConflict": "リクエストが集中して処理できませんでした。しばらくしてからもう一度お試しください。",
+    "confirmedMoveExists": "確定した引越しがあるため退会できません。引越し完了後にもう一度お試しください。",
+    "unpaidPaymentExists": "支払いが完了していない見積もりがあるため退会できません。支払い完了後にもう一度お試しください。",
     "emailAlreadyExists": "すでに登録されているメールアドレスです。",
     "emailNotVerified": "メール認証が必要です。認証番号を再度受け取ってください",
     "estimateAlreadyProcessed": "すでに処理された見積もりです。",
@@ -438,7 +440,13 @@
     "emailPlaceholder": "メールアドレスを入力してください",
     "currentPasswordNotice": "パスワードを変更する場合のみ、現在のパスワードを入力してください",
     "emailVerifyTitle": "本人確認",
-    "emailVerifyDescription": "安全に情報を変更できるよう、{email}に認証番号をお送りします"
+    "emailVerifyDescription": "安全に情報を変更できるよう、{email}に認証番号をお送りします",
+    "deleteAccount": "退会",
+    "deleteAccountDescription": "退会するとアカウントは元に戻せません。続けるには、下の文言をそのまま入力してください。",
+    "deleteAccountConfirmPhrase": "退会します",
+    "deleteAccountSubmit": "退会する",
+    "deleteAccountSubmitting": "退会中...",
+    "deleteAccountFailed": "退会に失敗しました。しばらくしてからもう一度お試しください。"
   },
   "auth": {
     "snsSignup": "SNSアカウントで簡単登録",

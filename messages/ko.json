@@ -329,6 +329,8 @@
     "alreadyTargeted": "이미 지정한 기사님입니다",
     "botCheckFailed": "봇 검증에 실패했어요. 다시 시도해 주세요.",
     "concurrentRequestConflict": "요청이 몰려 처리하지 못했습니다. 잠시 후 다시 시도해 주세요",
+    "confirmedMoveExists": "확정된 이사가 있어 탈퇴할 수 없습니다. 이사 완료 후 다시 시도해 주세요",
+    "unpaidPaymentExists": "결제가 끝나지 않은 견적이 있어 탈퇴할 수 없습니다. 결제 완료 후 다시 시도해 주세요",
     "emailAlreadyExists": "이미 가입된 이메일입니다",
     "emailNotVerified": "이메일 인증이 필요합니다. 인증번호를 다시 받아 주세요",
     "estimateAlreadyProcessed": "이미 처리된 견적입니다",
@@ -438,7 +440,13 @@
     "emailPlaceholder": "이메일을 입력해 주세요",
     "currentPasswordNotice": "비밀번호를 변경할 때만 현재 비밀번호를 입력해 주세요",
     "emailVerifyTitle": "본인 확인",
-    "emailVerifyDescription": "안전하게 정보를 수정할 수 있도록 {email}로 인증번호를 보내드려요"
+    "emailVerifyDescription": "안전하게 정보를 수정할 수 있도록 {email}로 인증번호를 보내드려요",
+    "deleteAccount": "회원 탈퇴",
+    "deleteAccountDescription": "탈퇴하면 계정을 되돌릴 수 없어요. 계속하려면 아래 문구를 똑같이 입력해 주세요.",
+    "deleteAccountConfirmPhrase": "탈퇴하겠습니다",
+    "deleteAccountSubmit": "탈퇴하기",
+    "deleteAccountSubmitting": "탈퇴 중...",
+    "deleteAccountFailed": "회원 탈퇴에 실패했어요. 잠시 후 다시 시도해 주세요"
   },
   "auth": {
     "snsSignup": "SNS 계정으로 간편 가입하기",
