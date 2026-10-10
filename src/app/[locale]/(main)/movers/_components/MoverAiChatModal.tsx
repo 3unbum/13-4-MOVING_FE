@@ -9,6 +9,7 @@ import {
   useRef,
   useState,
   type KeyboardEvent,
+  type MouseEvent as ReactMouseEvent,
   type PointerEvent as ReactPointerEvent,
 } from "react";
 import chevronLeft from "@/assets/icons/chevron-left-md.svg";
@@ -187,6 +188,15 @@ function MoverAiCarousel({
     onMoverClick(moverId);
   };
 
+  // 찜 버튼은 click에서 stopPropagation이라 카드 onClick까지 안 올라온다.
+  // 캡처 단계에서 먼저 막아야 드래그 직후 찜이 토글되지 않는다.
+  const handleClickCapture = (event: ReactMouseEvent<HTMLDivElement>) => {
+    if (!suppressClickRef.current) return;
+    suppressClickRef.current = false;
+    event.preventDefault();
+    event.stopPropagation();
+  };
+
   return (
     <div className="relative w-full">
       <div
@@ -194,9 +204,10 @@ function MoverAiCarousel({
         onPointerDown={handlePointerDown}
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerUp}
+        onClickCapture={handleClickCapture}
         className={cn(
           "relative flex w-full cursor-grab gap-3 overflow-x-auto scroll-smooth pb-1 active:cursor-grabbing",
-          "touch-pan-x snap-x snap-mandatory [scrollbar-width:none] [-ms-overflow-style:none]",
+          "snap-x snap-mandatory [scrollbar-width:none] [-ms-overflow-style:none]",
           "[&::-webkit-scrollbar]:hidden"
         )}
       >
