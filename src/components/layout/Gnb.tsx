@@ -490,9 +490,9 @@ function LogoSm({ className }: { className?: string }) {
     <Image
       src={logoSm}
       alt=""
-      width={88}
+      width={123}
       height={34}
-      className={cn("h-8.5 w-22 max-w-none", className)}
+      className={cn("h-8.5 w-31 max-w-none", className)}
       priority
     />
   );
@@ -519,9 +519,9 @@ function LogoLink({ iconOnlyOnMobile = false }: LogoLinkProps) {
       <Image
         src={logoLg}
         alt=""
-        width={116}
+        width={152}
         height={44}
-        className="pc:block hidden h-11 w-29"
+        className="pc:block hidden h-11 w-38"
         priority
       />
     </Link>
