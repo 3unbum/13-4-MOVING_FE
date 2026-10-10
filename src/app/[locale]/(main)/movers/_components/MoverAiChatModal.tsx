@@ -2,7 +2,15 @@
 
 import { useTranslations } from "next-intl";
 import Image from "next/image";
-import { useCallback, useEffect, useId, useRef, useState, type KeyboardEvent } from "react";
+import {
+  useCallback,
+  useEffect,
+  useId,
+  useRef,
+  useState,
+  type KeyboardEvent,
+  type PointerEvent as ReactPointerEvent,
+} from "react";
 import chevronLeft from "@/assets/icons/chevron-left-md.svg";
 import chevronRight from "@/assets/icons/chevron-right-md.svg";
 import likeIcon from "@/assets/icons/like-md-red-active.svg";
@@ -19,13 +27,33 @@ import type { MoverListItem } from "@/lib/services/mover-service";
 import { mapMoverListItemToCard } from "@/lib/utils/mover-list-mapper";
 import { cn } from "@/lib/utils/cn";
 
+/** 마우스 포인터 드래그 스크롤 시작 Threshold */
+const CAROUSEL_DRAG_THRESHOLD_PX = 10;
+/** 캐러셀이 이만큼 스크롤되면 이어지는 click은 상세 이동이 아니다 */
+const CAROUSEL_SCROLL_CLICK_THRESHOLD_PX = 5;
+
+function nearestCardIndex(scroller: HTMLElement) {
+  const cards = Array.from(scroller.children) as HTMLElement[];
+  const left = scroller.scrollLeft;
+  let nearest = 0;
+  let nearestDist = Infinity;
+  cards.forEach((card, index) => {
+    const dist = Math.abs(card.offsetLeft - left);
+    if (dist < nearestDist) {
+      nearestDist = dist;
+      nearest = index;
+    }
+  });
+  return nearest;
+}
+
 interface MoverAiChatModalProps {
   open: boolean;
   onClose: () => void;
   onRequireLogin?: () => void;
 }
 
-/** 추천 기사 가로 캐러셀 — 카드 클릭=상세, 넘기기는 좌우 화살표 */
+/** 추천 기사 가로 캐러셀 — 스와이프 + 화살표, 탭만 상세 이동 */
 function MoverAiCarousel({
   movers,
   onMoverClick,
@@ -43,6 +71,15 @@ function MoverAiCarousel({
 }) {
   const t = useTranslations("moverAi");
   const scrollerRef = useRef<HTMLDivElement>(null);
+  // 스와이프 직후 딸려 오는 click만 막음 (scroll 이벤트로는 건드리지 않음)
+  const suppressClickRef = useRef(false);
+  const dragRef = useRef<{
+    pointerId: number;
+    startX: number;
+    scrollLeft: number;
+    isMouse: boolean;
+  } | null>(null);
+  const clearMouseDragRef = useRef<(() => void) | null>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const canPrev = activeIndex > 0;
   const canNext = activeIndex < movers.length - 1;
@@ -52,61 +89,133 @@ function MoverAiCarousel({
     if (!scroller) return;
     const card = scroller.children[index] as HTMLElement | undefined;
     if (!card) return;
-    card.scrollIntoView({ behavior: "smooth", inline: "start", block: "nearest" });
+    // scrollIntoView는 채팅 목록까지 세로로 움직인다
+    scroller.scrollTo({ left: card.offsetLeft, behavior: "smooth" });
     setActiveIndex(index);
   }, []);
 
-  // 화살표로 위치가 바뀌면 활성 인덱스를 맞춤
+  // 마우스·터치 모두 실제 스크롤량으로만 클릭을 막는다
+  const finishDrag = useCallback(
+    (pointerId: number) => {
+      const drag = dragRef.current;
+      if (!drag || drag.pointerId !== pointerId) return;
+      const scroller = scrollerRef.current;
+      const scrolled =
+        scroller != null &&
+        Math.abs(scroller.scrollLeft - drag.scrollLeft) > CAROUSEL_SCROLL_CLICK_THRESHOLD_PX;
+      suppressClickRef.current = scrolled;
+      dragRef.current = null;
+      if (!scroller || !drag.isMouse) return;
+      scroller.style.scrollBehavior = "";
+      if (scrolled) scrollToIndex(nearestCardIndex(scroller));
+    },
+    [scrollToIndex]
+  );
+
+  // 스와이프·화살표로 위치가 바뀌면 활성 인덱스를 맞춤
   useEffect(() => {
     const scroller = scrollerRef.current;
     if (!scroller) return;
 
     const syncIndex = () => {
-      const cards = Array.from(scroller.children) as HTMLElement[];
-      if (cards.length === 0) return;
-      const left = scroller.scrollLeft;
-      let nearest = 0;
-      let nearestDist = Infinity;
-      cards.forEach((card, index) => {
-        const dist = Math.abs(card.offsetLeft - left);
-        if (dist < nearestDist) {
-          nearestDist = dist;
-          nearest = index;
-        }
-      });
-      setActiveIndex(nearest);
+      if (scroller.children.length === 0) return;
+      setActiveIndex(nearestCardIndex(scroller));
     };
 
     scroller.addEventListener("scroll", syncIndex, { passive: true });
     return () => scroller.removeEventListener("scroll", syncIndex);
   }, [movers.length]);
 
+  useEffect(() => {
+    return () => clearMouseDragRef.current?.();
+  }, []);
+
+  // setPointerCapture를 쓰면 click이 스크롤러로 가서 카드 상세 이동이 사라진다.
+  // 마우스만 window에서 드래그를 따라가고, 터치는 네이티브 가로 스크롤을 쓴다.
+  const handlePointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
+    suppressClickRef.current = false;
+    const scroller = scrollerRef.current;
+    if (!scroller) return;
+    const isMouse = event.pointerType === "mouse";
+    if (isMouse && event.button !== 0) return;
+    clearMouseDragRef.current?.();
+    dragRef.current = {
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      scrollLeft: scroller.scrollLeft,
+      isMouse,
+    };
+    if (!isMouse) return;
+
+    const onMove = (ev: PointerEvent) => {
+      const drag = dragRef.current;
+      const el = scrollerRef.current;
+      if (!drag || drag.pointerId !== ev.pointerId || !el) return;
+      const dx = ev.clientX - drag.startX;
+      if (Math.abs(dx) < CAROUSEL_DRAG_THRESHOLD_PX) return;
+      el.style.scrollBehavior = "auto";
+      el.scrollLeft = drag.scrollLeft - dx;
+    };
+
+    const onUp = (ev: PointerEvent) => {
+      clearMouseDragRef.current?.();
+      finishDrag(ev.pointerId);
+    };
+
+    clearMouseDragRef.current = () => {
+      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointerup", onUp);
+      window.removeEventListener("pointercancel", onUp);
+      clearMouseDragRef.current = null;
+    };
+    window.addEventListener("pointermove", onMove);
+    window.addEventListener("pointerup", onUp);
+    window.addEventListener("pointercancel", onUp);
+  };
+
+  const handlePointerUp = (event: ReactPointerEvent<HTMLDivElement>) => {
+    const drag = dragRef.current;
+    if (!drag || drag.isMouse || drag.pointerId !== event.pointerId) return;
+    finishDrag(event.pointerId);
+  };
+
+  const handleCardClick = (moverId: number) => {
+    if (suppressClickRef.current) {
+      suppressClickRef.current = false;
+      return;
+    }
+    onMoverClick(moverId);
+  };
+
   return (
     <div className="relative w-full">
       <div
         ref={scrollerRef}
+        onPointerDown={handlePointerDown}
+        onPointerUp={handlePointerUp}
+        onPointerCancel={handlePointerUp}
         className={cn(
-          "flex w-full gap-3 overflow-x-hidden scroll-smooth pb-1",
-          "snap-x snap-mandatory"
+          "relative flex w-full cursor-grab gap-3 overflow-x-auto scroll-smooth pb-1 active:cursor-grabbing",
+          "touch-pan-x snap-x snap-mandatory [scrollbar-width:none] [-ms-overflow-style:none]",
+          "[&::-webkit-scrollbar]:hidden"
         )}
       >
         {movers.map((mover) => {
           const card = mapMoverListItemToCard(mover);
           const favoriteCount = getFavoriteCount(mover.id, card.favoriteCount);
           const isFavorited = favoritedIds.has(mover.id);
-          const goDetail = () => onMoverClick(mover.id);
           return (
             <div
               key={mover.id}
               // 한 장이 크게 보이도록 — 옆 카드는 살짝 peek
-              className="w-[min(100%,368px)] shrink-0 snap-start"
+              className="w-[min(100%,368px)] shrink-0 snap-start select-none"
               role="link"
               tabIndex={0}
-              onClick={goDetail}
+              onClick={() => handleCardClick(mover.id)}
               onKeyDown={(event: KeyboardEvent<HTMLDivElement>) => {
                 if (event.key === "Enter" || event.key === " ") {
                   event.preventDefault();
-                  goDetail();
+                  onMoverClick(mover.id);
                 }
               }}
             >
