@@ -84,12 +84,9 @@ export default function CustomerQuotationRequestsPage() {
           detailAddress: arrival.detail,
         },
       });
-      // "활성 요청 없음"이 내 견적에 낡게 남지 않도록 비운다. 이 페이지도 같은 쿼리를 구독 중이라
-      // 지금 refetch하면 이동 전에 ActiveRequestModal이 뜬다 — 표시만 하고 refetch는 이동 뒤에 한다
-      await queryClient.invalidateQueries({
-        queryKey: myQuotesKeys.activeRequest,
-        refetchType: "none",
-      });
+      // 낡은 "활성 요청 없음"을 캐시에서 지운다. invalidate하면 이 페이지가 바로 refetch해 이동 전에
+      // ActiveRequestModal이 뜨고, 표시만 하면 내 견적이 캐시된 null로 "요청 없음"을 잠깐 보여준다
+      queryClient.removeQueries({ queryKey: myQuotesKeys.activeRequest });
       router.push("/customer/my-quotes");
     } catch (error) {
       if (error instanceof ApiError && error.code === "ACTIVE_REQUEST_EXISTS") {
