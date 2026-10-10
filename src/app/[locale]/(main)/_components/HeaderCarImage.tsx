@@ -1,6 +1,6 @@
 "use client";
 
-import car from "@/assets/images/landing/car.md.png";
+import car from "@/assets/images/landing/car.md.svg";
 import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
