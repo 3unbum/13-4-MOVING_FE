@@ -4,7 +4,7 @@ import Accordion from "@/components/common/Accordion";
 import Footer from "@/app/[locale]/(main)/_components/Footer";
 
 /** FAQ 키는 `q1`/`a1` 처럼 번호로 짝지어 둡니다. 늘릴 때 이 숫자만 바꾸면 됩니다. */
-const FAQ_COUNT = 10;
+const FAQ_COUNT = 15;
 
 /** 개인정보 처리방침(`privacy.s9Contact`)에도 같은 주소가 적혀 있습니다. 바꿀 때 함께 고치세요. */
 const SUPPORT_EMAIL = "letsmoving.help@gmail.com";

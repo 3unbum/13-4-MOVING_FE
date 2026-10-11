@@ -829,7 +829,17 @@
     "q9": "I forgot my password.",
     "a9": "Use \"Forgot password\" on the login page to receive a verification code by email and reset it. Accounts created through social login don't have a password, so please sign in with that service instead.",
     "q10": "How do I update my account details?",
-    "a10": "After logging in, you can change your name, phone number, and password on the profile edit page. Movers can also update their service areas and moving types."
+    "a10": "After logging in, you can change your name, phone number, and password on the profile edit page. Movers can also update their service areas and moving types.",
+    "q11": "What is the deposit?",
+    "a11": "When you confirm a quote, 10% of the quoted amount is set as a deposit. Please pay it within 48 hours of confirming. If your moving date comes sooner, the deadline is the day before you move. You can't pay after the deadline passes, so please pay in time.",
+    "q12": "The mover requested an additional charge.",
+    "a12": "Depending on conditions on the day, a mover may request an additional charge. It can be up to 20% of the quoted amount and only once per quote. You can review the reason and then approve or decline it. Only approved amounts are added to your balance; declining leaves the balance unchanged. You can't pay the balance while a request is still awaiting your response.",
+    "q13": "When do I pay the balance?",
+    "a13": "After the move is completed. The balance is the quoted amount minus the deposit, plus any additional charges you approved. You can pay it from \"My quotes\".",
+    "q14": "How do I delete my account?",
+    "a14": "After logging in, you can delete your account on the profile edit page. Email verification is required when you enter the page to confirm it's you. Note that you can't delete your account while you have a confirmed move or a quote with an unpaid balance. Please try again once the move is complete and payment is finished.",
+    "q15": "What happens to my data when I delete my account?",
+    "a15": "Personal details such as your email and phone number are deleted right away and you can no longer sign in. Chat history, notifications, and unwritten reviews are removed as well. However, completed quotes and the reviews you wrote remain in the other party's transaction history. Movers are shown by nickname instead of their real name, and reviews they received are deleted. You can sign up again with the same email afterwards."
   },
   "privacy": {
     "metaTitle": "Privacy Policy",
