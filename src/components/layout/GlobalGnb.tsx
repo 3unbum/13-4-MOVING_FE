@@ -20,9 +20,9 @@ import { notificationHref } from "@/lib/utils/notification-href";
 import { formatElapsedTime, type DateLocale } from "@/lib/utils/date";
 import { useAuth } from "@/providers/AuthProvider";
 
-// RootLayout(서버 컴포넌트)은 useAuth를 직접 못 써서, 실제 로그인 상태를 Gnb(순수 프레젠테이션)에
-// 주입해주는 클라이언트 경계. Gnb 는 props 만 받는 순수 컴포넌트로 두어, 로그인 상태를
-// 읽는 책임을 이 경계 한 곳에만 둔다.
+// RootLayout(서버 컴포넌트)은 useAuth를 직접 못 써서, 실제 로그인 상태를 Gnb에 주입해주는
+// 클라이언트 경계. Gnb 는 로그인 상태를 **props 로만** 받습니다(메뉴 열림·번역·경로 등은
+// 자체 훅으로 다룹니다). 인증을 읽는 책임을 이 경계 한 곳에 모아 두기 위해서입니다.
 export default function GlobalGnb() {
   const router = useRouter();
   const locale = useLocale() as DateLocale;
