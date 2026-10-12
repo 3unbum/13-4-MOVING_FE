@@ -9,6 +9,21 @@ const noopSubscribe = () => () => {};
 /** 표준이 아니라 lib.dom 타입에 없습니다 (Chrome·Edge·삼성 인터넷 계열) */
 type InstallPromptEvent = Event & { prompt: () => Promise<void> };
 
+declare global {
+  interface Window {
+    /** layout.tsx의 beforeInteractive 스크립트가 받아 보관한 설치 이벤트 */
+    __installPrompt?: InstallPromptEvent;
+  }
+}
+
+// 이벤트는 하이드레이션보다 먼저 올 수 있어 컴포넌트에서 직접 듣지 않고 window에 보관된 값을 읽습니다
+const INSTALL_PROMPT_CHANGE = "installpromptchange";
+const subscribePrompt = (onChange: () => void) => {
+  window.addEventListener(INSTALL_PROMPT_CHANGE, onChange);
+  return () => window.removeEventListener(INSTALL_PROMPT_CHANGE, onChange);
+};
+const getPrompt = () => window.__installPrompt ?? null;
+
 /**
  * 랜딩 푸터 위의 "앱으로 설치" 섹션.
  *
@@ -27,20 +42,12 @@ export default function InstallSection({ siteUrl }: { siteUrl: string }) {
   );
   const [installed, setInstalled] = useState(false);
   const [showGuide, setShowGuide] = useState(false);
-  const [promptEvent, setPromptEvent] = useState<InstallPromptEvent | null>(null);
+  const promptEvent = useSyncExternalStore(subscribePrompt, getPrompt, () => null);
 
   useEffect(() => {
-    const onPrompt = (e: Event) => {
-      e.preventDefault(); // 기본 미니 인포바 대신 버튼으로 띄웁니다
-      setPromptEvent(e as InstallPromptEvent);
-    };
     const onInstalled = () => setInstalled(true);
-    window.addEventListener("beforeinstallprompt", onPrompt);
     window.addEventListener("appinstalled", onInstalled);
-    return () => {
-      window.removeEventListener("beforeinstallprompt", onPrompt);
-      window.removeEventListener("appinstalled", onInstalled);
-    };
+    return () => window.removeEventListener("appinstalled", onInstalled);
   }, []);
 
   if (!ready) return null;
@@ -56,7 +63,9 @@ export default function InstallSection({ siteUrl }: { siteUrl: string }) {
       return;
     }
     await promptEvent.prompt();
-    setPromptEvent(null); // 한 번 쓰면 다시 쓸 수 없습니다
+    // 한 번 쓰면 다시 쓸 수 없어 비웁니다
+    window.__installPrompt = undefined;
+    window.dispatchEvent(new Event(INSTALL_PROMPT_CHANGE));
   };
 
   return (

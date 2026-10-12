@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { NextIntlClientProvider } from "next-intl";
+import Script from "next/script";
 import { routing } from "@/i18n/routing";
 import "@/app/globals.css";
 import "pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css";
@@ -55,6 +56,12 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[lo
   return (
     <html lang={locale} className="h-full antialiased">
       <body className="flex min-h-full flex-col">
+        {/* `beforeinstallprompt`는 페이지당 한 번만 오고 하이드레이션보다 먼저 올 수 있습니다.
+            컴포넌트가 붙은 뒤에 듣기 시작하면 놓치므로, 가장 먼저 실행되는 스크립트가
+            받아서 `window.__installPrompt`에 보관합니다 (InstallSection이 꺼내 씁니다). */}
+        <Script id="capture-install-prompt" strategy="beforeInteractive">
+          {`window.addEventListener("beforeinstallprompt",function(e){e.preventDefault();window.__installPrompt=e;window.dispatchEvent(new Event("installpromptchange"))})`}
+        </Script>
         <NextIntlClientProvider>
           <Providers>
             <GlobalGnb />
