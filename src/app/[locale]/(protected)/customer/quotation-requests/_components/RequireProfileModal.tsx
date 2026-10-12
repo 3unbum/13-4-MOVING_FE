@@ -33,7 +33,7 @@ export default function RequireProfileModal({
       >
         {t("profileModalTitle")}
       </p>
-      <p className="text-24 text-gray-gray-400 w-full text-start font-semibold">
+      <p className="text-24 text-black-300 w-full text-start font-semibold">
         {t("profileModalBody")}
       </p>
       <div className="flex w-full gap-3">

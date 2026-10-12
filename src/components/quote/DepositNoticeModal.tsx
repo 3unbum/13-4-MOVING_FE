@@ -54,7 +54,7 @@ export default function DepositNoticeModal({
         </span>
       </div>
 
-      <ul className="text-16 tablet:text-18 text-gray-gray-400 flex w-full flex-col gap-2 font-medium">
+      <ul className="text-16 tablet:text-18 text-black-300 flex w-full flex-col gap-2 font-medium">
         <li>{t("depositNoticeDeadline")}</li>
         <li>{t("depositNoticeEffect")}</li>
         <li>{t("depositNoticeBalance")}</li>

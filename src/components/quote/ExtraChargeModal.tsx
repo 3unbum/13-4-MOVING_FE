@@ -81,7 +81,7 @@ export default function ExtraChargeModal({
         onClose={onClose}
       />
 
-      <p className="text-14 text-gray-gray-500 w-full font-medium">{t("extraChargeHint")}</p>
+      <p className="text-14 text-black-300 w-full font-medium">{t("extraChargeHint")}</p>
 
       {/* 사유를 쓰고 그 옆에 금액 — 좁은 화면에서는 위아래로 쌓습니다 */}
       <div className="tablet:flex-col tablet:items-start flex w-full flex-col gap-4">
