@@ -831,7 +831,7 @@
     "q10": "How do I update my account details?",
     "a10": "After logging in, you can change your name, phone number, and password on the profile edit page. Movers can also update their service areas and moving types.",
     "q11": "What is the deposit?",
-    "a11": "When you confirm a quote, 10% of the quoted amount is set as a deposit. Please pay it within 48 hours of confirming. If your moving date comes sooner, the deadline is the day before you move. You can't pay after the deadline passes, so please pay in time.",
+    "a11": "When you confirm a quote, 10% of the quoted amount is set as a deposit. Please pay it within 48 hours of confirming. If your moving date comes sooner, the deadline is midnight (00:00 KST) at the start of your moving day. You can't pay after the deadline passes. The exact deadline is shown on the payment screen.",
     "q12": "The mover requested an additional charge.",
     "a12": "Depending on conditions on the day, a mover may request an additional charge. It can be up to 20% of the quoted amount and only once per quote. You can review the reason and then approve or decline it. Only approved amounts are added to your balance; declining leaves the balance unchanged. You can't pay the balance while a request is still awaiting your response.",
     "q13": "When do I pay the balance?",
