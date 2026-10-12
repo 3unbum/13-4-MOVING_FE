@@ -791,7 +791,13 @@
     "favoriteListLoadFailed": "Couldn't load your saved movers. Please try again in a moment.",
     "noFavoritesYet": "No saved movers yet!",
     "footer_privacy": "Privacy Policy",
-    "footer_copyright": "© 2026 Moving. A Codeit Sprint team project"
+    "footer_copyright": "© 2026 Moving. A Codeit Sprint team project",
+    "install_title": "Install Moving as an app",
+    "install_desc": "Add it to your home screen and open it like an app",
+    "install_app": "Install the app",
+    "install_qr": "Scan the QR code to open on your phone and install the app",
+    "install_guide_ios": "Tap the Share button, then choose 'Add to Home Screen'",
+    "install_guide_other": "Choose 'Install app' or 'Add to Home screen' from your browser menu"
   },
   "support": {
     "metaTitle": "Help Center",

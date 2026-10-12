@@ -791,7 +791,13 @@
     "favoriteListLoadFailed": "无法加载收藏列表，请稍后重试。",
     "noFavoritesYet": "还没有收藏的师傅！",
     "footer_privacy": "隐私政策",
-    "footer_copyright": "© 2026 Moving. Codeit Sprint 团队项目"
+    "footer_copyright": "© 2026 Moving. Codeit Sprint 团队项目",
+    "install_title": "将 Moving 安装为应用",
+    "install_desc": "添加到主屏幕，像应用一样一键打开",
+    "install_app": "安装应用",
+    "install_qr": "扫描二维码，在手机上打开并安装应用",
+    "install_guide_ios": "点击分享按钮，然后选择“添加到主屏幕”",
+    "install_guide_other": "请在浏览器菜单中选择“安装应用”或“添加到主屏幕”"
   },
   "support": {
     "metaTitle": "帮助中心",
