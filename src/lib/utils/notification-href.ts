@@ -24,7 +24,9 @@ export function notificationHref(item: NotificationItem, role: UserRole) {
   if (item.type === "PAYMENT_REQUEST") return "/customer/my-quotes?tab=payPending" as const;
 
   if (
-    (item.type === "NEW_ESTIMATE" || item.type === "ESTIMATE_CONFIRMED") &&
+    (item.type === "NEW_ESTIMATE" ||
+      item.type === "ESTIMATE_CONFIRMED" ||
+      item.type === "ESTIMATE_REJECTED") &&
     item.estimateId != null
   ) {
     return role === "MOVER"
