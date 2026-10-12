@@ -11,6 +11,7 @@ import AuthCard from "@/components/auth/AuthCard";
 import AuthHeader from "@/components/auth/AuthHeader";
 import AuthSubmitButton from "@/components/auth/AuthSubmitButton";
 import AuthSwitchLink from "@/components/auth/AuthSwitchLink";
+import EmailAutocompleteField from "@/components/auth/EmailAutocompleteField";
 import FormField from "@/components/auth/FormField";
 import ProfileRegisterModal from "@/components/auth/ProfileRegisterModal";
 import SignupEmailVerification, {
@@ -112,15 +113,13 @@ export default function CustomerSignupPage() {
                   errorMessage={errors.name?.message}
                   {...register("name")}
                 />
-                <FormField
+                <EmailAutocompleteField
                   id="email"
+                  control={control}
                   label={tp("email")}
-                  type="email"
                   placeholder={tp("emailPlaceholder")}
-                  autoComplete="email"
                   errorMessage={errors.email?.message}
                   readOnly={emailStatus !== "idle" || isEmailSending}
-                  {...register("email")}
                 />
                 <SignupEmailVerification
                   role="CUSTOMER"
