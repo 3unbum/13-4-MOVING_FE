@@ -627,7 +627,7 @@
     "moverRegions": "Service Areas",
     "moverDetailLabel": "View {name}'s profile",
     "ctaPromptRich": "<line>Request a designated quote</line><line>from {name}!</line>",
-    "aiButton": "AI"
+    "aiButton": "Find movers with AI"
   },
   "moverAi": {
     "modalTitle": "Find movers with AI chatbot",
@@ -640,7 +640,8 @@
     "thinking": "Thinking…",
     "retrySession": "Start over",
     "carouselPrev": "Previous mover",
-    "carouselNext": "Next mover"
+    "carouselNext": "Next mover",
+    "reviewSummary": "Review summary"
   },
   "request": {
     "step1Title": "Select your moving type",

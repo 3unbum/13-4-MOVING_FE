@@ -1,7 +1,9 @@
 "use client";
 
 import { useMemo, useState, type KeyboardEvent } from "react";
+import Image from "next/image";
 import { useTranslations } from "next-intl";
+import chatIconMd from "@/assets/icons/chat-md.svg";
 import { useRouter } from "@/i18n/navigation";
 import Filter, { type FilterOption } from "@/components/common/Filter";
 import Header from "@/components/common/Header";
@@ -219,9 +221,9 @@ export default function MoversPageClient({ initialFilters }: MoversPageClientPro
         <main
           className={cn(
             "w-full flex-1",
-            "px-6 pt-1.5 pb-10",
-            "tablet:px-18 tablet:pt-2.5",
-            "pc:px-90 pc:pt-0.75 pc:pb-20"
+            "px-6 pt-1.5 pb-48",
+            "tablet:px-18 tablet:pt-2.5 tablet:pb-28",
+            "pc:px-90 pc:pt-0.75 pc:pb-28"
           )}
         >
           {/* ── 검색·필터·정렬 (PC 검색열 819px, 목록은 820px) ── */}
@@ -229,23 +231,17 @@ export default function MoversPageClient({ initialFilters }: MoversPageClientPro
             <div className="pc:pb-0 tablet:pb-2.5 pb-1.5">
               <InputSearchbar
                 size="sm"
-                variant="withAi"
                 className="pc:hidden"
                 value={search}
                 onChange={setSearch}
-                onAiClick={openAiChat}
-                aiLabel={t("aiButton")}
                 label={t("searchMoverLabel")}
                 placeholder={t("searchMoverPlaceholder")}
               />
               <InputSearchbar
                 size="md"
-                variant="withAi"
                 className="pc:flex hidden"
                 value={search}
                 onChange={setSearch}
-                onAiClick={openAiChat}
-                aiLabel={t("aiButton")}
                 label={t("searchMoverLabel")}
                 placeholder={t("searchMoverPlaceholder")}
               />
@@ -438,6 +434,19 @@ export default function MoversPageClient({ initialFilters }: MoversPageClientPro
       </div>
 
       <ScrollToTopButton />
+
+      <button
+        type="button"
+        onClick={openAiChat}
+        className={cn(
+          "ai-search-entry text-14 tablet:text-16 fixed bottom-28 left-1/2 z-[var(--z-sticky)] flex h-13 max-w-[calc(100vw-7.5rem)] -translate-x-1/2 items-center gap-1.5 rounded-full border border-orange-200 bg-orange-100 px-4 font-semibold whitespace-nowrap text-orange-500 shadow-md transition-colors",
+          "tablet:bottom-8 tablet:max-w-[calc(100vw-3rem)] tablet:px-5",
+          "not-disabled:hover:border-transparent focus-visible:outline-none"
+        )}
+      >
+        <Image src={chatIconMd} alt="" className="size-5 shrink-0" />
+        <span>{t("aiButton")}</span>
+      </button>
 
       {/* 비회원 찜·AI 로그인 유도 / 기사님 AI 역할 제한 */}
       <InfoRequiredModal

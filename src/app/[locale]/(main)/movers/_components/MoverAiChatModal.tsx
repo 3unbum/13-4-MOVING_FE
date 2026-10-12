@@ -311,6 +311,16 @@ function RefreshIcon({ className }: { className?: string }) {
   );
 }
 
+/** 서버가 본문 끝에 붙이는 리뷰 요약. 없으면 말풍선에 이유만 남깁니다. */
+const REVIEW_SUMMARY_MARKER = "\n리뷰 요약:";
+
+function splitReviewSummary(content: string): { speech: string; reviewSummary: string | null } {
+  const index = content.indexOf(REVIEW_SUMMARY_MARKER);
+  if (index === -1) return { speech: content, reviewSummary: null };
+  const reviewSummary = content.slice(index + REVIEW_SUMMARY_MARKER.length).trim();
+  return { speech: content.slice(0, index), reviewSummary: reviewSummary || null };
+}
+
 function renderContentWithBold(content: string) {
   const parts = content.split(/(\*\*[^*]+\*\*)/g);
   return parts.map((part, index) => {
@@ -377,9 +387,14 @@ function MessageBubble({
   getFavoriteCount: (moverId: number, baseCount: number) => number;
   onFavoriteClick: (moverId: number, currentCount: number) => void;
 }) {
+  const t = useTranslations("moverAi");
   const isUser = message.role === "USER";
   const chips = message.ui?.chips ?? null;
   const movers = message.ui?.movers ?? null;
+  const isRecommendation = message.ui?.nextAction === "SHOW_RECOMMENDATION";
+  const { speech, reviewSummary } = isRecommendation
+    ? splitReviewSummary(message.content)
+    : { speech: message.content, reviewSummary: null };
 
   return (
     <div className={cn("flex w-full flex-col gap-2", isUser ? "items-end" : "items-start")}>
@@ -393,7 +408,7 @@ function MessageBubble({
           {message.content}
         </p>
       ) : (
-        <BeaverSpeakBubble content={message.content} />
+        <BeaverSpeakBubble content={speech} />
       )}
 
       {movers && movers.length > 0 && (
@@ -406,6 +421,17 @@ function MessageBubble({
             getFavoriteCount={getFavoriteCount}
             onFavoriteClick={onFavoriteClick}
           />
+        </div>
+      )}
+
+      {reviewSummary && (
+        <div className="w-full pl-12">
+          <div className="rounded-2xl border border-orange-200 bg-gray-50 px-3.5 py-2.5">
+            <p className="text-12 mb-1 font-semibold text-orange-500">{t("reviewSummary")}</p>
+            <p className="text-14 text-black-400 leading-relaxed whitespace-pre-wrap">
+              {reviewSummary}
+            </p>
+          </div>
         </div>
       )}
 
