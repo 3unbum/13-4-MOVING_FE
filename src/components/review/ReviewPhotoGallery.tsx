@@ -155,7 +155,7 @@ export function ReviewPhotoListModal({
       open={open}
       onClose={onClose}
       labelledBy={titleId}
-      className="w-full max-w-150 gap-6 rounded-[32px] p-6"
+      className="w-full max-w-150 gap-6 rounded-[32px] px-6 pt-8 pb-10"
     >
       <ModalHeader id={titleId} title={t("photoListTitle")} size="sm" onClose={onClose} />
       <div className="tablet:grid-cols-4 grid max-h-[70dvh] grid-cols-3 gap-2 overflow-y-auto">
@@ -254,7 +254,7 @@ export function ReviewPhotoModal({
       open={open}
       onClose={onClose}
       labelledBy={titleId}
-      className="w-full max-w-150 gap-6 rounded-[32px] p-6"
+      className="w-full max-w-150 gap-6 rounded-[32px] px-6 pt-8 pb-10"
     >
       <ModalHeader
         id={titleId}
