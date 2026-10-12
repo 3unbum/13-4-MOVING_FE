@@ -119,6 +119,7 @@
     "meta": "{left} · {right}",
     "newRequest": "{name} sent you a designated quote request.",
     "newEstimate": "A <em>{category} quote</em> from {name} arrived.",
+    "estimateRejected": "{name} <em>declined</em> your designated quote request.",
     "estimateConfirmedCustomer": "{name}'s quote was <em>confirmed</em>.",
     "estimateConfirmedMover": "The quote was <em>confirmed</em>.",
     "movingDayBefore": "Tomorrow is the move from <em>{from}</em> → <dest>{to}</dest>.",
