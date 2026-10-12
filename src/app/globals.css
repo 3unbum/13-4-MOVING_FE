@@ -130,7 +130,7 @@ body {
   }
 }
 
-/* InputSearchbar withAi 전용 — 호버 그라데이션 테두리 */
+/* 기사님 찾기 AI 진입 캡슐 — 호버 그라데이션 테두리 */
 @layer components {
   @keyframes ai-search-entry-spin {
     to {
@@ -165,7 +165,7 @@ body {
     position: absolute;
     inset: 2px;
     z-index: -1;
-    border-radius: calc(1rem - 2px);
+    border-radius: 9999px;
     background: var(--color-orange-100);
     transition: background-color 0.15s ease;
   }

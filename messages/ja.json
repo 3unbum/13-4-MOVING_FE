@@ -636,7 +636,7 @@
     "moverRegions": "対応可能地域",
     "moverDetailLabel": "{name} さんの詳細を見る",
     "ctaPromptRich": "<line>{name} さんに</line><line>指定見積もりを依頼してみましょう！</line>",
-    "aiButton": "AI"
+    "aiButton": "ムービングAIで探す"
   },
   "moverAi": {
     "modalTitle": "AIチャットボットで業者を探す",

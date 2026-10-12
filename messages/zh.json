@@ -636,7 +636,7 @@
     "moverRegions": "服务地区",
     "moverDetailLabel": "查看 {name} 师傅详情",
     "ctaPromptRich": "<line>向 {name} 师傅</line><line>申请指定报价吧！</line>",
-    "aiButton": "AI"
+    "aiButton": "用Moving AI找师傅"
   },
   "moverAi": {
     "modalTitle": "用 AI 聊天机器人找师傅",

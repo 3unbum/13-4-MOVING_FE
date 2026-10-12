@@ -636,7 +636,7 @@
     "moverRegions": "서비스 가능 지역",
     "moverDetailLabel": "{name} 기사님 상세 보기",
     "ctaPromptRich": "<line>{name} 기사님에게</line><line>지정 견적을 요청해보세요!</line>",
-    "aiButton": "AI"
+    "aiButton": "무빙 AI로 기사님 찾기"
   },
   "moverAi": {
     "modalTitle": "AI 챗봇으로 기사님 찾기",
