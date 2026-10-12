@@ -72,7 +72,7 @@ export default function ExtraChargeModal({
       // 요청이 나가는 동안에는 닫히지 않게 합니다 — 닫아도 요청은 취소되지 않아 상태가 어긋납니다
       onClose={isSubmitting ? () => {} : onClose}
       labelledBy={titleId}
-      className="tablet:w-152 tablet:min-w-152 tablet:max-w-152 w-[calc(100vw-2rem)] max-w-93.75 min-w-0 gap-6 rounded-4xl px-6 pt-8 pb-8"
+      className="tablet:w-152 tablet:min-w-152 tablet:max-w-152 w-[calc(100vw-2rem)] max-w-93.75 min-w-0 gap-6 rounded-4xl px-6 pt-8 pb-10"
     >
       <ModalHeader
         id={titleId}
@@ -81,7 +81,7 @@ export default function ExtraChargeModal({
         onClose={onClose}
       />
 
-      <p className="text-14 text-gray-gray-500 w-full font-medium">{t("extraChargeHint")}</p>
+      <p className="text-14 text-black-300 w-full font-medium">{t("extraChargeHint")}</p>
 
       {/* 사유를 쓰고 그 옆에 금액 — 좁은 화면에서는 위아래로 쌓습니다 */}
       <div className="tablet:flex-col tablet:items-start flex w-full flex-col gap-4">
@@ -121,7 +121,7 @@ export default function ExtraChargeModal({
                   : undefined
             }
           />
-          <p className="text-12 text-gray-gray-400 font-medium">
+          <p className="text-12 text-gray-gray-400 tablet:whitespace-nowrap font-medium">
             {t("extraAmountMax", { max: formatPrice(maxAmount, locale) })}
           </p>
         </div>

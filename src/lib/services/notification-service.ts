@@ -9,6 +9,7 @@ export type NotificationType =
   | "NEW_REQUEST"
   | "NEW_ESTIMATE"
   | "ESTIMATE_CONFIRMED"
+  | "ESTIMATE_REJECTED"
   | "MOVING_DAY_BEFORE"
   | "MOVING_DAY"
   | "NEW_CHAT_MESSAGE"
@@ -25,8 +26,8 @@ interface NotificationBase {
   createdAt: string;
   estimateId: number | null;
   quotationRequestId: number | null;
-  /** 채팅 알림일 때만. 컴포넌트 쇼케이스의 예시 데이터는 생략합니다 */
-  chatRoomId?: number | null;
+  /** 채팅 알림일 때만 값이 있습니다 (BE 는 항상 이 키를 보냅니다) */
+  chatRoomId: number | null;
 }
 
 export interface NewRequestPayload {
@@ -92,6 +93,12 @@ export interface EstimateConfirmedPayload {
   category: ServiceCode;
 }
 
+/** 고객 수신 — 기사님이 지정 견적 요청을 반려했습니다. 사유는 견적 상세에서 봅니다. */
+export interface EstimateRejectedPayload {
+  moverNickName: string;
+  category: ServiceCode;
+}
+
 export interface MovingDayPayload {
   /** 출발·도착 시도. BE가 코드를 주면 문장은 이 값으로 번역합니다. */
   fromRegion?: RegionCode;
@@ -112,6 +119,7 @@ export type NotificationItem =
   | (NotificationBase & { type: "NEW_REQUEST"; payload: NewRequestPayload })
   | (NotificationBase & { type: "NEW_ESTIMATE"; payload: NewEstimatePayload })
   | (NotificationBase & { type: "ESTIMATE_CONFIRMED"; payload: EstimateConfirmedPayload })
+  | (NotificationBase & { type: "ESTIMATE_REJECTED"; payload: EstimateRejectedPayload })
   | (NotificationBase & { type: "MOVING_DAY_BEFORE"; payload: MovingDayPayload })
   | (NotificationBase & { type: "MOVING_DAY"; payload: MovingDayPayload })
   | (NotificationBase & { type: "NEW_CHAT_MESSAGE"; payload: ChatMessagePayload })

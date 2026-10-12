@@ -33,6 +33,7 @@ export function notificationTone(type: NotificationType): NotificationTone {
     case "MOVING_DAY_BEFORE":
       return "moving";
     case "NEW_ESTIMATE":
+    case "ESTIMATE_REJECTED":
     case "PAYMENT_REQUEST":
     case "DEPOSIT_EXPIRED":
     case "EXTRA_CHARGE_PROPOSED":
@@ -82,6 +83,8 @@ export default function NotificationMessage({ item, role }: NotificationCopyProp
       return role === "MOVER"
         ? t.rich("estimateConfirmedMover", { em })
         : t.rich("estimateConfirmedCustomer", { name: item.payload.moverNickName, em });
+    case "ESTIMATE_REJECTED":
+      return t.rich("estimateRejected", { name: item.payload.moverNickName, em });
     case "NEW_CHAT_MESSAGE":
       return t.rich("newChatMessage", { name: item.payload.senderName, em });
     case "MOVING_DAY_BEFORE":

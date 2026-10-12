@@ -59,7 +59,13 @@ export default function SignupEmailVerification({
 
   const [isSending, setIsSending] = useState(false);
   // 실패 문구를 어느 이메일에 대한 것인지와 함께 들고 있다 — 이메일을 고치면 effect 없이도 문구가 사라진다
-  const [sendError, setSendError] = useState<{ email: string; message: string }>();
+  // isEmailTaken: 이미 가입된 이메일(409)이면 다시 보내도 결과가 같다. 그런데 BE는 이 실패도 1분 1회 제한에 세서,
+  // 버튼을 열어 두면 두 번째 클릭이 429 카운트다운으로 이 안내를 덮는다 — 이메일을 고칠 때까지 발송을 막는다
+  const [sendError, setSendError] = useState<{
+    email: string;
+    message: string;
+    isEmailTaken: boolean;
+  }>();
   // 마지막으로 발송에 성공한 이메일 — "이메일 변경" 후 같은 이메일로 돌아와 1분 제한에 걸리면 받은
   // 인증번호를 그대로 입력할 수 있게 코드 입력 단계로 돌려보내는 데 쓴다
   const [lastSentEmail, setLastSentEmail] = useState<string>();
@@ -133,7 +139,12 @@ export default function SignupEmailVerification({
       startSendLock(retryAfterSeconds);
       return;
     }
-    setSendError({ email, message: toErrorMessage(error) });
+    setSendError({
+      email,
+      message: toErrorMessage(error),
+      isEmailTaken:
+        error instanceof ApiError && error.code === AUTH_ERROR_CODES.EMAIL_ALREADY_EXISTS,
+    });
   };
 
   const handleResend = async (): Promise<string | undefined> => {
@@ -204,7 +215,9 @@ export default function SignupEmailVerification({
     );
   }
 
-  const visibleSendError = sendError?.email === email ? sendError.message : undefined;
+  const isSendErrorForEmail = sendError?.email === email;
+  const visibleSendError = isSendErrorForEmail ? sendError.message : undefined;
+  const isEmailTaken = isSendErrorForEmail && sendError.isEmailTaken;
   const sendErrorMessage = isSendLocked
     ? sendLockDailyHours !== null
       ? t("resetPassword.dailyLimitReached", { hours: sendLockDailyHours })
@@ -222,7 +235,7 @@ export default function SignupEmailVerification({
         variant="outlined"
         size="sm"
         onClick={handleSend}
-        disabled={!canRequest || isSending || isSendLocked || isTurnstileMissing}
+        disabled={!canRequest || isSending || isSendLocked || isTurnstileMissing || isEmailTaken}
       >
         {/* BE가 메일 발송을 마친 뒤에 응답해 1~3초 걸린다 — 버튼이 말없이 멈춘 것처럼 보이지 않게 진행 중임을
             알린다. Button의 icon prop은 글자 뒤에 붙어서, 스피너를 앞에 두려고 children에 넣는다 */}

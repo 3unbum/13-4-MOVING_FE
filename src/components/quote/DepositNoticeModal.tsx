@@ -38,23 +38,23 @@ export default function DepositNoticeModal({
       open={open}
       // 확정 요청이 나가는 동안에는 닫히지 않게 합니다 — 닫아도 요청은 취소되지 않아 상태가 어긋납니다
       onClose={isSubmitting ? () => {} : onClose}
-      className="tablet:w-152 tablet:min-w-152 w-[calc(100vw-2rem)] max-w-93.75 min-w-0 gap-6 rounded-4xl px-6 py-8"
+      className="tablet:w-152 tablet:min-w-152 w-[calc(100vw-2rem)] max-w-93.75 min-w-0 gap-6 rounded-4xl px-6 pt-8 pb-10"
     >
       <p
         id="deposit-notice-title"
-        className="tablet:text-32 text-24 text-black-300 w-full text-center font-bold"
+        className="tablet:text-32 text-24 text-black-300 w-full text-start font-bold"
       >
         {t("depositNoticeTitle")}
       </p>
 
-      <div className="flex w-full items-center justify-between rounded-2xl bg-white px-5 py-4">
+      <div className="flex w-full items-center justify-between rounded-2xl bg-white py-4 pr-4">
         <span className="text-16 text-gray-gray-400 font-semibold">{t("depositDue")}</span>
         <span className="tablet:text-24 text-20 text-black-500 font-bold">
           {tCommon("price", { amount: depositAmount.toLocaleString() })}
         </span>
       </div>
 
-      <ul className="text-16 tablet:text-18 text-gray-gray-400 flex w-full flex-col gap-2 font-medium">
+      <ul className="text-16 tablet:text-18 text-black-300 flex w-full flex-col gap-2 font-medium">
         <li>{t("depositNoticeDeadline")}</li>
         <li>{t("depositNoticeEffect")}</li>
         <li>{t("depositNoticeBalance")}</li>
