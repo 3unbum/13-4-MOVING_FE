@@ -121,7 +121,7 @@ export default function ExtraChargeModal({
                   : undefined
             }
           />
-          <p className="text-12 text-gray-gray-400 font-medium whitespace-nowrap">
+          <p className="text-12 text-gray-gray-400 tablet:whitespace-nowrap font-medium">
             {t("extraAmountMax", { max: formatPrice(maxAmount, locale) })}
           </p>
         </div>
