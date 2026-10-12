@@ -11,7 +11,16 @@ import ServiceWorkerRegister from "@/components/common/ServiceWorkerRegister";
 import { OG_FALLBACK_IMAGE } from "@/constants/site";
 import { SITE_URL } from "@/constants/site.server";
 
-export const metadata: Metadata = {
+export async function generateMetadata({ params }: LayoutProps<"/[locale]">): Promise<Metadata> {
+  const { locale } = await params;
+  return {
+    // 언어별 start_url을 위해 매니페스트를 locale마다 나눕니다
+    manifest: `/manifest/${locale}.webmanifest`,
+    ...metadata,
+  };
+}
+
+const metadata: Metadata = {
   // 상대 경로 og:image를 절대 URL로 바꾸는 기준점입니다. 없으면 공유 미리보기에
   // 이미지가 실리지 않습니다(Next가 경고만 내고 넘어갑니다).
   metadataBase: SITE_URL,

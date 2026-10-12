@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState, useSyncExternalStore } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+import { routing } from "@/i18n/routing";
 import { QRCodeSVG } from "qrcode.react";
 
 const noopSubscribe = () => () => {};
@@ -34,6 +35,7 @@ const getPrompt = () => window.__installPrompt ?? null;
  */
 export default function InstallSection({ siteUrl }: { siteUrl: string }) {
   const t = useTranslations("page");
+  const locale = useLocale();
   // 서버 렌더에는 false, 하이드레이션 이후 true — standalone 여부는 브라우저만 압니다
   const ready = useSyncExternalStore(
     noopSubscribe,
@@ -55,7 +57,14 @@ export default function InstallSection({ siteUrl }: { siteUrl: string }) {
     window.matchMedia("(display-mode: standalone)").matches ||
     (navigator as Navigator & { standalone?: boolean }).standalone === true;
   if (installed || standalone) return null;
-  const isIos = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  // iPadOS는 UA가 Mac으로 잡혀서 터치 지원 여부로 같이 거릅니다
+  const isIos =
+    /iphone|ipad|ipod/i.test(navigator.userAgent) ||
+    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  // 설치 이벤트가 없는 iOS는 눌러야 안내가 나오는 대신 처음부터 보여줍니다
+  const guideVisible = showGuide || isIos;
+  // QR로 열어도 보던 언어로 들어가도록 locale 경로를 붙입니다
+  const qrUrl = locale === routing.defaultLocale ? siteUrl : `${siteUrl}/${locale}`;
 
   const handleInstall = async () => {
     if (!promptEvent) {
@@ -77,7 +86,7 @@ export default function InstallSection({ siteUrl }: { siteUrl: string }) {
 
       <div className="pc:flex hidden flex-col items-center gap-3 rounded-3xl bg-gray-100 p-6">
         <div className="rounded-2xl bg-white p-3">
-          <QRCodeSVG value={siteUrl} size={112} />
+          <QRCodeSVG value={qrUrl} size={112} />
         </div>
         <p className="text-14 text-gray-gray-400 font-medium">{t("install_qr")}</p>
       </div>
@@ -90,7 +99,7 @@ export default function InstallSection({ siteUrl }: { siteUrl: string }) {
         >
           {t("install_app")}
         </button>
-        {showGuide && (
+        {guideVisible && (
           <p className="text-13 text-gray-gray-400 font-medium">
             {t(isIos ? "install_guide_ios" : "install_guide_other")}
           </p>
