@@ -18,7 +18,6 @@
     "regionFilterOptions": "地区筛选选项",
     "prevMonth": "上个月",
     "nextMonth": "下个月",
-    "datePlaceholder": "请选择日期",
     "movingDatePlaceholder": "请选择搬家日期",
     "pagination": "分页",
     "prevPage": "上一页",
@@ -38,7 +37,6 @@
     "price": "{amount} 韩元",
     "options": "选项",
     "requestedAt": "申请日期",
-    "selectDate": "选择日期",
     "done": "选择完成",
     "viewResults": "查询",
     "selectComplete": "选择完成",
@@ -132,14 +130,6 @@
     "extraChargeProposed": "{name}师傅<em>申请追加费用</em>。",
     "extraChargeApproved": "{name}客户<em>同意了追加费用</em>。",
     "extraChargeRejected": "{name}客户<em>拒绝了追加费用</em>。"
-  },
-  "gnbPreview": {
-    "loggedOut": "未登录",
-    "customer": "普通用户",
-    "mover": "师傅",
-    "empty": "没有通知",
-    "moverEmpty": "师傅，没有通知",
-    "hint": "点铃铛查看通知。切换语言后，通知文案会一起变化。"
   },
   "service": {
     "SMALL": "小型搬家",

@@ -18,7 +18,6 @@
     "regionFilterOptions": "地域の絞り込みオプション",
     "prevMonth": "前の月",
     "nextMonth": "次の月",
-    "datePlaceholder": "日付を選択してください",
     "movingDatePlaceholder": "引っ越し予定日を選択してください",
     "pagination": "ページネーション",
     "prevPage": "前のページ",
@@ -38,7 +37,6 @@
     "price": "{amount} ウォン",
     "options": "オプション",
     "requestedAt": "見積もり依頼日",
-    "selectDate": "日付選択",
     "done": "選択完了",
     "viewResults": "検索する",
     "selectComplete": "選択完了",
@@ -132,14 +130,6 @@
     "extraChargeProposed": "{name}さんが<em>追加料金をリクエスト</em>しました。",
     "extraChargeApproved": "{name}様が<em>追加料金を承認</em>しました。",
     "extraChargeRejected": "{name}様が<em>追加料金を辞退</em>しました。"
-  },
-  "gnbPreview": {
-    "loggedOut": "未ログイン",
-    "customer": "一般ユーザー",
-    "mover": "業者",
-    "empty": "通知なし",
-    "moverEmpty": "業者・通知なし",
-    "hint": "ベルを押して通知を確認してください。言語を変えると通知の文も一緒に変わります。"
   },
   "service": {
     "SMALL": "小規模引っ越し",

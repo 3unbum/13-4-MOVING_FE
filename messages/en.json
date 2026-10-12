@@ -18,7 +18,6 @@
     "regionFilterOptions": "Region filter options",
     "prevMonth": "Previous month",
     "nextMonth": "Next month",
-    "datePlaceholder": "Select a date",
     "movingDatePlaceholder": "Select your moving date",
     "pagination": "Pagination",
     "prevPage": "Previous page",
@@ -38,7 +37,6 @@
     "price": "{amount} KRW",
     "options": "options",
     "requestedAt": "Requested on",
-    "selectDate": "Select date",
     "done": "Done",
     "viewResults": "View Results",
     "selectComplete": "Done",
@@ -132,14 +130,6 @@
     "extraChargeProposed": "{name} <em>requested an extra charge</em>.",
     "extraChargeApproved": "{name} <em>approved the extra charge</em>.",
     "extraChargeRejected": "{name} <em>declined the extra charge</em>."
-  },
-  "gnbPreview": {
-    "loggedOut": "Logged out",
-    "customer": "Customer",
-    "mover": "Mover",
-    "empty": "No alerts",
-    "moverEmpty": "Mover, no alerts",
-    "hint": "Open the bell to check alerts. Switch the language and the alert copy changes with it."
   },
   "service": {
     "SMALL": "Small move",
