@@ -649,7 +649,8 @@
     "thinking": "Thinking…",
     "retrySession": "Start over",
     "carouselPrev": "Previous mover",
-    "carouselNext": "Next mover"
+    "carouselNext": "Next mover",
+    "reviewSummary": "Review summary"
   },
   "request": {
     "step1Title": "Select your moving type",

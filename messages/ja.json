@@ -649,7 +649,8 @@
     "thinking": "考えています…",
     "retrySession": "やり直す",
     "carouselPrev": "前の業者",
-    "carouselNext": "次の業者"
+    "carouselNext": "次の業者",
+    "reviewSummary": "レビュー要約"
   },
   "request": {
     "step1Title": "引っ越しタイプを選択してください",

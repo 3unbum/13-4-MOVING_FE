@@ -649,7 +649,8 @@
     "thinking": "답변을 생각하고 있어요…",
     "retrySession": "다시 시작하기",
     "carouselPrev": "이전 기사님",
-    "carouselNext": "다음 기사님"
+    "carouselNext": "다음 기사님",
+    "reviewSummary": "리뷰 요약"
   },
   "request": {
     "step1Title": "이사 유형을 선택해주세요",
