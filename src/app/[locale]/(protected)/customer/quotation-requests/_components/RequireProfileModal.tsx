@@ -25,18 +25,18 @@ export default function RequireProfileModal({
       labelledBy="require-profile-modal-title"
       open={open}
       onClose={() => {}}
-      className="tablet:w-152 tablet:min-w-152 w-[calc(100vw-2rem)] max-w-93.75 min-w-0 gap-10 rounded-4xl px-4 py-8"
+      className="tablet:w-152 tablet:min-w-152 w-[calc(100vw-2rem)] max-w-93.75 min-w-0 gap-10 rounded-4xl px-6 pt-8 pb-10"
     >
       <p
         id="require-profile-modal-title"
-        className="text-32 text-black-300 w-full text-center font-bold"
+        className="text-32 text-black-300 w-full text-start font-bold"
       >
         {t("profileModalTitle")}
       </p>
-      <p className="text-24 text-gray-gray-400 w-full text-center font-semibold">
+      <p className="text-24 text-gray-gray-400 w-full text-start font-semibold">
         {t("profileModalBody")}
       </p>
-      <div className="flex w-full gap-3 p-4">
+      <div className="flex w-full gap-3">
         <Button variant="outlined" size="md" onClick={onCancel}>
           {t("no")}
         </Button>

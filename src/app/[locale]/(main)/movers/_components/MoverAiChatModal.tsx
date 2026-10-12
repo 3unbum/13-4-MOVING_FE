@@ -389,14 +389,14 @@ export default function MoverAiChatModal({ open, onClose, onRequireLogin }: Move
         "pc:w-[560px]"
       )}
     >
-      <div className="flex h-full min-h-0 flex-col pb-4">
-        <div className="tablet:px-6 tablet:pt-6 tablet:pb-5 shrink-0 border-b border-gray-100 px-5 pt-5 pb-4">
+      <div className="flex h-full min-h-0 flex-col pb-10">
+        <div className="shrink-0 border-b border-gray-100 px-6 pt-8 pb-5">
           <ModalHeader id={titleId} title={t("modalTitle")} size="sm" onClose={handleClose} />
         </div>
 
         <div
           ref={listRef}
-          className="tablet:px-6 mt-4 flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-5 py-2"
+          className="mt-4 flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-6 py-2"
           role="log"
           aria-live="polite"
           aria-relevant="additions"
@@ -436,7 +436,7 @@ export default function MoverAiChatModal({ open, onClose, onRequireLogin }: Move
         </div>
 
         <form
-          className="tablet:px-6 mt-3 flex shrink-0 items-center gap-2 px-5"
+          className="mt-3 flex shrink-0 items-center gap-2 px-6"
           onSubmit={(event) => {
             event.preventDefault();
             handleSend();

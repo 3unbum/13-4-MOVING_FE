@@ -19,18 +19,18 @@ export default function ActiveRequestModal({ open, onConfirm }: ActiveRequestMod
       labelledBy="active-request-modal-title"
       open={open}
       onClose={() => {}}
-      className="tablet:w-152 tablet:min-w-152 w-[calc(100vw-2rem)] max-w-93.75 min-w-0 gap-10 rounded-4xl px-4 py-8"
+      className="tablet:w-152 tablet:min-w-152 w-[calc(100vw-2rem)] max-w-93.75 min-w-0 gap-10 rounded-4xl px-6 pt-8 pb-10"
     >
       <p
         id="active-request-modal-title"
-        className="tablet:text-32 text-24 text-black-300 w-full text-center font-bold"
+        className="tablet:text-32 text-24 text-black-300 w-full text-start font-bold"
       >
         {t("activeModalTitle")}
       </p>
-      <p className="tablet:text-24 text-20 text-gray-gray-400 w-full text-center font-semibold whitespace-pre-line">
+      <p className="tablet:text-24 text-20 text-gray-gray-400 w-full text-start font-semibold whitespace-pre-line">
         {t("activeModalBody")}
       </p>
-      <div className="flex w-full gap-3 p-4">
+      <div className="flex w-full gap-3">
         <Button variant="solid" size="md" onClick={onConfirm}>
           {t("activeModalConfirm")}
         </Button>
