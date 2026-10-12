@@ -18,7 +18,6 @@
     "regionFilterOptions": "지역 필터 옵션",
     "prevMonth": "이전 달",
     "nextMonth": "다음 달",
-    "datePlaceholder": "날짜를 선택해주세요",
     "movingDatePlaceholder": "이사 예정일을 선택해주세요",
     "pagination": "페이지네이션",
     "prevPage": "이전 페이지",
@@ -38,7 +37,6 @@
     "price": "{amount}원",
     "options": "옵션",
     "requestedAt": "견적 신청일",
-    "selectDate": "날짜 선택",
     "done": "선택완료",
     "viewResults": "조회하기",
     "selectComplete": "선택완료",
@@ -133,14 +131,6 @@
     "extraChargeProposed": "{name} 기사님이 <em>추가 금액을 요청</em>했어요.",
     "extraChargeApproved": "{name} 고객님이 <em>추가 금액을 승인</em>했어요.",
     "extraChargeRejected": "{name} 고객님이 <em>추가 금액을 거절</em>했어요."
-  },
-  "gnbPreview": {
-    "loggedOut": "비로그인",
-    "customer": "일반 유저",
-    "mover": "기사님",
-    "empty": "알림 없음",
-    "moverEmpty": "기사님 알림 없음",
-    "hint": "알림·프로필 아이콘을 눌러 드롭다운을 확인하세요. 언어를 바꾸면 알림 문장도 같이 바뀝니다."
   },
   "service": {
     "SMALL": "소형이사",

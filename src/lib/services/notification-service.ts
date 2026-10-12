@@ -26,8 +26,8 @@ interface NotificationBase {
   createdAt: string;
   estimateId: number | null;
   quotationRequestId: number | null;
-  /** 채팅 알림일 때만. 컴포넌트 쇼케이스의 예시 데이터는 생략합니다 */
-  chatRoomId?: number | null;
+  /** 채팅 알림일 때만 값이 있습니다 (BE 는 항상 이 키를 보냅니다) */
+  chatRoomId: number | null;
 }
 
 export interface NewRequestPayload {
