@@ -86,11 +86,12 @@ function clearStoredSession() {
 }
 
 function toClientAction(chip: MoverAiChip): MoverAiClientAction {
-  // 서비스·정렬·중의적 지역 해소는 chip.value(enum)를 그대로 전달합니다
+  // 값이 선택 결과인 칩만 value를 유지합니다. 목록/추천은 browse|recommend가 없으면 요청이 거절됩니다.
   if (
     chip.action === "SELECT_SERVICE" ||
     chip.action === "SELECT_SORT" ||
-    chip.action === "SELECT_REGION"
+    chip.action === "SELECT_REGION" ||
+    chip.action === "SELECT_MODE"
   ) {
     return { type: chip.action, value: chip.value };
   }

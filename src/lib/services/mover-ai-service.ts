@@ -5,8 +5,10 @@ import type { MoverListItem } from "@/lib/services/mover-service";
 export type MoverAiNextAction =
   | "ASK_REGION"
   | "ASK_SERVICE"
+  | "ASK_MODE"
   | "ASK_SORT"
   | "SHOW_MOVERS"
+  | "SHOW_RECOMMENDATION"
   | "CLARIFY_UNSUPPORTED"
   | "CLARIFY_REGION";
 
@@ -17,6 +19,8 @@ export type MoverAiClientActionType =
   | "SELECT_SERVICE"
   | "SELECT_SORT"
   | "SELECT_REGION"
+  | "SELECT_MODE"
+  | "COMPARE_OTHERS"
   | "SHOW_MORE"
   | "CHANGE_FILTERS"
   | "FAVORITE_ALL";
