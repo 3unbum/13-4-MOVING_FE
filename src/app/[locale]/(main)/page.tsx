@@ -14,6 +14,8 @@ import { QUOTE_DETAIL_MOCK_SIZE } from "./_components/QuoteDetailMockSize";
 import ScaledStage from "./_components/ScaledStage";
 import { Reveal, TiltOnScroll } from "./_components/Reveal";
 import Footer from "./_components/Footer";
+import InstallSection from "./_components/InstallSection";
+import { SITE_URL } from "@/constants/site.server";
 
 export default async function HomePage() {
   const t = await getTranslations("page");
@@ -104,6 +106,7 @@ export default async function HomePage() {
           </div>
         </section>
         <CompareQuotesSection />
+        <InstallSection siteUrl={SITE_URL.origin} />
       </main>
       <footer>
         <Footer />

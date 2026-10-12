@@ -791,7 +791,13 @@
     "favoriteListLoadFailed": "찜 목록을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.",
     "noFavoritesYet": "찜한 기사님이 없어요!",
     "footer_privacy": "개인정보 처리방침",
-    "footer_copyright": "© 2026 Moving. 코드잇 스프린트 팀 프로젝트"
+    "footer_copyright": "© 2026 Moving. 코드잇 스프린트 팀 프로젝트",
+    "install_title": "무빙을 앱으로 설치해보세요",
+    "install_desc": "홈 화면에 추가하면 앱처럼 바로 열 수 있어요",
+    "install_app": "앱으로 설치하기",
+    "install_qr": "QR을 스캔해 휴대폰에서 열고 앱으로 설치해보세요",
+    "install_guide_ios": "공유 버튼을 누르고 '홈 화면에 추가'를 선택해주세요",
+    "install_guide_other": "브라우저 메뉴에서 '앱 설치' 또는 '홈 화면에 추가'를 선택해주세요"
   },
   "support": {
     "metaTitle": "고객센터",

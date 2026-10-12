@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { routing } from "@/i18n/routing";
 import "@/app/globals.css";
@@ -6,6 +6,7 @@ import "pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css";
 import Providers from "./providers";
 import GlobalGnb from "@/components/layout/GlobalGnb";
 import ChatWidget from "@/components/chat/ChatWidget";
+import ServiceWorkerRegister from "@/components/common/ServiceWorkerRegister";
 import { OG_FALLBACK_IMAGE } from "@/constants/site";
 import { SITE_URL } from "@/constants/site.server";
 
@@ -25,6 +26,12 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     images: [OG_FALLBACK_IMAGE],
   },
+  // iOS 홈 화면 앱(standalone) 설정. 아이콘은 app/apple-icon.png가 자동 연결됩니다.
+  appleWebApp: { capable: true, title: "Moving", statusBarStyle: "default" },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#f9502e",
 };
 
 /** 빌드 타임에 locale별 페이지를 미리 생성합니다 */
@@ -53,6 +60,7 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[lo
             <GlobalGnb />
             {children}
             <ChatWidget />
+            <ServiceWorkerRegister />
           </Providers>
         </NextIntlClientProvider>
       </body>

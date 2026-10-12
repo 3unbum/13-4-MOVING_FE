@@ -791,7 +791,13 @@
     "favoriteListLoadFailed": "お気に入りリストを読み込めませんでした。しばらくしてからもう一度お試しください。",
     "noFavoritesYet": "お気に入りの業者がありません！",
     "footer_privacy": "プライバシーポリシー",
-    "footer_copyright": "© 2026 Moving. Codeit Sprint チームプロジェクト"
+    "footer_copyright": "© 2026 Moving. Codeit Sprint チームプロジェクト",
+    "install_title": "Movingをアプリとしてインストール",
+    "install_desc": "ホーム画面に追加すれば、アプリのようにすぐ開けます",
+    "install_app": "アプリをインストール",
+    "install_qr": "QRコードをスキャンしてスマートフォンで開き、アプリをインストールしましょう",
+    "install_guide_ios": "共有ボタンをタップして「ホーム画面に追加」を選んでください",
+    "install_guide_other": "ブラウザのメニューから「アプリをインストール」または「ホーム画面に追加」を選んでください"
   },
   "support": {
     "metaTitle": "ヘルプセンター",
