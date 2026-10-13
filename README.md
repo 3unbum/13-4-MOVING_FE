@@ -277,10 +277,207 @@ public/                        # 아이콘 · OG 이미지 · 서비스 워커(s
 </details>
 -->
 
-| 분류        | 제목                                                   | 작성자                                     |
-| :---------- | :----------------------------------------------------- | :----------------------------------------- |
-| 입력 검증   | 숫자 입력칸에서 `1e5`가 검증을 통과해 DB에 저장된 문제 | 조서현                                     |
-| _작성 예정_ |                                                        | 이은범 · 송현규 · 김민수 · 문치호 · 김은진 |
+| 분류        | 제목                                                                                        | 작성자 |
+| :---------- | :------------------------------------------------------------------------------------------ | :----- |
+| CI/CD       | EC2 빌드 중 OOM 문제와 러너 빌드 전환                                                       | 이은범 |
+| 결제        | 결제 승인에서 클라이언트 값을 믿지 않기: 금액 위변조 · 이중 결제 방어와 가짜 결제 통과 사고 | 송현규 |
+| 보안        | OAuth `state` — role 전달용에서 CSRF 방어용으로                                             | 김민수 |
+| 입력 검증   | 숫자 입력칸에서 `1e5`가 검증을 통과해 DB에 저장된 문제                                      | 조서현 |
+| 알림        | GNB 알림 패널 재설계와 지정 견적 반려 알림                                                  | 문치호 |
+| _작성 예정_ |                                                                                             | 김은진 |
+
+<details>
+<summary><b>[CI/CD] EC2 빌드 중 OOM 문제와 러너 빌드 전환</b></summary>
+
+<br />
+
+> 이은범 · BE · 관련 PR [#107](https://github.com/3unbum/13-4-MOVING_BE/pull/107)
+
+**문제 상황** —
+
+- **기존 방식**: EC2에 SSH로 접속해 `git reset --hard` → `npm ci` → `prisma generate` → `npm run build`를 순서대로 실행했습니다.
+- **발생 문제**: 서버가 떠 있는 바로 그 머신에서 빌드했습니다. t2.micro(메모리 1GB)인데 `tsc` 전체 컴파일과 `prisma generate`가 메모리를 크게 사용했습니다.
+- **영향 범위**: 빌드 중 PM2로 떠 있는 운영 서버까지 함께 느려졌습니다. CI/CD 특강에서 "EC2에서 빌드하면 OOM으로 죽는다"는 지적을 받았습니다.
+
+**원인 분석** — **빌드와 실행을 같은 머신에서 수행하는 구조**였습니다.
+
+- 러너는 코드 검증만 하고 종료합니다.
+- EC2가 소스를 받아 의존성 설치, Prisma 생성, 타입 컴파일을 전부 수행합니다.
+- 운영 서버 사양이 **실행이 아니라 빌드 기준**에 묶입니다.
+
+두 작업의 요구 사항이 정반대입니다.
+
+|             | 빌드                 | 실행     |
+| :---------- | :------------------- | :------- |
+| 필요 자원   | CPU · 메모리 많이    | 적게     |
+| 필요 의존성 | devDependencies 전부 | 런타임만 |
+| 빈도        | 배포할 때 한 번      | 상시     |
+
+**실패 지점이 배포 후반이라는 점이 더 문제였습니다.**
+
+- 러너 단계를 전부 통과합니다.
+- EC2에서 `git reset --hard origin/main`이 이미 실행되어 소스가 새 커밋으로 교체됩니다.
+- 그 다음 `npm run build`에서 실패하면 소스는 새 커밋, 서버는 옛 `dist`로 동작하는 불일치 상태가 됩니다.
+
+**해결** — **빌드를 러너로 옮기고 EC2에는 결과물만 전송했습니다.**
+
+1. **러너에서 빌드 후 산출물 압축 전송**
+   - GitHub Actions 러너는 2코어 7GB를 무료로 제공하며, 배포할 때만 사용합니다.
+   - `dist`(빌드 결과) · `generated`(Prisma Client) · `prisma`(스키마 · 마이그레이션) · `package*.json`을 압축해 `scp`로 전송합니다.
+   - `generated/`는 gitignore 대상이라 EC2에서 `git pull`로 받을 수 없고, 거기서 만들면 또 CPU를 사용하므로 러너에서 만들어 함께 전송했습니다.
+2. **EC2는 런타임 의존성만 설치하고 실행**
+   - `npm ci --omit=dev`로 `typescript` · `jest` · `prisma` CLI를 운영 서버에서 제거했습니다.
+
+```yaml
+# Before — EC2에서 전부 수행
+- name: SSH로 EC2 접속해 배포
+  script: |
+    git fetch origin main
+    git reset --hard origin/main
+    npm ci
+    npx prisma generate # 메모리 사용
+    npm run build # 메모리 사용 — 여기서 OOM
+
+# After — 러너에서 빌드, EC2는 실행만
+- name: 빌드
+  run: npm run build
+
+- name: 배포 파일 압축
+  run: tar -czf deploy.tar.gz dist generated prisma package.json package-lock.json
+
+- name: EC2로 전송
+  uses: appleboy/scp-action@v1
+
+- name: SSH로 EC2 접속해 실행
+  script: |
+    tar -xzf deploy.tar.gz
+    npm ci --omit=dev --ignore-scripts # 런타임 의존성만
+    pm2 reload moving-backend --update-env \
+      || pm2 start dist/src/server.js --name moving-backend
+```
+
+3. **전환 과정에서 걸린 두 가지**
+   - `npm ci --omit=dev`가 **husky를 찾지 못해 실패**했습니다. `package.json`의 `prepare` 스크립트가 husky를 호출하는데 husky는 devDependency라서, `--ignore-scripts`를 추가했습니다.
+   - 테스트 단계가 **`.env` 없이 실패**했습니다. `config/env.ts`가 모듈 로드 시점에 필수 환경변수를 검증해서, 전부 모킹인 단위 테스트도 import 단계에서 터졌습니다. 더미 `.env` 생성 단계를 추가했습니다.
+
+**개선 효과** —
+
+- **OOM 가능성 제거** — EC2에서 빌드가 사라져, 배포 중 서버 응답이 느려지던 현상도 함께 해소되었습니다.
+- **실패해도 운영 서버가 안전** — 빌드가 실패하면 러너에서 멈추므로 EC2는 건드려지지 않습니다. 소스만 교체되고 빌드는 실패한 불일치 상태가 **구조적으로 발생하지 않습니다**.
+- **운영 서버 경량화** — `typescript` · `jest` · `prisma` CLI 등 devDependencies가 EC2에서 제거되었습니다.
+
+**배운 점** —
+
+- **빌드와 실행을 분리해야 서버 사양을 실행 기준으로 산정할 수 있습니다.** "EC2에 소스가 있으니 거기서 빌드하는 게 자연스럽다"는 판단 하나로 서버 사양이 빌드 기준에 묶였습니다.
+- **파이프라인은 실패 지점까지 설계해야 합니다.** 같은 "빌드 실패"라도 러너에서 발생하면 영향이 없지만, EC2에서 발생하면 서버가 불일치 상태가 됩니다. 성공 경로만이 아니라 **실패했을 때 어디까지 망가지는지**를 기준으로 순서를 정해야 합니다.
+- **무료로 주어지는 자원을 먼저 확인해야 합니다.** 러너 2코어 7GB를 두고 1GB EC2에서 빌드하고 있었습니다.
+
+</details>
+
+<br />
+
+<details>
+<summary><b>[결제] 결제 승인에서 클라이언트 값을 믿지 않기: 금액 위변조 · 이중 결제 방어와 가짜 결제 통과 사고</b></summary>
+
+<br />
+
+> 송현규 · BE (FE 연동 포함) · 관련 PR BE [#145](https://github.com/3unbum/13-4-MOVING_BE/pull/145), FE [#220](https://github.com/3unbum/13-4-MOVING_FE/pull/220)
+
+**문제 상황** — 토스페이먼츠 결제를 붙였습니다. 결제가 성공하면 토스가 `successUrl`로 `paymentKey`, `orderId`, `amount`를 쿼리로 붙여 리다이렉트하고, FE는 이 값을 `POST /estimates/:id/pay`로 BE에 넘겨 승인합니다. 이 값은 사용자가 주소창에서 바꿀 수 있어서 그대로 믿으면 세 가지 문제가 생깁니다.
+
+1. 견적가보다 작은 `amount`로 승인 요청을 보내는 금액 위변조
+2. 남의 `estimateId`로 요청하는 타인 견적 결제
+3. 같은 견적에 동시 요청이 들어올 때의 이중 결제
+
+실제로 로컬 테스트 중에는 가짜 `paymentKey`로 성공 URL을 열었을 뿐인데 견적 676이 `PAID`로 바뀌는 사고가 있었습니다.
+
+**원인 분석** —
+
+- 위변조와 이중 결제는 구조적 위험이었습니다. 승인 요청의 입력이 전부 클라이언트에서 오고, 검증과 상태 갱신 사이에 다른 요청이 끼어들 수 있었습니다.
+- 가짜 결제 통과 사고는 BE가 `TOSS_SECRET_KEY` 없이 떠 있었던 것이 원인이었습니다. BE 개발 서버가 `.env`를 수정하기 전에 떠 있어 키를 읽지 못했고, 로컬 · CI 편의를 위해 만들어 둔 "키가 없으면 토스 호출 생략" 분기가 동작했습니다. 이 모드에서는 서버가 클라이언트 값을 그대로 믿으므로, 개발 편의용 분기가 검증 우회 경로가 되었습니다.
+
+**해결** —
+
+1. **승인 전 서버 기준 검증**: 본인 견적인지(403), 결제 가능한 상태인지, 이미 결제했는지, 추가 금액 요청에 응답했는지를 확인합니다. 기준 금액은 서버가 직접 계산하고, 클라이언트의 `amount`와 `orderId`(`moving-{type}-{estimateId}`)는 비교만 합니다. 틀리면 토스 호출 전에 거절해서 청구가 일어나지 않습니다.
+2. **승인 요청 설계**: `Idempotency-Key`에 `orderId`를 넣어 재전송 시 중복 승인을 막고, 토스에는 `paymentKey` / `orderId` / `amount` 셋만 보냅니다. 10초 타임아웃을 걸고, 응답을 못 받은 경우는 승인 여부를 알 수 없으므로 일반 실패로 처리합니다.
+3. **조건부 갱신**: 승인 직후 `updateMany`에 `COMPLETED + UNPAID` 조건을 걸고, 갱신된 행이 1이 아니면 409로 처리합니다. 결제 완료 알림 생성도 같은 트랜잭션에 묶었습니다.
+4. **사고 대응**: 테스트 데이터는 `WHERE id = 676 AND payment_key = 'dummy_payment_key'`로 조건을 좁혀 `UNPAID`로 복구했습니다. 서버 재시작 후 가짜 `paymentKey`가 토스에서 `NOT_FOUND_PAYMENT_SESSION`으로 거절되는 것을 확인했습니다(`INVALID_API_KEY`가 아니라 세션 없음이므로 키 인증은 통과한 상태입니다). 키가 없을 때 가짜 결제가 통과할 수 있다는 위험은 작업 기록에 남기고, 배포 시 필수 변수로 점검할 것을 제안했습니다.
+5. **알려진 한계를 코드에 명시**: 토스 승인 성공 후 DB 갱신이 실패하면 돈만 빠진 상태가 되는데, 웹훅 보정은 범위 밖으로 두고 `ponytail:` 주석으로 남겼습니다. 대신 `estimateId`, 결제 종류, `paymentKey`를 로그로 남겨 추적할 수 있게 했습니다.
+
+```typescript
+// Before: 클라이언트가 보낸 값을 그대로 승인에 넘긴다고 가정한 구조 (설계 전 위험)
+await confirmTossPayment(input); // amount/orderId를 믿는다
+await estimateRepository.pay(estimateId); // 조건 없이 PAID로 갱신
+
+// After: 서버 기준으로 비교 → 승인 → 조건부 갱신
+if (input.amount !== expectedAmount || input.orderId !== toPaymentOrderId(estimateId, input.type)) {
+  throw AppError.badRequest(
+    ERROR_CODES.PAYMENT_FAILED,
+    "결제 금액 또는 주문 정보가 견적과 일치하지 않습니다"
+  );
+}
+
+await confirmTossPayment(input); // Idempotency-Key: orderId
+
+const paid = await estimateRepository.pay(estimateId, input.paymentKey); // COMPLETED+UNPAID 조건부
+if (!paid) throw AppError.conflict(ERROR_CODES.ALREADY_PAID, "이미 결제한 견적입니다");
+```
+
+**개선 효과** —
+
+- 금액 · 주문 정보 위변조, 타인 견적 결제, 동시 요청에 의한 이중 결제가 서버에서 차단됩니다. 검증은 단위 테스트(토스 호출은 목)와 `tsc`, `eslint`로 확인했습니다.
+- 실제 토스 호출은 더미 `paymentKey`로 확인해, 키 인증이 통과하고 세션 없음으로 거절되는 것까지 검증했습니다.
+- 사고를 계기로 개발 편의 분기가 보안 구멍이 될 수 있다는 점을 배포 전에 위험으로 기록했습니다.
+- 한계: 승인 후 DB 실패 보정과 실제 토스 테스트 결제의 성공 경로(`PAID` → 결제 내역 화면)는 검증하지 못했습니다.
+
+**배운 점** —
+
+- 결제에서 클라이언트가 보내는 금액과 주문 정보는 참고값일 뿐입니다. 기준은 서버가 계산하고, 승인보다 앞에서 비교해야 합니다.
+- 되돌리기 어려운 외부 승인은 "검증 → 승인 → 조건부 갱신" 순서와 멱등 키를 함께 설계해야 합니다.
+- 키가 없을 때 건너뛰는 편의 모드는 운영에서 보안 우회 경로가 됩니다. 건너뛰기를 환경(로컬 · CI)에 한정하거나, 운영에서는 시작 시점에 실패시키는 방식이 더 안전합니다.
+
+</details>
+
+<br />
+
+<details>
+<summary><b>[보안] OAuth `state` — role 전달용에서 CSRF 방어용으로</b></summary>
+
+<br />
+
+> 김민수 · FE · 관련 PR [#116](https://github.com/3unbum/13-4-MOVING_FE/pull/116)
+
+**문제 상황** — 소셜 로그인은 외부 사이트를 거쳐 공용 콜백 주소(`/oauth/[provider]/callback`)로 돌아오기 때문에, 출발한 로그인 페이지의 role을 알기 위해 `state` 파라미터에 role을 실어 보내고 콜백에서 그대로 읽어 썼습니다(`?code=...&state=CUSTOMER`). 이 구조에서는 공격자가 자기 계정으로 받은 `code`를 담은 콜백 링크를 피해자에게 클릭시키면 **피해자의 브라우저가 공격자 계정으로 로그인**됩니다(Login CSRF). 피해자가 입력한 이사 주소 · 연락처는 공격자 계정에 쌓여, 공격자가 나중에 그대로 열람할 수 있습니다.
+
+**원인 분석** — 공격자가 보내는 `code`와 `state`는 모두 정상 발급된 값이라 형식 검증으로는 걸러낼 수 없었습니다. 아직 로그인 전이라 인증 미들웨어도 개입할 수 없습니다. "요청 내용이 올바른가"가 아니라 **"이 브라우저가 시작한 로그인인가"** 를 확인할 수단이 없는 것이 문제였습니다.
+
+**해결** — `state`에 role 대신 1회용 랜덤 nonce를 싣고, 같은 nonce를 role과 함께 `sessionStorage`에 저장했습니다. 콜백에서는 URL의 `state`와 저장값을 대조해 일치할 때만 진행하고, role은 URL이 아니라 저장값에서 복원합니다. 공격자가 만든 링크에는 피해자 브라우저에 짝이 되는 nonce가 없어서 대조 단계에서 막힙니다.
+
+```typescript
+// Before — URL의 state를 그대로 role로 신뢰
+<OAuthCallbackClient provider={provider} code={code} role={state} />
+
+// After
+export function createOAuthState(role: UserRole): string {
+  const nonce = crypto.randomUUID();
+  sessionStorage.setItem(OAUTH_STATE_KEY, JSON.stringify({ nonce, role }));
+  return nonce;
+}
+
+export function consumeOAuthState(state: string): UserRole | null {
+  const saved = sessionStorage.getItem(OAUTH_STATE_KEY);
+  sessionStorage.removeItem(OAUTH_STATE_KEY); // 1회용 — 대조 결과와 무관하게 삭제
+  if (!saved) return null;
+  const { nonce, role } = JSON.parse(saved) as { nonce: string; role: UserRole };
+  return nonce === state ? role : null;
+}
+```
+
+**개선 효과** — 다른 브라우저에서 시작된 인가 요청의 콜백은 "잘못된 접근" 처리되어 로그인 CSRF가 차단되었습니다. 콜백 URL에 role이 노출되지 않게 되었고, 백엔드 변경 없이 프론트만으로 해결했습니다.
+
+**배운 점** — 형식 검증("요청 내용이 맞는가")과 출처 검증("이 브라우저가 시작한 요청인가")은 다른 문제라는 것을 배웠습니다. OAuth의 `state`는 값을 실어 나르는 칸이 아니라 출처를 확인하기 위한 장치라는 점도 알게 되었습니다.
+
+</details>
 
 <br />
 
@@ -320,6 +517,56 @@ public/                        # 아이콘 · OG 이미지 · 서비스 워커(s
 **개선 효과** — `1e5` · `1년` 같은 값이 입력 단계에서 숫자만 남아 의도하지 않은 값이 저장되지 않고, 빈 입력은 "필수" 오류로 정확히 안내됩니다. FE · BE 양쪽에 같은 상한을 두어 한쪽을 우회해도 막힙니다.
 
 **배운 점** — `inputMode`는 검증이 아니라 힌트입니다. `Number()` 변환이 `1e5`나 `0x1F`까지 받아들인다는 점을 알고, 숫자 전용 입력은 입력 단계 필터링 + 스키마 상한을 기본으로 깔아야 합니다.
+
+</details>
+
+<br />
+
+<details>
+<summary><b>[알림] GNB 알림 패널 재설계와 지정 견적 반려 알림</b></summary>
+
+<br />
+
+> 문치호 · FE · 관련 PR FE [#171](https://github.com/3unbum/13-4-MOVING_FE/pull/171), [#192](https://github.com/3unbum/13-4-MOVING_FE/pull/192), [#244](https://github.com/3unbum/13-4-MOVING_FE/pull/244) / BE(알림 모듈) [#100](https://github.com/3unbum/13-4-MOVING_BE/pull/100), [#115](https://github.com/3unbum/13-4-MOVING_BE/pull/115), [#150](https://github.com/3unbum/13-4-MOVING_BE/pull/150)
+
+**문제 상황** — 피그마 알림은 문장과 시간만 있는 목록이었습니다. 읽음, 삭제, 빈 목록, 기사님의 오늘 새 요청은 디자인이 없어 전달받은 시안으로 패널을 먼저 만들었습니다. 그 시안은 전체 읽음 · 전체 삭제가 하단의 큰 카드였고, 카드 오른쪽 `>`가 읽음 · 삭제 메뉴를 열었습니다. 안 읽은 카드는 빨간 배경이었고, `읽지 않음 N`은 개수만 보여 줬습니다. 지정 견적을 반려해도 알림이 가지 않아, 고객은 견적 목록을 직접 열어야 알 수 있었습니다.
+
+**원인 분석** — 시안이 일괄 동작을 목록 아래 액션 카드로 두어, 알림이 적어도 목록 자리가 좁았습니다. `>`는 상세로 이동하는 표시라 메뉴가 열린다는 것을 알기 어려웠습니다. 읽지 않음은 색과 숫자만 있고 그 항목만 보는 동작이 없었습니다. 반려는 견적 상태로만 남아 있고 알림 타입에는 없었습니다.
+
+**해결** — 종류별 아이콘, 읽음 상태, 빈 목록, 오늘 새 요청은 유지하고 조작 위치만 바꿨습니다. 전체 읽음 · 전체 삭제는 닫기 옆 글자 칩으로 올리고, 누르면 확인 후 실행합니다. 카드의 `>`는 케밥으로 바꿔 읽음 · 삭제를 열고, 카드 본문을 누르면 해당 화면으로 이동합니다. `읽지 않음 N` 칩을 누르면 안 읽은 항목만 남고, 모두 읽으면 칩은 숨깁니다. 안 읽은 카드 배경은 `orange-100`으로 맞췄습니다. 알림이 4개부터 패널 안에서 스크롤됩니다. 지정 견적 반려는 `ESTIMATE_REJECTED`로 추가하고, 문장은 프론트가 기사님 닉네임으로 조립합니다. 누르면 견적 상세로 이동하고, 반려 사유는 상세에서 봅니다. 동시에 반려되어도 알림은 한 번만 만들어집니다.
+
+```typescript
+// Before — 하단 액션 카드, > 메뉴, 안 읽음은 표시만
+<div className={unread ? "bg-red-100" : "bg-background-100"}>
+  <button onClick={onClick}>{message}</button>
+  <Image src={chevronRight} alt="" />
+</div>
+<footer>
+  <FooterAction label="전체 읽음" onClick={onReadAll} />
+  <FooterAction label="전체 삭제" onClick={onDeleteAll} />
+</footer>
+
+// After — 헤더 칩, 케밥 메뉴, 안 읽음 칩이 필터
+<div className={unread ? "bg-orange-100" : "bg-background-100"}>
+  <button onClick={onClick}>{message}</button>
+  <button aria-label="더보기" onClick={openMenu}>
+    <KebabIcon />
+  </button>
+</div>
+<header>
+  {unreadCount > 0 && (
+    <button aria-pressed={unreadOnly} onClick={() => onUnreadOnlyChange(!unreadOnly)}>
+      읽지 않음 {unreadCount}
+    </button>
+  )}
+  <button onClick={() => confirm("read")}>전체 읽음</button>
+  <button onClick={() => confirm("delete")}>전체 삭제</button>
+</header>
+```
+
+**개선 효과** — 일괄 동작이 헤더로 올라가 목록이 패널의 본문이 되었습니다. 이동과 항목 메뉴가 나뉘어 누르기 전에 결과를 알 수 있습니다. 안 읽은 알림만 바로 걸러 볼 수 있고, 지정 견적 반려도 목록을 열기 전에 알림으로 전달됩니다.
+
+**배운 점** — 피그마가 없는 화면은 시안을 붙인 뒤, 알림이 쌓인 높이에서 다시 봐야 합니다. 아이콘은 동작을 알려 주므로 이동과 메뉴를 같은 기호에 두면 안 됩니다. 안 읽음은 색만으로 끝나지 않고, 개수 칩이 필터가 되어야 하며 읽을 항목이 없으면 필터도 같이 사라져야 합니다.
 
 </details>
 
