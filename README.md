@@ -132,12 +132,10 @@
 
 ### 주요 링크
 
-|                              |                                                                               |
-| :--------------------------- | :---------------------------------------------------------------------------- |
-| 📒 팀 Notion                 | [4팀 Notion](팀노션_링크)                                                     |
-| 📋 요구사항 분석 · Task List | [바로가기](https://app.notion.com/p/bum0107/3cd2c0a94b61800b8a1cf0912131c2f0) |
-| 🎨 Figma 디자인              | [바로가기](피그마_링크)                                                       |
-| 📘 API 명세                  | [바로가기](API명세_링크) · Swagger `/api-docs`                                |
+- 📒 [팀 Notion](팀노션_링크)
+- 📋 [요구사항 분석 · Task List](https://app.notion.com/p/bum0107/3cd2c0a94b61800b8a1cf0912131c2f0)
+- 🎨 [Figma 디자인](피그마_링크)
+- 📘 [API 명세](API명세_링크) · Swagger `/api-docs`
 
 <details>
 <summary><b>🤝 협업 방식</b></summary>
