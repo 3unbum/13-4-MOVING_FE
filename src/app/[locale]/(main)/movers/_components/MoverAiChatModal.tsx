@@ -23,6 +23,7 @@ import { useMoverAiChat } from "@/hooks/useMoverAiChat";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { useToggleMoverFavorite } from "@/hooks/useToggleMoverFavorite";
 import { useRouter } from "@/i18n/navigation";
+import { composeAssistantSpeech, moverAiChipLabel } from "@/lib/mover-ai-copy";
 import type { MoverAiChip, MoverAiMessageView } from "@/lib/services/mover-ai-service";
 import type { MoverListItem } from "@/lib/services/mover-service";
 import { mapMoverListItemToCard } from "@/lib/utils/mover-list-mapper";
@@ -311,18 +312,8 @@ function RefreshIcon({ className }: { className?: string }) {
   );
 }
 
-/** 서버가 본문 끝에 붙이는 리뷰 요약. 없으면 말풍선에 이유만 남깁니다. */
-const REVIEW_SUMMARY_MARKER = "\n리뷰 요약:";
-
-function splitReviewSummary(content: string): { speech: string; reviewSummary: string | null } {
-  const index = content.indexOf(REVIEW_SUMMARY_MARKER);
-  if (index === -1) return { speech: content, reviewSummary: null };
-  const reviewSummary = content.slice(index + REVIEW_SUMMARY_MARKER.length).trim();
-  return { speech: content.slice(0, index), reviewSummary: reviewSummary || null };
-}
-
 function renderContentWithBold(content: string) {
-  const parts = content.split(/(\*\*[^*]+\*\*)/g);
+  const parts = content.split(/(\*\*[^*\n]+\*\*)/g);
   return parts.map((part, index) => {
     const matched = /^\*\*([^*]+)\*\*$/.exec(part);
     if (matched) {
@@ -379,7 +370,7 @@ function MessageBubble({
   onFavoriteClick,
 }: {
   message: MoverAiMessageView;
-  onChipClick: (chip: MoverAiChip) => void;
+  onChipClick: (chip: MoverAiChip, label: string) => void;
   onMoverClick: (moverId: number) => void;
   chipsDisabled: boolean;
   favoritedIds: Set<number>;
@@ -388,13 +379,13 @@ function MessageBubble({
   onFavoriteClick: (moverId: number, currentCount: number) => void;
 }) {
   const t = useTranslations("moverAi");
+  const tService = useTranslations("service");
   const isUser = message.role === "USER";
   const chips = message.ui?.chips ?? null;
   const movers = message.ui?.movers ?? null;
-  const isRecommendation = message.ui?.nextAction === "SHOW_RECOMMENDATION";
-  const { speech, reviewSummary } = isRecommendation
-    ? splitReviewSummary(message.content)
-    : { speech: message.content, reviewSummary: null };
+  const { speech, reviewSummary } = isUser
+    ? { speech: message.content, reviewSummary: null }
+    : composeAssistantSpeech(message, t);
 
   return (
     <div className={cn("flex w-full flex-col gap-2", isUser ? "items-end" : "items-start")}>
@@ -437,27 +428,30 @@ function MessageBubble({
 
       {chips && chips.length > 0 && (
         <div className="flex max-w-full flex-wrap gap-2 pl-12">
-          {chips.map((chip) => (
-            <button
-              key={chip.id}
-              type="button"
-              disabled={chipsDisabled}
-              onClick={() => onChipClick(chip)}
-              className={cn(
-                "text-13 inline-flex items-center gap-1 rounded-full border border-orange-200 bg-orange-100 px-3 py-1.5 font-medium text-orange-500 transition-colors",
-                "not-disabled:hover:border-orange-300 not-disabled:hover:bg-orange-200",
-                "disabled:cursor-not-allowed disabled:opacity-40"
-              )}
-            >
-              {chip.action === "CHANGE_FILTERS" && (
-                <RefreshIcon className="size-3.5 shrink-0 text-orange-500" />
-              )}
-              {chip.action === "FAVORITE_ALL" && (
-                <Image src={likeIcon} alt="" className="size-4.5 shrink-0" />
-              )}
-              {chip.label}
-            </button>
-          ))}
+          {chips.map((chip) => {
+            const label = moverAiChipLabel(chip, message.ui?.nextAction, t, tService);
+            return (
+              <button
+                key={chip.id}
+                type="button"
+                disabled={chipsDisabled}
+                onClick={() => onChipClick(chip, label)}
+                className={cn(
+                  "text-13 inline-flex items-center gap-1 rounded-full border border-orange-200 bg-orange-100 px-3 py-1.5 font-medium text-orange-500 transition-colors",
+                  "not-disabled:hover:border-orange-300 not-disabled:hover:bg-orange-200",
+                  "disabled:cursor-not-allowed disabled:opacity-40"
+                )}
+              >
+                {chip.action === "CHANGE_FILTERS" && (
+                  <RefreshIcon className="size-3.5 shrink-0 text-orange-500" />
+                )}
+                {chip.action === "FAVORITE_ALL" && (
+                  <Image src={likeIcon} alt="" className="size-4.5 shrink-0" />
+                )}
+                {label}
+              </button>
+            );
+          })}
         </div>
       )}
     </div>
@@ -555,7 +549,7 @@ export default function MoverAiChatModal({ open, onClose, onRequireLogin }: Move
             <MessageBubble
               key={message.id}
               message={message}
-              onChipClick={(chip) => void sendChip(chip)}
+              onChipClick={(chip, label) => void sendChip(chip, label)}
               onMoverClick={handleMoverClick}
               chipsDisabled={busy}
               favoritedIds={favoritedIds}

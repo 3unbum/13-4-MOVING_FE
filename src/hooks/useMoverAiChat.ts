@@ -1,6 +1,7 @@
 "use client";
 
 import { useQueryClient } from "@tanstack/react-query";
+import { useLocale } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { favoriteQueryKeys } from "@/constants/query-keys/favorites";
 import {
@@ -8,6 +9,7 @@ import {
   type MoverAiChip,
   type MoverAiClientAction,
   type MoverAiFilters,
+  type MoverAiLocale,
   type MoverAiMessageView,
 } from "@/lib/services/mover-ai-service";
 import { ApiError } from "@/lib/utils/api-error";
@@ -85,6 +87,11 @@ function clearStoredSession() {
   writeStoredFilters(null);
 }
 
+function toApiLocale(locale: string): MoverAiLocale {
+  if (locale === "en" || locale === "zh" || locale === "ja") return locale;
+  return "ko";
+}
+
 function toClientAction(chip: MoverAiChip): MoverAiClientAction {
   // 값이 선택 결과인 칩만 value를 유지합니다. 목록/추천은 browse|recommend가 없으면 요청이 거절됩니다.
   if (
@@ -110,6 +117,7 @@ interface UseMoverAiChatOptions {
  */
 export function useMoverAiChat({ open, onRequireLogin }: UseMoverAiChatOptions) {
   const queryClient = useQueryClient();
+  const locale = toApiLocale(useLocale());
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [messages, setMessages] = useState<MoverAiMessageView[]>([]);
   const [filters, setFilters] = useState<MoverAiFilters>(
@@ -230,7 +238,7 @@ export function useMoverAiChat({ open, onRequireLogin }: UseMoverAiChatOptions) 
       setErrorMessage(null);
 
       try {
-        const result = await moverAiService.postMessage(sessionId, { message: trimmed });
+        const result = await moverAiService.postMessage(sessionId, { message: trimmed, locale });
         setMessages((prev) => [...prev, result.assistantMessage]);
         applyFilters(result.filters);
       } catch (error) {
@@ -241,22 +249,23 @@ export function useMoverAiChat({ open, onRequireLogin }: UseMoverAiChatOptions) 
         setIsSending(false);
       }
     },
-    [sessionId, isSending, handleAuthError, applyFilters]
+    [sessionId, isSending, handleAuthError, applyFilters, locale]
   );
 
   const sendChip = useCallback(
-    async (chip: MoverAiChip) => {
+    async (chip: MoverAiChip, label: string) => {
       if (!sessionId || isSending) return;
 
       const optimisticId = `local-user-${Date.now()}`;
-      setMessages((prev) => [...prev, { id: optimisticId, role: "USER", content: chip.label }]);
+      setMessages((prev) => [...prev, { id: optimisticId, role: "USER", content: label }]);
       setIsSending(true);
       setErrorMessage(null);
 
       try {
         const result = await moverAiService.postMessage(sessionId, {
-          message: chip.label,
+          message: label,
           clientAction: toClientAction(chip),
+          locale,
         });
         setMessages((prev) => [...prev, result.assistantMessage]);
         applyFilters(result.filters);
@@ -271,7 +280,7 @@ export function useMoverAiChat({ open, onRequireLogin }: UseMoverAiChatOptions) 
         setIsSending(false);
       }
     },
-    [sessionId, isSending, handleAuthError, queryClient, applyFilters]
+    [sessionId, isSending, handleAuthError, queryClient, applyFilters, locale]
   );
 
   const startNewSession = useCallback(async () => {
