@@ -15,6 +15,46 @@ export type MoverAiNextAction =
 /** BE `MoverAiSort` */
 export type MoverAiSort = "rating" | "review" | "career" | "confirmed";
 
+export type MoverAiLocale = "ko" | "en" | "zh" | "ja";
+
+export type MoverAiSpeechTemplate =
+  | "welcome"
+  | "askRegion"
+  | "askRegionNext"
+  | "askService"
+  | "askServiceNext"
+  | "askMode"
+  | "askSort"
+  | "showMovers"
+  | "showMoversMore"
+  | "showMoversEmpty"
+  | "recommend"
+  | "recommendOnly"
+  | "noMover"
+  | "clarifyRegion"
+  | "changeFilters"
+  | "resetRegion"
+  | "resetService"
+  | "favoriteCreated"
+  | "favoriteAlready"
+  | "favoritePartial"
+  | "favoriteOne"
+  | "favoriteOneAlready"
+  | "geminiFallback"
+  | "lastMovers";
+
+export interface MoverAiSpeech {
+  source: "template" | "model";
+  template: MoverAiSpeechTemplate | null;
+  ask: MoverAiSpeechTemplate | null;
+  unsupported: boolean;
+  closed: boolean;
+  modelReply: string | null;
+  reviewSummary: string | null;
+  reviewSummaryState: "text" | "none" | "failed" | null;
+  favoriteCount: number | null;
+}
+
 export type MoverAiClientActionType =
   | "SELECT_SERVICE"
   | "SELECT_SORT"
@@ -45,6 +85,8 @@ export interface MoverAiUi {
   chips: MoverAiChip[] | null;
   movers: MoverListItem[] | null;
   listMeta: { nextCursor: string | null; hasNext: boolean } | null;
+  /** 없으면 저장된 content를 그대로 보여 줍니다 */
+  speech?: MoverAiSpeech | null;
 }
 
 export interface MoverAiMessageView {
@@ -97,13 +139,18 @@ export const moverAiService = {
 
   postMessage: (
     sessionId: string,
-    body: { message: string; clientAction?: MoverAiClientAction | null }
+    body: {
+      message: string;
+      clientAction?: MoverAiClientAction | null;
+      locale?: MoverAiLocale;
+    }
   ) =>
     cookieFetch<PostMoverAiMessageResult>(`/mover-ai/sessions/${sessionId}/messages`, {
       method: "POST",
       body: JSON.stringify({
         message: body.message,
         clientAction: body.clientAction ?? null,
+        locale: body.locale ?? "ko",
       }),
     }),
 };
