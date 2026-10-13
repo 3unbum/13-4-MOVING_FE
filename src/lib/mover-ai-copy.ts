@@ -29,6 +29,22 @@ export function moverAiChipLabel(
   return chip.label;
 }
 
+const REVIEW_SUMMARY_MARKER = "\n리뷰 요약:";
+
+/** 저장된 content에서 말풍선과 리뷰 요약 상자를 나눕니다. */
+function splitStoredContent(content: string): {
+  speech: string;
+  reviewSummary: string | null;
+} {
+  const index = content.indexOf(REVIEW_SUMMARY_MARKER);
+  if (index === -1) return { speech: content, reviewSummary: null };
+  const reviewSummary = content.slice(index + REVIEW_SUMMARY_MARKER.length).trim();
+  return {
+    speech: content.slice(0, index),
+    reviewSummary: reviewSummary || null,
+  };
+}
+
 function templateLine(
   template: MoverAiSpeechTemplate,
   message: MoverAiMessageView,
@@ -36,12 +52,14 @@ function templateLine(
 ): string {
   const mover = message.ui?.movers?.[0];
   if (template === "recommend" || template === "recommendOnly") {
-    const nick = mover?.nickName ?? "";
+    // 카드가 없으면 composeAssistantSpeech가 content로 폴백합니다.
+    if (!mover) return "";
+    const nick = mover.nickName;
     const stats = t("stats", {
-      rating: Number(mover?.avgRating ?? 0).toFixed(1),
-      reviews: mover?.reviewCount ?? 0,
-      career: mover?.career ?? 0,
-      confirmed: mover?.confirmedCount ?? 0,
+      rating: Number(mover.avgRating).toFixed(1),
+      reviews: mover.reviewCount,
+      career: mover.career,
+      confirmed: mover.confirmedCount,
     });
     const intro =
       template === "recommendOnly" ? t("onlyIntro", { nick }) : t("recommendIntro", { nick });
@@ -64,16 +82,7 @@ export function composeAssistantSpeech(
   t: MoverAiTranslate
 ): { speech: string; reviewSummary: string | null } {
   const meta = message.ui?.speech;
-  if (!meta) {
-    const marker = "\n리뷰 요약:";
-    const index = message.content.indexOf(marker);
-    if (index === -1) return { speech: message.content, reviewSummary: null };
-    const reviewSummary = message.content.slice(index + marker.length).trim();
-    return {
-      speech: message.content.slice(0, index),
-      reviewSummary: reviewSummary || null,
-    };
-  }
+  if (!meta) return splitStoredContent(message.content);
 
   if (meta.source === "model") {
     const body = meta.modelReply ?? message.content;
@@ -83,9 +92,23 @@ export function composeAssistantSpeech(
     };
   }
 
+  // 탈퇴 등으로 추천 카드가 빠지면 통계를 0으로 만들지 않고 저장 문구를 씁니다.
+  const isRecommend = meta.template === "recommend" || meta.template === "recommendOnly";
+  if (isRecommend && !message.ui?.movers?.[0]) {
+    const stored = splitStoredContent(message.content);
+    return {
+      speech: stored.speech,
+      // 상자용 요약은 화면 언어로 저장된 값을 우선하고, 없으면 content에서 분리한 값을 씁니다.
+      reviewSummary: meta.reviewSummaryState === "text" ? meta.reviewSummary : stored.reviewSummary,
+    };
+  }
+
   const parts: string[] = [];
   if (meta.unsupported) parts.push(t("unsupported"));
-  if (meta.template) parts.push(templateLine(meta.template, message, t));
+  if (meta.template) {
+    const line = templateLine(meta.template, message, t);
+    if (line) parts.push(line);
+  }
   if (meta.ask) parts.push(templateLine(meta.ask, message, t));
   if (meta.closed) {
     const count = message.ui?.movers?.length ?? 0;
