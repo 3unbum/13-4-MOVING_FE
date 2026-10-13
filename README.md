@@ -146,6 +146,7 @@
 
 - `main` ← `dev` ← `{type}/{작업명}-{이슈번호}` 브랜치 전략을 쓰고, 직접 push 대신 PR로만 병합합니다. (`dev` 승인 2명 · `main` 승인 1명, Squash and Merge)
 - 커밋은 `{type}: {내용}` 형식이며 husky + commitlint가 검사합니다. 이슈 템플릿 5종을 쓰고, PR에는 `close #번호`로 이슈를 연결합니다.
+- PR마다 팀원 리뷰와 함께 AI 코드 리뷰(CodeRabbit)를 받습니다.
 
 </details>
 
