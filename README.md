@@ -152,10 +152,7 @@
 
 <a href="docs/architecture.png"><img src="docs/architecture.png" alt="무빙 시스템 아키텍처" width="100%" /></a>
 
-- 프론트엔드는 **Vercel**에 배포하고, 백엔드는 AWS(ap-northeast-2)의 **EC2**(Express + PM2)에서 실행합니다. 요청은 **ALB**(HTTPS)를 거쳐 들어오고, 데이터는 **RDS**(PostgreSQL), 프로필 · 리뷰 이미지는 **S3 + CloudFront**에 저장합니다.
 - 프론트의 `/api/*` 요청은 서버 rewrite를 거쳐 백엔드로 전달됩니다. 브라우저에서는 같은 도메인으로 보이기 때문에 로그인 쿠키를 안전하게 쓸 수 있습니다.
-- 백엔드는 `main`에 머지하면 GitHub Actions가 테스트 → 빌드 → scp → ssh 순으로 EC2에 배포하고 PM2를 재시작합니다. 프론트엔드는 GitHub와 연동된 Vercel이 자동으로 빌드 · 배포합니다.
-- 결제(토스페이먼츠), AI 추천(Gemini), 메일(Gmail), 봇 검증(Cloudflare Turnstile), 에러 모니터링(Sentry)은 외부 서비스를 연동합니다.
 
 <br />
 
