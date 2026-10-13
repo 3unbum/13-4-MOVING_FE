@@ -14,6 +14,10 @@ interface UseShareParams {
   text: string;
   /** 카카오 메시지 버튼 라벨 */
   buttonTitle: string;
+  /** 카카오 카드 제목 — 없으면 text만 있는 옛 모양으로 보냅니다 */
+  title?: string;
+  /** 카카오 카드 썸네일. 상대 경로를 주면 절대 URL로 바꿔 보냅니다 */
+  imageUrl?: string;
 }
 
 /**
@@ -25,7 +29,7 @@ interface UseShareParams {
  * 공유 문구·대상 URL도 호출부가 정합니다. 요구사항 문구는 같지만
  * 대상(기사님)이 화면마다 다르기 때문입니다.
  */
-export function useShare({ url, text, buttonTitle }: UseShareParams) {
+export function useShare({ url, text, buttonTitle, title, imageUrl }: UseShareParams) {
   const t = useTranslations("common");
   const [toast, setToast] = useState<string | null>(null);
   const isKakaoReady = useKakaoSdk();
@@ -58,8 +62,12 @@ export function useShare({ url, text, buttonTitle }: UseShareParams) {
   /**
    * 카카오톡 공유.
    *
-   * `feed`가 아니라 `text` 템플릿을 쓰는 이유는 `imageUrl`이 카카오 서버에서
-   * 접근 가능한 공개 URL이어야 하기 때문입니다. 배포 도메인이 정해지면 바꿀 수 있습니다.
+   * `feed` 템플릿은 썸네일이 있는 카드로 나갑니다. `imageUrl`이 카카오 서버에서
+   * 접근 가능한 **공개 절대 URL**이어야 해서 배포 도메인이 생긴 뒤에 전환했습니다.
+   * 이미지가 없으면 예전처럼 `text` 템플릿으로 보냅니다.
+   *
+   * ⚠️ 링크를 그냥 붙여넣을 때와 다릅니다 — 그쪽은 카카오가 og 태그를 읽지만,
+   * SDK 공유는 여기서 넘긴 값만 씁니다. 그래서 og와 같은 이미지를 명시적으로 줍니다.
    *
    * 키(`NEXT_PUBLIC_KAKAO_JS_KEY`)가 없거나 SDK 로드에 실패하면 링크 복사로
    * 폴백합니다 — 키를 아직 넣지 않은 팀원 환경에서도 화면이 깨지지 않습니다.
@@ -71,12 +79,27 @@ export function useShare({ url, text, buttonTitle }: UseShareParams) {
     }
 
     const shareUrl = toAbsoluteUrl();
+    const link = { mobileWebUrl: shareUrl, webUrl: shareUrl };
 
     try {
+      if (imageUrl) {
+        window.Kakao.Share.sendDefault({
+          objectType: "feed",
+          content: {
+            title: title ?? text,
+            description: title ? text : undefined,
+            imageUrl: new URL(imageUrl, window.location.origin).toString(),
+            link,
+          },
+          buttons: [{ title: buttonTitle, link }],
+        });
+        return;
+      }
+
       window.Kakao.Share.sendDefault({
         objectType: "text",
         text,
-        link: { mobileWebUrl: shareUrl, webUrl: shareUrl },
+        link,
         buttonTitle,
       });
     } catch {

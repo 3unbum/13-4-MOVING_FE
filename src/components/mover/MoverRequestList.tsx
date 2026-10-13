@@ -1,9 +1,10 @@
 "use client";
 
 import { CardReceivedRequest } from "@/components/quote/CardQuotation";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import type { MoverRequest } from "@/lib/services/mover-request-service";
 import { shortenAddress } from "@/lib/utils/address";
+import { localizeShortAddress } from "@/lib/utils/district";
 import { formatElapsedTime, formatMovingDate, type DateLocale } from "@/lib/utils/date";
 
 interface MoverRequestListProps {
@@ -23,12 +24,16 @@ function RequestCard({
   onReject?: () => void;
 }) {
   const locale = useLocale() as DateLocale;
+  const tRegion = useTranslations("region");
+  // 카드에 보이는 건 "울산 남구" 수준의 요약이라 번역해도 안전합니다. 기사님이 실제로
+  // 찾아갈 때 쓰는 전체 주소(동·호수까지)는 견적 보내기 모달에서 한국어 원문으로 봅니다.
+  const place = (address: string) => localizeShortAddress(shortenAddress(address), locale, tRegion);
   const common = {
     category: request.category,
     isTargeted: request.isTargeted,
     customerName: request.userName,
-    from: shortenAddress(request.fromAddress),
-    to: shortenAddress(request.toAddress),
+    from: place(request.fromAddress),
+    to: place(request.toAddress),
     movingDate: formatMovingDate(request.movingDate, locale),
     elapsedTime: formatElapsedTime(request.createdAt, locale),
     onSendEstimate,

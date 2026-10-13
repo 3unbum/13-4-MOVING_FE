@@ -4,7 +4,7 @@ import { ApiError } from "@/lib/utils/api-error";
 /**
  * `messages/*.json`의 `authError` 네임스페이스 키.
  *
- * BE `ERROR_CODES` 34종 전부를 덮습니다 — 인증뿐 아니라 견적·리뷰·찜까지.
+ * BE `ERROR_CODES` 45종 전부를 덮습니다 — 인증뿐 아니라 견적·리뷰·찜까지.
  * BE에 코드가 추가되면 `AUTH_ERROR_CODES` · 이 표 · `messages/*.json` 세 곳을 같이 채우세요.
  */
 const MESSAGE_KEY_BY_CODE: Record<AuthErrorCode, string> = {
@@ -24,12 +24,24 @@ const MESSAGE_KEY_BY_CODE: Record<AuthErrorCode, string> = {
   [AUTH_ERROR_CODES.INVALID_OR_EXPIRED_SIGNUP_TOKEN]: "invalidOrExpiredSignupToken",
   [AUTH_ERROR_CODES.PROVIDER_ACCOUNT_ALREADY_LINKED]: "providerAccountAlreadyLinked",
   [AUTH_ERROR_CODES.OAUTH_EMAIL_REQUIRED]: "oauthEmailRequired",
+  [AUTH_ERROR_CODES.CONFIRMED_MOVE_EXISTS]: "confirmedMoveExists",
+  [AUTH_ERROR_CODES.UNPAID_PAYMENT_EXISTS]: "unpaidPaymentExists",
+
+  // 회원가입 이메일 인증
+  [AUTH_ERROR_CODES.INVALID_SIGNUP_CODE]: "invalidSignupCode",
+  [AUTH_ERROR_CODES.SIGNUP_CODE_EXPIRED]: "signupCodeExpired",
+  [AUTH_ERROR_CODES.SIGNUP_CODE_ATTEMPTS_EXCEEDED]: "signupCodeAttemptsExceeded",
+  [AUTH_ERROR_CODES.EMAIL_NOT_VERIFIED]: "emailNotVerified",
 
   // 비밀번호 재설정
   [AUTH_ERROR_CODES.INVALID_RESET_CODE]: "invalidResetCode",
   [AUTH_ERROR_CODES.RESET_CODE_EXPIRED]: "resetCodeExpired",
   [AUTH_ERROR_CODES.RESET_CODE_ATTEMPTS_EXCEEDED]: "resetCodeAttemptsExceeded",
   [AUTH_ERROR_CODES.INVALID_OR_EXPIRED_RESET_TOKEN]: "invalidOrExpiredResetToken",
+  [AUTH_ERROR_CODES.INVALID_PROFILE_EDIT_CODE]: "invalidProfileEditCode",
+  [AUTH_ERROR_CODES.PROFILE_EDIT_CODE_EXPIRED]: "profileEditCodeExpired",
+  [AUTH_ERROR_CODES.PROFILE_EDIT_CODE_ATTEMPTS_EXCEEDED]: "profileEditCodeAttemptsExceeded",
+  [AUTH_ERROR_CODES.PROFILE_EDIT_VERIFICATION_REQUIRED]: "profileEditVerificationRequired",
 
   // 견적 요청
   [AUTH_ERROR_CODES.ACTIVE_REQUEST_EXISTS]: "activeRequestExists",
@@ -42,6 +54,17 @@ const MESSAGE_KEY_BY_CODE: Record<AuthErrorCode, string> = {
   [AUTH_ERROR_CODES.ALREADY_ESTIMATED]: "alreadyEstimated",
   [AUTH_ERROR_CODES.NOT_SERVICE_REGION]: "notServiceRegion",
   [AUTH_ERROR_CODES.ESTIMATE_ALREADY_PROCESSED]: "estimateAlreadyProcessed",
+  [AUTH_ERROR_CODES.ESTIMATE_NOT_COMPLETED]: "estimateNotCompleted",
+  [AUTH_ERROR_CODES.ALREADY_PAID]: "alreadyPaid",
+  [AUTH_ERROR_CODES.PAYMENT_FAILED]: "paymentFailed",
+  [AUTH_ERROR_CODES.PAYMENT_REQUEST_ALREADY_SENT]: "paymentRequestAlreadySent",
+  [AUTH_ERROR_CODES.DEPOSIT_NOT_REQUIRED]: "depositNotRequired",
+  [AUTH_ERROR_CODES.DEPOSIT_EXPIRED]: "depositExpired",
+  [AUTH_ERROR_CODES.DEPOSIT_NOT_PAID]: "depositNotPaid",
+  [AUTH_ERROR_CODES.EXTRA_CHARGE_ALREADY_REQUESTED]: "extraChargeAlreadyRequested",
+  [AUTH_ERROR_CODES.EXTRA_CHARGE_TOO_LARGE]: "extraChargeTooLarge",
+  [AUTH_ERROR_CODES.EXTRA_CHARGE_NOT_PENDING]: "extraChargeNotPending",
+  [AUTH_ERROR_CODES.EXTRA_CHARGE_PENDING]: "extraChargePending",
 
   // 리뷰 / 찜
   [AUTH_ERROR_CODES.REVIEW_ALREADY_CONFIRMED]: "reviewAlreadyConfirmed",
@@ -52,6 +75,7 @@ const MESSAGE_KEY_BY_CODE: Record<AuthErrorCode, string> = {
   [AUTH_ERROR_CODES.NOT_FOUND]: "notFound",
   [AUTH_ERROR_CODES.INTERNAL_ERROR]: "internalError",
   [AUTH_ERROR_CODES.TOO_MANY_REQUESTS]: "tooManyRequests",
+  [AUTH_ERROR_CODES.BOT_CHECK_FAILED]: "botCheckFailed",
   [AUTH_ERROR_CODES.CONCURRENT_REQUEST_CONFLICT]: "concurrentRequestConflict",
 };
 

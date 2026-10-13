@@ -17,7 +17,8 @@ export const makeCustomerProfileSchema = (t: ValidationTranslator) =>
 // BE moverProfileCreateSchema와 동일한 계약: services/regions 둘 다 배열(다중 선택)
 export const makeMoverProfileSchema = (t: ValidationTranslator) =>
   z.object({
-    image: z.string().optional(),
+    // null은 수정 화면에서 "이미지 삭제"를 뜻한다(등록 화면은 null을 undefined로 바꿔 보낸다)
+    image: z.string().nullable().optional(),
     // trim()을 min(1)보다 먼저 걸어야 공백만 입력한 값이 통과하지 않는다
     nickName: z.string().trim().min(1, t("nickNameRequired")),
     // valueAsNumber로 이미 숫자 변환된 값이 들어온다는 전제 — z.coerce는 resolver 타입 에러가 남
@@ -45,6 +46,13 @@ function withPasswordRules<T extends z.ZodType<PasswordFields>>(
 ) {
   return (
     schema
+      // #131 재설계: 프로필 수정 진입 자체는 이메일 인증(ProfileEmailVerificationGate)으로 본인
+      // 확인을 하므로, currentPassword는 더 이상 항상 필수가 아니라 "비밀번호 변경" 액션에만
+      // 필요하다 — BE customerProfileUpdateSchema/moverProfileUpdateSchema와 동일한 계약.
+      .refine((data: z.infer<T>) => !data.newPassword || !!data.currentPassword, {
+        message: t("passwordChangeAllRequired"),
+        path: ["currentPassword"],
+      })
       // 소셜 로그인 계정(비밀번호 없음)은 BE가 별도 에러 메시지로 응답
       .refine(
         (data: z.infer<T>) => !data.newPassword || data.newPassword === data.newPasswordConfirm,
@@ -64,12 +72,13 @@ function withPasswordRules<T extends z.ZodType<PasswordFields>>(
   );
 }
 
-// currentPassword는 항상 필수(#157) — 무엇을 바꾸든 재확인 필요.
-// newPassword/newPasswordConfirm만 선택 입력(비워두면 "변경 안 함")
+// currentPassword는 newPassword를 보낼 때만 필수(#131, withPasswordRules의 refine이 강제).
+// newPassword/newPasswordConfirm도 선택 입력(비워두면 "변경 안 함") — 소셜 로그인 계정
+// (hasPassword === false)은 이 세 필드 자체를 화면에서 숨긴다(CustomerProfileEditForm 참고).
 const makeAccountFields = (t: ValidationTranslator) => ({
   name: z.string().trim().min(1, t("nameRequired")),
   phoneNumber: z.string().min(1, t("phoneRequired")).regex(PHONE_PATTERN, t("phoneInvalid")),
-  currentPassword: z.string().min(1, t("currentPasswordRequired")),
+  currentPassword: z.string().optional().or(z.literal("")),
   newPassword: z
     .string()
     .regex(PASSWORD_PATTERN, t("passwordPattern"))
@@ -84,7 +93,7 @@ export const makeCustomerProfileUpdateSchema = (t: ValidationTranslator) =>
   withPasswordRules(
     z.object({
       ...makeAccountFields(t),
-      image: z.string().optional(),
+      image: z.string().nullable().optional(),
       region: z.enum(regionValues, { message: t("regionRequired") }),
       services: z.array(z.enum(serviceValues)).min(1, t("customerServicesRequired")),
     }),

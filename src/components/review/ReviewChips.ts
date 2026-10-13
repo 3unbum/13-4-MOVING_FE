@@ -130,9 +130,11 @@ export const REVIEW_CHIP_GROUPS: ReviewChipGroup[] = [
   },
 ];
 
-const REVIEW_CHIP_MAP = new Map(
-  REVIEW_CHIP_GROUPS.flatMap((group) => group.chips).map((chip) => [chip.id, chip])
-);
+const ALL_REVIEW_CHIPS = REVIEW_CHIP_GROUPS.flatMap((group) => group.chips);
+
+const REVIEW_CHIP_MAP = new Map(ALL_REVIEW_CHIPS.map((chip) => [chip.id, chip]));
+const REVIEW_CHIP_BY_MID = new Map(ALL_REVIEW_CHIPS.map((chip) => [chip.mid, chip.id]));
+const REVIEW_CHIP_BY_END = new Map(ALL_REVIEW_CHIPS.map((chip) => [chip.end, chip.id]));
 
 // 선택한 순서대로 한 문장으로 이어 붙인다. 마지막만 '~했어요'로 닫는다.
 export function buildReviewFromChips(selectedIds: string[]): string {
@@ -146,4 +148,29 @@ export function buildReviewFromChips(selectedIds: string[]): string {
   const head = chips.slice(0, -1).map((chip) => chip.mid);
   const last = chips[chips.length - 1].end;
   return `${head.join(", ")}, ${last}.`;
+}
+
+// 칩으로 만든 문장만 다시 칩 id로 되돌린다. 직접 고친 문장은 빈 배열이다.
+export function parseReviewChips(review: string): string[] {
+  const text = review.trim();
+  if (!text.endsWith(".")) return [];
+
+  const parts = text.slice(0, -1).split(", ");
+  if (parts.length === 0 || parts.length > MAX_REVIEW_CHIPS) return [];
+
+  const ids: string[] = [];
+  const seen = new Set<string>();
+
+  for (let index = 0; index < parts.length - 1; index += 1) {
+    const id = REVIEW_CHIP_BY_MID.get(parts[index]);
+    if (!id || seen.has(id)) return [];
+    seen.add(id);
+    ids.push(id);
+  }
+
+  const lastId = REVIEW_CHIP_BY_END.get(parts[parts.length - 1]);
+  if (!lastId || seen.has(lastId)) return [];
+  ids.push(lastId);
+
+  return buildReviewFromChips(ids) === text ? ids : [];
 }

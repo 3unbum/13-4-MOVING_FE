@@ -17,7 +17,12 @@ import MoverName from "@/components/mover/MoverName";
 import MovingInfo from "@/components/quote/MovingInfo";
 import ProfileAvatar from "@/components/common/ProfileAvatar";
 import ReviewKeywordChips from "@/components/review/ReviewKeywordChips";
-import { MAX_REVIEW_CHIPS, buildReviewFromChips } from "@/components/review/ReviewChips";
+import ReviewPhotoField from "@/components/review/ReviewPhotoField";
+import {
+  MAX_REVIEW_CHIPS,
+  buildReviewFromChips,
+  parseReviewChips,
+} from "@/components/review/ReviewChips";
 
 type ReviewWriteModalSize = "sm" | "md";
 type ReviewWriteModalPosition = "center" | "bottom";
@@ -43,6 +48,11 @@ interface ReviewWriteModalProps {
   onReviewChange: (review: string) => void;
   onSubmit: () => void;
   isSubmitting?: boolean;
+  /** write는 새 리뷰, edit는 이미 작성한 리뷰 */
+  mode?: "write" | "edit";
+  /** 있으면 사진을 최대 3장 붙이거나 지운다. 미리보기는 이 값을 넘기지 않는다. */
+  reviewId?: number;
+  initialImageUrls?: string[];
 }
 
 // 리뷰 작성 모달
@@ -64,6 +74,9 @@ export default function ReviewWriteModal({
   onReviewChange,
   onSubmit,
   isSubmitting = false,
+  mode = "write",
+  reviewId,
+  initialImageUrls = [],
 }: ReviewWriteModalProps) {
   const t = useTranslations("review");
   // 칩 자동 문장 생성은 한국어 어미 규칙에 묶여 있습니다 (ReviewChips 참고)
@@ -71,10 +84,17 @@ export default function ReviewWriteModal({
   const titleId = useId();
   const isMd = size === "md";
   const resolvedPosition = position ?? (isMd ? "center" : "bottom");
-  const isValid = rating > 0 && review.trim().length >= MIN_REVIEW_LENGTH;
-  const [selectedChipIds, setSelectedChipIds] = useState<string[]>([]);
+  const [imageUrls, setImageUrls] = useState(initialImageUrls);
+  const [isPhotoUploading, setIsPhotoUploading] = useState(false);
+  const isValid = rating > 0 && review.trim().length >= MIN_REVIEW_LENGTH && !isPhotoUploading;
+  // 수정 모달은 저장된 문장이 칩 조합과 같으면 그때 고른 칩을 다시 켠다.
+  const [selectedChipIds, setSelectedChipIds] = useState(() =>
+    showChips ? parseReviewChips(review) : []
+  );
   // 칩으로 만든 마지막 문장. 후기가 이와 같을 때만 칩이 본문을 갱신한다.
-  const [autoReview, setAutoReview] = useState("");
+  const [autoReview, setAutoReview] = useState(() =>
+    selectedChipIds.length > 0 ? buildReviewFromChips(selectedChipIds) : ""
+  );
 
   const applyChips = (nextIds: string[]) => {
     const nextReview = buildReviewFromChips(nextIds);
@@ -116,7 +136,12 @@ export default function ReviewWriteModal({
             )
       }
     >
-      <ModalHeader id={titleId} title={t("writeReview")} size={size} onClose={onClose} />
+      <ModalHeader
+        id={titleId}
+        title={mode === "edit" ? t("editReview") : t("writeReview")}
+        size={size}
+        onClose={onClose}
+      />
 
       <div className="flex min-h-0 w-full flex-1 flex-col items-start gap-8 overflow-y-auto">
         <div className="flex w-full flex-col items-start gap-4">
@@ -169,9 +194,19 @@ export default function ReviewWriteModal({
             maxLength={200}
             value={review}
             onChange={(event) => handleReviewInput(event.target.value)}
-            disabled={isSubmitting}
+            disabled={isSubmitting || isPhotoUploading}
           />
         </div>
+
+        {reviewId != null ? (
+          <ReviewPhotoField
+            reviewId={reviewId}
+            imageUrls={imageUrls}
+            onChange={setImageUrls}
+            onUploadingChange={setIsPhotoUploading}
+            disabled={isSubmitting}
+          />
+        ) : null}
       </div>
 
       <Button
@@ -181,7 +216,7 @@ export default function ReviewWriteModal({
         disabled={!isValid || isSubmitting}
         onClick={onSubmit}
       >
-        {t("submit")}
+        {mode === "edit" ? t("save") : t("submit")}
       </Button>
     </Modal>
   );

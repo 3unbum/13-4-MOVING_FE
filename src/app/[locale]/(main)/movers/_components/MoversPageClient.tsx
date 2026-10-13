@@ -1,17 +1,24 @@
 "use client";
 
 import { useMemo, useState, type KeyboardEvent } from "react";
+import Image from "next/image";
 import { useTranslations } from "next-intl";
+import chatIconMd from "@/assets/icons/chat-md.svg";
 import { useRouter } from "@/i18n/navigation";
 import Filter, { type FilterOption } from "@/components/common/Filter";
 import Header from "@/components/common/Header";
 import InputSearchbar from "@/components/common/InputSearchbar";
+import ScrollToTopButton from "@/components/common/ScrollToTopButton";
 import Sort from "@/components/common/Sort";
 import CardMover from "@/components/mover/CardMover";
 import InfoRequiredModal from "@/components/quote/InfoRequiredModal";
+import CardMoverSkeleton from "@/components/skeleton/CardMoverSkeleton";
+import SkeletonStatus from "@/components/skeleton/SkeletonStatus";
 import { REGION_COLUMNS, SERVICE_OPTIONS, SORT_OPTIONS } from "@/constants/movers/filters";
+import MoverAiChatModal from "./MoverAiChatModal";
 import type { MoverListFilters } from "@/constants/query-keys/movers";
 import { useDebounce } from "@/hooks/useDebounce";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { useInfiniteScrollTrigger } from "@/hooks/useInfiniteScrollTrigger";
 import { useMoverListUrlFilters } from "@/hooks/useMoverListUrlFilters";
 import { useMoversInfinite } from "@/hooks/useMoversInfinite";
@@ -26,6 +33,8 @@ import { toAuthErrorDetail } from "@/lib/auth/auth-error-message";
 import { useAuth } from "@/providers/AuthProvider";
 
 type MoverCardViewModel = ReturnType<typeof mapMoverListItemToCard>;
+
+const TABLET_QUERY = "(min-width: 744px)";
 
 function getMoverCardNavProps(onNavigate: () => void) {
   return {
@@ -120,6 +129,29 @@ export default function MoversPageClient({ initialFilters }: MoversPageClientPro
   const { search, setSearch, region, setRegion, service, setService, sort, setSort, resetFilters } =
     useMoverListUrlFilters(initialFilters);
   const [loginModalOpen, setLoginModalOpen] = useState(false);
+  /** 찜·AI 로그인 유도 / AI 기사님(역할) 제한 안내 */
+  const [loginModalReason, setLoginModalReason] = useState<"favorite" | "ai" | "aiCustomerOnly">(
+    "favorite"
+  );
+  const [aiChatOpen, setAiChatOpen] = useState(false);
+  const tCommon = useTranslations("common");
+  const isTabletUp = useMediaQuery(TABLET_QUERY);
+  const infoModalSize = isTabletUp ? "md" : "sm";
+
+  const openAiChat = () => {
+    // BE mover-ai는 CUSTOMER 전용 — 비로그인/기사님을 구분해 안내
+    if (!isAuthenticated) {
+      setLoginModalReason("ai");
+      setLoginModalOpen(true);
+      return;
+    }
+    if (!isCustomer) {
+      setLoginModalReason("aiCustomerOnly");
+      setLoginModalOpen(true);
+      return;
+    }
+    setAiChatOpen(true);
+  };
 
   // 입력은 즉시 반영, API keyword만 300ms debounce
   const debouncedSearch = useDebounce(search, 300);
@@ -139,7 +171,10 @@ export default function MoversPageClient({ initialFilters }: MoversPageClientPro
   // ── 서버 상태 ──
   const { favoritedIds, isFavoritesLoading, toggleFavorite, getFavoriteCount } =
     useToggleMoverFavorite({
-      onRequireLogin: () => setLoginModalOpen(true),
+      onRequireLogin: () => {
+        setLoginModalReason("favorite");
+        setLoginModalOpen(true);
+      },
     });
 
   const {
@@ -186,9 +221,9 @@ export default function MoversPageClient({ initialFilters }: MoversPageClientPro
         <main
           className={cn(
             "w-full flex-1",
-            "px-6 pt-1.5 pb-10",
-            "tablet:px-18 tablet:pt-2.5",
-            "pc:px-90 pc:pt-0.75 pc:pb-20"
+            "px-6 pt-1.5 pb-48",
+            "tablet:px-18 tablet:pt-2.5 tablet:pb-28",
+            "pc:px-90 pc:pt-0.75 pc:pb-28"
           )}
         >
           {/* ── 검색·필터·정렬 (PC 검색열 819px, 목록은 820px) ── */}
@@ -281,7 +316,20 @@ export default function MoversPageClient({ initialFilters }: MoversPageClientPro
           <div className="tablet:mt-6 pc:mt-9.25 pc:gap-13.5 mt-3 flex items-start">
             <div className="pc:w-205 pc:flex-none flex min-w-0 flex-1 flex-col">
               {isPending && (
-                <p className="text-14 text-gray-gray-500 py-8 text-center">{t("loadingMovers")}</p>
+                <SkeletonStatus label={t("loadingMovers")}>
+                  <ul className="pc:gap-5 flex flex-col gap-6">
+                    {Array.from({ length: 4 }, (_, index) => (
+                      <li key={index}>
+                        <div className="tablet:hidden">
+                          <CardMoverSkeleton size="md" withDescription />
+                        </div>
+                        <div className="tablet:block hidden">
+                          <CardMoverSkeleton size="lg" withDescription />
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                </SkeletonStatus>
               )}
 
               {isError && (
@@ -330,7 +378,17 @@ export default function MoversPageClient({ initialFilters }: MoversPageClientPro
                 <h2 className="text-20 text-black-black-450 font-semibold">
                   {t("favoriteMovers")}
                 </h2>
-                {isSidebarPending && <p className="text-14 text-gray-gray-500">{t("loading")}</p>}
+                {isSidebarPending && (
+                  <SkeletonStatus label={t("loading")}>
+                    <ul className="flex flex-col gap-4">
+                      {Array.from({ length: 3 }, (_, index) => (
+                        <li key={index}>
+                          <CardMoverSkeleton size="sm" />
+                        </li>
+                      ))}
+                    </ul>
+                  </SkeletonStatus>
+                )}
                 {isSidebarError && (
                   <p className="text-14 text-red-500" role="alert">
                     {t("favoriteLoadFailed")}
@@ -375,14 +433,50 @@ export default function MoversPageClient({ initialFilters }: MoversPageClientPro
         </main>
       </div>
 
-      {/* 비회원 찜 가드 */}
+      <ScrollToTopButton />
+
+      <button
+        type="button"
+        onClick={openAiChat}
+        className={cn(
+          "ai-search-entry text-14 tablet:text-16 fixed bottom-28 left-1/2 z-[var(--z-sticky)] flex h-13 max-w-[calc(100vw-7.5rem)] -translate-x-1/2 items-center gap-1.5 rounded-full border border-orange-200 bg-orange-100 px-4 font-semibold whitespace-nowrap text-orange-500 shadow-md transition-colors",
+          "tablet:bottom-8 tablet:max-w-[calc(100vw-3rem)] tablet:px-5",
+          "not-disabled:hover:border-transparent focus-visible:outline-none"
+        )}
+      >
+        <Image src={chatIconMd} alt="" className="size-5 shrink-0" />
+        <span>{t("aiButton")}</span>
+      </button>
+
+      {/* 비회원 찜·AI 로그인 유도 / 기사님 AI 역할 제한 */}
       <InfoRequiredModal
         open={loginModalOpen}
         onClose={() => setLoginModalOpen(false)}
-        title={t("loginRequired")}
-        message={t("loginToFavorite")}
-        actionLabel={t("goLogin")}
-        onAction={goToCustomerLogin}
+        size={infoModalSize}
+        title={
+          loginModalReason === "aiCustomerOnly" ? t("aiCustomerOnlyTitle") : t("loginRequired")
+        }
+        message={
+          loginModalReason === "ai"
+            ? t("loginToAi")
+            : loginModalReason === "aiCustomerOnly"
+              ? t("aiCustomerOnly")
+              : t("loginToFavorite")
+        }
+        actionLabel={loginModalReason === "aiCustomerOnly" ? tCommon("confirm") : t("goLogin")}
+        onAction={
+          loginModalReason === "aiCustomerOnly" ? () => setLoginModalOpen(false) : goToCustomerLogin
+        }
+      />
+
+      <MoverAiChatModal
+        open={aiChatOpen}
+        onClose={() => setAiChatOpen(false)}
+        onRequireLogin={() => {
+          setAiChatOpen(false);
+          setLoginModalReason("ai");
+          setLoginModalOpen(true);
+        }}
       />
     </div>
   );

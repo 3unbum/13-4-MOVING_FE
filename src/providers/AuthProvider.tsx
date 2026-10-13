@@ -12,6 +12,7 @@ interface AuthContextValue {
   authError: Error | null;
   refetch: () => Promise<void>;
   logout: () => Promise<void>;
+  deleteAccount: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -94,6 +95,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setAccount(null);
   };
 
+  // 실패(403 재인증 필요·409 탈퇴 불가 등)는 계정이 그대로 남아 있다는 뜻이라 로컬 상태를 건드리지 않고 그대로 던진다.
+  const deleteAccount = async () => {
+    await authService.deleteAccount();
+    setAccount(null);
+  };
+
   const value: AuthContextValue = {
     account,
     isLoading,
@@ -101,6 +108,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     isAuthenticated: !!account,
     refetch,
     logout,
+    deleteAccount,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

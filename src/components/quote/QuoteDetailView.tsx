@@ -4,17 +4,24 @@ import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import Button from "@/components/common/Button";
 import EtcButton from "@/components/common/EtcButton";
-import { ConfirmedBadge, FavoriteCount, PendingBadge } from "@/components/common/CardParts";
+import {
+  ConfirmedBadge,
+  FavoriteCount,
+  PendingBadge,
+  RejectedBadge,
+} from "@/components/common/CardParts";
 import Header from "@/components/common/Header";
 import ProfileAvatar from "@/components/common/ProfileAvatar";
 import MoverMeta from "@/components/mover/MoverMeta";
 import MoverName from "@/components/mover/MoverName";
 import MoveTypeChip from "@/components/filter/ChipMoveType";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
+import ExtraChargeInfo from "@/components/quote/ExtraChargeInfo";
+import PayAction from "@/components/quote/PayAction";
 import QuoteShare from "@/components/quote/QuoteShare";
 import { cn } from "@/lib/utils/cn";
 import { formatPrice, formatRequestDate, formatUsageDate, type DateLocale } from "@/lib/utils/date";
-import type { Estimate } from "@/lib/services/estimate-service";
+import { paymentTypeOfStage, type Estimate } from "@/lib/services/estimate-service";
 import type { QuotationRequest } from "@/lib/services/quotation-request-service";
 // 카드용 빨간 하트가 아니라 검은 하트입니다 (피그마 견적 상세 기준)
 import logoMark from "@/assets/icons/logo-mark-sm.svg";
@@ -106,11 +113,25 @@ export default function QuoteDetailView({
   // 이사일이 지나면 배치가 확정 견적을 CONFIRMED → COMPLETED로 바꿉니다.
   // CONFIRMED만 보면 이사를 마친 견적에 "확정하지 않은 견적" 안내가 붙습니다.
   const isConfirmed = estimateStatus === "CONFIRMED" || estimateStatus === "COMPLETED";
-  // 지난 요청에서 확정되지 않은 채 끝난 견적 — 하단에 안내가 붙습니다
-  const isUnconfirmed = !isPending && !isConfirmed;
+  // 기사님이 반려한 견적. 카드 목록(CardPendingHistory)과 표시를 맞춥니다 —
+  // 카드에서는 "반려됨"인데 상세로 들어오면 배지가 사라지면 상태를 다시 읽어야 합니다.
+  const isRejected = estimateStatus === "REJECTED";
+  // 지난 요청에서 확정되지 않은 채 끝난 견적 — 하단에 안내가 붙습니다.
+  // 반려는 제외합니다. "확정하지 않은 견적이에요!"는 고객이 고르지 않았다는 뜻인데,
+  // 반려는 기사님이 거절한 것이라 사실과 다릅니다. 반려 사유를 대신 보여줍니다.
+  const isUnconfirmed = !isPending && !isConfirmed && !isRejected;
+
+  // 선수금 대기(확정 후) 또는 잔금 대기(이사 완료 후)이면 공유 밑에 결제 버튼을 둡니다
+  const isPayDue = paymentTypeOfStage(estimate.paymentStage) !== null;
 
   // 위치만 다르고 내용은 같아 한 번만 만들어 두 자리에서 씁니다
-  const statusBadge = isPending ? <PendingBadge /> : isConfirmed ? <ConfirmedBadge /> : null;
+  const statusBadge = isPending ? (
+    <PendingBadge />
+  ) : isConfirmed ? (
+    <ConfirmedBadge />
+  ) : isRejected ? (
+    <RejectedBadge />
+  ) : null;
 
   return (
     <div className="flex min-h-dvh flex-col">
@@ -232,6 +253,20 @@ export default function QuoteDetailView({
               </span>
             </div>
 
+            {/* 기사님이 견적·반려 때 쓴 코멘트(BE가 10~200자 필수로 받습니다).
+                피그마 시안에는 없지만, 반려 사유를 고객이 볼 곳이 여기뿐이라 넣었습니다.
+                일반 견적에서도 금액만으로는 알 수 없는 설명이 담깁니다. */}
+            {estimate.comment.trim() && (
+              <div className="border-line-100 tablet:pb-8 pc:pb-9 flex flex-col gap-2 border-b pb-5">
+                <h2 className="text-16 text-black-black-450 pc:text-20 font-semibold">
+                  {isRejected ? t("rejectReason") : t("moverComment")}
+                </h2>
+                <p className="text-14 text-gray-gray-500 tablet:text-16 whitespace-pre-line">
+                  {estimate.comment}
+                </p>
+              </div>
+            )}
+
             <div className="tablet:gap-8 pc:gap-7 flex flex-col gap-5">
               <h2 className="text-16 text-black-black-450 pc:text-20 font-semibold">
                 {t("quoteInfo")}
@@ -256,6 +291,9 @@ export default function QuoteDetailView({
               </div>
             </div>
 
+            {/* 기사님이 요청한 추가 금액이 있으면 얼마가 왜 추가됐는지 보여줍니다 (승인·거절한 뒤에도 남습니다) */}
+            <ExtraChargeInfo estimate={estimate} />
+
             {isUnconfirmed && (
               <div className="bg-background-200 text-14 text-gray-gray-500 flex items-center gap-2 rounded-lg px-4 py-4 font-medium">
                 <span aria-hidden>ⓘ</span>
@@ -267,14 +305,17 @@ export default function QuoteDetailView({
                   하단 고정 CTA(110px)가 덮지 않도록 확정 대기일 때 여백을 더 둡니다. */}
             <QuoteShare
               title={t("shareTitleMobile")}
-              moverId={mover.id}
+              shareUrl={`/customer/my-quotes/${estimate.id}`}
               moverNickName={mover.nickName}
+              moverImage={mover.image}
               className={cn(
                 "pc:hidden border-line-100 border-t pt-6",
-                // 확정 CTA가 없으면 공유 버튼이 화면 맨 아래에 붙습니다 (1차 QA-10)
-                isPending ? "pb-32" : "pb-14"
+                // 확정 CTA가 없으면 공유 버튼이 화면 맨 아래에 붙습니다 (1차 QA-10).
+                // 결제 버튼이 밑에 오면 공유와의 간격만 두고, 아래 여백은 결제 버튼이 갖습니다
+                isPending ? "pb-32" : isPayDue ? "pb-6" : "pb-14"
               )}
             />
+            {isPayDue && <PayAction estimate={estimate} className="pc:hidden pb-14" />}
           </div>
 
           {/* 우: PC 전용 사이드 — 견적가 + 확정 버튼 + 공유 */}
@@ -305,9 +346,16 @@ export default function QuoteDetailView({
             )}
             <QuoteShare
               title={t("shareTitlePc")}
-              moverId={mover.id}
+              shareUrl={`/customer/my-quotes/${estimate.id}`}
               moverNickName={mover.nickName}
+              moverImage={mover.image}
             />
+            {isPayDue && (
+              <>
+                <hr className="border-line-100 my-10" />
+                <PayAction estimate={estimate} />
+              </>
+            )}
           </aside>
         </div>
       </div>
@@ -323,6 +371,9 @@ export default function QuoteDetailView({
               kind="like"
               size="sm"
               active={isFavorited}
+              /* 찜한 하트는 빨강입니다. 안 넘기면 `activeColor` 기본값이 "black"이라
+                 PC(위쪽 `FavoriteCount`)와 색이 달라집니다. */
+              activeColor="red"
               onClick={onToggleFavorite}
               disabled={isTogglingFavorite}
             />

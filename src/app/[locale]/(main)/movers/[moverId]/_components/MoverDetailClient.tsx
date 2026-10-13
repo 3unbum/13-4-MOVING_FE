@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { OG_FALLBACK_IMAGE } from "@/constants/site";
 import { useTranslations } from "next-intl";
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
@@ -12,16 +13,36 @@ import moverDetailBannerMd from "@/assets/images/common/mover-detail-banner-md.s
 import moverDetailBannerSm from "@/assets/images/common/mover-detail-banner-sm.svg";
 import Pagination from "@/components/common/Pagination";
 import ProgressBar from "@/components/common/ProgressBar";
+import SkeletonBone from "@/components/common/SkeletonBone";
+import Sort from "@/components/common/Sort";
 import Toast from "@/components/common/Toast";
 import InfoRequiredModal from "@/components/quote/InfoRequiredModal";
 import CardReview from "@/components/review/CardReview";
+import {
+  ReviewPhotoListModal,
+  ReviewPhotoModal,
+  ReviewPhotoStrip,
+} from "@/components/review/ReviewPhotoGallery";
+import CardReviewSkeleton, {
+  ReviewDistributionSkeleton,
+} from "@/components/skeleton/CardReviewSkeleton";
+import SkeletonStatus from "@/components/skeleton/SkeletonStatus";
 import { moverQueryKeys } from "@/constants/query-keys/movers";
 import { useMoverDetail } from "@/hooks/useMoverDetail";
 import { myQuotesKeys } from "@/hooks/useMyQuotes";
 import { useShare } from "@/hooks/useShare";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { useToggleMoverFavorite } from "@/hooks/useToggleMoverFavorite";
-import { moverService, type MoverRatingDistribution } from "@/lib/services/mover-service";
+import {
+  DEFAULT_MOVER_REVIEW_SORT,
+  MOVER_REVIEW_SORTS,
+  getReviewImageGallery,
+  moverService,
+  type MoverRatingDistribution,
+  type MoverReviewImageItem,
+  type MoverReviewItem,
+  type MoverReviewSort,
+} from "@/lib/services/mover-service";
 import { quotationRequestService } from "@/lib/services/quotation-request-service";
 import { ApiError } from "@/lib/utils/api-error";
 import { toAuthErrorDetail, toAuthErrorMessage } from "@/lib/auth/auth-error-message";
@@ -31,7 +52,7 @@ import { MoverDetailDesktopCta, MoverDetailMobileStickyCta } from "./MoverDetail
 import MoverDetailProfile, { MoverDetailAvatar } from "./MoverDetailProfile";
 import MoverDetailShare from "./MoverDetailShare";
 
-type ModalKind = "login" | "needQuote" | null;
+type ModalKind = "loginFavorite" | "login" | "needQuote" | null;
 
 const TABLET_QUERY = "(min-width: 744px)";
 
@@ -56,7 +77,7 @@ export default function MoverDetailClient() {
 
   const [modalKind, setModalKind] = useState<ModalKind>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
-  // InfoRequiredModal 공통 기본은 md — 상세만 뷰포트에 맞춰 size 전달
+  // InfoRequiredModal 기본은 md — 상세는 뷰포트에 맞춰 size를 넘긴다
   const isTabletUp = useMediaQuery(TABLET_QUERY);
   const infoModalSize = isTabletUp ? "md" : "sm";
 
@@ -73,11 +94,14 @@ export default function MoverDetailClient() {
     url: Number.isFinite(moverId) && moverId > 0 ? `/movers/${moverId}` : "/",
     text: mover ? tQuote("shareText", { moverName: mover.nickName }) : t("shareTextFallback"),
     buttonTitle: tQuote("shareButtonTitle"),
+    // 카카오 카드 제목·썸네일 — og와 같은 값을 씁니다 (SDK는 og를 읽지 않습니다)
+    title: mover ? tQuote("shareCardTitle", { moverName: mover.nickName }) : undefined,
+    imageUrl: mover?.image || OG_FALLBACK_IMAGE,
   });
 
   const { favoritedIds, isFavoritesLoading, toggleFavorite, getFavoriteCount } =
     useToggleMoverFavorite({
-      onRequireLogin: () => setModalKind("login"),
+      onRequireLogin: () => setModalKind("loginFavorite"),
     });
 
   // 활성 일반 견적 — 지정 요청 가드용 (CUSTOMER만)
@@ -129,7 +153,7 @@ export default function MoverDetailClient() {
   }
 
   if (detailQuery.isPending) {
-    return <p className="text-14 text-gray-gray-500 p-10 text-center">{t("loading")}</p>;
+    return <MoverDetailSkeleton label={t("loading")} />;
   }
 
   if (detailQuery.isError || !mover) {
@@ -280,11 +304,11 @@ export default function MoverDetailClient() {
       />
 
       <InfoRequiredModal
-        open={modalKind === "login"}
+        open={modalKind === "login" || modalKind === "loginFavorite"}
         onClose={closeModal}
         size={infoModalSize}
         title={t("loginRequired")}
-        message={t("loginToUse")}
+        message={modalKind === "loginFavorite" ? t("loginToFavorite") : t("loginToUse")}
         actionLabel={t("goLogin")}
         onAction={() => {
           closeModal();
@@ -345,6 +369,13 @@ function toProgressBarData(distribution: MoverRatingDistribution) {
   };
 }
 
+const REVIEW_SORT_LABEL = {
+  oldest: "sortOldest",
+  latest: "sortLatest",
+  ratingDesc: "sortRatingDesc",
+  ratingAsc: "sortRatingAsc",
+} as const;
+
 function ReviewHeading() {
   const tReview = useTranslations("review");
   return (
@@ -354,17 +385,171 @@ function ReviewHeading() {
   );
 }
 
+/** 상세 첫 로딩 뼈대 */
+function MoverDetailSkeleton({ label }: { label: string }) {
+  const chips = (
+    <div className="flex flex-wrap gap-3">
+      {Array.from({ length: 3 }, (_, index) => (
+        <SkeletonBone
+          key={index}
+          className="tablet:h-7 tablet:w-20 tablet:rounded-md h-6 w-18 rounded"
+        />
+      ))}
+    </div>
+  );
+
+  return (
+    <SkeletonStatus label={label} className="pc:pb-20 flex min-h-screen flex-col bg-white pb-27.5">
+      {/* 배너 — 원본과 같은 높이·배경. 이미지는 생략 */}
+      <div
+        className={cn(
+          "relative w-full overflow-hidden bg-orange-400",
+          "tablet:h-[157px] pc:h-[225px] h-30.5"
+        )}
+      />
+
+      <div className="tablet:px-18 pc:px-0 flex w-full flex-col items-center px-5">
+        <div className="tablet:max-w-[600px] pc:max-w-[1202px] pc:w-[1202px] w-full">
+          <div className={cn("relative z-10", "-mt-10.5", "tablet:-mt-[77px]", "pc:-mt-[103px]")}>
+            <SkeletonBone className="tablet:hidden size-16 rounded-xl" />
+            <SkeletonBone className="tablet:block pc:hidden hidden size-25 rounded-xl" />
+            <SkeletonBone className="pc:block hidden size-33.5 rounded-xl" />
+          </div>
+
+          <div
+            className={cn("pt-4", "tablet:pt-6", "pc:flex pc:items-start pc:gap-[116px] pc:pt-8")}
+          >
+            <div className="pc:w-[766px] pc:shrink-0 flex w-full min-w-0 flex-col gap-8">
+              {/* MoverDetailProfile 골격 */}
+              <section className="flex w-full flex-col gap-8">
+                <div className="flex w-full flex-col gap-[31px]">
+                  <div className="flex flex-col gap-5">
+                    <div className="flex flex-col gap-3">
+                      {chips}
+                      <SkeletonBone className="tablet:h-8 pc:h-8 h-6.5 w-3/4" />
+                    </div>
+                    <div className="flex w-full items-center justify-between gap-2">
+                      <SkeletonBone className="h-6.5 w-32" />
+                      <SkeletonBone className="h-6.5 w-16" />
+                    </div>
+                    <div className="flex w-full flex-col gap-1">
+                      <SkeletonBone className="h-6 w-full" />
+                      <SkeletonBone className="h-6 w-5/6" />
+                    </div>
+                  </div>
+
+                  {/* 통계 박스 뼈대 */}
+                  <SkeletonBone className="tablet:h-30 h-[95px] w-full rounded-2xl" />
+                </div>
+
+                <div className="flex flex-col gap-4">
+                  <SkeletonBone className="tablet:h-8 h-6.5 w-28" />
+                  {chips}
+                </div>
+                <div className="flex flex-col gap-4">
+                  <SkeletonBone className="tablet:h-8 h-6.5 w-24" />
+                  {chips}
+                </div>
+              </section>
+
+              {/* 모바일·태블릿 공유 자리 */}
+              <div className="pc:hidden border-line-100 flex flex-col gap-3 border-t pt-8">
+                <SkeletonBone className="h-8 w-40" />
+                <div className="flex items-center gap-3">
+                  {Array.from({ length: 3 }, (_, index) => (
+                    <SkeletonBone key={index} className="size-10 rounded-xl" />
+                  ))}
+                </div>
+              </div>
+
+              {/* 리뷰 — 상세 로드 후 MoverDetailReviews 첫 로딩과 같은 구성 */}
+              <div className="border-line-100 pc:pt-10 flex flex-col gap-4 border-t pt-8">
+                <ReviewHeading />
+                <ReviewDistributionSkeleton />
+                <ul className="divide-line-100 flex w-full flex-col divide-y">
+                  {Array.from({ length: 3 }, (_, index) => (
+                    <li key={index}>
+                      <div className="tablet:hidden">
+                        <CardReviewSkeleton size="sm" />
+                      </div>
+                      <div className="tablet:block hidden">
+                        <CardReviewSkeleton size="lg" />
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
+            {/* PC 사이드바 — CTA + 공유 */}
+            <aside className="pc:flex hidden w-80 shrink-0 flex-col gap-17.5">
+              <div className="flex w-80 flex-col gap-4">
+                <div className="flex flex-col gap-1">
+                  <SkeletonBone className="h-7 w-full" />
+                  <SkeletonBone className="h-7 w-2/3" />
+                </div>
+                <SkeletonBone className="h-13.5 w-full rounded-2xl" />
+                <SkeletonBone className="h-13.5 w-full rounded-2xl" />
+              </div>
+              <div className="flex flex-col gap-5.5">
+                <SkeletonBone className="h-8 w-36" />
+                <div className="flex items-center gap-4">
+                  {Array.from({ length: 3 }, (_, index) => (
+                    <SkeletonBone key={index} className="size-16 rounded-2xl" />
+                  ))}
+                </div>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </div>
+
+      {/* 모바일·태블릿 sticky CTA 자리 */}
+      <div
+        className={cn(
+          "pc:hidden border-line-100 fixed inset-x-0 bottom-0 z-[var(--z-sticky)] border-t bg-white",
+          "h-27.5 px-6 py-7",
+          "tablet:px-18"
+        )}
+      >
+        <div className="tablet:mx-auto tablet:max-w-150 flex items-center gap-2">
+          <SkeletonBone className="size-13.5 shrink-0 rounded-2xl" />
+          <SkeletonBone className="h-13.5 min-w-0 flex-1 rounded-2xl" />
+        </div>
+      </div>
+    </SkeletonStatus>
+  );
+}
+
 /** 상세 페이지 리뷰 영역. 마이페이지 공용 섹션과 분리해서 여기서만 다룬다. */
 function MoverDetailReviews({ moverId }: { moverId: number }) {
   const tReview = useTranslations("review");
   const [page, setPage] = useState(1);
+  const [sort, setSort] = useState<MoverReviewSort>(DEFAULT_MOVER_REVIEW_SORT);
+  const [photoListOpen, setPhotoListOpen] = useState(false);
+  const [photoViewer, setPhotoViewer] = useState<{
+    slides: MoverReviewImageItem[];
+    index: number;
+    known: MoverReviewItem[];
+    fromList?: boolean;
+  } | null>(null);
   // 피그마: 모바일 Card-list-review sm, 태블릿·PC lg
   const isTabletUp = useMediaQuery(TABLET_QUERY);
   const reviewCardSize = isTabletUp ? "lg" : "sm";
+  const sortOptions = MOVER_REVIEW_SORTS.map((value) => ({
+    value,
+    label: tReview(REVIEW_SORT_LABEL[value]),
+  }));
+
+  const handleSortChange = (value: string) => {
+    if (!MOVER_REVIEW_SORTS.includes(value as MoverReviewSort)) return;
+    setSort(value as MoverReviewSort);
+    setPage(1);
+  };
 
   const listQuery = useQuery({
-    queryKey: moverQueryKeys.reviewList(moverId, page),
-    queryFn: () => moverService.getReviews(moverId, page, REVIEW_TAKE),
+    queryKey: moverQueryKeys.reviewList(moverId, page, sort),
+    queryFn: () => moverService.getReviews(moverId, page, REVIEW_TAKE, sort),
     placeholderData: keepPreviousData,
   });
 
@@ -373,14 +558,29 @@ function MoverDetailReviews({ moverId }: { moverId: number }) {
     queryFn: () => moverService.getReviewDistribution(moverId),
   });
 
+  const imagesQuery = useQuery({
+    queryKey: moverQueryKeys.reviewImages(moverId),
+    queryFn: () => getReviewImageGallery(moverId),
+  });
+
   if (listQuery.isPending && !listQuery.data) {
     return (
-      <div className="flex w-full flex-col gap-4">
+      <SkeletonStatus label={tReview("loading")} className="flex w-full flex-col gap-4">
         <ReviewHeading />
-        <div className="text-16 text-gray-gray-400 min-h-[200px] py-20 text-center" role="status">
-          {tReview("loading")}
-        </div>
-      </div>
+        <ReviewDistributionSkeleton />
+        <ul className="divide-line-100 flex w-full flex-col divide-y">
+          {Array.from({ length: 3 }, (_, index) => (
+            <li key={index}>
+              <div className="tablet:hidden">
+                <CardReviewSkeleton size="sm" />
+              </div>
+              <div className="tablet:block hidden">
+                <CardReviewSkeleton size="lg" />
+              </div>
+            </li>
+          ))}
+        </ul>
+      </SkeletonStatus>
     );
   }
 
@@ -398,6 +598,24 @@ function MoverDetailReviews({ moverId }: { moverId: number }) {
   const totalPages = listQuery.data?.totalPages ?? 0;
   const isEmpty = (listQuery.data?.totalCount ?? 0) === 0;
   const distribution = distributionQuery.isError ? undefined : distributionQuery.data;
+  const gallery = imagesQuery.data?.items ?? [];
+
+  const openReviewPhotos = (item: MoverReviewItem, imageUrl: string) => {
+    const galleryIndex = gallery.findIndex(
+      (photo) => photo.reviewId === item.id && photo.imageUrl === imageUrl
+    );
+    if (galleryIndex >= 0) {
+      setPhotoViewer({ slides: gallery, index: galleryIndex, known: items });
+      return;
+    }
+
+    const urls = item.imageUrls ?? [];
+    setPhotoViewer({
+      slides: urls.map((url) => ({ reviewId: item.id, imageUrl: url })),
+      index: Math.max(0, urls.indexOf(imageUrl)),
+      known: [item],
+    });
+  };
 
   if (isEmpty) {
     // 피그마 상세 empty는 이미지 없이 제목 + 안내 문구만 (1:8169 / 1:8766)
@@ -415,7 +633,16 @@ function MoverDetailReviews({ moverId }: { moverId: number }) {
   return (
     <div className="flex w-full flex-col">
       <div className="flex flex-col gap-4">
-        <ReviewHeading />
+        <div className="flex items-center justify-between gap-3">
+          <ReviewHeading />
+          <Sort
+            size={isTabletUp ? "md" : "sm"}
+            options={sortOptions}
+            value={sort}
+            onChange={handleSortChange}
+          />
+        </div>
+        <ReviewPhotoStrip items={gallery} onOpen={() => setPhotoListOpen(true)} />
         {distribution ? <ProgressBar data={toProgressBarData(distribution)} hideTitle /> : null}
 
         <ul className="divide-line-100 flex w-full flex-col divide-y">
@@ -427,6 +654,8 @@ function MoverDetailReviews({ moverId }: { moverId: number }) {
                 createdAt={formatReviewCreatedAt(item.createdAt)}
                 rating={item.rating}
                 content={item.comment}
+                images={item.imageUrls ?? []}
+                onImageClick={(imageUrl) => openReviewPhotos(item, imageUrl)}
               />
             </li>
           ))}
@@ -439,6 +668,36 @@ function MoverDetailReviews({ moverId }: { moverId: number }) {
         onPageChange={setPage}
         className="mt-8 justify-center"
       />
+      {photoListOpen ? (
+        <ReviewPhotoListModal
+          open
+          onClose={() => setPhotoListOpen(false)}
+          items={gallery}
+          onSelect={(index) => {
+            setPhotoListOpen(false);
+            setPhotoViewer({ slides: gallery, index, known: items, fromList: true });
+          }}
+        />
+      ) : null}
+      {photoViewer ? (
+        <ReviewPhotoModal
+          key={`${photoViewer.index}-${photoViewer.slides[photoViewer.index]?.imageUrl ?? ""}`}
+          open
+          onClose={() => setPhotoViewer(null)}
+          slides={photoViewer.slides}
+          initialIndex={photoViewer.index}
+          moverId={moverId}
+          knownReviews={photoViewer.known}
+          onBack={
+            photoViewer.fromList
+              ? () => {
+                  setPhotoViewer(null);
+                  setPhotoListOpen(true);
+                }
+              : undefined
+          }
+        />
+      ) : null}
     </div>
   );
 }

@@ -3,7 +3,6 @@
 import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
-import Loading from "@/app/[locale]/loading";
 import emptyCharacter from "@/assets/images/common/empty-review.png";
 import Header from "@/components/common/Header";
 import Toast from "@/components/common/Toast";
@@ -14,6 +13,8 @@ import MoverRequestFilters, {
 } from "@/components/mover/MoverRequestFilters";
 import MoverRequestList from "@/components/mover/MoverRequestList";
 import QuoteActionModal from "@/components/quote/QuoteActionModal";
+import CardRequestSkeleton from "@/components/skeleton/CardRequestSkeleton";
+import SkeletonStatus from "@/components/skeleton/SkeletonStatus";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useInfiniteScrollTrigger } from "@/hooks/useInfiniteScrollTrigger";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
@@ -205,7 +206,21 @@ export default function MoverRequestsClient() {
             {error ? (
               <Message>{t("requestLoadFailed")}</Message>
             ) : isPending ? (
-              <Loading />
+              <SkeletonStatus
+                label={tCommon("loading")}
+                className="tablet:gap-8 pc:grid-cols-2 pc:gap-6 grid w-full grid-cols-1 gap-6"
+              >
+                {Array.from({ length: 4 }, (_, index) => (
+                  <div key={index}>
+                    <div className="tablet:hidden">
+                      <CardRequestSkeleton size="sm" footer="actions" />
+                    </div>
+                    <div className="tablet:block hidden">
+                      <CardRequestSkeleton size="lg" footer="actions" />
+                    </div>
+                  </div>
+                ))}
+              </SkeletonStatus>
             ) : requests.length === 0 ? (
               // 피그마 empty 문구는 t("noRequests") 하나뿐이라, 검색·필터로
               // 걸러져 0건인 경우는 원인을 알 수 있게 문구만 바꿔 같은 화면을 씁니다
@@ -270,6 +285,14 @@ export default function MoverRequestsClient() {
           customerName={action.request.userName}
           fromAddress={shortenAddress(action.request.fromAddress)}
           toAddress={shortenAddress(action.request.toAddress)}
+          // 위 두 값은 "서울 강남구"까지 줄인 것입니다. 견적가를 정하려면
+          // 동·호수까지 필요해 전체 주소를 따로 넘깁니다.
+          fullFromAddress={action.request.fromAddress}
+          fullToAddress={action.request.toAddress}
+          fromDetailAddress={action.request.fromDetailAddress}
+          fromPostalCode={action.request.fromPostalCode}
+          toDetailAddress={action.request.toDetailAddress}
+          toPostalCode={action.request.toPostalCode}
           movingDate={formatMovingDate(action.request.movingDate, locale)}
           price={price}
           onPriceChange={setPrice}

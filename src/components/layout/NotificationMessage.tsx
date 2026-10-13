@@ -25,12 +25,21 @@ export function notificationTone(type: NotificationType): NotificationTone {
     case "NEW_REQUEST":
       return "request";
     case "ESTIMATE_CONFIRMED":
+    case "PAYMENT_COMPLETED":
+    case "DEPOSIT_PAID":
+    case "EXTRA_CHARGE_RESPONDED":
       return "confirmed";
     case "MOVING_DAY":
     case "MOVING_DAY_BEFORE":
       return "moving";
     case "NEW_ESTIMATE":
+    case "ESTIMATE_REJECTED":
+    case "PAYMENT_REQUEST":
+    case "DEPOSIT_EXPIRED":
+    case "EXTRA_CHARGE_PROPOSED":
       return "quote";
+    case "NEW_CHAT_MESSAGE":
+      return "chat";
   }
 }
 
@@ -52,10 +61,32 @@ export default function NotificationMessage({ item, role }: NotificationCopyProp
         category: tService(item.payload.category),
         em,
       });
+    case "EXTRA_CHARGE_PROPOSED":
+      return t.rich("extraChargeProposed", { name: item.payload.moverNickName, em });
+    case "EXTRA_CHARGE_RESPONDED":
+      return t.rich(item.payload.approved ? "extraChargeApproved" : "extraChargeRejected", {
+        name: item.payload.customerName,
+        em,
+      });
+    case "DEPOSIT_PAID":
+      return t.rich("depositPaid", { name: item.payload.customerName, em });
+    case "DEPOSIT_EXPIRED":
+      // 같은 알림을 고객과 기사님이 받습니다 — 받는 사람 기준으로 상대 이름을 보여줍니다
+      return role === "MOVER"
+        ? t.rich("depositExpiredMover", { name: item.payload.customerName, em })
+        : t.rich("depositExpiredCustomer", { name: item.payload.moverNickName, em });
+    case "PAYMENT_COMPLETED":
+      return t.rich("paymentCompleted", { name: item.payload.customerName, em });
+    case "PAYMENT_REQUEST":
+      return t.rich("paymentRequest", { name: item.payload.moverNickName, em });
     case "ESTIMATE_CONFIRMED":
       return role === "MOVER"
         ? t.rich("estimateConfirmedMover", { em })
         : t.rich("estimateConfirmedCustomer", { name: item.payload.moverNickName, em });
+    case "ESTIMATE_REJECTED":
+      return t.rich("estimateRejected", { name: item.payload.moverNickName, em });
+    case "NEW_CHAT_MESSAGE":
+      return t.rich("newChatMessage", { name: item.payload.senderName, em });
     case "MOVING_DAY_BEFORE":
       return t.rich("movingDayBefore", {
         from: place(item.payload.fromRegion, item.payload.fromAddress),

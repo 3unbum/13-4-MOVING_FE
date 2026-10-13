@@ -37,7 +37,8 @@ export interface CustomerProfileUpdatePayload {
   phoneNumber?: string;
   currentPassword?: string;
   newPassword?: string;
-  image?: string;
+  // null이면 프로필 이미지를 삭제, undefined면 변경 없음
+  image?: string | null;
   region?: string;
   services?: string[];
 }
@@ -47,7 +48,8 @@ export interface CustomerProfileUpdatePayload {
 // 엔드포인트를 각자 다른 필드 조합으로 호출한다(#73). newPasswordConfirm은 FE 검증 전용이라 여기
 // 타입엔 없음.
 export interface MoverProfileUpdatePayload {
-  image?: string;
+  // null이면 프로필 이미지를 삭제, undefined면 변경 없음
+  image?: string | null;
   nickName?: string;
   career?: number;
   bio?: string;
@@ -102,6 +104,17 @@ export const profileService = {
   updateMover: (payload: MoverProfileUpdatePayload) =>
     cookieFetch<MoverAccountResponse>("/profiles/mover", {
       method: "PATCH",
+      body: JSON.stringify(payload),
+    }),
+
+  // 프로필 수정 진입용 이메일 인증(#131) — 로그인된 사용자 기준이라 role/email을 안 보낸다(BE가
+  // req.user.id로 처리). 가입 여부를 숨길 필요가 없어 비밀번호 재설정과 달리 항상 204는 아니다.
+  sendEmailVerificationCode: () =>
+    cookieFetch<void>("/profiles/email-verification/send", { method: "POST" }),
+
+  verifyEmailVerificationCode: (payload: { code: string }) =>
+    cookieFetch<void>("/profiles/email-verification/verify", {
+      method: "POST",
       body: JSON.stringify(payload),
     }),
 };

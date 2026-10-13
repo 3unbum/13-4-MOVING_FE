@@ -10,17 +10,19 @@ import NotificationMessage, {
 import {
   GNB_HOME_PATH,
   GNB_LOGIN_PATH,
+  GNB_MOVER_PAYMENT_PATH,
   GNB_PROFILE_PATHS,
   isGnbProfilePathAction,
 } from "@/constants/gnb/profile";
 import { groupRequestSummary, useNotifications } from "@/hooks/useNotifications";
+import { openChatRoom } from "@/lib/utils/chat-open";
 import { notificationHref } from "@/lib/utils/notification-href";
 import { formatElapsedTime, type DateLocale } from "@/lib/utils/date";
 import { useAuth } from "@/providers/AuthProvider";
 
-// RootLayout(서버 컴포넌트)은 useAuth를 직접 못 써서, 실제 로그인 상태를 Gnb(순수 프레젠테이션)에
-// 주입해주는 클라이언트 경계. Gnb 자체는 컴포넌트 쇼케이스(app/(main)/components/gnb)에서도
-// 독립적으로 쓰이므로 계속 props 기반으로 둔다.
+// RootLayout(서버 컴포넌트)은 useAuth를 직접 못 써서, 실제 로그인 상태를 Gnb에 주입해주는
+// 클라이언트 경계. Gnb 는 로그인 상태를 **props 로만** 받습니다(메뉴 열림·번역·경로 등은
+// 자체 훅으로 다룹니다). 인증을 읽는 책임을 이 경계 한 곳에 모아 두기 위해서입니다.
 export default function GlobalGnb() {
   const router = useRouter();
   const locale = useLocale() as DateLocale;
@@ -68,8 +70,13 @@ export default function GlobalGnb() {
     const item = items.find((notification) => String(notification.id) === id);
     if (!item || !account) return;
 
+    // 채팅 알림은 페이지 이동이 아니라 채팅 창을 그 방으로 엽니다.
     // 읽음 API를 기다리면 패널만 닫히고 화면은 그대로인 것처럼 보입니다.
-    router.push(notificationHref(item, account.role));
+    if (item.type === "NEW_CHAT_MESSAGE") {
+      openChatRoom({ roomId: item.payload.roomId, name: item.payload.senderName });
+    } else {
+      router.push(notificationHref(item, account.role));
+    }
 
     if (!item.isRead) {
       markRead.mutate(item.id, {
@@ -80,7 +87,10 @@ export default function GlobalGnb() {
 
   const handleProfileSelect = async (value: string) => {
     if (isGnbProfilePathAction(value)) {
-      router.push(GNB_PROFILE_PATHS[value]);
+      // 결제 내역만 역할마다 경로가 다릅니다
+      router.push(
+        value === "payment" && isMover ? GNB_MOVER_PAYMENT_PATH : GNB_PROFILE_PATHS[value]
+      );
       return;
     }
 
@@ -107,6 +117,7 @@ export default function GlobalGnb() {
       isLoadingMoreNotifications={isLoadingMore}
       onLoadMoreNotifications={loadMore}
       requestSummary={requestSummary}
+      summarySeenScope={account?.role === "MOVER" ? String(account.userId) : null}
       onLoginClick={() => router.push(GNB_LOGIN_PATH)}
       onNotificationSelect={openNotification}
       onMarkNotificationRead={(id) => {

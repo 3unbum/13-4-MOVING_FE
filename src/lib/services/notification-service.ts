@@ -6,7 +6,19 @@ import { cookieFetch } from "@/lib/utils/api-client";
  * 전날·당일은 payload가 같고 type만 다릅니다.
  */
 export type NotificationType =
-  "NEW_REQUEST" | "NEW_ESTIMATE" | "ESTIMATE_CONFIRMED" | "MOVING_DAY_BEFORE" | "MOVING_DAY";
+  | "NEW_REQUEST"
+  | "NEW_ESTIMATE"
+  | "ESTIMATE_CONFIRMED"
+  | "ESTIMATE_REJECTED"
+  | "MOVING_DAY_BEFORE"
+  | "MOVING_DAY"
+  | "NEW_CHAT_MESSAGE"
+  | "PAYMENT_REQUEST"
+  | "PAYMENT_COMPLETED"
+  | "DEPOSIT_PAID"
+  | "DEPOSIT_EXPIRED"
+  | "EXTRA_CHARGE_PROPOSED"
+  | "EXTRA_CHARGE_RESPONDED";
 
 interface NotificationBase {
   id: number;
@@ -14,6 +26,8 @@ interface NotificationBase {
   createdAt: string;
   estimateId: number | null;
   quotationRequestId: number | null;
+  /** 채팅 알림일 때만 값이 있습니다 (BE 는 항상 이 키를 보냅니다) */
+  chatRoomId: number | null;
 }
 
 export interface NewRequestPayload {
@@ -29,9 +43,59 @@ export interface NewEstimatePayload {
   price: number | null;
 }
 
+/** 고객 수신 — 기사님이 이사 완료 견적의 결제를 요청했습니다 */
+export interface PaymentRequestPayload {
+  moverNickName: string;
+  category: ServiceCode;
+  price: number | null;
+}
+
+/** 기사님 수신 — 고객이 이사 완료 견적을 결제했습니다 */
+export interface PaymentCompletedPayload {
+  customerName: string;
+  category: ServiceCode;
+  price: number | null;
+}
+
+/** 기사님 수신 — 고객이 선수금을 결제해 이사가 확정됐습니다 */
+export interface DepositPaidPayload {
+  customerName: string;
+  category: ServiceCode;
+  /** 결제한 선수금 */
+  amount: number | null;
+}
+
+/** 고객·기사님 수신 — 선수금 기한(48시간)을 넘겨 확정이 자동 취소됐습니다 */
+export interface DepositExpiredPayload {
+  moverNickName: string;
+  customerName: string;
+  category: ServiceCode;
+}
+
+/** 고객 수신 — 기사님이 추가 금액을 요청했습니다 */
+export interface ExtraChargeProposedPayload {
+  moverNickName: string;
+  category: ServiceCode;
+  amount: number | null;
+}
+
+/** 기사님 수신 — 고객이 추가 금액을 승인·거절했습니다 */
+export interface ExtraChargeRespondedPayload {
+  customerName: string;
+  category: ServiceCode;
+  amount: number | null;
+  approved: boolean;
+}
+
 export interface EstimateConfirmedPayload {
   moverNickName: string;
   customerName: string;
+  category: ServiceCode;
+}
+
+/** 고객 수신 — 기사님이 지정 견적 요청을 반려했습니다. 사유는 견적 상세에서 봅니다. */
+export interface EstimateRejectedPayload {
+  moverNickName: string;
   category: ServiceCode;
 }
 
@@ -45,12 +109,26 @@ export interface MovingDayPayload {
   movingDate: string;
 }
 
+/** 받는 사람 기준 상대방 이름 — 메시지 내용은 알림에 싣지 않습니다 */
+export interface ChatMessagePayload {
+  roomId: number;
+  senderName: string;
+}
+
 export type NotificationItem =
   | (NotificationBase & { type: "NEW_REQUEST"; payload: NewRequestPayload })
   | (NotificationBase & { type: "NEW_ESTIMATE"; payload: NewEstimatePayload })
   | (NotificationBase & { type: "ESTIMATE_CONFIRMED"; payload: EstimateConfirmedPayload })
+  | (NotificationBase & { type: "ESTIMATE_REJECTED"; payload: EstimateRejectedPayload })
   | (NotificationBase & { type: "MOVING_DAY_BEFORE"; payload: MovingDayPayload })
-  | (NotificationBase & { type: "MOVING_DAY"; payload: MovingDayPayload });
+  | (NotificationBase & { type: "MOVING_DAY"; payload: MovingDayPayload })
+  | (NotificationBase & { type: "NEW_CHAT_MESSAGE"; payload: ChatMessagePayload })
+  | (NotificationBase & { type: "PAYMENT_REQUEST"; payload: PaymentRequestPayload })
+  | (NotificationBase & { type: "PAYMENT_COMPLETED"; payload: PaymentCompletedPayload })
+  | (NotificationBase & { type: "DEPOSIT_PAID"; payload: DepositPaidPayload })
+  | (NotificationBase & { type: "DEPOSIT_EXPIRED"; payload: DepositExpiredPayload })
+  | (NotificationBase & { type: "EXTRA_CHARGE_PROPOSED"; payload: ExtraChargeProposedPayload })
+  | (NotificationBase & { type: "EXTRA_CHARGE_RESPONDED"; payload: ExtraChargeRespondedPayload });
 
 export interface NotificationListResult {
   items: NotificationItem[];

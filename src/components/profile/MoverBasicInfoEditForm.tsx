@@ -1,5 +1,6 @@
 "use client";
 
+import { isProfileEditVerificationRequiredError } from "@/hooks/useProfileEditVerified";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useForm } from "react-hook-form";
@@ -24,6 +25,8 @@ const PC_QUERY = "(min-width: 1280px)";
 interface MoverBasicInfoEditFormProps {
   account: MoverAccountResponse;
   onAccountUpdated: (account: MoverAccountResponse) => void;
+  // 인증 후 30분이 지나 BE가 403으로 거절하면 부모가 인증 화면을 다시 띄운다
+  onVerificationRequired: () => void;
 }
 
 // 피그마 "마이페이지_기본정보 수정_기사님" 대응(#73). 이름/전화번호/비밀번호 변경만 다루고,
@@ -42,6 +45,7 @@ function accountToFormValues(account: MoverAccountResponse): MoverBasicInfoUpdat
 export default function MoverBasicInfoEditForm({
   account,
   onAccountUpdated,
+  onVerificationRequired,
 }: MoverBasicInfoEditFormProps) {
   const t = useTranslations("profile");
   const tCommon = useTranslations("common");
@@ -88,7 +92,9 @@ export default function MoverBasicInfoEditForm({
       const updated = await profileService.updateMover({
         name: values.name,
         phoneNumber: values.phoneNumber,
-        // 비밀번호는 새 비밀번호를 입력했을 때만 실어 보낸다 — 빈 문자열을 보내면 BE 검증(정규식)에 걸림
+        // #131: currentPassword/newPassword 둘 다 비밀번호를 실제로 바꿀 때만 실어 보낸다 —
+        // 진입 자체는 이메일 인증(ProfileEmailVerificationGate)으로 이미 본인 확인이 끝났다.
+        // 빈 문자열을 보내면 BE 검증(정규식)에 걸리므로 newPassword가 있을 때만 포함한다.
         ...(values.newPassword && {
           currentPassword: values.currentPassword,
           newPassword: values.newPassword,
@@ -102,6 +108,10 @@ export default function MoverBasicInfoEditForm({
       // (HoneyLatlll 리뷰, PR #135)
       router.push("/mover/mypage");
     } catch (error) {
+      if (isProfileEditVerificationRequiredError(error)) {
+        onVerificationRequired();
+        return;
+      }
       setSubmitError(toAuthErrorMessage(error, tAuthError, t("basicInfoUpdateFailed")));
     }
   }
@@ -167,52 +177,64 @@ export default function MoverBasicInfoEditForm({
           </div>
         </div>
 
-        {/* 데스크톱은 두 컬럼이 나란히 배치돼 구분선이 없지만(피그마 Desktop), 모바일/태블릿은 세로로
-            쌓이면서 전화번호-현재 비밀번호 사이에 구분선이 있음(피그마 Tablet/Mobile) — pc에서만 숨김 */}
-        <div className="pc:hidden bg-line-100 h-px w-full" />
+        {/* #131: 소셜 로그인 계정(hasPassword === false)은 비밀번호 자체가 없어 변경할 수 없으므로
+            구분선을 포함해 이 컬럼 전체를 숨긴다 — 2열 그리드가 1열로 자연스럽게 접힌다. 이 화면
+            진입 자체는 이미 이메일 인증을 통과한 뒤라(MoverBasicInfoEditPanel의
+            ProfileEmailVerificationGate) 본인 확인은 끝난 상태 — 아래 필드는 "비밀번호를 바꾸고
+            싶을 때만" 쓰는 선택 입력이다. */}
+        {account.hasPassword && (
+          <>
+            {/* 데스크톱은 두 컬럼이 나란히 배치돼 구분선이 없지만(피그마 Desktop), 모바일/태블릿은
+                세로로 쌓이면서 전화번호-현재 비밀번호 사이에 구분선이 있음(피그마 Tablet/Mobile) —
+                pc에서만 숨김 */}
+            <div className="pc:hidden bg-line-100 h-px w-full" />
 
-        <div className="pc:gap-8 flex flex-col gap-5">
-          <div className="flex flex-col gap-4">
-            <FieldLabel required={false}>{t("currentPassword")}</FieldLabel>
-            <InputTextField
-              label={t("currentPassword")}
-              type="password"
-              placeholder={t("currentPasswordPlaceholder")}
-              size={fieldSize}
-              autoComplete="current-password"
-              errorMessage={errors.currentPassword?.message}
-              {...register("currentPassword")}
-            />
-          </div>
+            <div className="pc:gap-8 flex flex-col gap-5">
+              <div className="flex flex-col gap-4">
+                <FieldLabel required={false}>{t("currentPassword")}</FieldLabel>
+                {/* 비밀번호를 바꿀 때만 현재 비밀번호가 필요하다는 걸 안내 */}
+                <p className="text-12 text-black-100 pc:text-16">{t("currentPasswordNotice")}</p>
+                <InputTextField
+                  label={t("currentPassword")}
+                  type="password"
+                  placeholder={t("currentPasswordPlaceholder")}
+                  size={fieldSize}
+                  autoComplete="current-password"
+                  errorMessage={errors.currentPassword?.message}
+                  {...register("currentPassword")}
+                />
+              </div>
 
-          <div className="bg-line-100 h-px w-full" />
+              <div className="bg-line-100 h-px w-full" />
 
-          <div className="flex flex-col gap-4">
-            <FieldLabel required={false}>{t("newPassword")}</FieldLabel>
-            <InputTextField
-              label={t("newPassword")}
-              type="password"
-              placeholder={t("newPasswordPlaceholder")}
-              size={fieldSize}
-              autoComplete="new-password"
-              errorMessage={errors.newPassword?.message}
-              {...register("newPassword")}
-            />
-          </div>
+              <div className="flex flex-col gap-4">
+                <FieldLabel required={false}>{t("newPassword")}</FieldLabel>
+                <InputTextField
+                  label={t("newPassword")}
+                  type="password"
+                  placeholder={t("newPasswordPlaceholder")}
+                  size={fieldSize}
+                  autoComplete="new-password"
+                  errorMessage={errors.newPassword?.message}
+                  {...register("newPassword")}
+                />
+              </div>
 
-          <div className="flex flex-col gap-4">
-            <FieldLabel required={false}>{t("newPasswordConfirm")}</FieldLabel>
-            <InputTextField
-              label={t("newPasswordConfirm")}
-              type="password"
-              placeholder={t("newPasswordConfirmPlaceholder")}
-              size={fieldSize}
-              autoComplete="new-password"
-              errorMessage={errors.newPasswordConfirm?.message}
-              {...register("newPasswordConfirm")}
-            />
-          </div>
-        </div>
+              <div className="flex flex-col gap-4">
+                <FieldLabel required={false}>{t("newPasswordConfirm")}</FieldLabel>
+                <InputTextField
+                  label={t("newPasswordConfirm")}
+                  type="password"
+                  placeholder={t("newPasswordConfirmPlaceholder")}
+                  size={fieldSize}
+                  autoComplete="new-password"
+                  errorMessage={errors.newPasswordConfirm?.message}
+                  {...register("newPasswordConfirm")}
+                />
+              </div>
+            </div>
+          </>
+        )}
       </div>
 
       <div className="pc:w-125 pc:self-end w-full">

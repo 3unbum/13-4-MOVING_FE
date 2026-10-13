@@ -3,6 +3,8 @@
 import { useEffect } from "react";
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ApiError } from "@/lib/utils/api-error";
+import { chatKeys, type ChatStreamEvent } from "@/lib/services/chat-service";
+import { refreshLatestChatMessages } from "@/lib/utils/chat-cache";
 import {
   notificationKeys,
   notificationService,
@@ -98,6 +100,7 @@ function useNotificationStream(enabled: boolean) {
         // 끊겼다 붙은 뒤에는 놓친 알림이 있을 수 있어 목록을 다시 받습니다.
         if (failures > 0) {
           void queryClient.invalidateQueries({ queryKey: notificationKeys.all });
+          void queryClient.invalidateQueries({ queryKey: chatKeys.all });
         }
         failures = 0;
       };
@@ -106,6 +109,22 @@ function useNotificationStream(enabled: boolean) {
       next.addEventListener("notification", () => {
         failures = 0;
         void queryClient.invalidateQueries({ queryKey: notificationKeys.all });
+      });
+
+      // 채팅도 같은 연결을 씁니다(새 연결 불필요). 이벤트는 신호뿐이라 본문은 API로 다시 받습니다.
+      next.addEventListener("chat", (event) => {
+        failures = 0;
+        let roomId: number | null = null;
+        try {
+          roomId = (JSON.parse((event as MessageEvent<string>).data) as ChatStreamEvent).roomId;
+        } catch {
+          // 본문을 못 읽어도 목록은 다시 받습니다
+        }
+        void queryClient.invalidateQueries({ queryKey: chatKeys.rooms });
+        if (roomId !== null) {
+          // 불러온 페이지를 전부 다시 받지 않고 최신 페이지만 합친다
+          void refreshLatestChatMessages(queryClient, roomId);
+        }
       });
 
       next.onerror = () => {

@@ -18,6 +18,9 @@ export interface AddressSelectResult {
   roadAddress: string;
   lotAddress: string;
   region: RegionCode;
+  // 외국어로 검색했을 때 사용자 언어로 보여줄 주소 — 제출·저장은 항상 한국어 roadAddress를 쓴다
+  label?: string;
+  lotLabel?: string;
 }
 
 interface AddressSelectModalProps {
@@ -100,8 +103,8 @@ export default function AddressSelectModal({
                 key={result.id}
                 size={size}
                 zipCode={result.zipCode}
-                roadAddress={result.roadAddress}
-                lotAddress={result.lotAddress}
+                roadAddress={result.label ?? result.roadAddress}
+                lotAddress={result.lotLabel ?? result.lotAddress}
                 selected={result.id === selectedId}
                 onClick={() => onSelect(result)}
               />

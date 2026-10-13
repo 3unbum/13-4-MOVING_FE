@@ -19,7 +19,7 @@ export default function AuthHeader({ prompt, href, linkText }: AuthHeaderProps) 
   return (
     <div className="flex w-full flex-col items-center gap-2">
       <Link href="/" aria-label={t("home")} className="shrink-0">
-        <Image src={logoTextXl} alt={t("logoAlt")} className="tablet:h-20 h-16 w-auto" priority />
+        <Image src={logoTextXl} alt={t("logoAlt")} className="tablet:h-16 h-12 w-auto" priority />
       </Link>
       <AuthSwitchLink prompt={prompt} href={href} linkText={linkText} />
     </div>

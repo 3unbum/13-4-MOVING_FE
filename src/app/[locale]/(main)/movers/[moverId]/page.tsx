@@ -1,4 +1,5 @@
 import { getTranslations } from "next-intl/server";
+import { OG_FALLBACK_IMAGE } from "@/constants/site";
 import type { Metadata } from "next";
 import type { MoverDetail } from "@/lib/services/mover-service";
 import MoverDetailClient from "./_components/MoverDetailClient";
@@ -44,7 +45,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   const title = t("moverMetaTitle", { name: mover.nickName });
   const description = mover.bio || mover.description;
-  const images = mover.image ? [{ url: mover.image }] : undefined;
+  // 프로필 사진이 없으면 og:image 자체가 빠져 밋밋한 카드로 공유됐습니다.
+  // 사진을 안 올린 기사님이 적지 않아 브랜드 이미지로 폴백합니다.
+  const images = [{ url: mover.image || OG_FALLBACK_IMAGE }];
 
   return {
     title,
@@ -59,7 +62,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       card: "summary_large_image",
       title,
       description,
-      images: mover.image ? [mover.image] : undefined,
+      images,
     },
   };
 }

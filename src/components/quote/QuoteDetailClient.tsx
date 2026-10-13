@@ -2,12 +2,15 @@
 
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
+import { useRouter } from "@/i18n/navigation";
 import { useConfirmEstimate, useQuoteDetail } from "@/hooks/useQuoteDetail";
 import { useFavoriteMover } from "@/hooks/useFavoriteMover";
+import DepositNoticeModal from "@/components/quote/DepositNoticeModal";
 import QuoteDetailView from "@/components/quote/QuoteDetailView";
 import Toast from "@/components/common/Toast";
 import Loading from "@/app/[locale]/loading";
 import { toAuthErrorMessage } from "@/lib/auth/auth-error-message";
+import { calcDepositPreview } from "@/lib/services/estimate-service";
 
 interface QuoteDetailClientProps {
   estimateId: number;
@@ -27,8 +30,11 @@ function DetailMessage({ children }: { children: React.ReactNode }) {
 export default function QuoteDetailClient({ estimateId }: QuoteDetailClientProps) {
   const { estimate, request, isLoading, error } = useQuoteDetail(estimateId);
   const [toast, setToast] = useState<string | null>(null);
+  // 확정 버튼을 누르면 선수금 안내를 먼저 보여주고, 동의해야 확정합니다
+  const [isDepositNoticeOpen, setIsDepositNoticeOpen] = useState(false);
   const t = useTranslations("quote");
   const tAuthError = useTranslations("authError");
+  const router = useRouter();
 
   // 확정 실패를 알려줍니다. 안 띄우면 버튼만 다시 활성화돼 아무 일도 안 일어난 것처럼 보입니다.
   // 에러 코드를 현재 언어 문구로 바꿔 띄우고(ESTIMATE_ALREADY_PROCESSED 등),
@@ -66,8 +72,23 @@ export default function QuoteDetailClient({ estimateId }: QuoteDetailClientProps
       <QuoteDetailBody
         estimate={estimate}
         request={request}
-        onConfirm={() => confirm.mutate()}
+        // 바로 확정하지 않고 선수금 안내 모달을 먼저 띄웁니다 (아래 DepositNoticeModal)
+        onConfirm={() => setIsDepositNoticeOpen(true)}
         isConfirming={confirm.isPending}
+      />
+      <DepositNoticeModal
+        open={isDepositNoticeOpen}
+        depositAmount={calcDepositPreview(estimate.price ?? 0)}
+        isSubmitting={confirm.isPending}
+        onClose={() => setIsDepositNoticeOpen(false)}
+        // 동의하면 확정하고, 확정이 끝나면(목록 캐시 갱신까지) 선수금 결제 화면으로 이어집니다
+        onConfirm={() =>
+          confirm.mutate(undefined, {
+            onSuccess: () => router.push(`/customer/payment/${estimateId}`),
+            // 실패하면 토스트가 뜨고 모달은 닫습니다 (같은 모달에서 다시 누르면 같은 오류가 반복됩니다)
+            onSettled: () => setIsDepositNoticeOpen(false),
+          })
+        }
       />
       {toast && <Toast message={toast} />}
     </>

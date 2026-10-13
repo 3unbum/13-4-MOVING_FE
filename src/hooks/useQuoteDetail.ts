@@ -68,6 +68,8 @@ export function useConfirmEstimate(
         // 하나를 확정하면 나머지는 PENDING으로 남지만 더 이상 확정할 수 없는데,
         // 그 캐시가 살아 있으면 형제 견적 상세에 확정 버튼이 잠깐 잘못 뜹니다.
         queryClient.invalidateQueries({ queryKey: ["estimates", "detail"] }),
+        // 확정하면 선수금 결제 대기가 생겨 결제 탭 목록이 바뀝니다
+        queryClient.invalidateQueries({ queryKey: ["estimates", "mine"] }),
         queryClient.invalidateQueries({ queryKey: myQuotesKeys.pendingEstimates }),
         queryClient.invalidateQueries({ queryKey: myQuotesKeys.activeRequest }),
         queryClient.invalidateQueries({ queryKey: myQuotesKeys.requestHistory }),

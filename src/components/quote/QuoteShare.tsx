@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { OG_FALLBACK_IMAGE } from "@/constants/site";
 import { useTranslations } from "next-intl";
 import clipLg from "@/assets/icons/clip-lg.svg";
 import clipMd from "@/assets/icons/clip-md.svg";
@@ -14,10 +15,25 @@ import { cn } from "@/lib/utils/cn";
 interface QuoteShareProps {
   /** 피그마: PC "견적서 공유하기" / 모바일 "나만 알긴 아쉬운 기사님인가요?" */
   title: string;
-  /** 공유 대상 — 요구사항이 "기사님 상세 페이지 URL"을 공유하도록 정하고 있습니다 */
-  moverId: number;
+  /**
+   * 공유할 경로. 화면에 따라 가리키는 대상이 다릅니다.
+   *
+   * - 고객 견적 상세 → `/customer/my-quotes/123` (본인이면 열립니다)
+   * - 기사님 견적 상세 → `/movers/45` (기사님 전용 경로는 받는 사람이 못 엽니다)
+   */
+  shareUrl: string;
+  /**
+   * 공유 문구 맥락.
+   *
+   * 같은 컴포넌트를 고객·기사님이 함께 쓰는데 **누가 누구에게 보내는지**가 다릅니다.
+   * 고객은 "받은 견적서", 기사님은 본인 소개라 "추천"이 됩니다
+   * (기사님 화면에서 "본인께 받은 견적서"는 말이 안 됩니다).
+   */
+  variant?: "quote" | "mover";
   /** 공유 문구에 들어갈 기사님 별명 */
   moverNickName: string;
+  /** 카카오 카드 썸네일 — 없으면 브랜드 폴백 이미지를 씁니다 */
+  moverImage?: string | null;
   className?: string;
 }
 
@@ -66,14 +82,29 @@ function ShareButton({
  * 카카오는 JS SDK, 페이스북은 sharer를 씁니다. 카카오는 키(`NEXT_PUBLIC_KAKAO_JS_KEY`)가
  * 없거나 SDK 로드에 실패하면, 페이스북은 팝업이 차단되면 링크 복사로 폴백합니다.
  */
-export default function QuoteShare({ title, moverId, moverNickName, className }: QuoteShareProps) {
+export default function QuoteShare({
+  title,
+  shareUrl,
+  variant = "quote",
+  moverNickName,
+  moverImage,
+  className,
+}: QuoteShareProps) {
   const t = useTranslations("quote");
   const tCommon = useTranslations("common");
+  const isQuote = variant === "quote";
 
   const { copyLink, shareToKakao, shareToFacebook, isKakaoReady, toast } = useShare({
-    url: `/movers/${moverId}`,
-    text: t("shareText", { moverName: moverNickName }),
-    buttonTitle: t("shareButtonTitle"),
+    url: shareUrl,
+    text: isQuote
+      ? t("shareQuoteText", { moverName: moverNickName })
+      : t("shareText", { moverName: moverNickName }),
+    buttonTitle: isQuote ? t("shareQuoteButton") : t("shareButtonTitle"),
+    // 카카오 카드 제목·썸네일 — og와 같은 값 (SDK는 og를 읽지 않습니다)
+    title: isQuote
+      ? t("shareQuoteCardTitle", { moverName: moverNickName })
+      : t("shareCardTitle", { moverName: moverNickName }),
+    imageUrl: moverImage || OG_FALLBACK_IMAGE,
   });
 
   return (

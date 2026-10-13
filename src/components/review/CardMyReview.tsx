@@ -5,6 +5,7 @@ import InfoItem from "@/components/common/InfoItem";
 import MoverName from "@/components/mover/MoverName";
 import ProfileAvatar from "@/components/common/ProfileAvatar";
 import RatingStars from "@/components/common/RatingStars";
+import { ReviewPhotoThumbs } from "@/components/review/ReviewPhotoGallery";
 import { cn } from "@/lib/utils/cn";
 import type { HTMLAttributes } from "react";
 
@@ -25,8 +26,13 @@ interface CardMyReviewProps extends HTMLAttributes<HTMLElement> {
   movingDate: string;
   rating: number;
   content: string;
-  /** 표시용으로 이미 포맷된 문자열 (예: "2024.07.02") - sm에서만 표시 */
+  /** 표시용으로 이미 포맷된 문자열 (예: "2024.07.02") */
   createdAt?: string;
+  /** 수정한 적 있으면 작성일 대신 수정일로 보여 준다 */
+  edited?: boolean;
+  images?: string[];
+  onImageClick?: (imageUrl: string) => void;
+  onEdit?: () => void;
 }
 
 /** lg의 세로 구분선 */
@@ -55,6 +61,10 @@ export default function CardMyReview({
   rating,
   content,
   createdAt,
+  edited = false,
+  images = [],
+  onImageClick,
+  onEdit,
   className,
   ...props
 }: CardMyReviewProps) {
@@ -70,12 +80,41 @@ export default function CardMyReview({
     className
   );
 
+  const footer =
+    createdAt || onEdit ? (
+      <div className="flex w-full items-center justify-between gap-3">
+        {createdAt ? (
+          <p
+            className={cn(
+              "text-gray-gray-300 flex gap-1.5",
+              isLg ? "text-14" : "text-12 leading-4.5"
+            )}
+          >
+            <span>{edited ? t("editedAt") : t("writtenAt")}</span>
+            <span>{createdAt}</span>
+          </p>
+        ) : (
+          <span />
+        )}
+        {onEdit ? (
+          <button
+            type="button"
+            onClick={onEdit}
+            className="text-14 shrink-0 rounded-xl border border-orange-400 bg-white px-4 py-2 font-semibold text-orange-400"
+          >
+            {t("edit")}
+          </button>
+        ) : null}
+      </div>
+    ) : null;
+
   const review = (
     <div className="flex w-full flex-col items-start gap-3">
       <RatingStars rating={rating} />
       <p className={cn("text-black-black-400 w-full font-medium", isLg ? "text-18" : "text-16")}>
         {content}
       </p>
+      <ReviewPhotoThumbs urls={images} onSelect={onImageClick} />
     </div>
   );
 
@@ -120,6 +159,7 @@ export default function CardMyReview({
         </div>
 
         {review}
+        {footer}
       </article>
     );
   }
@@ -165,13 +205,7 @@ export default function CardMyReview({
       <hr className="h-0 w-full border-0 shadow-[0_0_0_0.5px_var(--color-line-100)]" />
 
       {review}
-
-      {createdAt && (
-        <p className="text-12 text-gray-gray-300 flex w-full justify-end gap-1.5 leading-4.5">
-          <span>{t("writtenAt")}</span>
-          <span>{createdAt}</span>
-        </p>
-      )}
+      {footer}
     </article>
   );
 }

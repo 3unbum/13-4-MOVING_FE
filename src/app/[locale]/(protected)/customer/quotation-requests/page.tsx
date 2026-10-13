@@ -1,18 +1,22 @@
 "use client";
 
 import AddressSelectModal from "@/components/address/AddressSelectModal";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import Toast from "@/components/common/Toast";
 import { SERVICES as MOVE_TYPES } from "@/components/filter/ChipRegion";
 import { useAddressSearch } from "@/hooks/useAddressSearch";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { ApiError } from "@/lib/utils/api-error";
 import { toAuthErrorMessage } from "@/lib/auth/auth-error-message";
+import { myQuotesKeys } from "@/hooks/useMyQuotes";
 import { quotationRequestService } from "@/lib/services/quotation-request-service";
 import { useAuth } from "@/providers/AuthProvider";
 import { useRouter } from "@/i18n/navigation";
 import { useState } from "react";
 import QuotationRequestMobile from "./_components/QuotationRequestMobile";
 import QuotationRequestDesktop from "./_components/QuotationRequestDesktop";
+import ActiveRequestModal from "./_components/ActiveRequestModal";
 import RequireProfileModal from "./_components/RequireProfileModal";
 
 // 모바일/데스크톱이 CSS(hidden/tablet:block)로만 화면 전환되고 항상 같이 마운트돼있어서,
@@ -33,12 +37,24 @@ export default function CustomerQuotationRequestsPage() {
   // 하드 게이트 아님(리다이렉트 X) — 페이지는 그대로 렌더하고 모달만 얹는다.
   // 예(등록하러 가기) → 프로필 등록 페이지, 아니오/닫기 → 진입 전 페이지로.
   const showProfileModal = !isAuthLoading && account?.hasProfile === false;
+  const queryClient = useQueryClient();
+  // 제출 성공 뒤엔 이동 중에도 이 페이지가 남아있어, 조회를 끄지 않으면 방금 만든 요청이 잡혀 모달이 뜬다
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  // 진입하자마자 활성 요청이 있으면 모달로 막는다. 프로필 없는 계정은 PROFILE_REQUIRED라 조회하지 않는다.
+  const { data: activeRequest } = useQuery({
+    queryKey: myQuotesKeys.activeRequestByAuth(account?.userId ?? null),
+    queryFn: () => quotationRequestService.getActive(),
+    enabled: account?.hasProfile === true && !isSubmitted,
+  });
   const isTabletUp = useMediaQuery(TABLET_QUERY);
   const [selected, setSelected] = useState<(typeof MOVE_TYPES)[number]>("SMALL");
   const [date, setDate] = useState<Date>();
   const departure = useAddressSearch();
   const arrival = useAddressSearch();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  // 진입 시 조회가 낡았을 때(다른 탭에서 요청 등) 제출에서 BE가 막으면 같은 모달을 띄운다
+  const [isActiveBlocked, setIsActiveBlocked] = useState(false);
+  const showActiveModal = !isSubmitted && (Boolean(activeRequest) || isActiveBlocked);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const canSubmit =
@@ -70,8 +86,16 @@ export default function CustomerQuotationRequestsPage() {
           detailAddress: arrival.detail,
         },
       });
+      // 낡은 "활성 요청 없음"을 캐시에서 지운다. invalidate하면 이 페이지가 바로 refetch해 이동 전에
+      // ActiveRequestModal이 뜨고, 표시만 하면 내 견적이 캐시된 null로 "요청 없음"을 잠깐 보여준다
+      queryClient.removeQueries({ queryKey: myQuotesKeys.activeRequest });
+      setIsSubmitted(true);
       router.push("/customer/my-quotes");
     } catch (error) {
+      if (error instanceof ApiError && error.code === "ACTIVE_REQUEST_EXISTS") {
+        setIsActiveBlocked(true);
+        return;
+      }
       setErrorMessage(toAuthErrorMessage(error, tAuthError, t("submitFailed")));
       setTimeout(() => setErrorMessage(null), 3000);
     } finally {
@@ -118,6 +142,10 @@ export default function CustomerQuotationRequestsPage() {
           if (window.history.length > 1) router.back();
           else router.replace("/");
         }}
+      />
+      <ActiveRequestModal
+        open={showActiveModal}
+        onConfirm={() => router.push("/customer/my-quotes")}
       />
       <AddressSelectModal
         size={isTabletUp ? "md" : "sm"}

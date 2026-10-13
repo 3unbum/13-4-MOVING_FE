@@ -9,6 +9,10 @@ export interface CustomerAccountResponse {
   phoneNumber: string;
   /** 프로필 등록 완료 여부 — false면 아래 프로필 필드는 비어있음 */
   hasProfile: boolean;
+  /** 소셜 로그인 계정이면 false(#131) — 비밀번호 변경 섹션 노출 여부를 이 값으로 가른다 */
+  hasPassword: boolean;
+  /** 최근 30분 이내 프로필 수정 이메일 인증을 통과했으면 true — 인증 화면을 건너뛴다 */
+  isProfileEditVerified: boolean;
   image: string | null;
   region: string | null;
   services: string[];
@@ -21,6 +25,10 @@ export interface MoverAccountResponse {
   email: string;
   phoneNumber: string;
   hasProfile: boolean;
+  /** 소셜 로그인 계정이면 false(#131) — 비밀번호 변경 섹션 노출 여부를 이 값으로 가른다 */
+  hasPassword: boolean;
+  /** 최근 30분 이내 프로필 수정 이메일 인증을 통과했으면 true — 인증 화면을 건너뛴다 */
+  isProfileEditVerified: boolean;
   image: string | null;
   nickName: string | null;
   career: number | null;
@@ -44,10 +52,25 @@ export interface SignupPayload {
   password: string;
 }
 
+export interface SignupCodePayload {
+  role: UserRole;
+  email: string;
+  /** Turnstile 통과 토큰. BE에 TURNSTILE_SECRET_KEY가 있을 때만 필수 */
+  turnstileToken?: string;
+}
+
+export interface VerifySignupCodePayload {
+  role: UserRole;
+  email: string;
+  code: string;
+}
+
 export interface LoginPayload {
   role: UserRole;
   email: string;
   password: string;
+  /** Turnstile 통과 토큰. BE에 TURNSTILE_SECRET_KEY가 있을 때만 필수 */
+  turnstileToken?: string;
 }
 
 export interface AuthResult {
@@ -120,8 +143,26 @@ export const authService = {
 
   logout: () => cookieFetch<void>("/auth/logout", { method: "POST" }),
 
+  // 본인 확인은 BE가 프로필 수정 진입 이메일 인증(30분 이내)으로 대신하므로 바디가 없다. 성공하면 BE가 인증 쿠키를 지운다.
+  deleteAccount: () => cookieFetch<void>("/auth/me", { method: "DELETE" }),
+
+  /** 같은 (email, role)로 인증한 뒤 30분 안에만 가입된다 — 아니면 403 EMAIL_NOT_VERIFIED. */
   signup: (payload: SignupPayload) =>
     cookieFetch<AuthResult>("/auth/signup", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    }),
+
+  /** 비밀번호 재설정과 달리 가입 여부를 숨기지 않는다 — 이미 가입된 이메일이면 409 EMAIL_ALREADY_EXISTS. */
+  sendSignupCode: (payload: SignupCodePayload) =>
+    cookieFetch<void>("/auth/signup/code", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    }),
+
+  /** 성공하면 BE가 인증 시각만 기록한다(토큰·쿠키 없음) — 이후 signup 요청을 BE가 그 기록으로 확인한다. */
+  verifySignupCode: (payload: VerifySignupCodePayload) =>
+    cookieFetch<void>("/auth/signup/verify", {
       method: "POST",
       body: JSON.stringify(payload),
     }),

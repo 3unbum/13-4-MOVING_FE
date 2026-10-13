@@ -1,11 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import type { AddressSelectResult } from "@/components/address/AddressSelectModal";
 import { REGION_LABELS, type RegionCode } from "@/components/filter/ChipRegion";
+import ja from "@/../messages/ja.json";
+import zh from "@/../messages/zh.json";
 
 // 카카오 로컬 API 전용 프록시 — REST API 키를 클라이언트에 노출 안 하려고 서버에서만 호출한다.
 // next.config.ts의 /api/:path* rewrite(백엔드 프록시)보다 파일시스템 라우트가 우선이라 충돌 없음.
 const KAKAO_ADDRESS_SEARCH_URL = "https://dapi.kakao.com/v2/local/search/address.json";
 const KAKAO_KEYWORD_SEARCH_URL = "https://dapi.kakao.com/v2/local/search/keyword.json";
+const KAKAO_COORD_TO_ADDRESS_URL = "https://dapi.kakao.com/v2/local/geo/coord2address.json";
+const GOOGLE_TEXT_SEARCH_URL = "https://places.googleapis.com/v1/places:searchText";
+const GOOGLE_PAGE_SIZE = 5;
 const PAGE_SIZE = 10;
 const KAKAO_FETCH_TIMEOUT_MS = 5000;
 
@@ -51,6 +56,57 @@ function toRegionCode(region1depthName: string): RegionCode | null {
   return (entry?.[0] as RegionCode) ?? null;
 }
 
+const HANGUL = /[가-힣ㄱ-ㅎ]/;
+
+// 결과 언어는 UI 언어가 아니라 **입력한 언어**를 따른다 — 영어로 치면 영어, 일본어로 치면 일본어.
+// 가나가 있으면 일본어, 그 밖에 한자가 있으면 중국어, 나머지(로마자 등)는 영어로 본다.
+// 단 "東京駅"처럼 한자만 쓴 입력은 일본어·중국어를 글자로 못 가려서, UI 언어가 일본어면 일본어로 본다.
+function detectLanguageCode(query: string, uiLocale?: string) {
+  if (/[぀-ヿ]/.test(query)) return "ja";
+  if (/[一-鿿]/.test(query)) return uiLocale === "ja" ? "ja" : "zh-CN";
+  return "en";
+}
+
+// 구글은 한국 도로명·지번을 일본어·중국어로 갖고 있지 않아 영어로 돌려준다.
+// 맨 끝 시·도만 messages의 지역명(ソウル·首尔 등)으로 바꿔, 입력 언어를 최대한 따라간다.
+const LOCALIZED_REGIONS: Record<string, Record<string, string>> = {
+  ja: ja.region,
+  "zh-CN": zh.region,
+};
+
+// 구글이 맨 끝에 국가명을 붙여 주는 응답이 있어("Seoul, South Korea") 끝이 국가명이면 시/도가 아니니 건너뛴다
+const COUNTRY_NAME = /korea|대한민국|한국|韓国|韩国|南韩/i;
+
+function localizeRegion(label: string, region: RegionCode, languageCode: string) {
+  const name = LOCALIZED_REGIONS[languageCode]?.[region];
+  if (!name || !label.includes(",")) return label;
+  if (COUNTRY_NAME.test(label.slice(label.lastIndexOf(",") + 1))) return label;
+  return label.replace(/[^,]+$/, ` ${name}`);
+}
+
+async function googleSearch(
+  googleKey: string,
+  textQuery: string,
+  languageCode: string,
+  pageSize: number
+) {
+  const res = await fetch(GOOGLE_TEXT_SEARCH_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-Goog-Api-Key": googleKey,
+      "X-Goog-FieldMask": "places.formattedAddress,places.location",
+    },
+    body: JSON.stringify({ textQuery, languageCode, regionCode: "KR", pageSize }),
+    signal: AbortSignal.timeout(KAKAO_FETCH_TIMEOUT_MS),
+  });
+  if (!res.ok) return [];
+  const { places = [] } = (await res.json()) as {
+    places?: { formattedAddress: string; location: { latitude: number; longitude: number } }[];
+  };
+  return places;
+}
+
 class KakaoError extends Error {
   constructor(readonly status: number) {
     super(`Kakao API ${status}`);
@@ -94,6 +150,22 @@ export async function GET(request: NextRequest) {
   if (!query) {
     return NextResponse.json({ results: [], hasMore: false });
   }
+  const uiLocale = params.get("locale") ?? undefined;
+
+  // 사용자가 고른 항목의 지번 라벨 — 같은 언어로 보이도록 카카오 지번 주소를 구글에 한 번 더 물어 표기를 얻는다.
+  // 목록 전체가 아니라 선택한 1건만 부르는 이유: 검색마다 구글 호출이 후보 수만큼 늘지 않게 하려는 것.
+  const lot = params.get("lot")?.trim().slice(0, 200);
+  if (lot) {
+    const googleKey = process.env.GOOGLE_PLACES_API_KEY;
+    if (!googleKey || HANGUL.test(query)) return NextResponse.json({ lotLabel: null });
+    const languageCode = detectLanguageCode(query, uiLocale);
+    const region = params.get("region") as RegionCode;
+    const [place] = await googleSearch(googleKey, lot, languageCode, 1).catch(() => []);
+    return NextResponse.json({
+      lotLabel: place ? localizeRegion(place.formattedAddress, region, languageCode) : null,
+    });
+  }
+
   const page = Math.max(1, Number(params.get("page")) || 1);
   // 첫 페이지에서 정한 검색 방식을 다음 페이지에도 유지하려고 클라이언트가 mode를 되돌려 보낸다
   let mode: "address" | "keyword" = params.get("mode") === "keyword" ? "keyword" : "address";
@@ -102,6 +174,39 @@ export async function GET(request: NextRequest) {
   if (!apiKey) {
     return NextResponse.json({ error: "KAKAO_REST_API_KEY is not configured" }, { status: 500 });
   }
+
+  // 한국어가 없는 입력(영·일·중)은 카카오가 못 찾아서 구글로 후보를 받는다.
+  // 구글 주소는 우편번호·지역 코드가 없고 한국어 주소와 표기도 달라 그대로 못 쓰니, 좌표를 카카오에 다시 넣어
+  // 한국어 도로명주소·우편번호·지역을 채운다. 화면엔 구글 주소(label)를, 제출·저장엔 카카오 주소를 쓴다.
+  const searchByGoogle = async (googleKey: string): Promise<AddressSelectResult[]> => {
+    const languageCode = detectLanguageCode(query, uiLocale);
+    const places = await googleSearch(googleKey, query, languageCode, GOOGLE_PAGE_SIZE);
+    const lookups = await Promise.allSettled(
+      places.map(async (place) => {
+        const { latitude: y, longitude: x } = place.location;
+        const kakaoRes = await fetch(`${KAKAO_COORD_TO_ADDRESS_URL}?x=${x}&y=${y}`, {
+          headers: { Authorization: `KakaoAK ${apiKey}` },
+          signal: AbortSignal.timeout(KAKAO_FETCH_TIMEOUT_MS),
+        });
+        if (!kakaoRes.ok) return null;
+        const { documents } = (await kakaoRes.json()) as {
+          documents: Pick<KakaoAddressDocument, "address" | "road_address">[];
+        };
+        const [doc] = documents;
+        if (!doc) return null;
+        const [result] = toResults([{ ...doc, address_name: "", x: String(x), y: String(y) }]);
+        if (!result) return null;
+
+        // 지번 라벨은 여기서 구글을 또 부르지 않는다 — 목록은 한국어 지번으로 보여주고,
+        // 사용자가 고른 항목만 `?lot=` 요청으로 따로 채운다
+        return {
+          ...result,
+          label: localizeRegion(place.formattedAddress, result.region, languageCode),
+        };
+      })
+    );
+    return lookups.flatMap((r) => (r.status === "fulfilled" && r.value ? [r.value] : []));
+  };
 
   const fetchKakao = async (url: string, q: string, pageNo: number, size: number) => {
     const res = await fetch(`${url}?query=${encodeURIComponent(q)}&page=${pageNo}&size=${size}`, {
@@ -131,6 +236,17 @@ export async function GET(request: NextRequest) {
     const documents = lookups.flatMap((r) => (r.status === "fulfilled" ? r.value.documents : []));
     return { documents, hasMore: !meta.is_end };
   };
+
+  const googleKey = process.env.GOOGLE_PLACES_API_KEY;
+  if (googleKey && page === 1 && !HANGUL.test(query)) {
+    try {
+      const results = await searchByGoogle(googleKey);
+      // 구글이 못 찾으면(영문 장소명 등) 아래 카카오 검색으로 이어간다
+      if (results.length) return NextResponse.json({ results, hasMore: false });
+    } catch {
+      // 구글 장애 — 카카오 검색으로 폴백
+    }
+  }
 
   try {
     let found: { documents: KakaoAddressDocument[]; hasMore: boolean };

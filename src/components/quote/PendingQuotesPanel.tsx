@@ -39,9 +39,9 @@ function EstimateCard({
       isTargeted={estimate.isTargeted}
       // 카드 제목은 기사님 한 줄 소개입니다
       title={estimate.mover.bio}
-      // 이 탭은 확정 전(PENDING) 견적만 다뤄 price가 항상 있습니다.
-      // (금액이 없는 건 반려 견적뿐이고 그건 "받았던 견적" 탭에 나옵니다)
-      price={estimate.price ?? 0}
+      // 반려 견적은 금액이 없어 null이 옵니다. PriceFooter가 "견적가 없음"으로 표기합니다.
+      price={estimate.price}
+      isRejected={estimate.estimateStatus === "REJECTED"}
       nickName={estimate.mover.nickName}
       profileImage={estimate.mover.image}
       rating={estimate.mover.avgRating}

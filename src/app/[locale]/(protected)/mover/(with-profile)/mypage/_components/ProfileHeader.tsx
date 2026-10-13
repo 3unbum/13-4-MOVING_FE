@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { useTranslations } from "next-intl";
-import likeMdActive from "@/assets/icons/like-md-active.svg";
+import likeMdRedActive from "@/assets/icons/like-md-red-active.svg";
 import logoMarkSm from "@/assets/icons/logo-mark-sm.svg";
 import ProfileAvatar from "@/components/common/ProfileAvatar";
 import type { MoverListItem } from "@/lib/services/mover-service";
@@ -30,7 +30,7 @@ export default function ProfileHeader({ mover }: ProfileHeaderProps) {
             </span>
           </div>
           <div className="flex items-center gap-1">
-            <Image src={likeMdActive} alt="" className="size-6" />
+            <Image src={likeMdRedActive} alt="" className="size-6" />
             <span className="text-14 tablet:text-16 text-gray-gray-500">
               <span className="sr-only">{t("favoriteSr")}</span>
               {mover.favoriteCount}
