@@ -126,13 +126,6 @@
 | **문치호**             | · 공통 컴포넌트(Modal / Pop-up, Tab)<br />· 찜한 기사님 페이지<br />· 작성 가능한 리뷰 · 내가 작성한 리뷰<br />· 마이페이지 기사님 리뷰 영역                                                                                                                        | · 찜한 기사님 API(찜하기 · 해제 · 목록)<br />· 이사 리뷰 API(작성 가능 · 내 리뷰 · 기사님 리뷰)<br />· 평점 재계산 로직                                                                                                                                                                                                                          | [@MunChiho](https://github.com/MunChiho)             |
 | **김은진**             | · 공통 컴포넌트(Dropdown / Filter / Sort, GNB)<br />· 기사님 찾기(회원 / 비회원)<br />· 기사님 상세(회원 / 비회원)<br />· AI 챗봇 기사님 찾기(챗봇 모달 · 대화 상태 훅)                                                                                             | · 기사님 목록 API(검색 · 필터 · 정렬 · 무한 스크롤)<br />· 기사님 상세 조회 API<br />· 기사님 찜하기 API(찜하기 · 해제)<br />· 정렬 성능 개선(반정규화 컬럼 + 인덱스)<br />· 알림 API 초안<br />· AI 챗봇 기사님 추천 API(Gemini)                                                                                                                | [@Eznnni](https://github.com/Eznnni)                 |
 
-### 주요 링크
-
-- 📒 [팀 Notion](https://app.notion.com/p/bum0107/4f62c0a94b6182509d1281654aab75d0)
-- 📋 [요구사항 분석 · Task List](https://app.notion.com/p/bum0107/3cd2c0a94b61800b8a1cf0912131c2f0)
-- 🎨 [Figma 디자인](피그마_링크)
-- 📘 [API 명세](https://app.notion.com/p/bum0107/API-f542c0a94b618394b54e81bc11e29240) · Swagger `/api-docs`
-
 <details>
 <summary><b>🤝 협업 방식</b></summary>
 
@@ -143,6 +136,13 @@
 - PR마다 팀원 리뷰와 함께 AI 코드 리뷰(CodeRabbit)를 받습니다.
 
 </details>
+
+### 주요 링크
+
+- 📒 [팀 Notion](https://app.notion.com/p/bum0107/4f62c0a94b6182509d1281654aab75d0)
+- 📋 [요구사항 분석 · Task List](https://app.notion.com/p/bum0107/3cd2c0a94b61800b8a1cf0912131c2f0)
+- 🎨 [Figma 디자인](피그마_링크)
+- 📘 [API 명세](https://app.notion.com/p/bum0107/API-f542c0a94b618394b54e81bc11e29240) · Swagger `/api-docs`
 
 <br />
 
@@ -548,8 +548,40 @@ export function consumeOAuthState(state: string): UserRole | null {
 
 <br />
 
-<div align="center">
+<details>
+<summary><b>[알림] 커밋 전에 알림 SSE가 나가는 문제</b></summary>
 
-**코드잇 스프린트 13기 파트4 · 4팀**
+<br />
 
-</div>
+> 김은진 · BE · 관련 PR [#99](https://github.com/3unbum/13-4-MOVING_BE/pull/99)(closed), [#100](https://github.com/3unbum/13-4-MOVING_BE/pull/100)
+
+**문제 상황** — 견적 요청, 견적 확정, 이사 당일 배치처럼 알림은 **DB 트랜잭션 안에서 만들어집니다.** `createNotification`은 INSERT 직후 `setImmediate`로 그 유저의 SSE 연결에 바로 푸시했습니다. 트랜잭션이 커밋되기 전이라, 클라이언트는 알림을 받았는데 목록을 다시 조회하면 그 알림이 없는 상태가 생길 수 있었습니다. 뒤에 있는 INSERT가 실패해 롤백되거나, 같은 트랜잭션이 재시도되면 더 어긋납니다. DB에는 행이 없는데 화면에는 이미 떠 있고, 재시도가 성공하면 같은 알림이 한 번 더 나갑니다.
+
+**원인 분석** — `setImmediate`는 콜백을 이벤트 루프에 넘길 뿐, 커밋을 기다리지 않습니다. 트랜잭션 콜백이 끝난 시점과 커밋 성공은 다르고, 롤백되어도 이미 예약된 푸시는 취소되지 않습니다. 목록은 커밋된 행만 돌려주므로 새로고침하면 맞아 보이지만, SSE를 받은 화면은 그 전에 이미 뱃지와 토스트를 띄운 뒤입니다. 실시간 연결과 조회 API가 서로 다른 시점을 보고 있었습니다.
+
+**해결** — INSERT 시점에는 `AsyncLocalStorage` 대기열에만 넣고, `$transaction`을 `runAfterCommitPublish`로 감쌌습니다. 함수가 성공한 뒤에만 `publish`하고, 예외가 나면 대기열을 버린 채 끝납니다.
+
+```typescript
+// Before
+const item = toNotificationItem(created);
+setImmediate(() => publishNotification(created.userId, item));
+
+await prisma.$transaction(async (tx) => {
+  await createNotification(tx, params);
+});
+
+// After
+enqueueNotificationPublish(created.userId, toNotificationItem(created));
+
+await runAfterCommitPublish(() =>
+  prisma.$transaction(async (tx) => {
+    await createNotification(tx, params);
+  })
+);
+```
+
+**개선 효과** — SSE는 커밋된 알림만 전달합니다. 트랜잭션 중간에 실패하면 클라이언트는 그 알림을 받지 않고, 새로고침한 목록과도 어긋나지 않습니다. 재시도가 성공했을 때 롤백된 시도의 알림이 먼저 가 있던 문제도 없습니다. 견적 요청처럼 수신자가 여러 명이어도, 전원에 대한 푸시가 그 트랜잭션의 커밋 뒤로 모입니다.
+
+**배운 점** — 실시간으로 전달되는 알림 데이터와 실제 진입 시 호출되는 목록 API는 반드시 같은 커밋 결과를 바라봐야 합니다. 백엔드의 트랜잭션 설계가 잘못되면 프론트엔드에서는 '거짓 알림(Ghost Notification)'이라는 최악의 UX 버그로 이어질 수 있어, 트랜잭션을 설계할 때 신중해야 함을 깨달았습니다.
+
+</details>
