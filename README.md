@@ -26,6 +26,8 @@
 8. [보안 · 접근성](#보안--접근성)
 9. [트러블 슈팅](#트러블-슈팅)
 
+<br />
+
 ## 프로젝트 소개
 
 이사 시장에는 무분별한 가격 책정과 무책임한 서비스로 정보의 투명성과 신뢰도가 낮다는 문제가 있습니다. **무빙**은 이사 소비자와 이사 전문가(기사님)를 이어 주는 견적 매칭 서비스입니다. 소비자가 이사 정보를 한 번 입력하면 기사님들이 견적을 보내고, 소비자는 견적가와 후기를 비교해 고른 뒤 결제와 후기 작성까지 한 서비스 안에서 마칩니다.
@@ -43,6 +45,8 @@
 > 2개 역할 · 4개 국어 · 33개 페이지
 -->
 
+<br />
+
 ## 기능 구현 영상 · 시연 계정
 
 https://github.com/user-attachments/assets/cb7b684e-4505-4162-b1b9-2d8d3b324df7
@@ -53,6 +57,8 @@ https://github.com/user-attachments/assets/cb7b684e-4505-4162-b1b9-2d8d3b324df7
 | :-------- | :--------------------- | :---------- |
 | 일반 유저 | `customer@moving.test` | `test1234!` |
 | 기사님    | `mover1@moving.test`   | `test1234!` |
+
+<br />
 
 ## 주요 기능
 
@@ -129,11 +135,15 @@ https://github.com/user-attachments/assets/cb7b684e-4505-4162-b1b9-2d8d3b324df7
 
 </details>
 
+<br />
+
 ## 시스템 아키텍처
 
 <a href="docs/architecture.png"><img src="docs/architecture.png" alt="무빙 시스템 아키텍처" width="100%" /></a>
 
 - 프론트의 `/api/*` 요청은 서버 rewrite를 거쳐 백엔드로 전달됩니다. 브라우저에서는 같은 도메인으로 보이기 때문에 로그인 쿠키를 안전하게 쓸 수 있습니다.
+
+<br />
 
 ## 기술 스택 · 프로젝트 구조
 
@@ -188,6 +198,8 @@ public/                        # 아이콘 · OG 이미지 · 서비스 워커(s
 
 </details>
 
+<br />
+
 ## 팀 소개 · 주요 링크
 
 | 이름                | 프론트엔드                                                            | 백엔드                                                        | GitHub                                               |
@@ -208,6 +220,8 @@ public/                        # 아이콘 · OG 이미지 · 서비스 워커(s
 - [Figma 디자인](https://www.figma.com/design/fgvdOrZSUPdiBm3OwVPmCm/-%25EC%258A%25A4%25ED%2594%2584%25EB%25A6%25B0%25ED%2584%25B0-%25EA%25B3%25B5%25EC%259C%25A0%25EC%259A%25A9--%25EB%25AC%25B4%25EB%25B9%2599_V2?node-id=0-1&p=f)
 - [API 명세](https://app.notion.com/p/bum0107/API-f542c0a94b618394b54e81bc11e29240) · Swagger `/api-docs`
 
+<br />
+
 ## 협업 방식
 
 | 구분          | 내용                                                                                                                                               |
@@ -219,6 +233,8 @@ public/                        # 아이콘 · OG 이미지 · 서비스 워커(s
 | **자동화**    | PR마다 Vercel 미리보기 배포, 팀원 리뷰와 AI 코드 리뷰(CodeRabbit)                                                                                  |
 | **커밋**      | `{type}: {내용}` 형식을 husky + commitlint가 검사 · `feat` 기능 추가 · `fix` 버그 수정 · `chore` 빌드 · 설정 · `test` 테스트 · `refactor` 리팩토링 |
 | **팀 규칙**   | 코드 리뷰 24시간 안에 · 4시간 막힌 문제는 팀에 공유 · 데일리 스크럼은 전날 퇴실 전 최신화                                                          |
+
+<br />
 
 ## 보안 · 접근성
 
@@ -246,6 +262,8 @@ public/                        # 아이콘 · OG 이미지 · 서비스 워커(s
 - `main` · `nav` · `header` · `footer` 같은 시맨틱 태그로 페이지 구조를 나눴습니다.
 - 버튼 · 모달 · 탭 · 입력 항목에 `aria` 속성과 `role`을 붙여 스크린 리더가 용도를 알 수 있게 했습니다.
 - 화면에는 보이지 않고 스크린 리더에만 읽히는 안내 문구를 별도로 두었습니다.
+
+<br />
 
 ## 트러블 슈팅
 
