@@ -6,7 +6,11 @@
 
 ### 견적은 받고, 비교하고, 믿을 수 있는 이사 전문가를 고르세요
 
-[**서비스 바로가기**](https://www.letsmoving.site) · [**시연 영상**](#기능-구현-영상--시연-계정) · [**Backend 저장소**](https://github.com/3unbum/13-4-MOVING_BE)
+<br />
+
+🚀 [**서비스 바로가기**](https://www.letsmoving.site) &emsp;-&emsp; 🎬 [**시연 영상**](#기능-구현-영상--시연-계정) &emsp;-&emsp; 🔗 [**Backend 저장소**](https://github.com/3unbum/13-4-MOVING_BE)
+
+<br />
 
 </div>
 
