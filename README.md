@@ -6,7 +6,7 @@
 
 ### 견적은 받고, 비교하고, 믿을 수 있는 이사 전문가를 고르세요
 
-[**🌐 서비스 바로가기**](https://www.letsmoving.site) · [**🎬 시연 영상**](시연영상_링크) · [**⚙️ Backend 저장소**](https://github.com/3unbum/13-4-MOVING_BE)
+[**🌐 서비스 바로가기**](https://www.letsmoving.site) · [**🎬 시연 영상**](#-기능-구현-영상--시연-계정) · [**⚙️ Backend 저장소**](https://github.com/3unbum/13-4-MOVING_BE)
 
 코드잇 스프린트 13기 · 파트4 고급 프로젝트 · 4팀
 
@@ -49,7 +49,7 @@
 
 ## 🎬 기능 구현 영상 · 시연 계정
 
-[![무빙 시연 영상](docs/promo-thumbnail.png)](시연영상_링크)
+https://github.com/user-attachments/assets/cb7b684e-4505-4162-b1b9-2d8d3b324df7
 
 직접 써 보려면 아래 시연 계정으로 로그인할 수 있습니다.
 
@@ -66,7 +66,7 @@
 
 ### 일반 유저
 
-> 🖼 **화면 자리** · `docs/screens/customer.gif` (견적 요청 → 견적 비교 → 확정 흐름)
+<p align="center"><img src="docs/screens/customer.gif" alt="일반 유저 화면 — 내 견적 관리" width="720" /></p>
 
 <details>
 <summary><b>일반 유저 기능과 구현 포인트 보기</b></summary>
@@ -85,7 +85,7 @@
 
 ### 기사님
 
-> 🖼 **화면 자리** · `docs/screens/mover.gif` (받은 요청 → 견적 발송 → 확정 알림 흐름)
+<p align="center"><img src="docs/screens/mover.gif" alt="기사님 화면 — 받은 요청" width="720" /></p>
 
 <details>
 <summary><b>기사님 기능과 구현 포인트 보기</b></summary>
