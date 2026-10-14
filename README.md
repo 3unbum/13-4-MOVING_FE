@@ -216,7 +216,7 @@ public/                        # 아이콘 · OG 이미지 · 서비스 워커(s
 
 - 📒 [팀 Notion](https://app.notion.com/p/bum0107/4f62c0a94b6182509d1281654aab75d0)
 - 📋 [요구사항 분석 · Task List](https://app.notion.com/p/bum0107/3cd2c0a94b61800b8a1cf0912131c2f0)
-- 🎨 [Figma 디자인](피그마_링크)
+- 🎨 [Figma 디자인](https://www.figma.com/design/fgvdOrZSUPdiBm3OwVPmCm/-%25EC%258A%25A4%25ED%2594%2584%25EB%25A6%25B0%25ED%2584%25B0-%25EA%25B3%25B5%25EC%259C%25A0%25EC%259A%25A9--%25EB%25AC%25B4%25EB%25B9%2599_V2?node-id=0-1&p=f)
 - 📘 [API 명세](https://app.notion.com/p/bum0107/API-f542c0a94b618394b54e81bc11e29240) · Swagger `/api-docs`
 
 <br />
