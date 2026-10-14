@@ -6,29 +6,23 @@
 
 ### 견적은 받고, 비교하고, 믿을 수 있는 이사 전문가를 고르세요
 
-[**🌐 서비스 바로가기**](https://www.letsmoving.site) · [**🎬 시연 영상**](#-기능-구현-영상--시연-계정) · [**⚙️ Backend 저장소**](https://github.com/3unbum/13-4-MOVING_BE)
-
-코드잇 스프린트 13기 · 파트4 고급 프로젝트 · 4팀
+[**서비스 바로가기**](https://www.letsmoving.site) · [**시연 영상**](#기능-구현-영상--시연-계정) · [**Backend 저장소**](https://github.com/3unbum/13-4-MOVING_BE)
 
 </div>
 
-<br />
+## 목차
 
-## 📑 목차
+1. [프로젝트 소개](#프로젝트-소개)
+2. [기능 구현 영상 · 시연 계정](#기능-구현-영상--시연-계정)
+3. [주요 기능](#주요-기능)
+4. [시스템 아키텍처](#시스템-아키텍처)
+5. [기술 스택 · 프로젝트 구조](#기술-스택--프로젝트-구조)
+6. [팀 소개 · 주요 링크](#팀-소개--주요-링크)
+7. [협업 방식](#협업-방식)
+8. [보안 · 접근성](#보안--접근성)
+9. [트러블 슈팅](#트러블-슈팅)
 
-1. [프로젝트 소개](#-프로젝트-소개)
-2. [기능 구현 영상 · 시연 계정](#-기능-구현-영상--시연-계정)
-3. [주요 기능](#-주요-기능)
-4. [시스템 아키텍처](#-시스템-아키텍처)
-5. [기술 스택 · 프로젝트 구조](#-기술-스택--프로젝트-구조)
-6. [팀 소개 · 주요 링크](#-팀-소개--주요-링크)
-7. [협업 방식](#-협업-방식)
-8. [보안 · 접근성](#-보안--접근성)
-9. [트러블 슈팅](#-트러블-슈팅)
-
-<br />
-
-## 💡 프로젝트 소개
+## 프로젝트 소개
 
 이사 시장에는 무분별한 가격 책정과 무책임한 서비스로 정보의 투명성과 신뢰도가 낮다는 문제가 있습니다. **무빙**은 이사 소비자와 이사 전문가(기사님)를 이어 주는 견적 매칭 서비스입니다. 소비자가 이사 정보를 한 번 입력하면 기사님들이 견적을 보내고, 소비자는 견적가와 후기를 비교해 고른 뒤 결제와 후기 작성까지 한 서비스 안에서 마칩니다.
 
@@ -45,9 +39,7 @@
 > 2개 역할 · 4개 국어 · 33개 페이지
 -->
 
-<br />
-
-## 🎬 기능 구현 영상 · 시연 계정
+## 기능 구현 영상 · 시연 계정
 
 https://github.com/user-attachments/assets/cb7b684e-4505-4162-b1b9-2d8d3b324df7
 
@@ -58,9 +50,7 @@ https://github.com/user-attachments/assets/cb7b684e-4505-4162-b1b9-2d8d3b324df7
 | 일반 유저 | `시연계정_이메일` | `시연계정_비밀번호` |
 | 기사님    | `시연계정_이메일` | `시연계정_비밀번호` |
 
-<br />
-
-## ✨ 주요 기능
+## 주요 기능
 
 > **추가 구현**은 과제 요구사항 외에 팀이 직접 기획해서 만든 기능입니다.
 
@@ -68,8 +58,41 @@ https://github.com/user-attachments/assets/cb7b684e-4505-4162-b1b9-2d8d3b324df7
 
 <p align="center"><img src="docs/screens/customer.gif" alt="일반 유저 화면 — 내 견적 관리" width="720" /></p>
 
+| 기능                                | 설명                                                                            |
+| :---------------------------------- | :------------------------------------------------------------------------------ |
+| **채팅형 견적 요청**                | 이사 종류 · 날짜 · 주소를 단계별로 입력                                         |
+| **견적 비교 · 확정**                | 받은 견적 목록 · 상세 확인, 지정 견적은 라벨로 구분                             |
+| **기사님 찾기**                     | 검색 · 필터 · 정렬, 무한 스크롤                                                 |
+| **AI 챗봇 기사님 찾기** · 추가 구현 | 대화로 조건을 정하면 Gemini가 기사님 추천                                       |
+| **결제** · 추가 구현                | 토스페이먼츠로 예약금 · 추가 금액 결제, 결제 내역                               |
+| **리뷰**                            | 작성 가능한 후기 · 작성한 후기 (사진 첨부 · 수정은 추가 구현)                   |
+| **계정 관리**                       | 프로필 등록 · 수정, 소셜 로그인, 이메일 인증 · Turnstile · 회원 탈퇴(추가 구현) |
+
+### 기사님
+
+<p align="center"><img src="docs/screens/mover.gif" alt="기사님 화면 — 받은 요청" width="720" /></p>
+
+| 기능                 | 설명                                                           |
+| :------------------- | :------------------------------------------------------------- |
+| **받은 요청**        | 서비스 지역의 요청만 노출, 유형 · 지역 · 지정 여부 필터와 정렬 |
+| **견적 발송 · 반려** | 견적 발송 모달과 반려 처리, 보낸 견적 · 반려한 요청 탭         |
+| **마이페이지**       | 프로필 · 기본 정보 수정, 받은 후기 · 평점 조회                 |
+
+### 모두에게
+
+| 기능                                        | 설명                                                   |
+| :------------------------------------------ | :----------------------------------------------------- |
+| **실시간 알림**                             | 안 읽은 알림 필터, 백엔드 SSE 스트림 연동              |
+| **1:1 채팅** · 추가 구현                    | 방 목록 · 메시지 무한 스크롤, 읽음 위치 반영           |
+| **4개 국어** · 추가 구현                    | 한국어 · English · 中文 · 日本語 (next-intl, URL 단위) |
+| **고객센터 · 개인정보처리방침** · 추가 구현 | FAQ형 고객센터와 개인정보 처리방침 페이지              |
+| **스켈레톤 로딩** · 추가 구현               | 목록 화면 로딩 중 레이아웃 유지                        |
+| **PWA** · 추가 구현                         | 설치 가능한 웹앱, 정적 파일만 캐시                     |
+
 <details>
-<summary><b>일반 유저 기능과 구현 포인트 보기</b></summary>
+<summary><b>구현 포인트 자세히 보기</b></summary>
+
+#### 일반 유저
 
 | 기능                                | 구현 포인트                                                                                                                                                                                                                                   |
 | :---------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -81,14 +104,7 @@ https://github.com/user-attachments/assets/cb7b684e-4505-4162-b1b9-2d8d3b324df7
 | **리뷰**                            | 작성 가능한 후기와 작성한 후기를 나눠 보여 줍니다. 사진 첨부와 작성 후 수정은 추가 구현입니다.                                                                                                                                                |
 | **계정 관리**                       | 프로필 등록 · 수정, 소셜 로그인 가입에 더해 이메일 인증 가입, 로그인 봇 검증(Turnstile), 프로필 수정 전 이메일 인증, 프로필 이미지 삭제, 회원 탈퇴를 추가 구현했습니다. 소셜 계정은 비밀번호가 없어 해당 입력란을 숨깁니다.                   |
 
-</details>
-
-### 기사님
-
-<p align="center"><img src="docs/screens/mover.gif" alt="기사님 화면 — 받은 요청" width="720" /></p>
-
-<details>
-<summary><b>기사님 기능과 구현 포인트 보기</b></summary>
+#### 기사님
 
 | 기능                 | 구현 포인트                                                                                                            |
 | :------------------- | :--------------------------------------------------------------------------------------------------------------------- |
@@ -96,12 +112,7 @@ https://github.com/user-attachments/assets/cb7b684e-4505-4162-b1b9-2d8d3b324df7
 | **견적 발송 · 반려** | 견적 발송 모달과 반려 처리를 두고, 보낸 견적 · 반려한 요청을 탭으로 나눠 보여 줍니다.                                  |
 | **마이페이지**       | 프로필 · 기본 정보 수정과 받은 후기 · 평점 조회를 제공합니다.                                                          |
 
-</details>
-
-### 모두에게
-
-<details>
-<summary><b>공통 기능과 구현 포인트 보기</b></summary>
+#### 모두에게
 
 | 기능                                        | 구현 포인트                                                                                                                                                                                                          |
 | :------------------------------------------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -114,50 +125,24 @@ https://github.com/user-attachments/assets/cb7b684e-4505-4162-b1b9-2d8d3b324df7
 
 </details>
 
-<br />
-
-## 🏗 시스템 아키텍처
+## 시스템 아키텍처
 
 <a href="docs/architecture.png"><img src="docs/architecture.png" alt="무빙 시스템 아키텍처" width="100%" /></a>
 
 - 프론트의 `/api/*` 요청은 서버 rewrite를 거쳐 백엔드로 전달됩니다. 브라우저에서는 같은 도메인으로 보이기 때문에 로그인 쿠키를 안전하게 쓸 수 있습니다.
 
-<br />
+## 기술 스택 · 프로젝트 구조
 
-## 🧰 기술 스택 · 프로젝트 구조
-
-### Language
-
-![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)
-
-### Framework & Libraries
-
-![Next.js](https://img.shields.io/badge/Next.js-000000?style=flat-square&logo=nextdotjs&logoColor=white)
-![React](https://img.shields.io/badge/React-61DAFB?style=flat-square&logo=react&logoColor=black)
-![TanStack Query](https://img.shields.io/badge/TanStack_Query-FF4154?style=flat-square&logo=reactquery&logoColor=white)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white)
-![React Hook Form](https://img.shields.io/badge/React_Hook_Form-EC5990?style=flat-square&logo=reacthookform&logoColor=white)
-![Zod](https://img.shields.io/badge/Zod-3E67B1?style=flat-square&logo=zod&logoColor=white)
-
-### Hosting & Deployment
-
-![Vercel](https://img.shields.io/badge/Vercel-000000?style=flat-square&logo=vercel&logoColor=white)
-![AWS EC2](https://img.shields.io/badge/AWS_EC2-FF9900?style=flat-square)
-
-### CI/CD · Version Control
-
-![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF?style=flat-square&logo=githubactions&logoColor=white)
-![Git](https://img.shields.io/badge/Git-F05032?style=flat-square&logo=git&logoColor=white)
-![GitHub](https://img.shields.io/badge/GitHub-181717?style=flat-square&logo=github&logoColor=white)
-
-### External Services
-
-![Toss Payments](https://img.shields.io/badge/Toss_Payments-0064FF?style=flat-square)
-![Cloudflare Turnstile](https://img.shields.io/badge/Cloudflare_Turnstile-F38020?style=flat-square&logo=cloudflare&logoColor=white)
-![Sentry](https://img.shields.io/badge/Sentry-362D59?style=flat-square&logo=sentry&logoColor=white)
+| 구분                        | 스택                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| :-------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Language**                | ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| **Framework & Libraries**   | ![Next.js](https://img.shields.io/badge/Next.js-000000?style=flat-square&logo=nextdotjs&logoColor=white) ![React](https://img.shields.io/badge/React-61DAFB?style=flat-square&logo=react&logoColor=black) ![TanStack Query](https://img.shields.io/badge/TanStack_Query-FF4154?style=flat-square&logo=reactquery&logoColor=white) ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white) ![React Hook Form](https://img.shields.io/badge/React_Hook_Form-EC5990?style=flat-square&logo=reacthookform&logoColor=white) ![Zod](https://img.shields.io/badge/Zod-3E67B1?style=flat-square&logo=zod&logoColor=white) |
+| **Hosting & Deployment**    | ![Vercel](https://img.shields.io/badge/Vercel-000000?style=flat-square&logo=vercel&logoColor=white) ![AWS EC2](https://img.shields.io/badge/AWS_EC2-FF9900?style=flat-square)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| **CI/CD · Version Control** | ![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF?style=flat-square&logo=githubactions&logoColor=white) ![Git](https://img.shields.io/badge/Git-F05032?style=flat-square&logo=git&logoColor=white) ![GitHub](https://img.shields.io/badge/GitHub-181717?style=flat-square&logo=github&logoColor=white)                                                                                                                                                                                                                                                                                                                                                      |
+| **External Services**       | ![Toss Payments](https://img.shields.io/badge/Toss_Payments-0064FF?style=flat-square) ![Cloudflare Turnstile](https://img.shields.io/badge/Cloudflare_Turnstile-F38020?style=flat-square&logo=cloudflare&logoColor=white) ![Sentry](https://img.shields.io/badge/Sentry-362D59?style=flat-square&logo=sentry&logoColor=white)                                                                                                                                                                                                                                                                                                                                                  |
 
 <details>
-<summary><b>📁 프로젝트 구조</b></summary>
+<summary><b>프로젝트 구조</b></summary>
 
 <br />
 
@@ -199,69 +184,39 @@ public/                        # 아이콘 · OG 이미지 · 서비스 워커(s
 
 </details>
 
-<br />
+## 팀 소개 · 주요 링크
 
-## 👥 팀 소개 · 주요 링크
+| 이름                | 프론트엔드                                                            | 백엔드                                                        | GitHub                                               |
+| :------------------ | :-------------------------------------------------------------------- | :------------------------------------------------------------ | :--------------------------------------------------- |
+| **이은범** (팀장)   | Card-list 공통 컴포넌트 · 내 견적 관리 · 받은 요청                    | DB 스키마 설계 · 견적 요청 API · 이사일 경과 배치             | [@3unbum](https://github.com/3unbum)                 |
+| **송현규** (부팀장) | 초기 세팅(라우팅 가드 · Provider) · 견적 요청 · 랜딩 · 결제 · 채팅 UI | 견적서 API · 기사님 견적 관리 API · 채팅 API                  | [@singsangsong28](https://github.com/singsangsong28) |
+| **김민수**          | AuthProvider · 로그인 · 회원가입 · 계정 찾기 · 회원 탈퇴              | JWT 인증 · 인가 · OAuth 소셜 로그인 · 이메일 인증             | [@HoneyLatlll](https://github.com/HoneyLatlll)       |
+| **조서현**          | Date picker · Pagination · 프로필 등록 · 수정 · 이메일 인증 게이트    | 프로필 API · 이미지 업로드(S3) · 프로필 수정 이메일 인증      | [@sxohyuni](https://github.com/sxohyuni)             |
+| **문치호**          | Modal · Tab · 찜한 기사님 · 리뷰                                      | 찜 API · 리뷰 API · 평점 재계산                               | [@MunChiho](https://github.com/MunChiho)             |
+| **김은진**          | Dropdown · GNB · 기사님 찾기 · 상세 · AI 챗봇                         | 기사님 목록 · 상세 API · 정렬 성능 개선 · AI 추천 API(Gemini) | [@Eznnni](https://github.com/Eznnni)                 |
 
-| 이름&emsp;&emsp;       | 프론트엔드                                                                                                                                                                                                                                                          | 백엔드                                                                                                                                                                                                                                                                                                                                           | GitHub                                               |
-| :--------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :--------------------------------------------------- |
-| **이은범**<br />팀장   | · 공통 컴포넌트 Card-list(10종)<br />· 내 견적 관리 페이지(확정 견적 · 반려 견적 요청)<br />· 받은 요청 페이지(목록 · 견적 · 반려하기)                                                                                                                              | · Prisma 스키마 설계 · 마이그레이션<br />· 견적 요청 생성 · 조회 API<br />· 지정 견적 요청 API<br />· 이사일 경과 처리 배치<br />· 프로젝트 초기 구조 설계<br />· TypeScript 6 · Prisma 7 업그레이드                                                                                                                                             | [@3unbum](https://github.com/3unbum)                 |
-| **송현규**<br />부팀장 | · 프론트엔드 초기 세팅(라우트 구조 · 라우팅 가드 · Provider · 디자인 토큰)<br />· 공통 컴포넌트(카드 배지 · 프로필 · 헤더 · 진행바, Chip)<br />· 견적 요청 페이지<br />· 랜딩 페이지<br />· 앱 로고 영문 변경<br />· 결제 플로우 UI<br />· 고객 · 기사 채팅방 UI    | · 견적서 API(제시 · 확정 · 조회)<br />· 기사님 견적 관리 API(받은 요청 목록 · 반려)<br />· 견적 상한 검증(일반 5건 · 지정 3건)<br />· 고객 · 기사 채팅 API                                                                                                                                                                                       | [@singsangsong28](https://github.com/singsangsong28) |
-| **김민수**             | · AuthProvider · API 클라이언트 설정<br />· 공통 컴포넌트(Input, Button, ModalButton)<br />· 로그인 · 회원가입(소셜 로그인 포함)<br />· 아이디 · 비밀번호 찾기<br />· 회원 탈퇴<br />· 마이페이지 내 프로필(기사님)                                                 | · 회원가입 · 로그인 · 로그아웃(역할 분리)<br />· JWT 발급 · 갱신(쿠키), 비밀번호 해싱<br />· 인증 · 인가 미들웨어<br />· OAuth 소셜 로그인(구글 · 네이버 · 카카오)<br />· 내 계정 조회(GET /auth/me)<br />· 이메일 인증<br />· 아이디 찾기 · 비밀번호 재설정<br />· 로그인 시도 · 인증번호 발송 횟수 제한<br />· 회원 탈퇴 · 탈퇴 후 데이터 처리 | [@HoneyLatlll](https://github.com/HoneyLatlll)       |
-| **조서현**             | · 공통 컴포넌트(Date picker, Pagination)<br />· 프로필 등록(일반 유저 · 기사님)<br />· 프로필 수정(일반 유저)<br />· 마이페이지 프로필 · 기본정보 수정(기사님)<br />· 프로필 수정 이메일 인증 게이트<br />· 프로필 이미지 변경 · 삭제, 소셜 계정 비밀번호 필드 숨김 | · 프로필 등록 API<br />· 프로필 조회 · 수정 API<br />· 프로필 이미지 업로드(multer-s3)<br />· 프로필 등록 게이트 미들웨어<br />· 프로필 수정 이메일 인증(30분 유지, 발송 횟수 제한)<br />· 계정 정보 수정 시 서버 측 인증 검증, 이미지 삭제                                                                                                      | [@sxohyuni](https://github.com/sxohyuni)             |
-| **문치호**             | · 공통 컴포넌트(Modal / Pop-up, Tab)<br />· 찜한 기사님 페이지<br />· 작성 가능한 리뷰 · 내가 작성한 리뷰<br />· 마이페이지 기사님 리뷰 영역                                                                                                                        | · 찜한 기사님 API(찜하기 · 해제 · 목록)<br />· 이사 리뷰 API(작성 가능 · 내 리뷰 · 기사님 리뷰)<br />· 평점 재계산 로직                                                                                                                                                                                                                          | [@MunChiho](https://github.com/MunChiho)             |
-| **김은진**             | · 공통 컴포넌트(Dropdown / Filter / Sort, GNB)<br />· 기사님 찾기(회원 / 비회원)<br />· 기사님 상세(회원 / 비회원)<br />· AI 챗봇 기사님 찾기(챗봇 모달 · 대화 상태 훅)                                                                                             | · 기사님 목록 API(검색 · 필터 · 정렬 · 무한 스크롤)<br />· 기사님 상세 조회 API<br />· 기사님 찜하기 API(찜하기 · 해제)<br />· 정렬 성능 개선(반정규화 컬럼 + 인덱스)<br />· 알림 API 초안<br />· AI 챗봇 기사님 추천 API(Gemini)                                                                                                                | [@Eznnni](https://github.com/Eznnni)                 |
+상세 담당 업무는 [팀원 소개 및 R&R](https://app.notion.com/p/bum0107/R-R-1fa2c0a94b6182a7a639012465fb2f82)에 정리되어 있습니다.
 
 ### 주요 링크
 
-- 📒 [팀 Notion](https://app.notion.com/p/bum0107/4f62c0a94b6182509d1281654aab75d0)
-- 📋 [요구사항 분석 · Task List](https://app.notion.com/p/bum0107/3cd2c0a94b61800b8a1cf0912131c2f0)
-- 🎨 [Figma 디자인](https://www.figma.com/design/fgvdOrZSUPdiBm3OwVPmCm/-%25EC%258A%25A4%25ED%2594%2584%25EB%25A6%25B0%25ED%2584%25B0-%25EA%25B3%25B5%25EC%259C%25A0%25EC%259A%25A9--%25EB%25AC%25B4%25EB%25B9%2599_V2?node-id=0-1&p=f)
-- 📘 [API 명세](https://app.notion.com/p/bum0107/API-f542c0a94b618394b54e81bc11e29240) · Swagger `/api-docs`
+- [팀 Notion](https://app.notion.com/p/bum0107/4f62c0a94b6182509d1281654aab75d0)
+- [요구사항 분석 · Task List](https://app.notion.com/p/bum0107/3cd2c0a94b61800b8a1cf0912131c2f0)
+- [Figma 디자인](https://www.figma.com/design/fgvdOrZSUPdiBm3OwVPmCm/-%25EC%258A%25A4%25ED%2594%2584%25EB%25A6%25B0%25ED%2584%25B0-%25EA%25B3%25B5%25EC%259C%25A0%25EC%259A%25A9--%25EB%25AC%25B4%25EB%25B9%2599_V2?node-id=0-1&p=f)
+- [API 명세](https://app.notion.com/p/bum0107/API-f542c0a94b618394b54e81bc11e29240) · Swagger `/api-docs`
 
-<br />
+## 협업 방식
 
-## 🤝 협업 방식
+| 구분          | 내용                                                                                                                                               |
+| :------------ | :------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **브랜치**    | `main`(운영 배포) ← `dev`(개발 통합, 기본 브랜치) ← `{type}/{작업명}-{이슈번호}`(작업)                                                             |
+| **병합 규칙** | 직접 push 없이 PR로만 병합 · `dev` 승인 2명, `main` 승인 1명 · Squash and Merge                                                                    |
+| **작업 흐름** | 이슈 생성 → 브랜치 생성 → 커밋 → PR 생성 → 자동 검사 · 코드 리뷰 → 병합                                                                            |
+| **이슈 · PR** | 이슈 템플릿 5종(feat · fix · chore · refactor · test), PR에 `close #번호`로 이슈 연결                                                              |
+| **자동화**    | PR마다 Vercel 미리보기 배포, 팀원 리뷰와 AI 코드 리뷰(CodeRabbit)                                                                                  |
+| **커밋**      | `{type}: {내용}` 형식을 husky + commitlint가 검사 · `feat` 기능 추가 · `fix` 버그 수정 · `chore` 빌드 · 설정 · `test` 테스트 · `refactor` 리팩토링 |
+| **팀 규칙**   | 코드 리뷰 24시간 안에 · 4시간 막힌 문제는 팀에 공유 · 데일리 스크럼은 전날 퇴실 전 최신화                                                          |
 
-### 브랜치 전략
-
-```text
-main            운영 배포
- └── dev        개발 통합 (기본 브랜치)
-      └── {type}/{작업명}-{이슈번호}    작업 브랜치
-```
-
-- 직접 push 없이 PR로만 병합합니다.
-- `dev`는 승인 2명, `main`은 승인 1명이 필요하며, Squash and Merge로 병합합니다.
-
-### 작업 흐름
-
-`이슈 생성` → `브랜치 생성` → `커밋` → `PR 생성` → `자동 검사 · 코드 리뷰` → `병합`
-
-- 이슈는 템플릿 5종(feat · fix · chore · refactor · test)으로 만들고, PR에는 `close #번호`로 이슈를 연결합니다.
-- PR마다 Vercel 미리보기 배포가 만들어지고, 팀원 리뷰와 함께 AI 코드 리뷰(CodeRabbit)를 받습니다.
-
-### 커밋 컨벤션
-
-커밋은 `{type}: {내용}` 형식이며, husky + commitlint가 형식을 검사합니다.
-
-| 타입       | 설명             |
-| :--------- | :--------------- |
-| `feat`     | 새로운 기능 추가 |
-| `fix`      | 버그 수정        |
-| `chore`    | 빌드 · 설정 변경 |
-| `test`     | 테스트 코드      |
-| `refactor` | 코드 리팩토링    |
-
-### 팀 규칙
-
-- 코드 리뷰는 24시간 안에 마칩니다.
-- 4시간 동안 해결되지 않는 문제는 팀에 공유합니다.
-- 데일리 스크럼은 전날 퇴실 전에 최신화합니다.
-
-<br />
-
-## 🔒 보안 · 접근성
+## 보안 · 접근성
 
 ### 보안
 
@@ -288,9 +243,7 @@ main            운영 배포
 - 버튼 · 모달 · 탭 · 입력 항목에 `aria` 속성과 `role`을 붙여 스크린 리더가 용도를 알 수 있게 했습니다.
 - 화면에는 보이지 않고 스크린 리더에만 읽히는 안내 문구를 별도로 두었습니다.
 
-<br />
-
-## 🔍 트러블 슈팅
+## 트러블 슈팅
 
 <details>
 <summary><b>[보안] OAuth `state` — role 전달용에서 CSRF 방어용으로</b></summary>
