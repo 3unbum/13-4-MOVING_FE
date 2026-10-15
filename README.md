@@ -8,7 +8,7 @@
 
 <br />
 
-🚀 [**서비스 바로가기**](https://www.letsmoving.site) &emsp;-&emsp; 🎬 [**시연 영상**](#기능-구현-영상--시연-계정) &emsp;-&emsp; 🔗 [**Backend 저장소**](https://github.com/3unbum/13-4-MOVING_BE)
+🚀 [**서비스 바로가기**](https://www.letsmoving.site) &emsp;-&emsp; 🎬 [**시연 영상**](https://youtu.be/l_jDUSVPUx4) &emsp;-&emsp; 🔗 [**Backend 저장소**](https://github.com/3unbum/13-4-MOVING_BE)
 
 <br />
 
