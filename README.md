@@ -49,7 +49,7 @@
 
 ## 기능 구현 영상 · 시연 계정
 
-https://github.com/user-attachments/assets/cb7b684e-4505-4162-b1b9-2d8d3b324df7
+<p align="center"><a href="https://github.com/user-attachments/assets/cb7b684e-4505-4162-b1b9-2d8d3b324df7"><img src="docs/promo-thumbnail.png" alt="무빙 기능 구현 영상 — 클릭하면 영상으로 이동합니다" width="720" /></a></p>
 
 직접 써 보려면 아래 시연 계정으로 로그인할 수 있습니다.
 
