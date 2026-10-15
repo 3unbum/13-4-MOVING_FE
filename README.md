@@ -271,6 +271,8 @@ public/                        # 아이콘 · OG 이미지 · 서비스 워커(s
 
 ## 트러블 슈팅
 
+팀원 1인 1건씩 작성했습니다. 백엔드 트러블 슈팅은 [Backend README](https://github.com/3unbum/13-4-MOVING_BE#트러블-슈팅)에 있습니다.
+
 <details>
 <summary><b>[보안] OAuth `state` — role 전달용에서 CSRF 방어용으로</b></summary>
 
